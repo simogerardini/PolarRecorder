@@ -23,7 +23,7 @@ android {
   compileSdk = 36
 
   defaultConfig {
-    applicationId = "com.wboelens.polarrecorder"
+    applicationId = "it.biosleep.recorder"
     minSdk = 26
     targetSdk = 36
     versionCode = 26
