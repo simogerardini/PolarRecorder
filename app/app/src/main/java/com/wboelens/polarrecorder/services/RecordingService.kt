@@ -7,11 +7,13 @@ import android.app.PendingIntent
 import android.app.Service
 import android.content.Context
 import android.content.Intent
+import android.content.pm.ServiceInfo
 import android.os.Binder
 import android.os.Handler
 import android.os.IBinder
 import android.os.Looper
 import androidx.core.app.NotificationCompat
+import androidx.core.app.ServiceCompat
 import com.polar.sdk.api.PolarBleApi
 import com.wboelens.polarrecorder.PolarRecorderApplication
 import com.wboelens.polarrecorder.recording.EventLogEntry
@@ -138,7 +140,12 @@ class RecordingService : Service() {
         // Service started without action - show notification if recording
         if (orchestrator.recordingState.value.isRecording) {
           val notification = createNotification()
-          startForeground(NOTIFICATION_ID, notification)
+          ServiceCompat.startForeground(
+              this,
+              NOTIFICATION_ID,
+              notification,
+              ServiceInfo.FOREGROUND_SERVICE_TYPE_CONNECTED_DEVICE,
+          )
         }
       }
     }
@@ -153,7 +160,12 @@ class RecordingService : Service() {
     if (result is StartRecordingResult.Success) {
       // Service-specific: start foreground notification
       val notification = createNotification()
-      startForeground(NOTIFICATION_ID, notification)
+      ServiceCompat.startForeground(
+          this,
+          NOTIFICATION_ID,
+          notification,
+          ServiceInfo.FOREGROUND_SERVICE_TYPE_CONNECTED_DEVICE,
+      )
       scheduleNotificationUpdates()
     }
     // Errors are already logged by orchestrator
