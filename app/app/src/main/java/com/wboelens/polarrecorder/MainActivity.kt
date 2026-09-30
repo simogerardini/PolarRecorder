@@ -19,9 +19,13 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
+import com.wboelens.polarrecorder.biosleep.ui.NightDetailScreen
+import com.wboelens.polarrecorder.biosleep.ui.NightsScreen
 import com.wboelens.polarrecorder.dataSavers.DataSavers
 import com.wboelens.polarrecorder.managers.PermissionManager
 import com.wboelens.polarrecorder.managers.PolarManager
@@ -150,6 +154,23 @@ class MainActivity : ComponentActivity() {
                   deviceViewModel = deviceViewModel,
                   polarManager = polarManager,
                   onContinue = { navController.navigate("deviceConnection") },
+                  onOpenNights = { navController.navigate("nights") },
+              )
+            }
+            // BioSleep: elenco notti e dettaglio di una notte
+            composable("nights") {
+              NightsScreen(
+                  onBack = { navController.navigateUp() },
+                  onOpenNight = { id -> navController.navigate("night/$id") },
+              )
+            }
+            composable(
+                "night/{sessionId}",
+                arguments = listOf(navArgument("sessionId") { type = NavType.LongType }),
+            ) { entry ->
+              NightDetailScreen(
+                  sessionId = entry.arguments?.getLong("sessionId") ?: 0L,
+                  onBack = { navController.navigateUp() },
               )
             }
             composable("deviceConnection") {
@@ -225,6 +246,7 @@ class MainActivity : ComponentActivity() {
                   dataSavers = dataSavers,
                   onBackPressed = backAction,
                   onRestartRecording = { navController.navigate("dataSaverInitialization") },
+                  onOpenNights = { navController.navigate("nights") },
               )
             }
           }

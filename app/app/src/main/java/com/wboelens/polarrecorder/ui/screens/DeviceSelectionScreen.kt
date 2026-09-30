@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Bedtime
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -34,6 +35,7 @@ fun DeviceSelectionScreen(
     deviceViewModel: DeviceViewModel,
     polarManager: PolarManager,
     onContinue: () -> Unit,
+    onOpenNights: () -> Unit,
 ) {
   val selectedDevices by deviceViewModel.selectedDevices.observeAsState(emptyList())
   val state = rememberPullToRefreshState()
@@ -50,6 +52,7 @@ fun DeviceSelectionScreen(
           TopAppBar(
               title = { Text("Select Devices") },
               actions = {
+                IconButton(onClick = onOpenNights) { Icon(Icons.Filled.Bedtime, "Le mie notti") }
                 IconButton(onClick = onRefresh) { Icon(Icons.Filled.Refresh, "Trigger Refresh") }
               },
           )
