@@ -1,6 +1,7 @@
 package com.wboelens.polarrecorder.dataSavers
 
 import android.content.Context
+import com.wboelens.polarrecorder.biosleep.BioSleepDataSaver
 import com.wboelens.polarrecorder.managers.PreferencesManager
 import com.wboelens.polarrecorder.state.LogState
 
@@ -11,6 +12,7 @@ class DataSavers(
 ) {
   val mqtt: MQTTDataSaver = MQTTDataSaver(logState, preferencesManager)
   val fileSystem: FileSystemDataSaver = FileSystemDataSaver(context, logState, preferencesManager)
+  val bioSleep: BioSleepDataSaver = BioSleepDataSaver(context, logState, preferencesManager)
 
   private val savers = mutableListOf<DataSaver>()
 
@@ -26,6 +28,10 @@ class DataSavers(
       fileSystem.enable()
     }
     savers.add(fileSystem)
+
+    // BioSleep: database locale + analisi notturna, sempre attivo
+    bioSleep.enable()
+    savers.add(bioSleep)
   }
 
   fun iterator(): Iterator<DataSaver> = savers.iterator()

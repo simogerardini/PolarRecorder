@@ -173,6 +173,9 @@ class RecordingOrchestrator(
     // Dispose all streams
     disposeAllStreams()
 
+    // BioSleep: chiude la sessione e avvia subito l'analisi della notte
+    dataSavers.bioSleep.finishRecording()
+
     // Retain the recording name so post-stop event edits can still be saved
     completedRecordingName = _recordingState.value.currentRecordingName
 

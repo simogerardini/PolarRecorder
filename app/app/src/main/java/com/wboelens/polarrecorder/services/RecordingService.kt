@@ -21,6 +21,7 @@ import com.wboelens.polarrecorder.recording.RecordingOrchestrator
 import com.wboelens.polarrecorder.recording.StartRecordingResult
 import com.wboelens.polarrecorder.state.LogState
 import java.util.concurrent.Executors
+import java.util.concurrent.ScheduledFuture
 import java.util.concurrent.TimeUnit
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -44,6 +45,7 @@ class RecordingService : Service() {
   }
 
   private val executor = Executors.newSingleThreadScheduledExecutor()
+  private var notificationUpdates: ScheduledFuture<*>? = null
 
   // Dependencies (initialized in onCreate)
   private lateinit var orchestrator: RecordingOrchestrator
@@ -181,12 +183,17 @@ class RecordingService : Service() {
   }
 
   private fun stopServiceAfterRecordingEnded() {
+    // Ferma l'aggiornamento della notifica, altrimenti ricompare ogni minuto dopo lo stop
+    notificationUpdates?.cancel(false)
+    notificationUpdates = null
     stopForeground(STOP_FOREGROUND_REMOVE)
     stopSelf()
   }
 
   private fun scheduleNotificationUpdates() {
-    executor.scheduleWithFixedDelay(
+    notificationUpdates?.cancel(false)
+    notificationUpdates =
+        executor.scheduleWithFixedDelay(
         {
           val notification = createNotification()
           val notificationManager =
