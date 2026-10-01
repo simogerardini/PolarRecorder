@@ -12,42 +12,42 @@
         android:scaleY="0.72">
 
         <!-- Anello esterno principale -->
-        <path android:strokeColor="#212121" android:strokeWidth="1.8" android:strokeLineCap="round"
+        <path android:strokeColor="#69F0AE" android:strokeWidth="1.8" android:strokeLineCap="round"
             android:pathData="M 54,12 A 42,42 0 1,1 53.9,12 Z" />
 
         <!-- Cerchio concentrico secondario -->
-        <path android:strokeColor="#424242" android:strokeWidth="1.2"
+        <path android:strokeColor="#43C98A" android:strokeWidth="1.2"
             android:pathData="M 54,18 A 36,36 0 1,1 53.9,18 Z" />
 
         <!-- Anello tratteggiato (30 trattini, sostituisce strokeDasharray) -->
-        <path android:strokeColor="#616161" android:strokeWidth="2.2"
+        <path android:strokeColor="#2FA36F" android:strokeWidth="2.2"
             android:pathData="M54,23 A31,31 0 0,1 56.50,23.10 M60.45,23.68 A31,31 0 0,1 62.87,24.30 M66.61,25.68 A31,31 0 0,1 68.84,26.77 M72.22,28.92 A31,31 0 0,1 74.21,30.43 M77.04,33.26 A31,31 0 0,1 78.72,35.12 M80.85,38.50 A31,31 0 0,1 82.16,40.64 M83.46,44.42 A31,31 0 0,1 84.31,46.76 M84.83,50.76 A31,31 0 0,1 85.00,53.26 M84.83,57.24 A31,31 0 0,1 84.31,59.70 M83.46,63.58 A31,31 0 0,1 82.16,65.72 M80.85,69.50 A31,31 0 0,1 78.72,71.25 M77.04,74.74 A31,31 0 0,1 74.21,76.38 M72.22,79.08 A31,31 0 0,1 68.84,80.00 M66.61,82.32 A31,31 0 0,1 62.87,83.51 M60.45,84.32 A31,31 0 0,1 56.50,84.90 M54,85 A31,31 0 0,1 51.50,84.90 M47.55,84.32 A31,31 0 0,1 45.13,83.70 M41.39,82.32 A31,31 0 0,1 39.16,81.23 M35.78,79.08 A31,31 0 0,1 33.79,77.57 M30.96,74.74 A31,31 0 0,1 29.28,72.88 M27.15,69.50 A31,31 0 0,1 25.84,67.36 M24.54,63.58 A31,31 0 0,1 23.69,61.24 M23.17,57.24 A31,31 0 0,1 23.00,54.74 M23.17,50.76 A31,31 0 0,1 23.69,48.30 M24.54,44.42 A31,31 0 0,1 25.84,42.28 M27.15,38.50 A31,31 0 0,1 29.28,36.75 M30.96,33.26 A31,31 0 0,1 33.79,31.62 M35.78,28.92 A31,31 0 0,1 39.16,28.00 M41.39,25.68 A31,31 0 0,1 45.13,24.49 M47.55,23.68 A31,31 0 0,1 51.50,23.10" />
 
         <!-- Segmenti ad arco esterni -->
-        <path android:strokeColor="#212121" android:strokeWidth="1.4" android:strokeLineCap="round"
+        <path android:strokeColor="#69F0AE" android:strokeWidth="1.4" android:strokeLineCap="round"
             android:pathData="M 32,22 A 38,38 0 0,1 76,22 M 86,32 A 38,38 0 0,1 86,76 M 76,86 A 38,38 0 0,1 32,86 M 22,76 A 38,38 0 0,1 22,32" />
 
         <!-- Punti cardinali -->
-        <path android:fillColor="#212121"
+        <path android:fillColor="#69F0AE"
             android:pathData="M 52,10 H 56 V 15 H 52 Z M 52,93 H 56 V 98 H 52 Z M 10,52 H 15 V 56 H 10 Z M 93,52 H 98 V 56 H 93 Z" />
 
         <!-- Tacche a 45° -->
-        <path android:strokeColor="#424242" android:strokeWidth="1.2"
+        <path android:strokeColor="#43C98A" android:strokeWidth="1.2"
             android:pathData="M 26,26 L 31,31 M 82,26 L 77,31 M 26,82 L 31,77 M 82,82 L 77,77" />
 
         <!-- Nucleo -->
-        <path android:strokeColor="#212121" android:strokeWidth="2.0"
+        <path android:strokeColor="#69F0AE" android:strokeWidth="2.0"
             android:pathData="M 54,34 A 20,20 0 1,1 53.9,34 Z" />
-        <path android:strokeColor="#757575" android:strokeWidth="0.8"
+        <path android:strokeColor="#2A8A5F" android:strokeWidth="0.8"
             android:pathData="M 54,37 A 17,17 0 1,1 53.9,37 Z" />
 
         <!-- ECG -->
-        <path android:strokeColor="#111111" android:strokeWidth="2.4"
+        <path android:strokeColor="#69F0AE" android:strokeWidth="2.4"
             android:strokeLineCap="round" android:strokeLineJoin="round"
             android:pathData="M 38,54 L 44,54 L 47,48 L 50,59 L 54,41 L 58,63 L 61,50 L 64,54 L 70,54" />
 
         <!-- Mezzaluna sleep -->
-        <path android:strokeColor="#424242" android:strokeWidth="1.2" android:strokeLineCap="round"
+        <path android:strokeColor="#43C98A" android:strokeWidth="1.2" android:strokeLineCap="round"
             android:pathData="M 46,65 C 50,68 58,68 62,65" />
     </group>
 </vector>
