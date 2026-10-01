@@ -28,6 +28,13 @@ import com.wboelens.polarrecorder.managers.PolarManager
 import com.wboelens.polarrecorder.ui.components.DeviceList
 import com.wboelens.polarrecorder.viewModels.DeviceViewModel
 import kotlinx.coroutines.launch
+import androidx.compose.runtime.setValue
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.material3.Card
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -36,7 +43,10 @@ fun DeviceSelectionScreen(
     polarManager: PolarManager,
     onContinue: () -> Unit,
     onOpenNights: () -> Unit,
+    nightDeviceName: String?,
+    onStartNight: () -> Unit,
 ) {
+  var nightStarting by remember { mutableStateOf(false) }
   val selectedDevices by deviceViewModel.selectedDevices.observeAsState(emptyList())
   val state = rememberPullToRefreshState()
   val coroutineScope = rememberCoroutineScope()
@@ -65,6 +75,35 @@ fun DeviceSelectionScreen(
           onRefresh = onRefresh,
       ) {
         Column(modifier = Modifier.fillMaxSize().padding(16.dp)) {
+          // BioSleep: avvio della notte con un tocco (impostazioni dell'ultima registrazione)
+          if (nightDeviceName != null) {
+            Card(modifier = Modifier.fillMaxWidth()) {
+              Column(
+                  Modifier.padding(16.dp),
+                  verticalArrangement = Arrangement.spacedBy(8.dp),
+              ) {
+                Text("Notte", style = MaterialTheme.typography.titleMedium)
+                Text(
+                    if (nightStarting) "Avvio in corso: segui la notifica."
+                    else "Fascia $nightDeviceName. Indossala, poi premi Avvia notte.",
+                    style = MaterialTheme.typography.bodySmall,
+                )
+                Button(
+                    onClick = {
+                      nightStarting = true
+                      polarManager.stopPeriodicScanning()
+                      onStartNight()
+                    },
+                    enabled = !nightStarting,
+                    modifier = Modifier.fillMaxWidth(),
+                ) {
+                  Text(if (nightStarting) "Avvio in corso…" else "Avvia notte")
+                }
+              }
+            }
+            Spacer(modifier = Modifier.height(16.dp))
+          }
+
           DeviceList(
               deviceViewModel = deviceViewModel,
               isBLEEnabled = polarManager.isBLEEnabled.value,

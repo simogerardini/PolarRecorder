@@ -24,7 +24,12 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import android.content.Intent
+import androidx.compose.runtime.remember
+import androidx.core.content.ContextCompat
+import com.wboelens.polarrecorder.biosleep.auto.NightProfileStore
 import com.wboelens.polarrecorder.biosleep.ui.IntervalsSettingsScreen
+import com.wboelens.polarrecorder.services.RecordingService
 import com.wboelens.polarrecorder.biosleep.ui.NightDetailScreen
 import com.wboelens.polarrecorder.biosleep.ui.NightsScreen
 import com.wboelens.polarrecorder.dataSavers.DataSavers
@@ -129,6 +134,10 @@ class MainActivity : ComponentActivity() {
     setContent {
       AppTheme {
         val navController = rememberNavController()
+        // BioSleep: fascia dell'ultima registrazione (null = nessuna registrazione fatta ancora)
+        val nightDeviceName = remember {
+          NightProfileStore(this@MainActivity).load()?.let { it.deviceName.ifBlank { it.deviceId } }
+        }
 
         // Get the snackbarHostState from the ErrorHandler
         val (snackbarHostState, currentLogType) =
@@ -156,7 +165,21 @@ class MainActivity : ComponentActivity() {
                   polarManager = polarManager,
                   onContinue = { navController.navigate("deviceConnection") },
                   onOpenNights = { navController.navigate("nights") },
+                  nightDeviceName = nightDeviceName,
+                  onStartNight = {
+                    val intent =
+                        Intent(this@MainActivity, RecordingService::class.java)
+                            .setAction(RecordingService.ACTION_START_NIGHT)
+                    ContextCompat.startForegroundService(this@MainActivity, intent)
+                  },
               )
+              // Quando la notte e' partita si passa alla schermata di registrazione
+              val binder by serviceConnection.binder.collectAsState()
+              val nightRecording =
+                  binder?.recordingState?.collectAsState()?.value?.isRecording == true
+              LaunchedEffect(nightRecording) {
+                if (nightRecording) navController.navigate("recording")
+              }
             }
             // BioSleep: elenco notti e dettaglio di una notte
             composable("nights") {
@@ -167,9 +190,7 @@ class MainActivity : ComponentActivity() {
               )
             }
             composable("intervalsSettings") {
-              IntervalsSettingsScreen(
-                  onBack = { navController.navigateUp() }
-              )
+              IntervalsSettingsScreen(onBack = { navController.navigateUp() })
             }
             composable(
                 "night/{sessionId}",
