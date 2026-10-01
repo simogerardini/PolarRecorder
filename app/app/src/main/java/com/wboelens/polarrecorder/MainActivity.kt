@@ -24,6 +24,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import com.wboelens.polarrecorder.biosleep.ui.IntervalsSettingsScreen
 import com.wboelens.polarrecorder.biosleep.ui.NightDetailScreen
 import com.wboelens.polarrecorder.biosleep.ui.NightsScreen
 import com.wboelens.polarrecorder.dataSavers.DataSavers
@@ -162,6 +163,12 @@ class MainActivity : ComponentActivity() {
               NightsScreen(
                   onBack = { navController.navigateUp() },
                   onOpenNight = { id -> navController.navigate("night/$id") },
+                  onOpenSettings = { navController.navigate("intervalsSettings") },
+              )
+            }
+            composable("intervalsSettings") {
+              IntervalsSettingsScreen(
+                  onBack = { navController.navigateUp() }
               )
             }
             composable(
