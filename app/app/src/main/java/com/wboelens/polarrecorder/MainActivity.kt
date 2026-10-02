@@ -36,6 +36,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.withTimeoutOrNull
+import com.wboelens.polarrecorder.biosleep.ui.BioAgeScreen
 import com.wboelens.polarrecorder.biosleep.ui.IntervalsSettingsScreen
 import com.wboelens.polarrecorder.services.RecordingService
 import com.wboelens.polarrecorder.biosleep.ui.NightDetailScreen
@@ -277,8 +278,10 @@ class MainActivity : ComponentActivity() {
                   onBack = { navController.navigateUp() },
                   onOpenNight = { id -> navController.navigate("night/$id") },
                   onOpenSettings = { navController.navigate("intervalsSettings") },
+                  onOpenBioAge = { navController.navigate("bioAge") },
               )
             }
+            composable("bioAge") { BioAgeScreen(onBack = { navController.navigateUp() }) }
             composable("intervalsSettings") {
               IntervalsSettingsScreen(onBack = { navController.navigateUp() })
             }

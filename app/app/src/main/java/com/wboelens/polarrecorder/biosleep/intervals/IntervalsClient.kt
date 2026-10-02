@@ -28,7 +28,7 @@ sealed interface IntervalsResult {
  * Athlete id "0" = l'atleta proprietario della API key.
  */
 object IntervalsClient {
-  private const val BASE_URL = "https://intervals.icu/api/v1/athlete/0"
+  internal const val BASE_URL = "https://intervals.icu/api/v1/athlete/0"
   private const val CONNECT_TIMEOUT_MS = 15_000
   private const val READ_TIMEOUT_MS = 20_000
 
@@ -142,7 +142,7 @@ object IntervalsClient {
         else -> "Errore Intervals HTTP $code: ${text.take(200)}"
       }
 
-  private fun request(method: String, url: String, apiKey: String, body: String?): Pair<Int, String> {
+  internal fun request(method: String, url: String, apiKey: String, body: String?): Pair<Int, String> {
     val auth = Base64.getEncoder().encodeToString("API_KEY:$apiKey".toByteArray(Charsets.UTF_8))
     val conn = URL(url).openConnection() as HttpURLConnection
     try {

@@ -13,6 +13,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.HourglassTop
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.Card
 import androidx.compose.material3.CircularProgressIndicator
@@ -45,7 +46,12 @@ import kotlinx.coroutines.withContext
 /** Schermata "Le mie notti": elenco delle notti analizzate, dalla piu' recente. */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun NightsScreen(onBack: () -> Unit, onOpenNight: (Long) -> Unit, onOpenSettings: () -> Unit) {
+fun NightsScreen(
+    onBack: () -> Unit,
+    onOpenNight: (Long) -> Unit,
+    onOpenSettings: () -> Unit,
+    onOpenBioAge: () -> Unit,
+) {
   val context = LocalContext.current
   // Il database si legge in background (Dispatchers.IO) per non bloccare l'interfaccia
   // Si ricarica da sola quando una notte nuova finisce l'analisi
@@ -78,6 +84,9 @@ fun NightsScreen(onBack: () -> Unit, onOpenNight: (Long) -> Unit, onOpenSettings
               }
             },
             actions = {
+              IconButton(onClick = onOpenBioAge) {
+                Icon(Icons.Filled.HourglassTop, contentDescription = "Età BioSleep")
+              }
               IconButton(onClick = onOpenSettings) {
                 Icon(Icons.Filled.Settings, contentDescription = "Impostazioni Intervals.icu")
               }
