@@ -27,9 +27,15 @@ import androidx.navigation.navArgument
 import android.content.Intent
 import androidx.compose.runtime.remember
 import androidx.core.content.ContextCompat
+import com.wboelens.polarrecorder.biosleep.BioSleepDataSaver
+import com.wboelens.polarrecorder.biosleep.SleepDb
+import com.wboelens.polarrecorder.biosleep.auto.HabitLearner
 import com.wboelens.polarrecorder.biosleep.auto.NightNotifier
 import com.wboelens.polarrecorder.biosleep.auto.NightProfileStore
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.withTimeoutOrNull
 import com.wboelens.polarrecorder.biosleep.ui.IntervalsSettingsScreen
 import com.wboelens.polarrecorder.services.RecordingService
 import com.wboelens.polarrecorder.biosleep.ui.NightDetailScreen
@@ -81,9 +87,10 @@ class MainActivity : ComponentActivity() {
     // Matches androidx.activity's internal DefaultLightScrim — a semi-opaque white used as the
     // navigation bar scrim on API 26, where light-appearance nav bar icons aren't supported.
     private const val API_26_LIGHT_NAV_SCRIM: Int = 0xe6ffffff.toInt()
+    private const val MORNING_STOP_MIN_RECORDING_MS = 2 * 3_600_000L
+    private const val NIGHT_READY_TIMEOUT_MS = 3 * 60_000L
   }
 
-  @Suppress("LongMethod")
   /** Notte da aprire perche' l'utente ha toccato la notifica del mattino (null = nessuna). */
   private val openNightRequest = MutableStateFlow<Long?>(null)
 
@@ -102,9 +109,42 @@ class MainActivity : ComponentActivity() {
     handleOpenNight(intent)
   }
 
+  /**
+   * true se all'apertura dell'app (al mattino) la registrazione e' stata chiusa: invece della
+   * schermata con "Stop recording" si va alle notti e, appena pronta, al dettaglio di stanotte.
+   */
+  private val morningStopRequest = MutableStateFlow(false)
+  private var stoppedOnOpen = false
+  private var justCreated = false
+
+  /**
+   * Come Oura: aprendo l'app nella fascia del mattino, con almeno 2 ore registrate, la notte
+   * si chiude da sola (anche se la fascia e' ancora indossata).
+   */
+  private fun stopNightIfMorning(): Boolean {
+    if (!app.isRecordingActive) return false
+    val state = app.recordingOrchestrator?.recordingState?.value ?: return false
+    if (!state.isRecording) return false
+    val now = System.currentTimeMillis()
+    if (now - state.recordingStartTime < MORNING_STOP_MIN_RECORDING_MS) return false
+    val habits = HabitLearner.learn(SleepDb.get(this).nightTimes(), now)
+    if (!HabitLearner.isMorning(now, habits)) return false
+
+    Log.d(TAG, "Apertura al mattino: chiusura automatica della notte")
+    BioSleepDataSaver.newNightReady.value = null
+    startService(
+        Intent(this, RecordingService::class.java).setAction(RecordingService.ACTION_STOP_RECORDING))
+    stoppedOnOpen = true
+    morningStopRequest.value = true
+    return true
+  }
+
+  @Suppress("LongMethod")
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
     handleOpenNight(intent)
+    justCreated = true
+    val stoppedNow = stopNightIfMorning()
     // Use light/dark SystemBarStyle (not auto) so contrast enforcement stays off and the
     // app's background shows through truly transparent system bars.
     val isDark =
@@ -142,7 +182,8 @@ class MainActivity : ComponentActivity() {
     serviceConnection = app.getServiceConnection()
 
     // Determine start destination based on recording state
-    val startDestination = if (app.isRecordingActive) "recording" else "deviceSelection"
+    val startDestination =
+        if (!stoppedNow && app.isRecordingActive) "recording" else "deviceSelection"
 
     permissionManager = PermissionManager(this)
 
@@ -182,6 +223,23 @@ class MainActivity : ComponentActivity() {
           }
         }
 
+        // BioSleep: notte chiusa all'apertura -> elenco notti, poi il dettaglio quando e' pronta
+        val morningStop by morningStopRequest.collectAsState()
+        LaunchedEffect(morningStop) {
+          if (!morningStop) return@LaunchedEffect
+          // Pila pulita: indietro dalle notti si torna alla schermata iniziale
+          navController.navigate("deviceSelection") {
+            popUpTo(navController.graph.id) { inclusive = true }
+          }
+          navController.navigate("nights")
+          val id =
+              withTimeoutOrNull(NIGHT_READY_TIMEOUT_MS) {
+                BioSleepDataSaver.newNightReady.filterNotNull().first()
+              }
+          if (id != null) navController.navigate("night/$id")
+          morningStopRequest.value = false
+        }
+
         Scaffold(snackbarHost = { LogMessageSnackbarHost(snackbarHostState, currentLogType) }) {
             paddingValues ->
           NavHost(
@@ -208,7 +266,9 @@ class MainActivity : ComponentActivity() {
               val nightRecording =
                   binder?.recordingState?.collectAsState()?.value?.isRecording == true
               LaunchedEffect(nightRecording) {
-                if (nightRecording) navController.navigate("recording")
+                // Dopo la chiusura al mattino il servizio resta "in registrazione" per un attimo:
+                // non bisogna tornare alla schermata di registrazione
+                if (nightRecording && !stoppedOnOpen) navController.navigate("recording")
               }
             }
             // BioSleep: elenco notti e dettaglio di una notte
@@ -315,6 +375,9 @@ class MainActivity : ComponentActivity() {
 
   override fun onStart() {
     super.onStart()
+    // App gia' aperta e tornata in primo piano (onCreate non viene richiamato)
+    if (!justCreated) stopNightIfMorning()
+    justCreated = false
     // Always bind to service to observe state
     serviceConnection.bind()
     Log.d(TAG, "Service bound")
