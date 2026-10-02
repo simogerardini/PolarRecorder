@@ -20,4 +20,16 @@ class BaselineParityTest {
     assertTrue(esito.differenze.isEmpty(),
         "${esito.differenze.size} differenze fra app e coach (prime 30 stampate sopra)")
   }
+
+  @Test
+  fun formaIdenticaAlCoach() {
+    val testo = javaClass.getResource("/biosleep/baseline_cases.json")?.readText()
+        ?: error("Manca src/test/resources/biosleep/baseline_cases.json")
+    val esito = BaselineParity.verificaForma(testo)
+    println("Casi forma verificati: ${esito.casi}")
+    esito.differenze.take(30).forEach { println("  DIFF $it") }
+    assertTrue(esito.casi > 0, "Nessun caso forma nel file: rigenera con genera_casi_baseline.py")
+    assertTrue(esito.differenze.isEmpty(),
+        "${esito.differenze.size} differenze di forma fra app e coach (prime 30 stampate sopra)")
+  }
 }

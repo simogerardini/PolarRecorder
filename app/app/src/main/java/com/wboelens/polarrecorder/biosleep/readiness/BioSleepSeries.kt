@@ -65,4 +65,17 @@ object PyJson {
           quality = num(o.get("BioSleepQuality")), sleepHours = num(o.get("BioSleepSleepHours")))
 
   fun wellnessBio(a: JsonArray): List<WellnessBio> = a.filter { it.isJsonObject }.map { wellnessBio(it.asJsonObject) }
+
+  fun rigaForma(o: JsonObject) =
+      RigaForma(
+          id = str(o.get("id")), date = str(o.get("date")), ctl = num(o.get("ctl"))?.v,
+          atl = num(o.get("atl"))?.v, rampRate = num(o.get("rampRate"))?.v)
+
+  fun righeForma(a: JsonArray): List<RigaForma> = a.filter { it.isJsonObject }.map { rigaForma(it.asJsonObject) }
+
+  fun caricoAttivita(o: JsonObject) =
+      CaricoAttivita(startDateLocal = str(o.get("start_date_local")), load = num(o.get("icu_training_load"))?.v)
+
+  fun carichiAttivita(a: JsonArray): List<CaricoAttivita> =
+      a.filter { it.isJsonObject }.map { caricoAttivita(it.asJsonObject) }
 }

@@ -35,6 +35,57 @@ object BaselineParity {
     return Esito(casi.size(), diff, intest)
   }
 
+  /** Forma: wellness_reale + stato_forma sui "casi_forma", piu' la serie dell'app sul caso reale. */
+  fun verificaForma(json: String): Esito {
+    val doc = JsonParser.parseString(json).asJsonObject
+    val diff = ArrayList<String>()
+    val casi = doc.getAsJsonArray("casi_forma")
+    eqD(diff, "costante EWMA_ATL", FormaCalc.EWMA_ATL, dbl(doc.get("ewma_atl")))
+    eqD(diff, "costante EWMA_CTL", FormaCalc.EWMA_CTL, dbl(doc.get("ewma_ctl")))
+    eqD(diff, "costante RISCHIO_RELATIVO_PCT", FormaCalc.RISCHIO_RELATIVO_PCT, dbl(doc.get("rischio_relativo_pct")))
+    casi.forEachIndexed { i, el ->
+      val c = el.asJsonObject
+      val nome = "forma $i (${c.get("fonte")!!.asString})"
+      val w = PyJson.righeForma(c.getAsJsonArray("wellness"))
+      val serie = if (c.has("attivita")) {
+        val r = FormaCalc.wellnessReale(w, PyJson.carichiAttivita(c.getAsJsonArray("attivita")))
+        val attese = c.getAsJsonArray("reale").map { it.asJsonObject }
+        if (r.size != attese.size) diff.add("$nome: ${r.size} righe, attese ${attese.size}")
+        else r.zip(attese).forEach { (k, p) ->
+          val atteso = listOf(PyJson.str(p.get("giorno")), dbl(p.get("ctl")), dbl(p.get("atl")), dbl(p.get("rampRate")))
+          val ottenuto = listOf(k.giorno, k.ctl, k.atl, k.rampRate)
+          if (atteso != ottenuto) diff.add("$nome: riga $ottenuto, attesa $atteso")
+        }
+        if (c.get("fonte")!!.asString == "forma_reale") {
+          val app = FormaCalc.serieApp(w, PyJson.carichiAttivita(c.getAsJsonArray("attivita")),
+              Py.parseDate(w.maxOf { it.giorno })!!)
+          confrontaForma("$nome serieApp", FormaCalc.statoForma(app), c.get("forma"), diff)
+        }
+        r
+      } else w
+      confrontaForma(nome, FormaCalc.statoForma(serie), c.get("forma"), diff)
+    }
+    return Esito(casi.size(), diff, "")
+  }
+
+  private fun eqD(diff: MutableList<String>, campo: String, kt: Double, py: Double?) {
+    if (kt != py) diff.add("$campo = $kt, atteso $py")
+  }
+
+  private fun confrontaForma(nome: String, f: StatoForma?, a: JsonElement?, diff: MutableList<String>) {
+    val o = a?.takeIf { it.isJsonObject }?.asJsonObject
+    if ((f == null) != (o == null)) {
+      diff.add("$nome: forma $f, attesa $o")
+      return
+    }
+    if (f == null || o == null) return
+    val atteso = listOf(dbl(o.get("ctl")), dbl(o.get("atl")), dbl(o.get("tsb")), dbl(o.get("form_pct")),
+        PyJson.str(o.get("zona")), PyJson.str(o.get("colore")), o.get("giorni_in_zona")!!.asInt,
+        o.get("storico_gg")!!.asInt, o.get("rischio_relativo")!!.asBoolean)
+    val ottenuto = listOf(f.ctl, f.atl, f.tsb, f.formPct, f.zona, f.colore, f.giorniInZona, f.storicoGg, f.rischioRelativo)
+    if (atteso != ottenuto) diff.add("$nome: forma $ottenuto, attesa $atteso")
+  }
+
   private fun giorno(o: JsonObject) =
       GiornoBio(
           data = PyJson.str(o.get("data")),
