@@ -27,7 +27,9 @@ import androidx.navigation.navArgument
 import android.content.Intent
 import androidx.compose.runtime.remember
 import androidx.core.content.ContextCompat
+import com.wboelens.polarrecorder.biosleep.auto.NightNotifier
 import com.wboelens.polarrecorder.biosleep.auto.NightProfileStore
+import kotlinx.coroutines.flow.MutableStateFlow
 import com.wboelens.polarrecorder.biosleep.ui.IntervalsSettingsScreen
 import com.wboelens.polarrecorder.services.RecordingService
 import com.wboelens.polarrecorder.biosleep.ui.NightDetailScreen
@@ -82,8 +84,27 @@ class MainActivity : ComponentActivity() {
   }
 
   @Suppress("LongMethod")
+  /** Notte da aprire perche' l'utente ha toccato la notifica del mattino (null = nessuna). */
+  private val openNightRequest = MutableStateFlow<Long?>(null)
+
+  private fun handleOpenNight(intent: Intent?) {
+    val id = intent?.getLongExtra(NightNotifier.EXTRA_SESSION_ID, -1L) ?: -1L
+    if (id >= 0) {
+      openNightRequest.value = id
+      intent?.removeExtra(NightNotifier.EXTRA_SESSION_ID) // non riaprirla a ogni rotazione
+    }
+  }
+
+  // App gia' aperta: la notifica arriva qui invece di ricreare la schermata
+  override fun onNewIntent(intent: Intent) {
+    super.onNewIntent(intent)
+    setIntent(intent)
+    handleOpenNight(intent)
+  }
+
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
+    handleOpenNight(intent)
     // Use light/dark SystemBarStyle (not auto) so contrast enforcement stays off and the
     // app's background shows through truly transparent system bars.
     val isDark =
@@ -149,6 +170,15 @@ class MainActivity : ComponentActivity() {
             if (navController.currentDestination?.route == "deviceSelection") {
               polarManager.startPeriodicScanning()
             }
+          }
+        }
+
+        // BioSleep: tocco sulla notifica del mattino -> dettaglio di quella notte
+        val openNight by openNightRequest.collectAsState()
+        LaunchedEffect(openNight) {
+          openNight?.let { id ->
+            navController.navigate("night/$id")
+            openNightRequest.value = null
           }
         }
 
