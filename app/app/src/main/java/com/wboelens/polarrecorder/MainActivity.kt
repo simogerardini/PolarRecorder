@@ -32,15 +32,21 @@ import com.wboelens.polarrecorder.biosleep.SleepDb
 import com.wboelens.polarrecorder.biosleep.auto.HabitLearner
 import com.wboelens.polarrecorder.biosleep.auto.NightNotifier
 import com.wboelens.polarrecorder.biosleep.auto.NightProfileStore
+import com.wboelens.polarrecorder.biosleep.cache.CacheSync
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.withTimeoutOrNull
 import com.wboelens.polarrecorder.biosleep.ui.BioAgeScreen
+import com.wboelens.polarrecorder.biosleep.ui.HomeScreen
 import com.wboelens.polarrecorder.biosleep.ui.IntervalsSettingsScreen
 import com.wboelens.polarrecorder.services.RecordingService
 import com.wboelens.polarrecorder.biosleep.ui.NightDetailScreen
 import com.wboelens.polarrecorder.biosleep.ui.NightsScreen
+import com.wboelens.polarrecorder.biosleep.ui.allenamento.BarraBioSleep
+import com.wboelens.polarrecorder.biosleep.ui.allenamento.CalendarioScreen
+import com.wboelens.polarrecorder.biosleep.ui.allenamento.GraficiScreen
+import com.wboelens.polarrecorder.biosleep.ui.allenamento.OggiScreen
 import com.wboelens.polarrecorder.dataSavers.DataSavers
 import com.wboelens.polarrecorder.managers.PermissionManager
 import com.wboelens.polarrecorder.managers.PolarManager
@@ -183,8 +189,8 @@ class MainActivity : ComponentActivity() {
     serviceConnection = app.getServiceConnection()
 
     // Determine start destination based on recording state
-    val startDestination =
-        if (!stoppedNow && app.isRecordingActive) "recording" else "deviceSelection"
+    // BioSleep: si parte sempre dalla schermata iniziale (che mostra anche la notte in corso)
+    val startDestination = "oggi"
 
     permissionManager = PermissionManager(this)
 
@@ -209,7 +215,9 @@ class MainActivity : ComponentActivity() {
         LaunchedEffect(Unit) {
           permissionManager.checkAndRequestPermissions {
             Log.d(TAG, "Necessary permissions for scanning granted")
-            if (navController.currentDestination?.route == "deviceSelection") {
+            // Ricerca della fascia solo se va ancora configurata
+            if (navController.currentDestination?.route == "home" &&
+                NightProfileStore(this@MainActivity).load() == null) {
               polarManager.startPeriodicScanning()
             }
           }
@@ -229,7 +237,7 @@ class MainActivity : ComponentActivity() {
         LaunchedEffect(morningStop) {
           if (!morningStop) return@LaunchedEffect
           // Pila pulita: indietro dalle notti si torna alla schermata iniziale
-          navController.navigate("deviceSelection") {
+          navController.navigate("oggi") {
             popUpTo(navController.graph.id) { inclusive = true }
           }
           navController.navigate("nights")
@@ -248,6 +256,57 @@ class MainActivity : ComponentActivity() {
               startDestination = startDestination,
               modifier = Modifier.padding(paddingValues).consumeWindowInsets(paddingValues),
           ) {
+            // BioSleep Parte 3: Oggi, Calendario, Grafici (stessa barra in basso della scheda Notte)
+            composable("oggi") {
+              OggiScreen(
+                  bottomBar = { BarraBioSleep(navController) },
+                  onApriSeduta = { data, evento ->
+                    navController.navigate("calendario?data=$data" + (evento?.let { "&evento=$it" } ?: ""))
+                  },
+              )
+            }
+            composable(
+                "calendario?data={data}&evento={evento}",
+                arguments =
+                    listOf(
+                        navArgument("data") {
+                          type = NavType.StringType
+                          nullable = true
+                          defaultValue = null
+                        },
+                        navArgument("evento") {
+                          type = NavType.StringType
+                          nullable = true
+                          defaultValue = null
+                        },
+                    ),
+            ) { entry ->
+              CalendarioScreen(
+                  data = entry.arguments?.getString("data")?.let { java.time.LocalDate.parse(it) },
+                  evento = entry.arguments?.getString("evento"),
+                  bottomBar = { BarraBioSleep(navController) },
+              )
+            }
+            composable("grafici") { GraficiScreen(bottomBar = { BarraBioSleep(navController) }) }
+            // BioSleep: schermata iniziale (configurazione fascia, avvio, notte in corso)
+            composable("home") {
+              HomeScreen(
+                  polarManager = polarManager,
+                  serviceConnection = serviceConnection,
+                  onStartNight = {
+                    val intent =
+                        Intent(this@MainActivity, RecordingService::class.java)
+                            .setAction(RecordingService.ACTION_START_NIGHT)
+                    ContextCompat.startForegroundService(this@MainActivity, intent)
+                  },
+                  onNightStopped = { navController.navigate("nights") },
+                  onOpenNights = { navController.navigate("nights") },
+                  onOpenBioAge = { navController.navigate("bioAge") },
+                  onOpenIntervals = { navController.navigate("intervalsSettings") },
+                  bottomBar = { BarraBioSleep(navController) },
+              )
+            }
+            // Schermate originali di Polar Recorder: non piu' raggiungibili dall'app
             composable("deviceSelection") {
               DeviceSelectionScreen(
                   deviceViewModel = deviceViewModel,
@@ -378,6 +437,7 @@ class MainActivity : ComponentActivity() {
 
   override fun onStart() {
     super.onStart()
+    CacheSync.aggiornaInBackground(this)
     // App gia' aperta e tornata in primo piano (onCreate non viene richiamato)
     if (!justCreated) stopNightIfMorning()
     justCreated = false

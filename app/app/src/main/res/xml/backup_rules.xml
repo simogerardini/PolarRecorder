@@ -2,4 +2,5 @@
 <!-- Backup automatico (Android 11 e precedenti): esclude la API key di Intervals.icu -->
 <full-backup-content>
     <exclude domain="sharedpref" path="biosleep_intervals.xml" />
+    <exclude domain="database" path="biosleep_cache.db" />
 </full-backup-content>

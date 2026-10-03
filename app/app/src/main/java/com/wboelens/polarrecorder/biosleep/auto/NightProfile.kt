@@ -59,6 +59,11 @@ class NightProfileStore(context: Context) {
     prefs.edit().putString(KEY_PROFILE, json.toString()).apply()
   }
 
+  /** Dimentica la fascia (per configurarne un'altra). */
+  fun clear() {
+    prefs.edit().remove(KEY_PROFILE).apply()
+  }
+
   fun load(): NightProfile? {
     val text = prefs.getString(KEY_PROFILE, null) ?: return null
     return try {
