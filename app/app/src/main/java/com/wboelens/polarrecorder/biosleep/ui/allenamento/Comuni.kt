@@ -268,6 +268,9 @@ private fun Indicatore(titolo: String, sigla: String, valore: Double, ieri: Doub
 
 data class SerieGrafico(val nome: String, val colore: Color, val valori: List<Double?>, val punti: Boolean = false)
 
+/** Fascia orizzontale colorata tra due valori (infiniti ammessi: viene tagliata al grafico). */
+data class FasciaGrafico(val da: Double, val a: Double, val colore: Color)
+
 /**
  * Linee su giorni consecutivi. Un valore null interrompe la linea; punti = true disegna anche
  * ogni valore (utile per le notti, che possono avere buchi). banda = fascia colorata [basso, alto].
@@ -279,6 +282,10 @@ fun GraficoLinee(
     modifier: Modifier = Modifier,
     banda: Pair<Double, Double>? = null,
     lineaZero: Boolean = false,
+    fasce: List<FasciaGrafico> = emptyList(),
+    /** Valori da includere comunque nella scala (per mostrare le fasce vicine). */
+    includi: List<Double> = emptyList(),
+    legenda: Boolean = true,
 ) {
   val misuratore = rememberTextMeasurer()
   val stile = MaterialTheme.typography.labelSmall.copy(color = MaterialTheme.colorScheme.onSurfaceVariant)
@@ -288,7 +295,8 @@ fun GraficoLinee(
   val tutti =
       serie.flatMap { it.valori.filterNotNull() } +
           listOfNotNull(banda?.first, banda?.second) +
-          (if (lineaZero) listOf(0.0) else emptyList())
+          (if (lineaZero) listOf(0.0) else emptyList()) +
+          includi
   if (giorni.size < 2 || serie.all { s -> s.valori.all { it == null } }) {
     Box(modifier, contentAlignment = Alignment.Center) { Text("Dati insufficienti per il grafico", style = stile) }
     return
@@ -309,6 +317,11 @@ fun GraficoLinee(
       fun x(i: Int) = sinistra + w * i / (giorni.size - 1).toFloat()
       fun y(v: Double) = sopra + h * (1f - ((v - yMin) / (yMax - yMin)).toFloat())
 
+      for (f in fasce) {
+        val alto = y(minOf(f.a, yMax))
+        val basso = y(maxOf(f.da, yMin))
+        if (basso > alto) drawRect(f.colore, topLeft = Offset(sinistra, alto), size = Size(w, basso - alto))
+      }
       banda?.let { (basso, alto) ->
         drawRect(coloreBanda, topLeft = Offset(sinistra, y(alto)), size = Size(w, y(basso) - y(alto)))
       }
@@ -343,7 +356,7 @@ fun GraficoLinee(
         if (s.punti) s.valori.forEachIndexed { i, v -> if (v != null) drawCircle(s.colore, 3.dp.toPx(), Offset(x(i), y(v))) }
       }
     }
-    if (serie.size > 1 || banda != null) {
+    if (legenda && (serie.size > 1 || banda != null)) {
       Row(Modifier.padding(top = 4.dp), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
         for (s in serie) Legenda(s.colore, s.nome)
         if (banda != null) Legenda(coloreBanda.copy(alpha = 0.4f), "range normale")

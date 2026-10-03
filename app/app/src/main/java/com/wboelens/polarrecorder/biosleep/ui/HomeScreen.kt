@@ -24,6 +24,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material.icons.filled.FilterVintage
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedCard
 import androidx.compose.material3.Scaffold
@@ -38,6 +39,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -56,7 +58,8 @@ import kotlinx.coroutines.delay
  * Schermata iniziale di BioSleep. Tre stati:
  *  1. nessuna fascia configurata -> elenco fasce trovate, un solo tasto "Connetti";
  *  2. fascia configurata -> "Avvia notte" e accesso a notti, eta', Intervals;
- *  3. notte in corso -> durata, stato del segnale, "Termina notte".
+ *  3. notte in corso -> durata, stato del segnale, batteria, "Termina notte".
+ * Premendo "Avvia notte" si apre il fiore che respira con i dati della fascia (FioreNotte.kt).
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -79,6 +82,27 @@ fun HomeScreen(
   val recording = binder?.recordingState?.collectAsState()?.value
   val isRecording = recording?.isRecording == true
 
+  // Batteria della fascia: la manda la H10 al collegamento (Polar SDK -> DeviceState)
+  val batterie by app.deviceState.batteryLevels.collectAsState()
+  val batteria = profile?.let { batterie[it.deviceId] }
+  LaunchedEffect(batteria) { batteria?.let { BatteriaFascia.ricorda(context, it) } }
+
+  // Fiore a schermo intero: si apre con "Avvia notte", si riapre dalla notte in corso
+  var fiore by rememberSaveable { mutableStateOf(false) }
+  var eraInRegistrazione by remember { mutableStateOf(isRecording) }
+  LaunchedEffect(isRecording) {
+    if (eraInRegistrazione && !isRecording) fiore = false // notte terminata
+    eraInRegistrazione = isRecording
+  }
+  if (fiore) {
+    FioreNotte(
+        inRegistrazione = isRecording,
+        inizioMs = recording?.recordingStartTime,
+        batteria = batteria,
+        onChiudi = { fiore = false },
+    )
+  }
+
   Scaffold(
       bottomBar = bottomBar,
       topBar = {
@@ -100,10 +124,20 @@ fun HomeScreen(
     ) {
       val p = profile
       when {
-        isRecording -> NightInProgress(recording!!.recordingStartTime, app, serviceConnection, onNightStopped)
+        isRecording ->
+            NightInProgress(
+                recording!!.recordingStartTime, app, serviceConnection, onNightStopped, batteria) { fiore = true }
         p == null -> SetupStrap(polarManager, app) { profile = it }
         else ->
-            ReadyCard(p, isRecording, onStartNight, onOpenNights) {
+            ReadyCard(
+                p,
+                isRecording,
+                onStartNight = {
+                  fiore = true
+                  onStartNight()
+                },
+                onOpenNights = onOpenNights,
+            ) {
               profileStore.clear()
               profile = null
             }
@@ -239,6 +273,8 @@ private fun ReadyCard(
     }
   }
   LaunchedEffect(isRecording) { if (isRecording) starting = false }
+  val context = LocalContext.current
+  val ultimaBatteria = remember { BatteriaFascia.ultima(context) }
 
   Card(Modifier.fillMaxWidth()) {
     Column(Modifier.padding(20.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
@@ -254,6 +290,8 @@ private fun ReadyCard(
           style = MaterialTheme.typography.bodySmall,
           color = MaterialTheme.colorScheme.onSurfaceVariant,
       )
+      // Ultima lettura: la fascia ora e' scollegata, il valore vero arriva all'avvio della notte
+      RigaBatteria(ultimaBatteria?.first, ultimaBatteria?.second?.let { "letta il ${quandoLetta(it)}" })
       Button(
           onClick = {
             starting = true
@@ -293,6 +331,8 @@ private fun NightInProgress(
     app: PolarRecorderApplication,
     serviceConnection: RecordingServiceConnection,
     onNightStopped: () -> Unit,
+    batteria: Int?,
+    onMostraFiore: () -> Unit,
 ) {
   var now by remember { mutableLongStateOf(System.currentTimeMillis()) }
   var askStop by remember { mutableStateOf(false) }
@@ -318,6 +358,12 @@ private fun NightInProgress(
           style = MaterialTheme.typography.bodyMedium,
           color = if (silentMin < 2) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.error,
       )
+      RigaBatteria(batteria)
+      OutlinedButton(onClick = onMostraFiore, modifier = Modifier.fillMaxWidth()) {
+        Icon(Icons.Filled.FilterVintage, null, Modifier.size(18.dp))
+        Spacer(Modifier.width(8.dp))
+        Text("Mostra il fiore")
+      }
       OutlinedButton(onClick = { askStop = true }, modifier = Modifier.fillMaxWidth()) {
         Text("Termina notte")
       }

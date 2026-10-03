@@ -4,7 +4,9 @@ import android.content.Context
 import android.database.SQLException
 import com.wboelens.polarrecorder.biosleep.SleepDb
 import com.wboelens.polarrecorder.biosleep.cache.CacheSync
+import com.wboelens.polarrecorder.biosleep.coach.CoachAvvioWorker
 import com.wboelens.polarrecorder.biosleep.riepilogo.RiepilogoWorker
+import java.time.LocalDate
 
 /** Collega database e Intervals: invia una notte e salva l'esito. Da chiamare fuori dal main thread. */
 object IntervalsSync {
@@ -30,7 +32,13 @@ object IntervalsSync {
     }
     if (result is IntervalsResult.Ok) {
       CacheSync.aggiornaInBackground(context, forza = true)
-      RiepilogoWorker.avvia(context)
+      // Coach e attesa del riepilogo solo per la notte di oggi: reinviare una notte vecchia non
+      // deve avviare il coach ne' far aspettare un riepilogo. Stessa data della wellness inviata.
+      val data = IntervalsClient.morningDate(night.summary)
+      if (data == LocalDate.now().toString()) {
+        CoachAvvioWorker.avvia(context, data)
+        RiepilogoWorker.avvia(context, LocalDate.parse(data))
+      }
     }
     return result
   }

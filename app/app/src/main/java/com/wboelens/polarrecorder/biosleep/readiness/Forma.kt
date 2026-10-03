@@ -44,7 +44,8 @@ object FormaCalc {
   /** Finestra del coach: get_wellness(14) e get_activities(14). */
   const val FINESTRA_GG = 14L
 
-  private val BANDE = listOf(
+  /** Soglie di zona sul TSB (stato_forma del coach): sopra soglia -> nome, colore. Usate anche dai grafici. */
+  val BANDE = listOf(
       Triple(20.0, "Transizione", "giallo"), Triple(5.0, "Fresco", "blu"),
       Triple(-10.0, "Grigia", "grigio"), Triple(-30.0, "Ottimale", "verde"))
 

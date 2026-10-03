@@ -272,6 +272,7 @@ class MainActivity : ComponentActivity() {
                     navController.navigate("calendario?data=$data" + (evento?.let { "&evento=$it" } ?: ""))
                   },
                   onApriRiepilogo = { data -> navController.navigate("riepilogo/$data") },
+                  onApriImpostazioni = { navController.navigate("intervalsSettings") },
               )
             }
             composable(

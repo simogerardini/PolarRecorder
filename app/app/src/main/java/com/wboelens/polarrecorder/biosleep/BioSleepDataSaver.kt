@@ -18,6 +18,8 @@ import com.wboelens.polarrecorder.state.LogState
 import java.util.Locale
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.Executors
+import kotlinx.coroutines.channels.BufferOverflow
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlin.math.roundToInt
 import kotlin.math.sqrt
@@ -55,6 +57,14 @@ class BioSleepDataSaver(
 
     /** true mentre una notte appena chiusa e' in analisi. */
     val analyzing = MutableStateFlow(false)
+
+    /**
+     * Battiti in diretta (RR in ms, solo quelli validi) per il fiore della schermata Notte.
+     * Senza nessuno in ascolto i valori vengono scartati: la registrazione non rallenta mai e non
+     * si accumula memoria (al massimo 64 battiti in attesa, poi si perdono i piu' vecchi).
+     */
+    val battiti =
+        MutableSharedFlow<Int>(extraBufferCapacity = 64, onBufferOverflow = BufferOverflow.DROP_OLDEST)
   }
 
   private val appContext = context.applicationContext
@@ -164,7 +174,10 @@ class BioSleepDataSaver(
         when (s) {
           is PolarHrData.PolarHrSample -> {
             if (s.contactStatusSupported && !s.contactStatus) continue // fascia staccata
-            for (rr in s.rrsMs) buffer.add(RrRow(sessionId, phoneTimestamp, rr))
+            for (rr in s.rrsMs) {
+              buffer.add(RrRow(sessionId, phoneTimestamp, rr))
+              battiti.tryEmit(rr)
+            }
             if (s.rrsMs.isNotEmpty()) lastValidBeatMs = phoneTimestamp
           }
           is PolarPpiData.PolarPpiSample -> {
@@ -175,7 +188,10 @@ class BioSleepDataSaver(
                     s.errorEstimate > PPI_MAX_ERROR_MS
             // Non valido -> salvato negativo: tiene il tempo, ma e' escluso dall'HRV
             buffer.add(RrRow(sessionId, phoneTimestamp, if (invalid) -s.ppi else s.ppi))
-            if (!invalid) lastValidBeatMs = phoneTimestamp
+            if (!invalid) {
+              lastValidBeatMs = phoneTimestamp
+              battiti.tryEmit(s.ppi)
+            }
           }
         }
       }

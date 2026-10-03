@@ -46,7 +46,10 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-/** Impostazioni Intervals.icu: campi da creare, API key, invio automatico, prova di connessione. */
+/**
+ * Impostazioni Intervals.icu: campi da creare, API key, invio automatico, prova di connessione,
+ * avvio del coach su GitHub (SezioneAvvioCoach, in CoachSettingsSection.kt).
+ */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun IntervalsSettingsScreen(onBack: () -> Unit) {
@@ -151,6 +154,9 @@ fun IntervalsSettingsScreen(onBack: () -> Unit) {
                 else MaterialTheme.colorScheme.error,
         )
       }
+
+      // Parte 3: avvio del coach su GitHub dopo l'invio della notte di oggi
+      SezioneAvvioCoach()
     }
   }
 }

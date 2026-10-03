@@ -1,5 +1,6 @@
 package com.wboelens.polarrecorder.biosleep.ui.allenamento
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -8,6 +9,9 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.CircularProgressIndicator
@@ -25,11 +29,15 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.wboelens.polarrecorder.biosleep.cache.CacheRepo
 import com.wboelens.polarrecorder.biosleep.cache.Finestre
 import com.wboelens.polarrecorder.biosleep.cache.Prontezza
+import com.wboelens.polarrecorder.biosleep.readiness.FormaCalc
 import com.wboelens.polarrecorder.biosleep.readiness.PyJson
+import com.wboelens.polarrecorder.biosleep.readiness.StatoForma
+import com.wboelens.polarrecorder.biosleep.training.Formato
 import com.wboelens.polarrecorder.biosleep.readiness.RigaForma as RigaFormaDati
 import java.time.LocalDate
 import kotlin.math.exp
@@ -45,12 +53,14 @@ data class DatiGrafici(
     val fc: List<Double?>,
     val sonno: List<Double?>,
     val rangeHrv: Pair<Double, Double>?,
+    val formaOggi: StatoForma?,
 ) {
   companion object {
     fun carica(repo: CacheRepo, oggi: LocalDate): DatiGrafici {
       val da = oggi.minusDays(Finestre.GG_STORICO - 1)
       val giorni = generateSequence(da) { it.plusDays(1) }.takeWhile { !it.isAfter(oggi) }.toList()
-      val forma: Map<String, RigaFormaDati> = repo.forma(oggi).serie.associateBy { it.giorno }
+      val home = repo.forma(oggi)
+      val forma: Map<String, RigaFormaDati> = home.serie.associateBy { it.giorno }
       val wellness = repo.wellness(da, oggi).associateBy { PyJson.str(it.get("id")) ?: "" }
       fun campo(nome: String) = giorni.map { d -> wellness[d.toString()]?.let { PyJson.num(it.get(nome))?.v } }
       val rmssd = campo("BioSleepRMSSD")
@@ -71,6 +81,7 @@ data class DatiGrafici(
           fc = campo("BioSleepAvgHR"),
           sonno = campo("BioSleepSleepHours"),
           rangeHrv = range,
+          formaOggi = home.oggi,
       )
     }
   }
@@ -106,17 +117,14 @@ fun GraficiScreen(bottomBar: @Composable () -> Unit) {
       Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
         for (p in listOf(30, 90)) FilterChip(selected = p == periodo, onClick = { periodo = p }, label = { Text("$p giorni") })
       }
-      Sezione("Carico di allenamento") {
+      Sezione("Forma fisica e stanchezza") {
         GraficoLinee(
             d.giorni,
-            listOf(
-                SerieGrafico("CTL forma fisica", ColoriBio.ctl, d.ctl),
-                SerieGrafico("ATL stanchezza", ColoriBio.atl, d.atl),
-                SerieGrafico("TSB forma", ColoriBio.tsb, d.tsb)),
-            altezza,
-            lineaZero = true)
-        Nota("Ultimi 14 giorni ricalcolati sulle sole sedute svolte, come il coach.")
+            listOf(SerieGrafico("CTL forma fisica", ColoriBio.ctl, d.ctl), SerieGrafico("ATL stanchezza", ColoriBio.atl, d.atl)),
+            altezza)
+        Nota("Quando la stanchezza (ATL) supera la forma fisica (CTL), la forma (TSB) scende sotto zero.")
       }
+      Sezione("Forma (TSB) e zone") { FormaZone(d) }
       Sezione("HRV notturno (rMSSD, ms)") {
         GraficoLinee(
             d.giorni,
@@ -136,6 +144,60 @@ fun GraficiScreen(bottomBar: @Composable () -> Unit) {
         GraficoLinee(d.giorni, listOf(SerieGrafico("notte", ColoriBio.blu, d.sonno, punti = true)), altezza)
       }
     }
+  }
+}
+
+/** Fasce di zona del coach (stato_forma, sul TSB): Transizione > 20, Fresco, Grigia, Ottimale, Alto rischio < -30. */
+private fun fasceZona(): List<FasciaGrafico> {
+  val soglie = FormaCalc.BANDE.map { it.first } // 20, 5, -10, -30
+  val out = ArrayList<FasciaGrafico>()
+  var sopra = Double.POSITIVE_INFINITY
+  for ((soglia, _, colore) in FormaCalc.BANDE) {
+    out.add(FasciaGrafico(soglia, sopra, ColoriBio.daNome(colore).copy(alpha = 0.18f)))
+    sopra = soglia
+  }
+  out.add(FasciaGrafico(Double.NEGATIVE_INFINITY, soglie.last(), ColoriBio.rosso.copy(alpha = 0.18f)))
+  return out
+}
+
+@Composable
+private fun FormaZone(d: DatiGrafici) {
+  d.formaOggi?.let { f ->
+    Row(verticalAlignment = Alignment.CenterVertically) {
+      Box(Modifier.size(12.dp).background(ColoriBio.daNome(f.colore), CircleShape))
+      Text(
+          "  Oggi TSB ${Formato.conSegno(f.tsb)} · zona ${f.zona} da ${f.giorniInZona} " +
+              if (f.giorniInZona == 1) "giorno" else "giorni",
+          style = MaterialTheme.typography.bodyMedium,
+          fontWeight = FontWeight.SemiBold)
+    }
+  }
+  GraficoLinee(
+      d.giorni,
+      listOf(SerieGrafico("TSB", MaterialTheme.colorScheme.onSurface, d.tsb)),
+      Modifier.fillMaxWidth().height(200.dp),
+      lineaZero = true,
+      fasce = fasceZona(),
+      includi = listOf(-15.0, 10.0), // almeno le zone vicine allo zero sempre visibili
+      legenda = false)
+  // Legenda delle zone, dall'alto in basso come nel grafico
+  val voci = FormaCalc.BANDE.map { (soglia, nome, colore) -> Triple(nome, colore, soglia) }
+  Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
+    var sopra: Double? = null
+    for ((nome, colore, soglia) in voci) {
+      VoceZona(colore, nome, if (sopra == null) "oltre ${Formato.conSegno(soglia, 0)}" else "da ${Formato.conSegno(soglia, 0)} a ${Formato.conSegno(sopra, 0)}")
+      sopra = soglia
+    }
+    VoceZona("rosso", "Alto rischio", "sotto ${Formato.conSegno(voci.last().third, 0)}")
+  }
+}
+
+@Composable
+private fun VoceZona(colore: String, nome: String, intervallo: String) {
+  Row(verticalAlignment = Alignment.CenterVertically) {
+    Box(Modifier.size(10.dp).background(ColoriBio.daNome(colore).copy(alpha = 0.5f), CircleShape))
+    Text("  $nome", style = MaterialTheme.typography.labelMedium, modifier = Modifier.width(110.dp))
+    Text(intervallo, style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
   }
 }
 
