@@ -4,6 +4,7 @@ import android.content.Context
 import android.database.SQLException
 import android.util.Log
 import com.wboelens.polarrecorder.biosleep.intervals.IntervalsSettings
+import com.wboelens.polarrecorder.biosleep.riepilogo.RiepilogoDaCache
 import java.time.LocalDate
 import java.util.concurrent.Executors
 import java.util.concurrent.atomic.AtomicInteger
@@ -73,7 +74,15 @@ object CacheSync {
       _stato.update { it.copy(errore = "API key Intervals.icu non impostata") }
       return
     }
-    aggiorna(db, { risorsa, da, a -> IntervalsReader.leggi(settings.apiKey, risorsa, da, a) }, LocalDate.now())
+    val oggi = LocalDate.now()
+    if (aggiorna(db, { risorsa, da, a -> IntervalsReader.leggi(settings.apiKey, risorsa, da, a) }, oggi) == null) {
+      // Riepilogo del coach di oggi, se gia' pubblicato: salvato per la home, senza notifica
+      try {
+        RiepilogoDaCache.salva(app, oggi)
+      } catch (e: SQLException) {
+        Log.w(TAG, "Riepilogo non salvato: ${e.message}")
+      }
+    }
   }
 
   /**

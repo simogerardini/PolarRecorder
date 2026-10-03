@@ -105,7 +105,11 @@ data class DatiOggi(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun OggiScreen(bottomBar: @Composable () -> Unit, onApriSeduta: (LocalDate, String?) -> Unit) {
+fun OggiScreen(
+    bottomBar: @Composable () -> Unit,
+    onApriSeduta: (LocalDate, String?) -> Unit,
+    onApriRiepilogo: (String) -> Unit,
+) {
   val dati = rememberDallaCache { repo, oggi -> DatiOggi.carica(repo, oggi) }
   Scaffold(
       topBar = { TopAppBar(title = { Text("Oggi") }, actions = { AzioneAggiorna() }) },
@@ -116,6 +120,7 @@ fun OggiScreen(bottomBar: @Composable () -> Unit, onApriSeduta: (LocalDate, Stri
         verticalArrangement = Arrangement.spacedBy(16.dp),
     ) {
       StatoAggiornamento()
+      RiquadroRiepilogo(LocalDate.now(), onApriRiepilogo)
       if (dati == null) {
         Box(Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) { CircularProgressIndicator() }
         return@Column

@@ -148,12 +148,15 @@ class AllenamentiTest {
   }
 
   @Test
-  fun noteSpecchioIllegibileRestaUnaNota() {
+  fun noteSpecchioIllegibileNonCompare() {
+    // tag rovinato: non e' una seduta, e come ogni NOTE "coach:" non e' una nota dell'atleta
     val rotta =
         ev("""{"id":9101,"start_date_local":"2026-10-04T00:00:00","category":"NOTE","name":"Brick",
             "external_id":"coach:SpecchioGarmin:112","description":"[[seduta_garmin:{rotto]]"}""")
     assertEquals(false, rotta.specchio)
-    assertEquals(true, rotta.nota)
+    assertEquals(false, rotta.nota)
+    val atleta = ev("""{"id":9102,"start_date_local":"2026-10-04T00:00:00","category":"NOTE","name":"Gamba pesante"}""")
+    assertEquals(true, atleta.nota)
   }
 
   @Test

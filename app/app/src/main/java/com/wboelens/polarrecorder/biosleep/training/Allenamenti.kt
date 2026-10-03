@@ -56,9 +56,14 @@ data class EventoCal(
     val passi: JsonArray?,
     val specchio: Boolean = false,
     val parti: List<ParteGarmin> = emptyList(),
+    val externalId: String? = null,
 ) {
   val sport get() = Sport.da(tipo)
-  val nota get() = categoria == "NOTE" && !specchio
+
+  /** NOTE scritta dal coach (riepilogo, registri): mai mostrata come nota dell'atleta. */
+  val delCoach get() = externalId?.startsWith("coach:") == true
+
+  val nota get() = categoria == "NOTE" && !specchio && !delCoach
 }
 
 /** Una seduta svolta (attivita' arrivata da Garmin Connect). */
@@ -166,6 +171,7 @@ object Allenamenti {
         descrizione = PyJson.str(o.get("description")),
         attivitaId = PyJson.str(o.get("paired_activity_id")),
         passi = doc?.get("steps")?.takeIf { it.isJsonArray }?.asJsonArray,
+        externalId = PyJson.str(o.get("external_id")),
     )
   }
 
@@ -192,6 +198,7 @@ object Allenamenti {
         passi = null,
         specchio = true,
         parti = parti,
+        externalId = PyJson.str(o.get("external_id")),
     )
   }
 

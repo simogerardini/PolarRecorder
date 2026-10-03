@@ -4,6 +4,7 @@ import android.content.Context
 import android.database.SQLException
 import com.wboelens.polarrecorder.biosleep.SleepDb
 import com.wboelens.polarrecorder.biosleep.cache.CacheSync
+import com.wboelens.polarrecorder.biosleep.riepilogo.RiepilogoWorker
 
 /** Collega database e Intervals: invia una notte e salva l'esito. Da chiamare fuori dal main thread. */
 object IntervalsSync {
@@ -27,7 +28,10 @@ object IntervalsSync {
     } catch (e: SQLException) {
       // l'esito resta comunque visibile nel log; non blocca nulla
     }
-    if (result is IntervalsResult.Ok) CacheSync.aggiornaInBackground(context, forza = true)
+    if (result is IntervalsResult.Ok) {
+      CacheSync.aggiornaInBackground(context, forza = true)
+      RiepilogoWorker.avvia(context)
+    }
     return result
   }
 }

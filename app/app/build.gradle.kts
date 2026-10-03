@@ -67,6 +67,7 @@ dependencies {
   testImplementation(libs.turbine)
   testImplementation(libs.kotlinx.coroutines.test)
   coreLibraryDesugaring(libs.android.desugar)
+  implementation(libs.androidx.work.runtime.ktx)
 
   implementation(libs.androidx.core.ktx)
   implementation(libs.androidx.appcompat)

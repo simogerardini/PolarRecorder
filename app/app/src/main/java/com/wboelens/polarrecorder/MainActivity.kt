@@ -33,6 +33,7 @@ import com.wboelens.polarrecorder.biosleep.auto.HabitLearner
 import com.wboelens.polarrecorder.biosleep.auto.NightNotifier
 import com.wboelens.polarrecorder.biosleep.auto.NightProfileStore
 import com.wboelens.polarrecorder.biosleep.cache.CacheSync
+import com.wboelens.polarrecorder.biosleep.riepilogo.RiepilogoLink
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.first
@@ -45,8 +46,10 @@ import com.wboelens.polarrecorder.biosleep.ui.NightDetailScreen
 import com.wboelens.polarrecorder.biosleep.ui.NightsScreen
 import com.wboelens.polarrecorder.biosleep.ui.allenamento.BarraBioSleep
 import com.wboelens.polarrecorder.biosleep.ui.allenamento.CalendarioScreen
+import com.wboelens.polarrecorder.biosleep.ui.allenamento.GestisciLinkRiepilogo
 import com.wboelens.polarrecorder.biosleep.ui.allenamento.GraficiScreen
 import com.wboelens.polarrecorder.biosleep.ui.allenamento.OggiScreen
+import com.wboelens.polarrecorder.biosleep.ui.allenamento.RiepilogoScreen
 import com.wboelens.polarrecorder.dataSavers.DataSavers
 import com.wboelens.polarrecorder.managers.PermissionManager
 import com.wboelens.polarrecorder.managers.PolarManager
@@ -114,6 +117,7 @@ class MainActivity : ComponentActivity() {
     super.onNewIntent(intent)
     setIntent(intent)
     handleOpenNight(intent)
+    RiepilogoLink.daIntent(intent) // tocco sulla notifica del riepilogo del coach
   }
 
   /**
@@ -150,6 +154,7 @@ class MainActivity : ComponentActivity() {
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
     handleOpenNight(intent)
+    RiepilogoLink.daIntent(intent) // app aperta dalla notifica del riepilogo del coach
     justCreated = true
     val stoppedNow = stopNightIfMorning()
     // Use light/dark SystemBarStyle (not auto) so contrast enforcement stays off and the
@@ -232,6 +237,9 @@ class MainActivity : ComponentActivity() {
           }
         }
 
+        // BioSleep: tocco sulla notifica del riepilogo del coach -> schermata Riepilogo
+        GestisciLinkRiepilogo(navController)
+
         // BioSleep: notte chiusa all'apertura -> elenco notti, poi il dettaglio quando e' pronta
         val morningStop by morningStopRequest.collectAsState()
         LaunchedEffect(morningStop) {
@@ -256,13 +264,14 @@ class MainActivity : ComponentActivity() {
               startDestination = startDestination,
               modifier = Modifier.padding(paddingValues).consumeWindowInsets(paddingValues),
           ) {
-            // BioSleep Parte 3: Oggi, Calendario, Grafici (stessa barra in basso della scheda Notte)
+            // BioSleep Parte 3: Oggi, Calendario, Grafici, Riepilogo del coach
             composable("oggi") {
               OggiScreen(
                   bottomBar = { BarraBioSleep(navController) },
                   onApriSeduta = { data, evento ->
                     navController.navigate("calendario?data=$data" + (evento?.let { "&evento=$it" } ?: ""))
                   },
+                  onApriRiepilogo = { data -> navController.navigate("riepilogo/$data") },
               )
             }
             composable(
@@ -288,6 +297,13 @@ class MainActivity : ComponentActivity() {
               )
             }
             composable("grafici") { GraficiScreen(bottomBar = { BarraBioSleep(navController) }) }
+            composable("riepilogo/{data}") { entry ->
+              RiepilogoScreen(
+                  data = entry.arguments?.getString("data") ?: java.time.LocalDate.now().toString(),
+                  onBack = { navController.navigateUp() },
+                  onApriSeduta = { data -> navController.navigate("calendario?data=$data") },
+              )
+            }
             // BioSleep: schermata iniziale (configurazione fascia, avvio, notte in corso)
             composable("home") {
               HomeScreen(
