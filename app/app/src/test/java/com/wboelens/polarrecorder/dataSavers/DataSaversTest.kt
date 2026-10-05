@@ -1,6 +1,7 @@
 package com.wboelens.polarrecorder.dataSavers
 
 import android.content.Context
+import com.wboelens.polarrecorder.biosleep.BioSleepDataSaver
 import com.wboelens.polarrecorder.managers.PreferencesManager
 import com.wboelens.polarrecorder.state.LogState
 import com.wboelens.polarrecorder.testutil.BaseRobolectricTest
@@ -78,42 +79,43 @@ class DataSaversTest : BaseRobolectricTest() {
   }
 
   @Test
-  fun `iterator returns both savers`() {
+  fun `iterator returns all savers including BioSleep`() {
     val dataSavers = DataSavers(context, logState, preferencesManager)
 
     val saverList = mutableListOf<DataSaver>()
     dataSavers.iterator().forEach { saverList.add(it) }
 
-    assertEquals(2, saverList.size)
+    assertEquals(3, saverList.size) // MQTT, file e BioSleep
   }
 
   @Test
-  fun `asList returns both savers as list`() {
+  fun `asList returns all savers including BioSleep`() {
     val dataSavers = DataSavers(context, logState, preferencesManager)
 
     val list = dataSavers.asList()
 
-    assertEquals(2, list.size)
+    assertEquals(3, list.size)
     assertTrue(list.any { it is MQTTDataSaver })
     assertTrue(list.any { it is FileSystemDataSaver })
+    assertTrue(list.any { it is BioSleepDataSaver })
   }
 
   @Test
-  fun `enabledCount returns 0 when none enabled`() {
+  fun `enabledCount is 1 when only BioSleep is enabled`() {
     val dataSavers = DataSavers(context, logState, preferencesManager)
 
-    assertEquals(0, dataSavers.enabledCount)
+    assertEquals(1, dataSavers.enabledCount) // BioSleep e' sempre attivo
   }
 
   @Test
-  fun `enabledCount returns 1 when one enabled`() {
+  fun `enabledCount is 2 when MQTT is also enabled`() {
     every { preferencesManager.mqttEnabled } returns true
     every { preferencesManager.mqttConfig } returns
         MQTTConfig(host = "broker.test.com", port = 1883, useSSL = false)
 
     val dataSavers = DataSavers(context, logState, preferencesManager)
 
-    assertEquals(1, dataSavers.enabledCount)
+    assertEquals(2, dataSavers.enabledCount) // MQTT + BioSleep
   }
 
   @Test

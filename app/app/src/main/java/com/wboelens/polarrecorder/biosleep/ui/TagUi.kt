@@ -9,6 +9,8 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
@@ -75,18 +77,37 @@ private fun rememberTagGiorno(data: String): Set<String>? {
   return tag
 }
 
-/** Pulsanti rapidi della sera, sulla scheda Notte: valgono per la mattina del risveglio. */
+/**
+ * Tag della notte sulla scheda Notte, in una riga che scorre di lato: prima quelli della sera
+ * (alcol, cena tardiva, caffeina, stress), poi tutti gli altri tag di giorno. Valgono per la
+ * mattina del risveglio, quindi il coach li ha gia' al primo run. Sotto, quelli scelti, anche
+ * se sono fuori dallo schermo.
+ */
 @Composable
 fun TagSera() {
   val context = LocalContext.current.applicationContext
   val data = remember { Vocabolario.mattinaDellaNotte(LocalDateTime.now()).toString() }
   val scelti = rememberTagGiorno(data) ?: return
   val scope = rememberCoroutineScope()
+  val ordine = Vocabolario.GIORNO_SERA + Vocabolario.GIORNO_CONTESTO + Vocabolario.GIORNO_NOTTE + Vocabolario.GIORNO_CORPO
   Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
-    Text("Stasera", style = MaterialTheme.typography.labelLarge)
-    ChipTag(Vocabolario.GIORNO_SERA, scelti) { nuovi ->
-      // tutti gli altri tag di quel giorno restano: si cambiano solo quelli della sera
-      scope.launch(Dispatchers.IO) { TagDb.get(context).impostaGiorno(data, nuovi) }
+    Text("Tag per la notte · scorri per gli altri", style = MaterialTheme.typography.labelLarge)
+    LazyRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+      items(ordine, key = { it }) { k ->
+        FilterChip(
+            selected = k in scelti,
+            onClick = {
+              val nuovi = if (k in scelti) scelti - k else scelti + k
+              scope.launch(Dispatchers.IO) { TagDb.get(context).impostaGiorno(data, nuovi) }
+            },
+            label = { Text(Vocabolario.etichetta(k)) })
+      }
+    }
+    if (scelti.isNotEmpty()) {
+      Text(
+          "Scelti: " + ordine.filter { it in scelti }.joinToString(" · ") { Vocabolario.etichetta(it) },
+          style = MaterialTheme.typography.bodySmall,
+          color = MaterialTheme.colorScheme.onSurfaceVariant)
     }
   }
 }

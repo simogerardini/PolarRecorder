@@ -232,9 +232,13 @@ class PolarManager(
                     ConnectionState.DISCONNECTING
             ) {
               // a disconnect was requested, so this disconnect is expected
-              logState.addLogMessage("Device ${polarDeviceInfo.deviceId} disconnected")
+              logState.addLogMessage("Fascia ${polarDeviceInfo.deviceId} scollegata")
             } else {
-              logState.addLogError("Device ${polarDeviceInfo.deviceId} disconnected")
+              // BioSleep: la fascia si spegne da sola quando la togli e si ricollega da sola quando
+              // la indossi. Resta nel registro, ma senza avviso a schermo: lo stato del segnale e'
+              // gia' nella schermata iniziale.
+              logState.addLogError(
+                  "Fascia ${polarDeviceInfo.deviceId} scollegata (si ricollega da sola)", false)
             }
 
             deviceState.updateConnectionState(
@@ -486,8 +490,10 @@ class PolarManager(
 
   fun disconnectDevice(deviceId: String) {
     try {
-      api.disconnectFromDevice(deviceId)
+      // Prima lo stato, poi la richiesta: se la fascia risponde subito, la disconnessione
+      // risulta gia' "voluta" e non compare come errore
       deviceState.updateConnectionState(deviceId, ConnectionState.DISCONNECTING)
+      api.disconnectFromDevice(deviceId)
     } catch (e: PolarInvalidArgument) {
       Log.e(TAG, "Disconnect failed: ${e.message}", e)
     }
@@ -596,7 +602,7 @@ class PolarManager(
           logState.addLogSuccess("Setting time for $deviceId succeeded")
           PolarApiResult.Success()
         } catch (e: Exception) {
-          logState.addLogError("Setting time of $deviceId failed: ${e.message}")
+          logState.addLogError("Impostazione dell'orario della fascia non riuscita: ${e.message}")
           PolarApiResult.Failure("Set time failed", e)
         }
       }
@@ -617,7 +623,7 @@ class PolarManager(
           logState.addLogSuccess("Setting sdk mode for $deviceId succeeded")
           PolarApiResult.Success()
         } catch (e: Exception) {
-          logState.addLogError("Setting sdk mode of $deviceId failed: ${e.message}")
+          logState.addLogError("Impostazione della modalità della fascia non riuscita: ${e.message}")
           PolarApiResult.Failure("Set sdk mode failed", e)
         }
       }

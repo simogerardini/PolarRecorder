@@ -181,7 +181,7 @@ class RecordingOrchestratorTest {
       val result = orchestrator.startRecording("Test Recording")
 
       assertTrue(result is StartRecordingResult.NoDevicesSelected)
-      verify { logState.addLogError(match { it.contains("No devices selected") }) }
+      verify { logState.addLogError(match { it.contains("nessuna fascia selezionata") }) }
     }
 
     @Test
@@ -359,7 +359,7 @@ class RecordingOrchestratorTest {
     fun `stopRecording when not recording logs error`() {
       orchestrator.stopRecording()
 
-      verify { logState.addLogError(match { it.contains("no recording in progress") }) }
+      verify { logState.addLogError(match { it.contains("Nessuna notte in registrazione") }, false) }
     }
 
     @Test

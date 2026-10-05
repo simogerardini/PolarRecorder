@@ -72,18 +72,18 @@ class RecordingOrchestrator(
   @Suppress("ReturnCount")
   fun startRecording(recordingName: String): StartRecordingResult {
     if (recordingName.isEmpty()) {
-      logState.addLogError("Recording name cannot be the empty string")
+      logState.addLogError("Nome della registrazione mancante")
       return StartRecordingResult.EmptyRecordingName("Recording name cannot be the empty string")
     }
 
     if (_recordingState.value.isRecording) {
-      logState.addLogError("Recording already in progress")
+      logState.addLogError("Una notte è già in registrazione")
       return StartRecordingResult.AlreadyRecording("Recording already in progress")
     }
 
     val selectedDevices = deviceState.selectedDevices.value
     if (selectedDevices.isEmpty()) {
-      logState.addLogError("Cannot start recording: No devices selected")
+      logState.addLogError("Impossibile avviare la notte: nessuna fascia selezionata")
       return StartRecordingResult.NoDevicesSelected("Cannot start recording: No devices selected")
     }
 
@@ -94,7 +94,7 @@ class RecordingOrchestrator(
     if (disconnectedDevices.isNotEmpty()) {
       val disconnectedNames = disconnectedDevices.map { it.info.name }.joinToString(", ")
       logState.addLogError(
-          "Cannot start recording: Some selected devices are not connected: $disconnectedNames"
+          "Impossibile avviare la notte: fascia non collegata ($disconnectedNames)"
       )
       return StartRecordingResult.DevicesNotConnected(disconnectedNames)
     }
@@ -102,9 +102,9 @@ class RecordingOrchestrator(
     // Check if datasavers are initialized
     val enabledDataSavers = dataSavers.asList().filter { it.isEnabled.value }
     if (enabledDataSavers.isEmpty()) {
-      logState.addLogError("Cannot start recording: No data savers are enabled")
+      logState.addLogError("Impossibile avviare la notte: salvataggio dei dati non attivo")
       return StartRecordingResult.NoDataSaversEnabled(
-          "Cannot start recording: No data savers are enabled"
+          "Impossibile avviare la notte: salvataggio dei dati non attivo"
       )
     }
 
@@ -112,12 +112,10 @@ class RecordingOrchestrator(
         enabledDataSavers.filter { it.isInitialized.value != InitializationState.SUCCESS }
     if (uninitializedSavers.isNotEmpty()) {
       logState.addLogError(
-          "Cannot start recording: Data savers are not initialized. " +
-              "Please go through the initialization process first."
+          "Impossibile avviare la notte: salvataggio dei dati non pronto. Riprova."
       )
       return StartRecordingResult.DataSaversNotInitialized(
-          "Cannot start recording: Data savers are not initialized. " +
-              "Please go through the initialization process first."
+          "Impossibile avviare la notte: salvataggio dei dati non pronto. Riprova."
       )
     }
 
@@ -157,7 +155,8 @@ class RecordingOrchestrator(
   /** Stops the current recording session. */
   fun stopRecording() {
     if (!_recordingState.value.isRecording) {
-      logState.addLogError("Trying to stop recording while no recording in progress")
+      // Succede se due stop arrivano insieme (es. apertura dell'app e stop automatico): innocuo
+      logState.addLogError("Nessuna notte in registrazione da fermare", false)
       return
     }
 
@@ -230,7 +229,7 @@ class RecordingOrchestrator(
     }
 
     if (devices.isEmpty() && preferencesManager.recordingStopOnDisconnect) {
-      logState.addLogError("No devices connected, stopping recording")
+      logState.addLogError("Fascia scollegata: notte fermata")
       stopRecording()
       return true // Indicates recording was stopped
     } else {
@@ -302,10 +301,11 @@ class RecordingOrchestrator(
         .retry(RETRY_COUNT)
         .doOnSubscribe { logState.addLogMessage("Starting $dataType stream for $deviceId") }
         .doOnError { error ->
-          logState.addLogError("Stream error for $deviceId - $dataType: ${error.message}")
+          // Capita quando la fascia si scollega: la riconnessione e' automatica, niente avviso
+          logState.addLogError("Errore nel flusso $dataType della fascia: ${error.message}", false)
         }
         .doOnComplete {
-          logState.addLogError("Stream completed unexpectedly for $deviceId - $dataType")
+          logState.addLogError("Flusso $dataType della fascia interrotto", false)
         }
         .subscribe(
             { data ->
@@ -351,7 +351,7 @@ class RecordingOrchestrator(
             },
             { error ->
               logState.addLogError(
-                  "${dataType.name} recording failed for device $deviceId: ${error.message}",
+                  "Registrazione ${dataType.name} della fascia non riuscita: ${error.message}",
               )
             },
         )
