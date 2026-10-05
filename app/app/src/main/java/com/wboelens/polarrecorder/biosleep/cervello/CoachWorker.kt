@@ -142,16 +142,16 @@ class CoachWorker(context: Context, params: WorkerParameters) : CoroutineWorker(
     }
 
     val settings = IntervalsSettings(ctx)
-    val apiKey = settings.apiKey
-    if (apiKey.isBlank()) {
+    val credenziali = settings.credenziali
+    if (credenziali == null) {
       CoachStato(ctx).registra(data, RisultatoCervello(RisultatoCervello.ERRORE, emptyList(), null, null,
-          "API key Intervals.icu non impostata"), 0, "auto")
+          "Intervals.icu non collegato"), 0, "auto")
       assicuraRipiego(ctx)
       return Result.success()
     }
     val config =
         ConfigCervello(
-            apiKey, settings.athleteId, Cervello.cartella(ctx).absolutePath, "auto", false, senzaAttesa,
+            credenziali, Cervello.cartella(ctx).absolutePath, "auto", false, senzaAttesa,
             profilo = ProfiloRepo.effettivo(ctx),
             tag = runCatching { TagDb.get(ctx).perCervello() }.getOrNull())
     CoachStato(ctx).attesaTagFinoMs = 0L // il coach parte: i tag di adesso in poi valgono dal run dopo

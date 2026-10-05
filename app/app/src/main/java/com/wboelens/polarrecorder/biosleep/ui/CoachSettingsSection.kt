@@ -72,7 +72,7 @@ fun SezioneCoach(onApriProfilo: () -> Unit = {}) {
           atleta = it
           settings.athleteId = it
         },
-        label = { Text("Id atleta Intervals.icu (0 = quello della API key)") },
+        label = { Text("Id atleta per la API key (0 = quello della API key)") },
         singleLine = true,
         modifier = Modifier.fillMaxWidth())
 
@@ -117,7 +117,9 @@ fun SezioneCoach(onApriProfilo: () -> Unit = {}) {
                   Cervello.esegui(
                       ctx,
                       ConfigCervello(
-                          settings.apiKey, settings.athleteId, Cervello.cartella(ctx).absolutePath,
+                          settings.credenziali ?: return@withContext RisultatoCervello(
+                              RisultatoCervello.ERRORE, emptyList(), null, null, "Intervals.icu non collegato"),
+                          Cervello.cartella(ctx).absolutePath,
                           modo = "settimanale", dryRun = true, senzaAttesa = true,
                           profilo = ProfiloRepo.effettivo(ctx),
                           tag = runCatching { TagDb.get(ctx).perCervello() }.getOrNull()))

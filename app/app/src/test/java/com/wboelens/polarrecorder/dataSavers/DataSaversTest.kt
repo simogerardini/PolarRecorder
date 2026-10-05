@@ -37,10 +37,6 @@ class DataSaversTest : BaseRobolectricTest() {
       every { mqttEnabled } returns false
       every { mqttConfig = any() } just runs
       every { mqttEnabled = any() } just runs
-      every { fileSystemDataSaverConfig } returns FileSystemDataSaverConfig()
-      every { fileSystemEnabled } returns false
-      every { fileSystemDataSaverConfig = any() } just runs
-      every { fileSystemEnabled = any() } just runs
     }
   }
 
@@ -49,13 +45,6 @@ class DataSaversTest : BaseRobolectricTest() {
     val dataSavers = DataSavers(context, logState, preferencesManager)
 
     assertNotNull(dataSavers.mqtt)
-  }
-
-  @Test
-  fun `fileSystem saver is created and configured`() {
-    val dataSavers = DataSavers(context, logState, preferencesManager)
-
-    assertNotNull(dataSavers.fileSystem)
   }
 
   @Test
@@ -79,24 +68,41 @@ class DataSaversTest : BaseRobolectricTest() {
   }
 
   @Test
-  fun `iterator returns all savers including BioSleep`() {
+  fun `mqtt saver configured from preferences`() {
+    val testConfig =
+        MQTTConfig(
+            host = "custom.broker.com",
+            port = 8883,
+            useSSL = true,
+            username = "user",
+            password = "pass",
+            topicPrefix = "custom/prefix",
+        )
+    every { preferencesManager.mqttConfig } returns testConfig
+
+    val dataSavers = DataSavers(context, logState, preferencesManager)
+
+    assertTrue(dataSavers.mqtt.isConfigured)
+  }
+
+  @Test
+  fun `iterator returns MQTT and BioSleep`() {
     val dataSavers = DataSavers(context, logState, preferencesManager)
 
     val saverList = mutableListOf<DataSaver>()
     dataSavers.iterator().forEach { saverList.add(it) }
 
-    assertEquals(3, saverList.size) // MQTT, file e BioSleep
+    assertEquals(2, saverList.size) // MQTT e BioSleep (il salvataggio su file non c'e' piu')
   }
 
   @Test
-  fun `asList returns all savers including BioSleep`() {
+  fun `asList returns MQTT and BioSleep`() {
     val dataSavers = DataSavers(context, logState, preferencesManager)
 
     val list = dataSavers.asList()
 
-    assertEquals(3, list.size)
+    assertEquals(2, list.size)
     assertTrue(list.any { it is MQTTDataSaver })
-    assertTrue(list.any { it is FileSystemDataSaver })
     assertTrue(list.any { it is BioSleepDataSaver })
   }
 
@@ -116,34 +122,5 @@ class DataSaversTest : BaseRobolectricTest() {
     val dataSavers = DataSavers(context, logState, preferencesManager)
 
     assertEquals(2, dataSavers.enabledCount) // MQTT + BioSleep
-  }
-
-  @Test
-  fun `mqtt saver configured from preferences`() {
-    val testConfig =
-        MQTTConfig(
-            host = "custom.broker.com",
-            port = 8883,
-            useSSL = true,
-            username = "user",
-            password = "pass",
-            topicPrefix = "custom/prefix",
-        )
-    every { preferencesManager.mqttConfig } returns testConfig
-
-    val dataSavers = DataSavers(context, logState, preferencesManager)
-
-    assertTrue(dataSavers.mqtt.isConfigured)
-  }
-
-  @Test
-  fun `fileSystem saver configured from preferences`() {
-    val testConfig =
-        FileSystemDataSaverConfig(baseDirectory = "content://test/directory", splitAtSizeMb = 50)
-    every { preferencesManager.fileSystemDataSaverConfig } returns testConfig
-
-    val dataSavers = DataSavers(context, logState, preferencesManager)
-
-    assertTrue(dataSavers.fileSystem.isConfigured)
   }
 }

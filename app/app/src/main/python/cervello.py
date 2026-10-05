@@ -5,7 +5,8 @@ CERVELLO BIOSLEEP — ingresso unico per l'app Android (Chaquopy).  04/10/2026
 L'app chiama  esegui_app(config_json) -> risultato_json  e non vede altro.
 
 config (JSON):
-  intervals_api_key, intervals_athlete_id   obbligatori
+  intervals_token                            token OAuth (preferito), oppure
+  intervals_api_key, intervals_athlete_id    chiave API personale + id atleta
   cartella        memoria privata dell'app per stato, flag, riepiloghi e log
   modo            "auto" (default) | "settimanale" | "giornaliero"
   dry_run         true = calcola senza scrivere su Intervals.icu
@@ -34,6 +35,84 @@ import contextlib, importlib, io, json, os, sys, traceback
 
 _VARIABILI_ESTERNE = ("GH_TOKEN", "GITHUB_REPOSITORY", "TELEGRAM_TOKEN", "TELEGRAM_CHAT_ID")
 cs = None
+
+
+# ── PREPARAZIONE DELL'ACCOUNT INTERVALS.ICU (06/10/2026 — roadmap punto 1) ──────────
+# I campi wellness personalizzati in cui l'app scrive la notte. Simone li aveva creati a
+# mano; per chi installa l'app li crea prepara_account(), solo quelli mancanti (si puo'
+# rilanciare senza effetti). Definizione presa dal suo account (custom-item reali):
+# INPUT_FIELD numerico privato; qui in piu' unita' e descrizione, utili a chi li legge.
+CAMPI_BIOSLEEP = [
+    {"code": "BioSleepRMSSD",      "units": "ms",  "desc": "rMSSD media delle finestre di 5' valide nel sonno"},
+    {"code": "BioSleepSDNN",       "units": "ms",  "desc": "SDNN della notte"},
+    {"code": "BioSleepRHR",        "units": "bpm", "desc": "FC a riposo: media dei 5' piu' bassi"},
+    {"code": "BioSleepMinHR",      "units": "bpm", "desc": "FC minima (1o percentile)"},
+    {"code": "BioSleepAvgHR",      "units": "bpm", "desc": "FC media notturna"},
+    {"code": "BioSleepHours",      "units": "h",   "desc": "durata della registrazione"},
+    {"code": "BioSleepSleepHours", "units": "h",   "desc": "sonno totale"},
+    {"code": "BioSleepDeepMin",    "units": "min", "desc": "sonno profondo"},
+    {"code": "BioSleepREMMin",     "units": "min", "desc": "sonno REM"},
+    {"code": "BioSleepLightMin",   "units": "min", "desc": "sonno leggero"},
+    {"code": "BioSleepAwakeMin",   "units": "min", "desc": "veglia durante la notte"},
+    {"code": "BioSleepQuality",    "units": "%",   "desc": "copertura della registrazione con battiti validi"},
+]
+
+
+def _intestazioni(cfg):
+    if cfg.get("intervals_token"):
+        return {"Authorization": f"Bearer {cfg['intervals_token']}", "Content-Type": "application/json"}, "0"
+    import base64
+    chiave = base64.b64encode(f"API_KEY:{cfg['intervals_api_key']}".encode()).decode()
+    return ({"Authorization": f"Basic {chiave}", "Content-Type": "application/json"},
+            cfg.get("intervals_athlete_id") or "0")
+
+
+def prepara_account(config_json):
+    """Crea su Intervals.icu i campi wellness BioSleep mancanti. Da chiamare dopo il
+    collegamento (e a ogni aggiornamento dell'app: non tocca i campi gia' presenti).
+    Risultato JSON: {"esito": "ok"|"permesso_mancante"|"errore", "creati": [codici],
+    "esistenti": [codici], "errore": "..."}. "permesso_mancante" = il token non ha lo
+    scope SETTINGS:WRITE: va rifatto il collegamento chiedendolo."""
+    import requests
+    cfg = json.loads(config_json)
+    out = {"esito": "errore", "creati": [], "esistenti": []}
+    # Sessione propria: coach_settimanale all'import rimappa requests.get/post sulla sua
+    # Session; qui non dipendiamo da quale modulo e' stato caricato prima.
+    http = requests.Session()
+    try:
+        h, atleta = _intestazioni(cfg)
+        url = f"https://intervals.icu/api/v1/athlete/{atleta}/custom-item"
+        r = http.get(url, headers=h, timeout=30)
+        if r.status_code in (401, 403):
+            out["esito"] = "permesso_mancante"
+            return json.dumps(out)
+        if r.status_code != 200:
+            out["errore"] = f"lettura campi: HTTP {r.status_code}"
+            return json.dumps(out)
+        presenti = {((x.get("content") or {}).get("code") or x.get("name"))
+                    for x in r.json() or [] if x.get("type") == "INPUT_FIELD"}
+        for campo in CAMPI_BIOSLEEP:
+            if campo["code"] in presenti:
+                out["esistenti"].append(campo["code"])
+                continue
+            corpo = {"type": "INPUT_FIELD", "visibility": "PRIVATE", "name": campo["code"],
+                     "description": campo["desc"],
+                     "content": {"code": campo["code"], "name": campo["code"], "type": "numeric",
+                                 "units": campo["units"], "number_format": ".1f", "gauge": True,
+                                 "color": "#333333", "text_align": "center", "text_wrap": "no",
+                                 "options": [], "min": None, "max": None}}
+            rp = http.post(url, headers=h, json=corpo, timeout=30)
+            if rp.status_code in (401, 403):
+                out["esito"] = "permesso_mancante"
+                return json.dumps(out)
+            if rp.status_code not in (200, 201):
+                out["errore"] = f"creazione {campo['code']}: HTTP {rp.status_code} {rp.text[:120]}"
+                return json.dumps(out)
+            out["creati"].append(campo["code"])
+        out["esito"] = "ok"
+    except Exception as e:
+        out["errore"] = f"{type(e).__name__}: {e}"
+    return json.dumps(out)
 
 
 def valida_tag(tag):
@@ -127,8 +206,15 @@ def esegui_app(config_json):
     os.makedirs(os.path.join(cartella, "log"), exist_ok=True)
     for k in _VARIABILI_ESTERNE:
         os.environ.pop(k, None)
-    os.environ.update({"INTERVALS_API_KEY": cfg["intervals_api_key"],
-                       "INTERVALS_ATHLETE_ID": cfg["intervals_athlete_id"],
+    # 06/10/2026: OAuth (intervals_token) oppure chiave API personale + id atleta
+    for k in ("INTERVALS_TOKEN", "INTERVALS_API_KEY", "INTERVALS_ATHLETE_ID"):
+        os.environ.pop(k, None)
+    if cfg.get("intervals_token"):
+        os.environ.update({"INTERVALS_TOKEN": cfg["intervals_token"], "INTERVALS_ATHLETE_ID": "0"})
+    else:
+        os.environ.update({"INTERVALS_API_KEY": cfg["intervals_api_key"],
+                           "INTERVALS_ATHLETE_ID": cfg["intervals_athlete_id"]})
+    os.environ.update({
                        "COACH_SETT_STATE": os.path.join(cartella, "stato_coach.json")})
     # 04/10/2026: profilo atleta dall'app. FC massima e a riposo (aggiornate dall'app man
     # mano che raccoglie dati) valgono piu' di quelle su Intervals.icu; disponibilita' per

@@ -31,6 +31,7 @@ import com.wboelens.polarrecorder.biosleep.auto.NightNotifier
 import com.wboelens.polarrecorder.biosleep.auto.NightProfileStore
 import com.wboelens.polarrecorder.biosleep.cache.CacheSync
 import com.wboelens.polarrecorder.biosleep.cervello.CoachWorker
+import com.wboelens.polarrecorder.biosleep.intervals.OAuthIntervals
 import com.wboelens.polarrecorder.biosleep.riepilogo.RiepilogoLink
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.filterNotNull
@@ -106,6 +107,7 @@ class MainActivity : ComponentActivity() {
     setIntent(intent)
     handleOpenNight(intent)
     RiepilogoLink.daIntent(intent) // tocco sulla notifica del riepilogo del coach
+    gestisciRitornoOAuth(intent)
   }
 
   /**
@@ -144,6 +146,8 @@ class MainActivity : ComponentActivity() {
     handleOpenNight(intent)
     RiepilogoLink.daIntent(intent) // app aperta dalla notifica "Piano pronto"
     CoachWorker.assicuraRipiego(this) // coach di ripiego delle 10:30, se non e' gia' in coda
+    gestisciRitornoOAuth(intent)
+    OAuthIntervals.preparaSeAggiornata(this) // a ogni aggiornamento: campi BioSleep su Intervals.icu
     justCreated = true
     val stoppedNow = stopNightIfMorning()
     // Use light/dark SystemBarStyle (not auto) so contrast enforcement stays off and the
@@ -343,6 +347,20 @@ class MainActivity : ComponentActivity() {
         }
       }
     }
+  }
+
+  /**
+   * Ritorno dal collegamento a Intervals.icu (App Link verificato sul dominio del Worker): il
+   * controllo dello state e il salvataggio del token avvengono fuori dal main thread, poi si apre
+   * la schermata Impostazioni con l'esito. L'URI si toglie dall'intent: un ritorno vale una volta.
+   */
+  private fun gestisciRitornoOAuth(intent: Intent?) {
+    if (!OAuthIntervals.eRitorno(intent)) return
+    val uri = intent?.data ?: return
+    intent.data = null
+    val app = applicationContext
+    kotlin.concurrent.thread(name = "biosleep-oauth") { OAuthIntervals.gestisci(app, uri) }
+    RiepilogoLink.richiesta.value = "intervalsSettings"
   }
 
   override fun onStart() {

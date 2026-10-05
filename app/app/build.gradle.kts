@@ -31,6 +31,12 @@ android {
     versionName = "2.1.1"
 
     testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+
+    // Collegamento OAuth a Intervals.icu: client_id e indirizzi non sono segreti (il client_secret
+    // lo conosce solo il Worker). OAUTH_HOST = dominio dell'App Link verificato (assetlinks.json).
+    buildConfigField("String", "INTERVALS_CLIENT_ID", "\"1235\"")
+    buildConfigField("String", "OAUTH_HOST", "\"biosleep-oauth.simonegerardini.workers.dev\"")
+    buildConfigField("String", "OAUTH_REDIRECT_URI", "\"https://biosleep-oauth.simonegerardini.workers.dev/callback\"")
     ndk {
       // Solo telefoni a 64 bit ARM: ogni architettura in piu' porta un'altra copia di Python.
       // Per l'emulatore del Mac aggiungere "x86_64" (o "arm64-v8a" basta sui Mac con chip Apple).
@@ -51,7 +57,10 @@ android {
     sourceCompatibility = JavaVersion.VERSION_11
     targetCompatibility = JavaVersion.VERSION_11
   }
-  buildFeatures { compose = true }
+  buildFeatures {
+    compose = true
+    buildConfig = true // BuildConfig.INTERVALS_CLIENT_ID e indirizzi OAuth
+  }
 
   testOptions { unitTests.all { it.useJUnitPlatform() } }
 }
@@ -74,6 +83,7 @@ dependencies {
   testImplementation(libs.kotlinx.coroutines.test)
   coreLibraryDesugaring(libs.android.desugar)
   implementation(libs.androidx.work.runtime.ktx)
+  implementation(libs.androidx.browser) // Custom Tab per il collegamento a Intervals.icu
 
   implementation(libs.androidx.core.ktx)
   implementation(libs.androidx.appcompat)

@@ -7,7 +7,6 @@ import java.net.HttpURLConnection
 import java.net.URL
 import java.time.Instant
 import java.time.ZoneId
-import java.util.Base64
 import java.util.Locale
 import kotlin.math.roundToInt
 import org.json.JSONException
@@ -24,15 +23,15 @@ sealed interface IntervalsResult {
 
 /**
  * Client minimo per l'API REST di Intervals.icu (nessuna libreria esterna).
- * Autenticazione: HTTP Basic con utente "API_KEY" e password = la tua API key.
- * Athlete id "0" = l'atleta proprietario della API key.
+ * Autenticazione: header Authorization gia' pronto (IntervalsAuth.header): Bearer con il token
+ * del collegamento OAuth, oppure Basic con la API key. Athlete id "0" = il proprietario.
  */
 object IntervalsClient {
   internal const val BASE_URL = "https://intervals.icu/api/v1/athlete/0"
   private const val CONNECT_TIMEOUT_MS = 15_000
   private const val READ_TIMEOUT_MS = 20_000
 
-  // Campi personalizzati di benessere: vanno creati una volta in Intervals.icu con questi codici
+  // Campi personalizzati di benessere: li crea cervello.prepara_account al collegamento
   const val F_RMSSD = "BioSleepRMSSD"
   const val F_SDNN = "BioSleepSDNN"
   const val F_RHR = "BioSleepRHR"
@@ -87,12 +86,12 @@ object IntervalsClient {
       }
 
   /** Invia il riepilogo di una notte nei campi personalizzati del giorno del risveglio. */
-  fun uploadNight(apiKey: String, s: NightSummary, stages: SleepStages?): IntervalsResult {
+  fun uploadNight(auth: String, s: NightSummary, stages: SleepStages?): IntervalsResult {
     val date = morningDate(s)
     val body = buildWellness(s, stages)
     val (code, text) =
         try {
-          request("PUT", "$BASE_URL/wellness/$date", apiKey, body.toString())
+          request("PUT", "$BASE_URL/wellness/$date", auth, body.toString())
         } catch (e: IOException) {
           return IntervalsResult.Failed("Connessione non riuscita: ${e.message}")
         }
@@ -112,15 +111,15 @@ object IntervalsClient {
     } else {
       IntervalsResult.Failed(
           "Intervals non ha salvato: ${missing.joinToString()}. " +
-              "Crea questi campi personalizzati di benessere e riprova.")
+              "Mancano i campi BioSleep: in Impostazioni premi \"Prepara i campi\" e reinvia la notte.")
     }
   }
 
-  /** Verifica API key e connessione leggendo il profilo atleta. */
-  fun testConnection(apiKey: String): IntervalsResult {
+  /** Verifica accesso e connessione leggendo il profilo atleta. */
+  fun testConnection(auth: String): IntervalsResult {
     val (code, text) =
         try {
-          request("GET", BASE_URL, apiKey, null)
+          request("GET", BASE_URL, auth, null)
         } catch (e: IOException) {
           return IntervalsResult.Failed("Connessione non riuscita: ${e.message}")
         }
@@ -137,19 +136,19 @@ object IntervalsClient {
   private fun describeError(code: Int, text: String): String =
       when (code) {
         HttpURLConnection.HTTP_UNAUTHORIZED,
-        HttpURLConnection.HTTP_FORBIDDEN -> "API key non valida (HTTP $code)"
+        HttpURLConnection.HTTP_FORBIDDEN -> "Accesso a Intervals.icu non valido: ricollega o controlla la API key (HTTP $code)"
         422 -> "Dati rifiutati da Intervals (HTTP 422): ${text.take(200)}"
         else -> "Errore Intervals HTTP $code: ${text.take(200)}"
       }
 
-  internal fun request(method: String, url: String, apiKey: String, body: String?): Pair<Int, String> {
-    val auth = Base64.getEncoder().encodeToString("API_KEY:$apiKey".toByteArray(Charsets.UTF_8))
+  /** auth = valore completo dell'header Authorization ("Bearer ..." o "Basic ..."). */
+  internal fun request(method: String, url: String, auth: String, body: String?): Pair<Int, String> {
     val conn = URL(url).openConnection() as HttpURLConnection
     try {
       conn.requestMethod = method
       conn.connectTimeout = CONNECT_TIMEOUT_MS
       conn.readTimeout = READ_TIMEOUT_MS
-      conn.setRequestProperty("Authorization", "Basic $auth")
+      conn.setRequestProperty("Authorization", auth)
       conn.setRequestProperty("Accept", "application/json")
       if (body != null) {
         conn.doOutput = true

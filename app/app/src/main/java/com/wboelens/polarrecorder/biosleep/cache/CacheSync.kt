@@ -3,6 +3,7 @@ package com.wboelens.polarrecorder.biosleep.cache
 import android.content.Context
 import android.database.SQLException
 import android.util.Log
+import com.wboelens.polarrecorder.biosleep.intervals.IntervalsAuth
 import com.wboelens.polarrecorder.biosleep.intervals.IntervalsSettings
 import java.time.LocalDate
 import java.util.concurrent.Executors
@@ -68,13 +69,13 @@ object CacheSync {
       _stato.update { it.copy(aggiornatoMs = ultimoOk) } // dopo un riavvio dell'app
     }
     if (!forza && ultimoOk != null && System.currentTimeMillis() - ultimoOk < MIN_INTERVALLO_MS) return
-    val settings = IntervalsSettings(app)
-    if (!settings.isConfigured) {
-      _stato.update { it.copy(errore = "API key Intervals.icu non impostata") }
+    val credenziali = IntervalsSettings(app).credenziali
+    if (credenziali == null) {
+      _stato.update { it.copy(errore = "Intervals.icu non collegato") }
       return
     }
-    val apiKey = settings.apiKey // decifrata una volta sola per le tre letture
-    aggiorna(db, { risorsa, da, a -> IntervalsReader.leggi(apiKey, risorsa, da, a) }, LocalDate.now())
+    val auth = IntervalsAuth.header(credenziali) // decifrata una volta sola per le tre letture
+    aggiorna(db, { risorsa, da, a -> IntervalsReader.leggi(auth, risorsa, da, a) }, LocalDate.now())
   }
 
   /**

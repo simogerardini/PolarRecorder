@@ -7,12 +7,12 @@ import com.chaquo.python.android.AndroidPlatform
 import com.google.gson.JsonArray
 import com.google.gson.JsonObject
 import com.google.gson.JsonParser
+import com.wboelens.polarrecorder.biosleep.intervals.Credenziali
 import java.io.File
 
 /** Parametri di una chiamata a cervello.esegui_app (contratto del pacchetto Python). */
 data class ConfigCervello(
-    val apiKey: String,
-    val athleteId: String,
+    val credenziali: Credenziali,
     val cartella: String,
     val modo: String = "auto",
     val dryRun: Boolean = false,
@@ -26,8 +26,14 @@ data class ConfigCervello(
   fun json(): String =
       JsonObject()
           .apply {
-            addProperty("intervals_api_key", apiKey)
-            addProperty("intervals_athlete_id", athleteId)
+            when (val c = credenziali) {
+              // OAuth: il cervello usa il Bearer e l'atleta "0"
+              is Credenziali.Token -> addProperty("intervals_token", c.token)
+              is Credenziali.Chiave -> {
+                addProperty("intervals_api_key", c.chiave)
+                addProperty("intervals_athlete_id", c.atleta)
+              }
+            }
             addProperty("cartella", cartella)
             addProperty("modo", modo)
             addProperty("dry_run", dryRun)
@@ -39,7 +45,7 @@ data class ConfigCervello(
 
   /** Per i log: mai la API key. */
   override fun toString() =
-      "ConfigCervello(athleteId=$athleteId, cartella=$cartella, modo=$modo, dryRun=$dryRun, senzaAttesa=$senzaAttesa)"
+      "ConfigCervello(credenziali=$credenziali, cartella=$cartella, modo=$modo, dryRun=$dryRun, senzaAttesa=$senzaAttesa)"
 }
 
 /**
@@ -83,6 +89,26 @@ data class RisultatoCervello(
   }
 }
 
+/** Esito di cervello.prepara_account: campi BioSleep creati o gia' presenti su Intervals.icu. */
+data class EsitoPrepara(val esito: String, val creati: List<String>, val esistenti: List<String>, val errore: String?) {
+  companion object {
+    const val OK = "ok"
+    const val PERMESSO_MANCANTE = "permesso_mancante"
+    const val ERRORE = "errore"
+
+    fun da(testo: String): EsitoPrepara =
+        try {
+          val o = JsonParser.parseString(testo).asJsonObject
+          fun lista(k: String) = o.get(k)?.takeIf { it.isJsonArray }?.asJsonArray?.map { it.asString }.orEmpty()
+          EsitoPrepara(
+              o.get("esito")?.takeIf { it.isJsonPrimitive }?.asString ?: ERRORE, lista("creati"), lista("esistenti"),
+              o.get("errore")?.takeIf { it.isJsonPrimitive }?.asString)
+        } catch (e: RuntimeException) {
+          EsitoPrepara(ERRORE, emptyList(), emptyList(), "Risposta illeggibile: ${e.message}")
+        }
+  }
+}
+
 /**
  * Il coach in Python (Chaquopy) dentro l'app. Ingresso unico: cervello.esegui_app(config_json).
  *
@@ -95,6 +121,29 @@ object Cervello {
 
   /** Cartella privata del coach: stato, flag, riepiloghi, log. */
   fun cartella(context: Context): File = File(context.filesDir, "coach").apply { mkdirs() }
+
+  /** cervello.prepara_account: crea i campi BioSleep mancanti (non tocca gli esistenti). */
+  fun preparaAccount(context: Context, c: Credenziali): EsitoPrepara =
+      synchronized(lucchetto) {
+        if (!Python.isStarted()) Python.start(AndroidPlatform(context.applicationContext))
+        val cfg =
+            JsonObject()
+                .apply {
+                  when (c) {
+                    is Credenziali.Token -> addProperty("intervals_token", c.token)
+                    is Credenziali.Chiave -> {
+                      addProperty("intervals_api_key", c.chiave)
+                      addProperty("intervals_athlete_id", c.atleta)
+                    }
+                  }
+                }
+                .toString()
+        try {
+          EsitoPrepara.da(Python.getInstance().getModule("cervello").callAttr("prepara_account", cfg).toString())
+        } catch (e: PyException) {
+          EsitoPrepara(EsitoPrepara.ERRORE, emptyList(), emptyList(), "Python: ${e.message}")
+        }
+      }
 
   fun esegui(context: Context, config: ConfigCervello): RisultatoCervello =
       synchronized(lucchetto) {

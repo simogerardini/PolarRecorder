@@ -1,7 +1,6 @@
 package com.wboelens.polarrecorder.managers
 
 import android.content.Context
-import com.wboelens.polarrecorder.dataSavers.FileSystemDataSaverConfig
 import com.wboelens.polarrecorder.dataSavers.MQTTConfig
 import com.wboelens.polarrecorder.testutil.BaseRobolectricTest
 import org.junit.Assert.assertEquals
@@ -98,42 +97,6 @@ class PreferencesManagerTest : BaseRobolectricTest() {
     assertEquals("", retrieved.password)
   }
 
-  // ==================== FileSystem Config Tests ====================
-
-  @Test
-  fun `fileSystemDataSaverConfig returns defaults initially`() {
-    val config = preferencesManager.fileSystemDataSaverConfig
-
-    assertEquals("", config.baseDirectory)
-    assertEquals(20, config.splitAtSizeMb) // DEFAULT_SPLIT_SIZE_MB
-  }
-
-  @Test
-  fun `fileSystemDataSaverConfig setter persists all fields`() {
-    val config = FileSystemDataSaverConfig(baseDirectory = "content://test/dir", splitAtSizeMb = 50)
-
-    preferencesManager.fileSystemDataSaverConfig = config
-
-    val newManager = PreferencesManager(context)
-    val retrieved = newManager.fileSystemDataSaverConfig
-
-    assertEquals("content://test/dir", retrieved.baseDirectory)
-    assertEquals(50, retrieved.splitAtSizeMb)
-  }
-
-  @Test
-  fun `fileSystemEnabled default is false`() {
-    assertFalse(preferencesManager.fileSystemEnabled)
-  }
-
-  @Test
-  fun `fileSystemEnabled setter persists value`() {
-    preferencesManager.fileSystemEnabled = true
-
-    val newManager = PreferencesManager(context)
-    assertTrue(newManager.fileSystemEnabled)
-  }
-
   // ==================== Recording Settings Tests ====================
 
   @Test
@@ -181,13 +144,11 @@ class PreferencesManagerTest : BaseRobolectricTest() {
   fun `preferences persist across manager instances`() {
     preferencesManager.recordingName = "TestName"
     preferencesManager.mqttEnabled = true
-    preferencesManager.fileSystemEnabled = true
 
     val newManager = PreferencesManager(context)
 
     assertEquals("TestName", newManager.recordingName)
     assertTrue(newManager.mqttEnabled)
-    assertTrue(newManager.fileSystemEnabled)
   }
 
   @Test

@@ -11,7 +11,6 @@ class DataSavers(
     preferencesManager: PreferencesManager,
 ) {
   val mqtt: MQTTDataSaver = MQTTDataSaver(logState, preferencesManager)
-  val fileSystem: FileSystemDataSaver = FileSystemDataSaver(context, logState, preferencesManager)
   val bioSleep: BioSleepDataSaver = BioSleepDataSaver(context, logState, preferencesManager)
 
   private val savers = mutableListOf<DataSaver>()
@@ -22,12 +21,6 @@ class DataSavers(
       mqtt.enable()
     }
     savers.add(mqtt)
-
-    fileSystem.configure(preferencesManager.fileSystemDataSaverConfig)
-    if (preferencesManager.fileSystemEnabled) {
-      fileSystem.enable()
-    }
-    savers.add(fileSystem)
 
     // BioSleep: database locale + analisi notturna, sempre attivo
     bioSleep.enable()

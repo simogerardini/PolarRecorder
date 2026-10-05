@@ -2,6 +2,7 @@ package com.wboelens.polarrecorder.biosleep.cache
 
 import android.content.Context
 import android.database.SQLException
+import com.wboelens.polarrecorder.biosleep.intervals.IntervalsAuth
 import com.wboelens.polarrecorder.biosleep.intervals.IntervalsSettings
 import com.wboelens.polarrecorder.biosleep.training.DettaglioAttivita
 import com.wboelens.polarrecorder.biosleep.training.DettaglioParser
@@ -25,9 +26,8 @@ object DettagliRepo {
     if (salvato != null) {
       DettaglioParser.attivita(salvato.first)?.let { return EsitoDettaglio.Pronto(it, DettaglioParser.flussi(salvato.second)) }
     }
-    val settings = IntervalsSettings(context)
-    if (!settings.isConfigured) return EsitoDettaglio.Errore("API key Intervals.icu non impostata")
-    val chiave = settings.apiKey
+    val credenziali = IntervalsSettings(context).credenziali ?: return EsitoDettaglio.Errore("Intervals.icu non collegato")
+    val chiave = IntervalsAuth.header(credenziali)
     val attivitaTesto =
         when (val l = IntervalsReader.leggiPercorso(chiave, "/activity/$id?intervals=true")) {
           is Lettura.Ok -> l.testo

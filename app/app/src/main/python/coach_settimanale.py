@@ -111,7 +111,13 @@ STATE_FILE         = os.getenv("COACH_SETT_STATE", "coach_settimanale_state.json
 GH_TOKEN           = os.getenv("GH_TOKEN", "")
 GITHUB_REPOSITORY  = os.getenv("GITHUB_REPOSITORY", "")
 
-AUTH = f"Basic {base64.b64encode(f'API_KEY:{API_KEY}'.encode()).decode()}"
+# 06/10/2026: accesso OAuth dall'app (token Bearer, atleta "0" = proprietario del token);
+# la chiave API personale resta valida (Basic auth).
+INTERVALS_TOKEN    = os.getenv("INTERVALS_TOKEN")
+if INTERVALS_TOKEN:
+    ATHLETE_ID = ATHLETE_ID or "0"
+AUTH = (f"Bearer {INTERVALS_TOKEN}" if INTERVALS_TOKEN else
+        f"Basic {base64.b64encode(f'API_KEY:{API_KEY}'.encode()).decode()}")
 ICU  = {"Authorization": AUTH, "Content-Type": "application/json"}
 ICU_BASE = "https://intervals.icu/api/v1"
 
@@ -3181,7 +3187,7 @@ def main():
     ap.add_argument("--senza-attesa", action="store_true",
                     help="pianifica anche senza i biometrici della notte")
     args = ap.parse_args()
-    if not API_KEY or not ATHLETE_ID:
+    if not (API_KEY or INTERVALS_TOKEN) or not ATHLETE_ID:
         print("❌ INTERVALS_API_KEY / INTERVALS_ATHLETE_ID mancanti")
         return 1
     esegui_auto(args.modo, args.dry_run, args.force, args.lunedi, args.senza_attesa)

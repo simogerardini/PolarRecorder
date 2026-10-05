@@ -1,6 +1,7 @@
 package com.wboelens.polarrecorder.biosleep.cervello
 
 import com.google.gson.JsonParser
+import com.wboelens.polarrecorder.biosleep.intervals.Credenziali
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNull
 import org.junit.jupiter.api.Assertions.assertTrue
@@ -10,7 +11,7 @@ class ProfiloTest {
   @Test
   fun profiloComeDaContratto() {
     val p = ProfiloAtleta(189, 42, 10.5, mapOf("lun" to 90, "ven" to 0, "sab" to 300))
-    val c = ConfigCervello("k", "0", "/c", profilo = p)
+    val c = ConfigCervello(Credenziali.Chiave("k", "0"), "/c", profilo = p)
     val o = JsonParser.parseString(c.json()).asJsonObject.getAsJsonObject("profilo")
     assertEquals(189, o.get("fc_max")!!.asInt)
     assertEquals(42, o.get("fc_riposo")!!.asInt)
@@ -24,7 +25,7 @@ class ProfiloTest {
   @Test
   fun profiloVuotoNonSiManda() {
     assertNull(ProfiloAtleta().json())
-    val o = JsonParser.parseString(ConfigCervello("k", "0", "/c").json()).asJsonObject
+    val o = JsonParser.parseString(ConfigCervello(Credenziali.Chiave("k", "0"), "/c").json()).asJsonObject
     assertTrue(!o.has("profilo"))
   }
 

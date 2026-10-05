@@ -12,9 +12,7 @@ import java.time.LocalDate
 object IntervalsSync {
   fun syncNight(context: Context, sessionId: Long): IntervalsResult {
     val settings = IntervalsSettings(context)
-    if (!settings.isConfigured) {
-      return IntervalsResult.Failed("API key Intervals.icu non impostata")
-    }
+    val credenziali = settings.credenziali ?: return IntervalsResult.Failed("Intervals.icu non collegato")
     val db = SleepDb.get(context)
     val night =
         try {
@@ -23,7 +21,7 @@ object IntervalsSync {
           return IntervalsResult.Failed("Errore del database: ${e.message}")
         } ?: return IntervalsResult.Failed("Notte non trovata")
 
-    val result = IntervalsClient.uploadNight(settings.apiKey, night.summary, night.stages)
+    val result = IntervalsClient.uploadNight(IntervalsAuth.header(credenziali), night.summary, night.stages)
     try {
       val syncedAt = if (result is IntervalsResult.Ok) System.currentTimeMillis() else null
       db.markSync(sessionId, syncedAt, result.message)
