@@ -16,6 +16,7 @@ material = "1.13.0"
 activity = "1.13.0"
 constraintlayout = "2.2.1"
 work = "2.10.1"
+chaquopy = "17.0.0"
 
 material3 = "1.4.0"
 material3AdaptiveNavigationSuite = "1.4.0"
@@ -76,4 +77,4 @@ kotlinx-coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-t
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
 compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
-
+chaquopy = { id = "com.chaquo.python", version.ref = "chaquopy" }

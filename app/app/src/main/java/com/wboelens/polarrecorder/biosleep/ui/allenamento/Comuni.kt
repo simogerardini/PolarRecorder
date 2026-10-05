@@ -196,10 +196,12 @@ fun BarraBioSleep(navController: NavController) {
       NavigationBarItem(
           selected = corrente == v.rotta,
           onClick = {
+            // Ogni scheda riparte dalla sua schermata principale. Niente saveState/restoreState:
+            // salvando la pila con popUpTo(Oggi), Navigation la associava anche a "Oggi" stessa, e
+            // il tocco su Oggi ripristinava la pila del Calendario (con il dettaglio della seduta).
             navController.navigate(v.rotta) {
-              popUpTo(navController.graph.findStartDestination().id) { saveState = true }
+              popUpTo(navController.graph.findStartDestination().id)
               launchSingleTop = true
-              restoreState = true
             }
           },
           icon = { Icon(v.icona, null) },

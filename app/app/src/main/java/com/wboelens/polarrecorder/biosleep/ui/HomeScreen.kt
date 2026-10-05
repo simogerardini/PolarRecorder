@@ -15,7 +15,6 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Bedtime
 import androidx.compose.material.icons.filled.HourglassTop
-import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
@@ -50,6 +49,8 @@ import com.wboelens.polarrecorder.biosleep.auto.NightProfile
 import com.wboelens.polarrecorder.biosleep.auto.NightProfileStore
 import com.wboelens.polarrecorder.biosleep.setup.BioSleepSetup
 import com.wboelens.polarrecorder.managers.PolarManager
+import com.wboelens.polarrecorder.services.AvvioNotte
+import com.wboelens.polarrecorder.services.RecordingService
 import com.wboelens.polarrecorder.services.RecordingServiceConnection
 import com.wboelens.polarrecorder.state.ConnectionState
 import kotlinx.coroutines.delay
@@ -70,8 +71,9 @@ fun HomeScreen(
     onNightStopped: () -> Unit,
     onOpenNights: () -> Unit,
     onOpenBioAge: () -> Unit,
-    onOpenIntervals: () -> Unit,
+    @Suppress("UNUSED_PARAMETER") onOpenIntervals: () -> Unit, // impostazioni ora dalla scheda Oggi
     bottomBar: @Composable () -> Unit = {},
+    onOpenSleep: () -> Unit = {},
 ) {
   val context = LocalContext.current
   val app = context.applicationContext as PolarRecorderApplication
@@ -94,6 +96,9 @@ fun HomeScreen(
     if (eraInRegistrazione && !isRecording) fiore = false // notte terminata
     eraInRegistrazione = isRecording
   }
+  // Avvio non riuscito (es. fascia non trovata): si chiude il fiore, il motivo resta nella scheda
+  val avvio by RecordingService.avvioNotte.collectAsState()
+  LaunchedEffect(avvio) { if (avvio is AvvioNotte.Fallito) fiore = false }
   if (fiore) {
     FioreNotte(
         inRegistrazione = isRecording,
@@ -112,7 +117,6 @@ fun HomeScreen(
               if (profile != null) {
                 IconButton(onClick = onOpenNights) { Icon(Icons.Filled.Bedtime, "Le mie notti") }
                 IconButton(onClick = onOpenBioAge) { Icon(Icons.Filled.HourglassTop, "Età BioSleep") }
-                IconButton(onClick = onOpenIntervals) { Icon(Icons.Filled.Settings, "Intervals.icu") }
               }
             },
         )
@@ -128,7 +132,7 @@ fun HomeScreen(
             NightInProgress(
                 recording!!.recordingStartTime, app, serviceConnection, onNightStopped, batteria) { fiore = true }
         p == null -> SetupStrap(polarManager, app) { profile = it }
-        else ->
+        else -> {
             ReadyCard(
                 p,
                 isRecording,
@@ -141,6 +145,9 @@ fun HomeScreen(
               profileStore.clear()
               profile = null
             }
+            // Sonno: punteggio di stanotte, deficit, orologio biologico (dettaglio: SonnoScreen)
+            RiquadroSonno(onOpenSleep)
+        }
       }
     }
   }
@@ -264,15 +271,10 @@ private fun ReadyCard(
     onOpenNights: () -> Unit,
     onChangeStrap: () -> Unit,
 ) {
-  var starting by remember { mutableStateOf(false) }
+  // Stato vero dell'avvio, dal servizio: il pulsante si riattiva appena l'avvio riesce o fallisce
+  val avvio by RecordingService.avvioNotte.collectAsState()
+  val starting = avvio is AvvioNotte.InCorso && !isRecording
   var askChange by remember { mutableStateOf(false) }
-  LaunchedEffect(starting) {
-    if (starting) {
-      delay(120_000) // se dopo 2 minuti non e' partita, la notifica spiega il motivo
-      starting = false
-    }
-  }
-  LaunchedEffect(isRecording) { if (isRecording) starting = false }
   val context = LocalContext.current
   val ultimaBatteria = remember { BatteriaFascia.ultima(context) }
 
@@ -292,15 +294,24 @@ private fun ReadyCard(
       )
       // Ultima lettura: la fascia ora e' scollegata, il valore vero arriva all'avvio della notte
       RigaBatteria(ultimaBatteria?.first, ultimaBatteria?.second?.let { "letta il ${quandoLetta(it)}" })
+      (avvio as? AvvioNotte.Fallito)?.let {
+        Text(
+            "Avvio non riuscito: ${it.motivo}",
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.error,
+        )
+      }
       Button(
-          onClick = {
-            starting = true
-            onStartNight()
-          },
+          onClick = onStartNight,
           enabled = !starting,
           modifier = Modifier.fillMaxWidth().height(56.dp),
       ) {
-        Text(if (starting) "Avvio in corso…" else "Avvia notte")
+        Text(
+            when {
+              starting -> "Avvio in corso…"
+              avvio is AvvioNotte.Fallito -> "Riprova"
+              else -> "Avvia notte"
+            })
       }
     }
   }

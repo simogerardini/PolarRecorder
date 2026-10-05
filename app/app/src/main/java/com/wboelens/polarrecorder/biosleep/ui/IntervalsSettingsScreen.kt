@@ -48,11 +48,11 @@ import kotlinx.coroutines.withContext
 
 /**
  * Impostazioni Intervals.icu: campi da creare, API key, invio automatico, prova di connessione,
- * avvio del coach su GitHub (SezioneAvvioCoach, in CoachSettingsSection.kt).
+ * coach nell'app (SezioneCoach, in CoachSettingsSection.kt).
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun IntervalsSettingsScreen(onBack: () -> Unit) {
+fun IntervalsSettingsScreen(onBack: () -> Unit, onApriProfilo: () -> Unit = {}) {
   val context = LocalContext.current
   val settings = remember { IntervalsSettings(context) }
   val scope = rememberCoroutineScope()
@@ -66,7 +66,7 @@ fun IntervalsSettingsScreen(onBack: () -> Unit) {
   Scaffold(
       topBar = {
         TopAppBar(
-            title = { Text("Intervals.icu") },
+            title = { Text("Impostazioni") },
             navigationIcon = {
               IconButton(onClick = onBack) {
                 Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Indietro")
@@ -155,8 +155,8 @@ fun IntervalsSettingsScreen(onBack: () -> Unit) {
         )
       }
 
-      // Parte 3: avvio del coach su GitHub dopo l'invio della notte di oggi
-      SezioneAvvioCoach()
+      // Il coach nell'app (cervello Python): id atleta, ultimo run, misura della durata
+      SezioneCoach(onApriProfilo)
     }
   }
 }

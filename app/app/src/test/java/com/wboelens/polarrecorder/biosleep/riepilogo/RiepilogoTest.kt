@@ -1,113 +1,131 @@
 package com.wboelens.polarrecorder.biosleep.riepilogo
 
 import com.google.gson.JsonObject
-import com.google.gson.JsonParser
 import com.wboelens.polarrecorder.biosleep.training.Allenamenti
 import java.time.LocalDate
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNull
+import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
 
-/** NOTE riepilogo del coach: lettura del JSON (schema v1, file di esempio del coach) e regole intorno. */
+/**
+ * riepilogo_<data>.json del cervello (schema v1). I due file di prova sono stati prodotti dal
+ * codice del cervello stesso (cervello._riepilogo su un piano della suite di coach_settimanale).
+ */
 class RiepilogoTest {
-  private val esempio =
-      javaClass.getResource("/biosleep/riepilogo_esempio.json")?.readText()
-          ?: error("Manca src/test/resources/biosleep/riepilogo_esempio.json")
+  private fun risorsa(nome: String) =
+      javaClass.getResource("/biosleep/$nome")?.readText() ?: error("Manca src/test/resources/biosleep/$nome")
 
-  /** La NOTE come la scrive il coach: testo libero, poi il tag con il JSON su una riga. */
-  private fun nota(json: String, data: String = "2026-09-23"): JsonObject {
+  @Test
+  fun pianoSettimanaleVero() {
+    val r = RiepilogoParser.leggi(risorsa("riepilogo_settimanale.json"))!!
+    assertEquals(1, r.versione)
+    assertEquals(true, r.settimanale)
+    assertEquals("build", r.fase)
+    assertEquals("verde", r.banda)
+    assertEquals(11.0, r.oreTarget)
+    assertEquals(12, r.sedute.size)
+    assertEquals(r.sedute.map { it.data }.sorted(), r.sedute.map { it.data }, "sedute in ordine di giorno")
+    val prima = r.sedute.first()
+    assertEquals("Corsa di supporto 50min", prima.nome)
+    assertEquals(50, prima.durataMin)
+    assertEquals(false, prima.qualita)
+    // descrizione senza [[tag]] ne' "intensity=..."
+    assertEquals("5m Z1 HR\n40m Z2 HR\n5m Z1 HR (post: stretching)", prima.descrizione)
+    // alta intensita' dal campo strutturato "intensita" del cervello
+    val a = r.altaIntensita!!
+    assertEquals(18, a.minuti)
+    assertEquals(525, a.suMinuti)
+    assertEquals(10.0, a.tettoPct)
+    assertEquals("preparazione gara: al massimo il 10% del tempo di bici e corsa sopra la soglia", a.regola)
+    assertEquals(false, a.sopraTetto)
+  }
+
+  @Test
+  fun giornalieroSenzaSedute() {
+    // esito "niente": nessuna seduta da rimodulare, il riepilogo c'e' comunque
+    val r = RiepilogoParser.leggi(risorsa("riepilogo_giornaliero.json"))!!
+    assertEquals(false, r.settimanale)
+    assertEquals("niente", r.esito)
+    assertEquals(0, r.sedute.size)
+    assertNull(r.altaIntensita)
+  }
+
+  @Test
+  fun campoIntensitaStrutturatoHaPrecedenza() {
+    val j = JsonObject()
+    j.addProperty("v", 1)
+    j.addProperty("data", "2026-10-05")
+    j.addProperty("tipo", "settimanale")
+    j.addProperty("testo", "Alta intensita': 18' su 525' bici+corsa (3.4%, tetto 10%)")
+    j.add("intensita", JsonObject().apply {
+      addProperty("alta_min", 40)
+      addProperty("base_min", 500)
+      addProperty("tetto_pct", 10)
+    })
+    val a = RiepilogoParser.leggi(j)!!.altaIntensita!!
+    assertEquals(40, a.minuti)
+    assertEquals(8.0, a.pct)
+  }
+
+  @Test
+  fun blocchiCompletiSeIlCervelloLiScrive() {
+    val j = com.google.gson.JsonParser.parseString(
+        """{"v":1,"data":"2026-10-05","tipo":"giornaliero","decisione":{"codice":"RIDUCI","etichetta":"🟡 RIDUCI","motivo":"banda gialla"},
+           "biometria":{"ok":true,"banda":"giallo","hrv_7gg":52.1,"range_ms":[55.0,61.0],"fc_7gg":45.0},
+           "forma":{"ctl":46.2,"atl":48.9,"tsb":-2.7,"fascia":[-12.7,-10.0]},
+           "volume":{"target_h":9.1,"fatte_h":2.0},"carico":{"fatti":120,"tetto":420,"calendario":380},
+           "intensita":{"pct_facile":82,"pct_intenso":18},"sedute":[],"testo":"messaggio lungo"}""").asJsonObject
+    val r = RiepilogoParser.leggi(j)!!
+    assertEquals("🟡 RIDUCI", r.decisione.etichetta)
+    assertEquals(55.0 to 61.0, r.biometria!!.rangeMs)
+    assertEquals(-2.7, r.forma!!.tsb)
+    assertEquals(9.1, r.oreTarget, "ore obiettivo anche dal blocco volume")
+    assertEquals(82.0, r.intensita!!.pctFacile)
+    assertEquals(420.0, r.carico!!.tetto)
+  }
+
+  @Test
+  fun tettoDellaFaseDalCoach() {
+    // ciclo continuo: 10,5% con tetto 20% non e' un superamento (era il falso rosso col 10% fisso)
+    val j = JsonObject()
+    j.addProperty("data", "2026-10-05")
+    j.addProperty("tipo", "settimanale")
+    j.add("intensita", JsonObject().apply {
+      addProperty("alta_min", 55)
+      addProperty("base_min", 524)
+      addProperty("tetto_pct", 20)
+      addProperty("regola", "polarizzazione 80/20: al massimo il 20% del tempo di bici e corsa sopra la soglia")
+    })
+    val a = RiepilogoParser.leggi(j)!!.altaIntensita!!
+    assertEquals(20.0, a.tettoPct)
+    assertEquals(false, a.sopraTetto)
+    assertTrue(a.regola!!.startsWith("polarizzazione 80/20"))
+    // oltre il tetto: rosso
+    j.getAsJsonObject("intensita").addProperty("alta_min", 110)
+    assertEquals(true, RiepilogoParser.leggi(j)!!.altaIntensita!!.sopraTetto)
+    // riepilogo vecchio senza tetto_pct ne' riga di testo: nessun tetto inventato
+    j.getAsJsonObject("intensita").apply { remove("tetto_pct"); remove("regola") }
+    assertNull(RiepilogoParser.leggi(j)!!.altaIntensita!!.tettoPct)
+  }
+
+  @Test
+  fun senzaDataNonERiepilogo() {
+    assertNull(RiepilogoParser.leggi("""{"v":1,"tipo":"settimanale"}"""))
+    assertNull(RiepilogoParser.leggi("non json"))
+  }
+
+  @Test
+  fun noteDelCoachMaiNelCalendario() {
     val o = JsonObject()
     o.addProperty("id", 777)
     o.addProperty("category", "NOTE")
-    o.addProperty("start_date_local", "${data}T00:00:00")
-    o.addProperty("external_id", "coach:Riepilogo:$data")
-    o.addProperty("description", "Riepilogo del coach\n[[riepilogo_coach:$json]]")
-    return o
-  }
-
-  private val compatto = JsonParser.parseString(esempio).toString()
-
-  @Test
-  fun leggeLEsempioDelCoach() {
-    val r = RiepilogoParser.leggi(RiepilogoParser.json(nota(compatto).get("description")!!.asString)!!)!!
-    assertEquals(1, r.versione)
-    assertEquals("2026-09-23", r.data)
-    assertEquals("🔵 PUOI SPINGERE", r.titoloNotifica)
-    assertEquals("SPINGI", r.decisione.codice)
-    assertEquals("Base 70.3 Multisport (prep. continua)", r.fase)
-    assertNull(r.gara)
-    val b = r.biometria!!
-    assertEquals(true, b.ok)
-    assertEquals(55.0 to 61.0, b.rangeMs)
-    assertEquals(60.1, b.hrv7gg)
-    assertNull(b.ggRitardo)
-    val f = r.forma!!
-    assertEquals(-12.7 to -10.0, f.fascia)
-    assertNull(f.tsbDomenica)
-    assertEquals(100.0, r.discipline["7gg"]!!["corsa"]!!.pct)
-    assertNull(r.discipline["28gg"]!!["palestra"]!!.pct)
-    assertNull(r.intensita)
-    assertEquals(7.1, r.volume!!.restanoH)
-    assertNull(r.carico!!.fatti)
-    assertNull(r.avvisi, "stringa vuota = nessun avviso")
-    assertEquals(emptyList<String>(), r.nonScritte)
-    assertEquals(true, r.testo!!.startsWith("🎯 COACH"))
-  }
-
-  @Test
-  fun jsonSuPiuRigheGrazieADotall() {
-    val indentato = esempio // il file di esempio e' indentato su piu' righe
-    assertEquals("2026-09-23", RiepilogoParser.leggi(RiepilogoParser.json(nota(indentato).get("description")!!.asString)!!)!!.data)
-  }
-
-  @Test
-  fun trovaSoloIlRiepilogoDellaData() {
-    val ieri = nota(compatto.replace("2026-09-23", "2026-09-22"), "2026-09-22")
-    val altraNota = nota(compatto).deepCopy().apply { addProperty("external_id", "coach:SpecchioGarmin:1") }
-    assertNull(RiepilogoParser.trova(listOf(ieri, altraNota), "2026-09-23"))
-    assertEquals("SPINGI", RiepilogoParser.trova(listOf(ieri, nota(compatto)), "2026-09-23")
-        ?.getAsJsonObject("decisione")?.get("codice")?.asString)
-  }
-
-  @Test
-  fun campiFacoltativiENonScritte() {
-    val j = JsonParser.parseString(compatto).asJsonObject
-    j.add("intensita", JsonParser.parseString("""{"pct_facile": 78.5, "pct_intenso": null}"""))
-    j.add("non_scritte", JsonParser.parseString("""["Bici Z2 sab", {"data": "2026-09-27", "nome": "Lungo"}]"""))
-    j.addProperty("avvisi", "Credito basso")
-    j.getAsJsonObject("discipline").getAsJsonObject("7gg").getAsJsonObject("bici").addProperty("target_pct", 45)
-    val r = RiepilogoParser.leggi(j)!!
-    assertEquals(78.5, r.intensita!!.pctFacile)
-    assertNull(r.intensita!!.pctIntenso)
-    assertEquals(listOf("Bici Z2 sab", "2026-09-27 · Lungo"), r.nonScritte)
-    assertEquals("Credito basso", r.avvisi)
-    assertEquals(45.0, r.discipline["7gg"]!!["bici"]!!.targetPct)
-  }
-
-  @Test
-  fun tagRottoOSenzaDataNonERiepilogo() {
-    assertNull(RiepilogoParser.json("[[riepilogo_coach:{rotto]]"))
-    assertNull(RiepilogoParser.leggi(JsonParser.parseString("""{"v":1}""").asJsonObject))
-  }
-
-  @Test
-  fun passiDellAttesa() {
-    val t0 = 1_000_000L
-    val fine = t0 + Attesa.DURATA_MS
-    assertEquals(Passo.NOTIFICA, Attesa.passo(true, false, t0, fine))
-    assertEquals(Passo.GIA_NOTIFICATO, Attesa.passo(true, true, t0, fine))
-    assertEquals(Passo.RIPROVA, Attesa.passo(false, false, fine - 1, fine))
-    assertEquals(Passo.SCADUTO, Attesa.passo(false, false, fine, fine))
-    assertEquals(Passo.NOTIFICA, Attesa.passo(true, false, fine + 5, fine), "trovato anche all'ultimo giro: notifica")
-  }
-
-  @Test
-  fun notaDelCoachMaiNelCalendario() {
-    val n = Allenamenti.evento(nota(compatto))!!
+    o.addProperty("start_date_local", "2026-10-05T00:00:00")
+    o.addProperty("external_id", "coach:Piano:2026-10-05")
+    o.addProperty("name", "Piano")
+    val n = Allenamenti.evento(o)!!
     assertEquals(false, n.nota)
-    val giorno = LocalDate.of(2026, 9, 23)
-    val g = Allenamenti.giorni(listOf(n), emptyList(), giorno, giorno, giorno).single()
-    assertEquals(0, g.note.size)
-    assertEquals(0, g.pianificate.size)
+    val g = LocalDate.of(2026, 10, 5)
+    assertEquals(0, Allenamenti.giorni(listOf(n), emptyList(), g, g, g).single().note.size)
   }
 }

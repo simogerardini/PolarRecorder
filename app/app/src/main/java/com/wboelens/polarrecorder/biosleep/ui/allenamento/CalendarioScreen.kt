@@ -20,6 +20,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -82,7 +83,12 @@ sealed interface Dettaglio {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun CalendarioScreen(data: LocalDate?, evento: String?, bottomBar: @Composable () -> Unit) {
+fun CalendarioScreen(
+    data: LocalDate?,
+    evento: String?,
+    bottomBar: @Composable () -> Unit,
+    onApriAttivita: (String) -> Unit = {},
+) {
   val dati = rememberDallaCache { repo, oggi -> DatiCalendario.carica(repo, oggi) }
   var dettaglio by remember { mutableStateOf<Dettaglio?>(null) }
   val lista = rememberLazyListState()
@@ -126,7 +132,7 @@ fun CalendarioScreen(data: LocalDate?, evento: String?, bottomBar: @Composable (
   }
 
   dettaglio?.let { det ->
-    ModalBottomSheet(onDismissRequest = { dettaglio = null }) { SchedaDettaglio(det) }
+    ModalBottomSheet(onDismissRequest = { dettaglio = null }) { SchedaDettaglio(det, onApriAttivita) }
   }
 }
 
@@ -154,7 +160,7 @@ private fun Giorno(g: GiornoCal, dati: DatiCalendario, onApri: (Dettaglio) -> Un
 }
 
 @Composable
-private fun SchedaDettaglio(det: Dettaglio) {
+private fun SchedaDettaglio(det: Dettaglio, onApriAttivita: (String) -> Unit) {
   Column(
       Modifier.fillMaxWidth().verticalScroll(rememberScrollState()).padding(start = 20.dp, end = 20.dp, bottom = 32.dp),
       verticalArrangement = Arrangement.spacedBy(12.dp),
@@ -186,8 +192,15 @@ private fun SchedaDettaglio(det: Dettaglio) {
         }
         val consuntivo = det.s.consuntivo
         when {
-          consuntivo != null ->
-              Blocco("Svolto", consuntivo.durataS, consuntivo.tss, consuntivo.distanzaM, consuntivo.compliance)
+          consuntivo != null -> {
+            Blocco("Svolto", consuntivo.durataS, consuntivo.tss, consuntivo.distanzaM, consuntivo.compliance)
+            // analisi della seduta svolta (per il multisport: una per parte)
+            for (a in det.s.svolte) {
+              TextButton(onClick = { onApriAttivita(a.id) }) {
+                Text("Analisi della seduta" + if (det.s.svolte.size > 1) " · ${a.sport.etichetta}" else "")
+              }
+            }
+          }
           det.s.esito == Esito.NON_SVOLTA ->
               Text("Non svolta", color = ColoriBio.rosso, fontWeight = FontWeight.Bold)
           else -> {}
@@ -197,6 +210,7 @@ private fun SchedaDettaglio(det: Dettaglio) {
         val a = det.a
         Text(a.nome, style = MaterialTheme.typography.titleLarge)
         Text("${DateIt.lunga(a.data)} · ${a.sport.etichetta} · non pianificata", color = MaterialTheme.colorScheme.onSurfaceVariant)
+        TextButton(onClick = { onApriAttivita(a.id) }) { Text("Analisi della seduta") }
         Blocco("Svolto", a.durataS, a.tss, a.distanzaM, null)
       }
     }

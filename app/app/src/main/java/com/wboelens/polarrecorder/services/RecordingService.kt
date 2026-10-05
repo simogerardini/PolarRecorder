@@ -1,5 +1,6 @@
 package com.wboelens.polarrecorder.services
 
+import android.app.AlarmManager
 import android.app.Notification
 import android.app.NotificationChannel
 import android.app.NotificationManager
@@ -9,13 +10,17 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.ServiceInfo
 import android.os.Binder
+import android.os.Build
 import android.os.Handler
 import android.os.IBinder
 import android.os.Looper
+import android.os.PowerManager
 import androidx.core.app.NotificationCompat
 import androidx.core.app.ServiceCompat
+import androidx.core.content.ContextCompat
 import com.polar.sdk.api.PolarBleApi
 import com.wboelens.polarrecorder.PolarRecorderApplication
+import com.wboelens.polarrecorder.R
 import com.wboelens.polarrecorder.recording.EventLogEntry
 import com.wboelens.polarrecorder.recording.RecordingOrchestrator
 import com.wboelens.polarrecorder.recording.StartRecordingResult
@@ -23,7 +28,13 @@ import com.wboelens.polarrecorder.state.LogState
 import java.util.concurrent.Executors
 import java.util.concurrent.ScheduledFuture
 import java.util.concurrent.TimeUnit
+import com.wboelens.polarrecorder.biosleep.BioSleepDataSaver
 import com.wboelens.polarrecorder.biosleep.SleepDb
+import com.wboelens.polarrecorder.biosleep.auto.Habits
+import com.wboelens.polarrecorder.biosleep.finalize.NightFinalizeWorker
+import com.wboelens.polarrecorder.biosleep.watchdog.AutoStopAlarmReceiver
+import com.wboelens.polarrecorder.biosleep.watchdog.AutoStopLog
+import com.wboelens.polarrecorder.biosleep.watchdog.AutoStopRule
 import com.wboelens.polarrecorder.biosleep.auto.HabitLearner
 import com.wboelens.polarrecorder.biosleep.auto.NightNotifier
 import com.wboelens.polarrecorder.biosleep.auto.NightProfile
@@ -32,11 +43,22 @@ import com.wboelens.polarrecorder.biosleep.auto.NightStarter
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.isActive
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import kotlinx.coroutines.withTimeoutOrNull
+
+/** BioSleep: stato dell'avvio della notte, osservato dal pulsante "Avvia notte". */
+sealed interface AvvioNotte {
+  data object Fermo : AvvioNotte
+
+  data object InCorso : AvvioNotte
+
+  data class Fallito(val motivo: String) : AvvioNotte
+}
 
 /**
  * Foreground service for background recording. This service handles Android lifecycle and
@@ -51,11 +73,23 @@ class RecordingService : Service() {
     const val EXTRA_DEVICE_IDS = "device_ids"
     // BioSleep: avvio della notte con un tocco (profilo salvato, nessuna schermata)
     const val ACTION_START_NIGHT = "com.wboelens.polarrecorder.START_NIGHT"
-    private const val AUTO_STOP_NO_DATA_MS = 10 * 60_000L // 10 minuti senza battiti
-    private const val AUTO_STOP_MIN_RECORDING_MS = 2 * 3_600_000L // solo dopo almeno 2 ore
-    private const val AUTO_STOP_CHECK_MS = 60_000L
+    // BioSleep: controllo dello stop automatico chiesto dall'allarme di riserva
+    const val ACTION_CHECK_AUTOSTOP = "com.wboelens.polarrecorder.CHECK_AUTOSTOP"
+    private const val AUTO_STOP_CHECK_S = 60L // timer del controllo, indipendente dai dati
+    private const val SAFETY_ALARM_MS = 10 * 60_000L // allarme di riserva (anche in Doze)
+    private const val WAKELOCK_TIMEOUT_MS = 14 * 3_600_000L
+    private const val FINALIZE_WAIT_MS = 5 * 60_000L
+    private const val ALARM_REQUEST = 3_101
     private const val NOTIFICATION_ID = 1
     private const val CHANNEL_ID = "RecordingServiceChannel"
+
+    private val _avvioNotte = MutableStateFlow<AvvioNotte>(AvvioNotte.Fermo)
+
+    /**
+     * Avvio della notte in corso, riuscito (torna Fermo) o fallito con il motivo. La schermata lo
+     * osserva per riattivare "Avvia notte" appena il servizio rinuncia, senza timer.
+     */
+    val avvioNotte: StateFlow<AvvioNotte> = _avvioNotte.asStateFlow()
   }
 
   private val executor = Executors.newSingleThreadScheduledExecutor()
@@ -71,7 +105,10 @@ class RecordingService : Service() {
   private var logMessagesJob: Job? = null
   private var selectedDevicesJob: Job? = null
   private var nightStartJob: Job? = null
-  private var autoStopJob: Job? = null
+  private var autoStopFuture: ScheduledFuture<*>? = null
+  @Volatile private var habits: Habits? = null
+  private var wakeLock: PowerManager.WakeLock? = null
+  private var finalizeWaitJob: Job? = null
 
   // Binder
   private val binder = LocalBinder()
@@ -165,6 +202,16 @@ class RecordingService : Service() {
       }
       ACTION_STOP_RECORDING -> doStopRecording()
       ACTION_START_NIGHT -> startNight()
+      ACTION_CHECK_AUTOSTOP -> {
+        if (orchestrator.recordingState.value.isRecording || nightStartJob?.isActive == true) {
+          executor.execute { runAutoStopCheck("allarme") }
+        } else {
+          // Allarme arrivato a un servizio ripartito senza registrazione: chiude le notti aperte
+          AutoStopLog.write(this, "Allarme senza registrazione attiva -> chiusura notti aperte")
+          NightFinalizeWorker.enqueue(this, "allarme dopo riavvio del servizio")
+          stopSelf()
+        }
+      }
       else -> {
         // Service started without action - show notification if recording
         if (orchestrator.recordingState.value.isRecording) {
@@ -187,6 +234,7 @@ class RecordingService : Service() {
     val result = orchestrator.startRecording(recordingName)
 
     if (result is StartRecordingResult.Success) {
+      _avvioNotte.value = AvvioNotte.Fermo
       // Service-specific: start foreground notification
       val notification = createNotification()
       ServiceCompat.startForeground(
@@ -198,6 +246,7 @@ class RecordingService : Service() {
       scheduleNotificationUpdates()
       saveNightProfile()
       startAutoStopMonitor()
+      AutoStopLog.write(this, "Registrazione avviata: $recordingName")
     }
     // Errors are already logged by orchestrator
   }
@@ -216,6 +265,10 @@ class RecordingService : Service() {
   /** Prepara e avvia la notte con le impostazioni dell'ultima registrazione. */
   private fun startNight() {
     if (orchestrator.recordingState.value.isRecording || nightStartJob?.isActive == true) return
+    _avvioNotte.value = AvvioNotte.InCorso
+    // Una notte non si ferma per una disconnessione momentanea: la fascia si ricollega da sola,
+    // e la fine la decide lo stop automatico (ereditato da Polar Recorder, qui sempre spento)
+    app.preferencesManager.recordingStopOnDisconnect = false
     // Entro 5 secondi dall'avvio un servizio in primo piano deve mostrare la sua notifica
     ServiceCompat.startForeground(
         this,
@@ -247,6 +300,7 @@ class RecordingService : Service() {
   }
 
   private fun failNightStart(reason: String) {
+    _avvioNotte.value = AvvioNotte.Fallito(reason)
     logState.addLogError("BioSleep: avvio della notte non riuscito: $reason")
     NightNotifier.notifyAlert(this, "Avvio della notte non riuscito", reason)
     stopServiceAfterRecordingEnded()
@@ -261,56 +315,112 @@ class RecordingService : Service() {
   }
 
   /**
-   * Al mattino, quando la fascia viene tolta, non arrivano piu' battiti: dopo 10 minuti senza dati,
-   * nella fascia oraria del mattino e dopo almeno 2 ore di registrazione, si ferma da sola.
+   * Stop automatico del mattino. Tre livelli, nessuno dei quali dipende dall'arrivo dei dati:
+   *  1. un timer ogni 60 s sul thread del servizio (lo stesso che aggiorna la notifica);
+   *  2. un wakelock parziale per tutta la registrazione, cosi' la CPU non dorme tra i controlli;
+   *  3. un allarme di riserva ogni 10 minuti che funziona anche in Doze.
+   * Ogni controllo scrive una riga in files/biosleep_autostop.log.
    */
   private fun startAutoStopMonitor() {
-    autoStopJob?.cancel()
-    autoStopJob =
-        scope.launch {
-          val habits =
-              withContext(Dispatchers.IO) {
-                HabitLearner.learn(
-                    SleepDb.get(this@RecordingService).nightTimes(),
-                    System.currentTimeMillis(),
-                )
-              }
-          val bioSleep = app.dataSavers?.bioSleep ?: return@launch
-          while (isActive) {
-            delay(AUTO_STOP_CHECK_MS)
-            val state = orchestrator.recordingState.value
-            if (!state.isRecording) break
-            val now = System.currentTimeMillis()
-            val lastBeat = maxOf(bioSleep.lastValidBeatMs, state.recordingStartTime)
-            if (
-                now - state.recordingStartTime >= AUTO_STOP_MIN_RECORDING_MS &&
-                    now - lastBeat >= AUTO_STOP_NO_DATA_MS &&
-                    HabitLearner.isMorning(now, habits)
-            ) {
-              logState.addLogMessage("BioSleep: fascia tolta, registrazione fermata in automatico")
-              doStopRecording()
-              break
-            }
-          }
-        }
+    acquireWakeLock()
+    autoStopFuture?.cancel(false)
+    executor.execute {
+      habits = HabitLearner.learn(SleepDb.get(this).nightTimes(), System.currentTimeMillis())
+      AutoStopLog.write(this, "Stop automatico attivo dalle ${HabitLearner.minutesToClock(habits!!.morningFromMinute)}")
+    }
+    autoStopFuture =
+        executor.scheduleWithFixedDelay(
+            { runAutoStopCheck("timer") }, AUTO_STOP_CHECK_S, AUTO_STOP_CHECK_S, TimeUnit.SECONDS)
+    scheduleSafetyAlarm()
   }
 
-  private fun createStartingNotification(): Notification =
+  @Suppress("TooGenericExceptionCaught")
+  private fun runAutoStopCheck(source: String) {
+    try {
+      val state = orchestrator.recordingState.value
+      if (!state.isRecording) return
+      val bioSleep = app.dataSavers?.bioSleep ?: return
+      val now = System.currentTimeMillis()
+      val h = habits ?: HabitLearner.learn(emptyList(), now)
+      val decision =
+          AutoStopRule.decide(
+              now, state.recordingStartTime, bioSleep.lastValidBeatMs, bioSleep.lastPacketMs,
+              HabitLearner.isMorning(now, h), AutoStopLog.testMode(this))
+      AutoStopLog.write(this, "Controllo ($source): ${decision.reason}")
+      if (source == "allarme") scheduleSafetyAlarm()
+      if (decision.stop) {
+        logState.addLogMessage("BioSleep: fascia tolta, registrazione fermata in automatico")
+        doStopRecording()
+      }
+    } catch (e: Exception) {
+      // un errore non deve mai spegnere il controllo: si riprova al giro successivo
+      AutoStopLog.write(this, "Controllo ($source) fallito: ${e.javaClass.simpleName} ${e.message}")
+    }
+  }
+
+  private fun safetyAlarmIntent(): PendingIntent =
+      PendingIntent.getBroadcast(
+          this, ALARM_REQUEST, Intent(this, AutoStopAlarmReceiver::class.java),
+          PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT)
+
+  private fun scheduleSafetyAlarm() {
+    val am = getSystemService(AlarmManager::class.java) ?: return
+    val at = System.currentTimeMillis() + SAFETY_ALARM_MS
+    val exact = Build.VERSION.SDK_INT < Build.VERSION_CODES.S || am.canScheduleExactAlarms()
+    if (exact) am.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, at, safetyAlarmIntent())
+    else am.setAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, at, safetyAlarmIntent())
+  }
+
+  private fun acquireWakeLock() {
+    if (wakeLock?.isHeld == true) return
+    wakeLock =
+        getSystemService(PowerManager::class.java)
+            .newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "BioSleep:notte")
+            .apply { acquire(WAKELOCK_TIMEOUT_MS) }
+  }
+
+  private fun stopAutoStopMonitor() {
+    autoStopFuture?.cancel(false)
+    autoStopFuture = null
+    getSystemService(AlarmManager::class.java)?.cancel(safetyAlarmIntent())
+    if (wakeLock?.isHeld == true) wakeLock?.release()
+    wakeLock = null
+  }
+
+  private fun createStartingNotification(
+      title: String = "Avvio della notte",
+      text: String = "Collegamento alla fascia in corso…",
+  ): Notification =
       NotificationCompat.Builder(this, CHANNEL_ID)
-          .setContentTitle("Avvio della notte")
-          .setContentText("Collegamento alla fascia in corso…")
-          .setSmallIcon(android.R.drawable.ic_media_play)
+          .setContentTitle(title)
+          .setContentText(text)
+          .setSmallIcon(R.drawable.ic_notifica_notte)
+          .setColor(ContextCompat.getColor(this, R.color.biosleep_notifica))
           .setOngoing(true)
           .build()
 
   private fun stopServiceAfterRecordingEnded() {
-    autoStopJob?.cancel()
-    autoStopJob = null
+    stopAutoStopMonitor()
     // Ferma l'aggiornamento della notifica, altrimenti ricompare ogni minuto dopo lo stop
     notificationUpdates?.cancel(false)
     notificationUpdates = null
-    stopForeground(STOP_FOREGROUND_REMOVE)
-    stopSelf()
+    if (!BioSleepDataSaver.analyzing.value) {
+      stopForeground(STOP_FOREGROUND_REMOVE)
+      stopSelf()
+      return
+    }
+    // Notte in analisi: il servizio resta in primo piano finche' non ha finito (max 5 minuti),
+    // cosi' Android non congela il processo. L'analisi vera la fa NightFinalizeWorker.
+    AutoStopLog.write(this, "Registrazione fermata: analisi della notte in corso")
+    getSystemService(NotificationManager::class.java)
+        .notify(NOTIFICATION_ID, createStartingNotification("Analisi della notte", "Calcolo e invio a Intervals.icu…"))
+    finalizeWaitJob?.cancel()
+    finalizeWaitJob =
+        scope.launch {
+          withTimeoutOrNull(FINALIZE_WAIT_MS) { BioSleepDataSaver.analyzing.first { !it } }
+          stopForeground(STOP_FOREGROUND_REMOVE)
+          stopSelf()
+        }
   }
 
   private fun scheduleNotificationUpdates() {
@@ -364,7 +474,8 @@ class RecordingService : Service() {
     return NotificationCompat.Builder(this, CHANNEL_ID)
         .setContentTitle("Recording in progress")
         .setContentText("Recording for $durationText")
-        .setSmallIcon(android.R.drawable.ic_media_play)
+        .setSmallIcon(R.drawable.ic_notifica_notte)
+        .setColor(ContextCompat.getColor(this, R.color.biosleep_notifica))
         .setOngoing(true)
         .setContentIntent(pendingIntent)
         .build()
@@ -376,7 +487,11 @@ class RecordingService : Service() {
     logMessagesJob?.cancel()
     selectedDevicesJob?.cancel()
     nightStartJob?.cancel()
-    autoStopJob?.cancel()
+    finalizeWaitJob?.cancel()
+    stopAutoStopMonitor()
+    AutoStopLog.write(this, "Servizio chiuso (registrazione attiva: ${orchestrator.recordingState.value.isRecording})")
+    // Servizio chiuso a meta' avvio (es. dal sistema): il pulsante non deve restare bloccato
+    if (_avvioNotte.value == AvvioNotte.InCorso) _avvioNotte.value = AvvioNotte.Fermo
 
     // Cleanup orchestrator resources
     orchestrator.cleanup()

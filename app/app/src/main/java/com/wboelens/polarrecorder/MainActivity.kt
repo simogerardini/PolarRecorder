@@ -33,17 +33,21 @@ import com.wboelens.polarrecorder.biosleep.auto.HabitLearner
 import com.wboelens.polarrecorder.biosleep.auto.NightNotifier
 import com.wboelens.polarrecorder.biosleep.auto.NightProfileStore
 import com.wboelens.polarrecorder.biosleep.cache.CacheSync
+import com.wboelens.polarrecorder.biosleep.cervello.CoachWorker
 import com.wboelens.polarrecorder.biosleep.riepilogo.RiepilogoLink
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.withTimeoutOrNull
+import com.wboelens.polarrecorder.biosleep.ui.ProfiloScreen
+import com.wboelens.polarrecorder.biosleep.ui.SonnoScreen
 import com.wboelens.polarrecorder.biosleep.ui.BioAgeScreen
 import com.wboelens.polarrecorder.biosleep.ui.HomeScreen
 import com.wboelens.polarrecorder.biosleep.ui.IntervalsSettingsScreen
 import com.wboelens.polarrecorder.services.RecordingService
 import com.wboelens.polarrecorder.biosleep.ui.NightDetailScreen
 import com.wboelens.polarrecorder.biosleep.ui.NightsScreen
+import com.wboelens.polarrecorder.biosleep.ui.allenamento.AttivitaScreen
 import com.wboelens.polarrecorder.biosleep.ui.allenamento.BarraBioSleep
 import com.wboelens.polarrecorder.biosleep.ui.allenamento.CalendarioScreen
 import com.wboelens.polarrecorder.biosleep.ui.allenamento.GestisciLinkRiepilogo
@@ -154,7 +158,8 @@ class MainActivity : ComponentActivity() {
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
     handleOpenNight(intent)
-    RiepilogoLink.daIntent(intent) // app aperta dalla notifica del riepilogo del coach
+    RiepilogoLink.daIntent(intent) // app aperta dalla notifica "Piano pronto"
+    CoachWorker.assicuraRipiego(this) // coach di ripiego delle 10:30, se non e' gia' in coda
     justCreated = true
     val stoppedNow = stopNightIfMorning()
     // Use light/dark SystemBarStyle (not auto) so contrast enforcement stays off and the
@@ -295,9 +300,15 @@ class MainActivity : ComponentActivity() {
                   data = entry.arguments?.getString("data")?.let { java.time.LocalDate.parse(it) },
                   evento = entry.arguments?.getString("evento"),
                   bottomBar = { BarraBioSleep(navController) },
+                  onApriAttivita = { id -> navController.navigate("attivita/$id") },
               )
             }
             composable("grafici") { GraficiScreen(bottomBar = { BarraBioSleep(navController) }) }
+            composable("sonno") { SonnoScreen(onBack = { navController.navigateUp() }) }
+            composable("profilo") { ProfiloScreen(onBack = { navController.navigateUp() }) }
+            composable("attivita/{id}") { entry ->
+              AttivitaScreen(id = entry.arguments?.getString("id") ?: "", onBack = { navController.navigateUp() })
+            }
             composable("riepilogo/{data}") { entry ->
               RiepilogoScreen(
                   data = entry.arguments?.getString("data") ?: java.time.LocalDate.now().toString(),
@@ -321,6 +332,7 @@ class MainActivity : ComponentActivity() {
                   onOpenBioAge = { navController.navigate("bioAge") },
                   onOpenIntervals = { navController.navigate("intervalsSettings") },
                   bottomBar = { BarraBioSleep(navController) },
+                  onOpenSleep = { navController.navigate("sonno") },
               )
             }
             // Schermate originali di Polar Recorder: non piu' raggiungibili dall'app
@@ -359,7 +371,10 @@ class MainActivity : ComponentActivity() {
             }
             composable("bioAge") { BioAgeScreen(onBack = { navController.navigateUp() }) }
             composable("intervalsSettings") {
-              IntervalsSettingsScreen(onBack = { navController.navigateUp() })
+              IntervalsSettingsScreen(
+                  onBack = { navController.navigateUp() },
+                  onApriProfilo = { navController.navigate("profilo") },
+              )
             }
             composable(
                 "night/{sessionId}",

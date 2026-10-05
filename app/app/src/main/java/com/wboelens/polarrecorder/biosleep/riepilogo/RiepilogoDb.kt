@@ -11,11 +11,9 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 
 /**
- * Riepiloghi del coach e stato delle notifiche, in un file proprio (biosleep_riepiloghi.db).
- *
- * Perche' non nella cache: il coach cancella la NOTE del giorno prima, quindi un riepilogo passato
- * non si puo' rileggere da Intervals.icu; la cache invece si cancella e si ricostruisce a ogni
- * cambio di schema. Anche "notificato" deve sopravvivere, altrimenti la notifica si ripeterebbe.
+ * Riepiloghi del coach (riepilogo_<data>.json del cervello) e stato della notifica "Piano pronto",
+ * in un file proprio (biosleep_riepiloghi.db), separato dalla cache che si ricostruisce a ogni
+ * cambio di schema: "notificato" deve sopravvivere, altrimenti la notifica si ripeterebbe.
  */
 class RiepilogoDb internal constructor(context: Context, nomeFile: String?) :
     SQLiteOpenHelper(context, nomeFile, null, VERSIONE) {
@@ -43,6 +41,7 @@ class RiepilogoDb internal constructor(context: Context, nomeFile: String?) :
     db.execSQL(
         "CREATE TABLE riepiloghi(data TEXT PRIMARY KEY, json TEXT NOT NULL, " +
             "notificato INTEGER NOT NULL DEFAULT 0, salvato_ms INTEGER NOT NULL)")
+    // tabella delle attese della vecchia NOTE riepilogo: non piu' usata, lasciata per non migrare
     db.execSQL(
         "CREATE TABLE attese(data TEXT PRIMARY KEY, inizio_ms INTEGER, scaduta INTEGER NOT NULL DEFAULT 0)")
   }
@@ -69,7 +68,6 @@ class RiepilogoDb internal constructor(context: Context, nomeFile: String?) :
       }
       val limite = LocalDate.parse(data).minusDays(GG_STORICO).toString()
       db.delete("riepiloghi", "data < ?", arrayOf(limite))
-      db.delete("attese", "data < ?", arrayOf(limite))
       db.setTransactionSuccessful()
     } finally {
       db.endTransaction()
@@ -93,31 +91,5 @@ class RiepilogoDb internal constructor(context: Context, nomeFile: String?) :
   fun notificato(data: String): Boolean =
       readableDatabase.rawQuery("SELECT notificato FROM riepiloghi WHERE data = ?", arrayOf(data)).use { c ->
         c.moveToFirst() && c.getLong(0) == 1L
-      }
-
-  /** Nuova attesa (notte appena inviata): riparte da adesso, azzerando un "scaduta" precedente. */
-  fun iniziaAttesa(data: String, adessoMs: Long = System.currentTimeMillis()) {
-    val v = ContentValues().apply {
-      put("data", data)
-      put("inizio_ms", adessoMs)
-      put("scaduta", 0L)
-    }
-    writableDatabase.insertWithOnConflict("attese", null, v, SQLiteDatabase.CONFLICT_REPLACE)
-    cambiato()
-  }
-
-  fun segnaScaduta(data: String) {
-    val v = ContentValues().apply { put("scaduta", 1L) }
-    writableDatabase.update("attese", v, "data = ?", arrayOf(data))
-    cambiato()
-  }
-
-  /**
-   * Attesa finita senza riepilogo. Vale anche se l'ultimo giro non e' mai partito (telefono
-   * senza rete, WorkManager rimandato): passate 2 ore dall'inizio, l'attesa e' comunque scaduta.
-   */
-  fun scaduta(data: String, adessoMs: Long = System.currentTimeMillis()): Boolean =
-      readableDatabase.rawQuery("SELECT inizio_ms, scaduta FROM attese WHERE data = ?", arrayOf(data)).use { c ->
-        c.moveToFirst() && (c.getLong(1) == 1L || (!c.isNull(0) && adessoMs - c.getLong(0) >= Attesa.DURATA_MS))
       }
 }

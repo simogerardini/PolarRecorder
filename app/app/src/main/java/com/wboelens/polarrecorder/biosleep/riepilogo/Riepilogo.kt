@@ -1,9 +1,11 @@
 package com.wboelens.polarrecorder.biosleep.riepilogo
 
+import android.content.Intent
 import com.google.gson.JsonElement
 import com.google.gson.JsonObject
 import com.google.gson.JsonParser
 import com.wboelens.polarrecorder.biosleep.readiness.PyJson
+import kotlinx.coroutines.flow.MutableStateFlow
 
 data class Decisione(val codice: String?, val etichetta: String?, val motivo: String?)
 
@@ -56,58 +58,96 @@ data class Volume(
 
 data class Carico(val fatti: Double?, val tetto: Double?, val sostenibile: Double?, val calendario: Double?)
 
-/** Il riepilogo del mattino che il coach pubblica come NOTE su Intervals.icu (schema v1). */
+/** Una seduta del piano. */
+data class SedutaPiano(
+    val data: String,
+    val nome: String,
+    val tipo: String?,
+    val durataMin: Int?,
+    val qualita: Boolean,
+    val declassata: Boolean,
+    val descrizione: String?,
+)
+
+/**
+ * Alta intensita' della settimana come la conta il coach (limita_alta_intensita): minuti di
+ * lavoro intenso su minuti di bici + corsa, con il tetto della fase deciso dal coach (20% nel
+ * ciclo continuo 80/20, 10% in preparazione gara) e la regola che lo spiega. L'app non fissa
+ * nessun tetto: se manca, la linea non si disegna.
+ */
+data class AltaIntensita(val minuti: Int, val suMinuti: Int, val tettoPct: Double?, val regola: String? = null) {
+  val pct: Double get() = if (suMinuti > 0) minuti * 100.0 / suMinuti else 0.0
+
+  /** Rosso solo con un superamento vero del tetto. */
+  val sopraTetto: Boolean get() = tettoPct != null && pct > tettoPct
+}
+
+/**
+ * Riepilogo del coach (riepilogo_<data>.json del cervello). Contiene i campi del piano (tipo,
+ * fase, banda, motivi, ore_target, sedute) e, quando il cervello li scrive, i blocchi completi
+ * della vecchia schermata (decisione, biometria, forma, discipline, intensita, volume, carico,
+ * oggi, avvisi, non_scritte). Ogni campo puo' mancare: la schermata completa con i dati locali
+ * dove puo' (stesse formule del coach) e nasconde il resto. "testo" si legge ma non si mostra.
+ */
 data class Riepilogo(
     val versione: Int?,
     val data: String,
+    val tipo: String?,
+    val esito: String?,
     val ora: String?,
-    val titoloNotifica: String?,
-    val testoNotifica: String?,
     val decisione: Decisione,
     val fase: String?,
     val gara: String?,
+    val banda: String?,
+    val motivi: List<String>,
+    val oreTarget: Double?,
     val biometria: BiometriaCoach?,
     val forma: FormaCoach?,
-    /** "7gg" e "28gg" -> disciplina (nuoto, bici, corsa, palestra) -> quota. */
     val discipline: Map<String, Map<String, QuotaDisciplina>>,
     val intensita: Intensita?,
+    val altaIntensita: AltaIntensita?,
     val volume: Volume?,
     val carico: Carico?,
     val oggi: String?,
     val avvisi: String?,
     val nonScritte: List<String>,
+    val sedute: List<SedutaPiano>,
     val testo: String?,
-)
+) {
+  val settimanale: Boolean get() = tipo == "settimanale"
+}
 
-/**
- * Lettura della NOTE riepilogo: category NOTE, external_id coach:Riepilogo:<data>, JSON nel tag
- * [[riepilogo_coach:{...}]] della description. Ogni campo puo' mancare o essere null: il modello
- * lo riporta come null e la schermata nasconde solo quell'elemento.
- */
 object RiepilogoParser {
-  const val PREFISSO = "coach:Riepilogo:"
-  const val VERSIONE_GESTITA = 1
+  // Riga del testo del coach: "Alta intensita': 18' su 525' bici+corsa (3.4%, tetto 10%)"
+  private val RIGA_ALTA = Regex("""Alta intensita'?: (\d+)' su (\d+)'.*?tetto (\d+(?:\.\d+)?)%""")
 
-  // Come indicato dal coach: modalita' DOTALL, greedy fino all'ultimo "}]]".
-  private val TAG = Regex("""\[\[riepilogo_coach:(\{.*\})\]\]""", RegexOption.DOT_MATCHES_ALL)
-
-  /** Il JSON del tag, o null se manca o non e' un oggetto JSON valido. */
-  fun json(descrizione: String?): JsonObject? {
-    val testo = TAG.find(descrizione ?: return null)?.groupValues?.get(1) ?: return null
-    return runCatching { JsonParser.parseString(testo).asJsonObject }.getOrNull()
+  /**
+   * Preferisce il campo strutturato "intensita" {alta_min, base_min, tetto_pct} se il cervello lo
+   * scrive; altrimenti legge la riga del testo (stesso modulo, formato stabile).
+   */
+  private fun altaIntensita(j: JsonObject, testo: String?): AltaIntensita? {
+    val riga = testo?.let { RIGA_ALTA.find(it) }
+    j.get("intensita")?.takeIf { it.isJsonObject }?.asJsonObject?.let { o ->
+      val alta = PyJson.num(o.get("alta_min"))?.v
+      val base = PyJson.num(o.get("base_min"))?.v
+      if (alta != null && base != null) {
+        // tetto: quello del campo; nei riepiloghi senza tetto_pct, quello della riga del testo
+        val tetto = PyJson.num(o.get("tetto_pct"))?.v ?: riga?.groupValues?.get(3)?.toDouble()
+        val regola = o.get("regola")?.takeIf { it.isJsonPrimitive }?.let { PyJson.str(it) }?.takeIf { it.isNotBlank() }
+        return AltaIntensita(alta.toInt(), base.toInt(), tetto, regola)
+      }
+    }
+    val m = riga ?: return null
+    return AltaIntensita(m.groupValues[1].toInt(), m.groupValues[2].toInt(), m.groupValues[3].toDouble())
   }
 
-  fun eRiepilogo(evento: JsonObject): Boolean =
-      PyJson.str(evento.get("category")) == "NOTE" &&
-          PyJson.str(evento.get("external_id"))?.startsWith(PREFISSO) == true
-
-  /** Il riepilogo della data indicata tra gli eventi letti da Intervals.icu (JSON grezzo). */
-  fun trova(eventi: List<JsonObject>, data: String): JsonObject? =
-      eventi
-          .asSequence()
-          .filter { eRiepilogo(it) && PyJson.str(it.get("external_id")) == PREFISSO + data }
-          .mapNotNull { json(PyJson.str(it.get("description"))) }
-          .firstOrNull { PyJson.str(it.get("data")) == data }
+  /** La descrizione delle sedute e' nella sintassi di Intervals.icu: via tag e "intensity=". */
+  fun descrizioneLeggibile(d: String?): String? =
+      d?.lines()
+          ?.map { it.replace(Regex("""\[\[[^\]]*\]\]"""), "").replace(Regex("""\s*intensity=\w+"""), "").trim() }
+          ?.filter { it.isNotEmpty() }
+          ?.joinToString("\n") { it.removePrefix("- ").trim() }
+          ?.ifEmpty { null }
 
   private fun ogg(o: JsonObject?, k: String): JsonObject? = o?.get(k)?.takeIf { it.isJsonObject }?.asJsonObject
 
@@ -155,9 +195,11 @@ object RiepilogoParser {
     }.filterValues { it.isNotEmpty() }
   }
 
+  private fun lista(o: JsonObject, k: String): List<JsonElement> =
+      o.get(k)?.takeIf { it.isJsonArray }?.asJsonArray?.toList() ?: emptyList()
+
   fun leggi(j: JsonObject): Riepilogo? {
     val data = str(j, "data")?.takeIf { it.length == 10 } ?: return null
-    val notifica = ogg(j, "notifica")
     val dec = ogg(j, "decisione")
     val per = ogg(j, "periodizzazione")
     val gara = per?.get("gara")?.let { g ->
@@ -172,15 +214,32 @@ object RiepilogoParser {
     val i = ogg(j, "intensita")
     val v = ogg(j, "volume")
     val c = ogg(j, "carico")
+    val testo = str(j, "testo")?.takeIf { it.isNotBlank() }
+    val sedute =
+        lista(j, "sedute").mapNotNull { el ->
+          val s = el.takeIf { it.isJsonObject }?.asJsonObject ?: return@mapNotNull null
+          SedutaPiano(
+              data = str(s, "data") ?: return@mapNotNull null,
+              nome = str(s, "nome") ?: "Seduta",
+              tipo = str(s, "tipo"),
+              durataMin = num(s, "durata_min")?.toInt(),
+              qualita = bool(s, "qualita") == true,
+              declassata = bool(s, "declassata") == true,
+              descrizione = descrizioneLeggibile(str(s, "descrizione")),
+          )
+        }
     return Riepilogo(
         versione = int(j, "v"),
         data = data,
+        tipo = str(j, "tipo"),
+        esito = str(j, "esito"),
         ora = str(j, "ora"),
-        titoloNotifica = str(notifica, "titolo"),
-        testoNotifica = str(notifica, "testo"),
         decisione = Decisione(str(dec, "codice"), str(dec, "etichetta"), str(dec, "motivo")),
-        fase = str(per, "fase"),
+        fase = str(j, "fase") ?: str(per, "fase"),
         gara = gara,
+        banda = str(j, "banda") ?: str(b, "banda"),
+        motivi = lista(j, "motivi").mapNotNull { m -> m.takeIf { it.isJsonPrimitive }?.let { PyJson.str(it) } }.filter { it.isNotBlank() },
+        oreTarget = num(j, "ore_target") ?: num(v, "target_h"),
         biometria =
             b?.let {
               BiometriaCoach(
@@ -200,7 +259,8 @@ object RiepilogoParser {
                   rampMax = num(it, "ramp_max"))
             },
         discipline = discipline(ogg(j, "discipline")),
-        intensita = i?.let { Intensita(num(it, "pct_facile"), num(it, "pct_intenso")) },
+        intensita = i?.let { Intensita(num(it, "pct_facile"), num(it, "pct_intenso")) }?.takeIf { it.pctFacile != null || it.pctIntenso != null },
+        altaIntensita = altaIntensita(j, testo),
         volume =
             v?.let {
               Volume(num(it, "target_h"), num(it, "sostenibile_h"), num(it, "tetto_h"), num(it, "fatte_h"),
@@ -209,28 +269,24 @@ object RiepilogoParser {
         carico = c?.let { Carico(num(it, "fatti"), num(it, "tetto"), num(it, "sostenibile"), num(it, "calendario")) },
         oggi = str(j, "oggi")?.takeIf { it.isNotBlank() },
         avvisi = str(j, "avvisi")?.takeIf { it.isNotBlank() },
-        nonScritte =
-            j.get("non_scritte")?.takeIf { it.isJsonArray }?.asJsonArray?.mapNotNull { voce(it) }.orEmpty(),
-        testo = str(j, "testo")?.takeIf { it.isNotBlank() },
+        nonScritte = lista(j, "non_scritte").mapNotNull { voce(it) },
+        sedute = sedute.sortedBy { it.data },
+        testo = testo,
     )
   }
 
-  fun leggi(testoJson: String): Riepilogo? =
-      runCatching { JsonParser.parseString(testoJson).asJsonObject }.getOrNull()?.let { leggi(it) }
+  fun leggi(testo: String): Riepilogo? =
+      runCatching { JsonParser.parseString(testo).asJsonObject }.getOrNull()?.let { leggi(it) }
 }
 
-/** Cosa fa il controllo in background a ogni giro (logica pura, testata). */
-enum class Passo { NOTIFICA, GIA_NOTIFICATO, RIPROVA, SCADUTO }
+/** Il tocco sulla notifica "Piano pronto" arriva a MainActivity: la data passa da qui alla navigazione. */
+object RiepilogoLink {
+  const val EXTRA_RIEPILOGO = "biosleep_riepilogo_data"
+  val richiesta = MutableStateFlow<String?>(null)
 
-object Attesa {
-  const val INTERVALLO_MIN = 10L
-  const val DURATA_MS = 2 * 60 * 60 * 1000L
-
-  fun passo(trovato: Boolean, giaNotificato: Boolean, adessoMs: Long, scadenzaMs: Long): Passo =
-      when {
-        trovato && giaNotificato -> Passo.GIA_NOTIFICATO
-        trovato -> Passo.NOTIFICA
-        adessoMs >= scadenzaMs -> Passo.SCADUTO
-        else -> Passo.RIPROVA
-      }
+  fun daIntent(intent: Intent?) {
+    val data = intent?.getStringExtra(EXTRA_RIEPILOGO) ?: return
+    intent.removeExtra(EXTRA_RIEPILOGO) // non riaprire il riepilogo a ogni rotazione
+    richiesta.value = data
+  }
 }

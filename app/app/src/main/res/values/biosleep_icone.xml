@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Tinta delle icone di notifica (verde acqua tenue, leggibile su tema chiaro e scuro) -->
+    <color name="biosleep_notifica">#5FB3C9</color>
+</resources>

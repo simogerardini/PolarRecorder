@@ -3,6 +3,7 @@ import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
   alias(libs.plugins.android.application)
+  alias(libs.plugins.chaquopy)
   alias(libs.plugins.compose.compiler)
   id("io.gitlab.arturbosch.detekt") version "1.23.8"
 }
@@ -30,6 +31,11 @@ android {
     versionName = "2.1.1"
 
     testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+    ndk {
+      // Solo telefoni a 64 bit ARM: ogni architettura in piu' porta un'altra copia di Python.
+      // Per l'emulatore del Mac aggiungere "x86_64" (o "arm64-v8a" basta sui Mac con chip Apple).
+      abiFilters += listOf("arm64-v8a")
+    }
   }
 
   buildTypes {
@@ -102,4 +108,17 @@ dependencies {
   implementation(libs.androidx.runtime.livedata)
 
   implementation(libs.gson)
+}
+
+chaquopy {
+  defaultConfig {
+    version = "3.12"
+    // Python del Mac usato in compilazione (stessa versione 3.12). Togli il commento e
+    // correggi il percorso solo se la build dice che non lo trova:
+    // buildPython("/opt/homebrew/bin/python3.12")
+    pip {
+      install("requests")
+      install("tzdata") // fusi orari per zoneinfo: Android non li fornisce a Python
+    }
+  }
 }

@@ -1,19 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- BioSleep: luna (notte) con tracciato del battito. Icona di notifica: solo bianco su trasparente,
-     Android usa la sagoma e la colora da se'. -->
+<!-- Icona di notifica: solo bianco su trasparente (Android usa solo l'alpha) -->
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
-    android:width="24dp"
-    android:height="24dp"
-    android:viewportWidth="24"
-    android:viewportHeight="24">
-  <path
-      android:fillColor="#FFFFFFFF"
-      android:pathData="M9.36,3.52 A9,9 0 1,0 18.67,14.91 A7.6,7.6 0 0,1 9.36,3.52 Z" />
-  <path
-      android:fillColor="#00000000"
-      android:strokeColor="#FFFFFFFF"
-      android:strokeWidth="1.6"
-      android:strokeLineCap="round"
-      android:strokeLineJoin="round"
-      android:pathData="M12.2,9.6 H14.6 L15.9,6.2 L17.6,12.6 L18.9,9.6 H22.2" />
+    android:width="24dp" android:height="24dp"
+    android:viewportWidth="24" android:viewportHeight="24">
+    <path android:strokeColor="#FFFFFF" android:strokeWidth="1.8" android:strokeLineCap="round" android:strokeLineJoin="round"
+        android:pathData="M 7.4,7.4 A 4.6,4.6 0 0,1 16.6,7.4 A 4.6,4.6 0 0,1 16.6,16.6 A 4.6,4.6 0 0,1 7.4,16.6 A 4.6,4.6 0 0,1 7.4,7.4 Z" />
+    <path android:strokeColor="#FFFFFF" android:strokeWidth="1.8" android:strokeLineCap="round" android:strokeLineJoin="round"
+        android:pathData="M 6.5,12 H 9 L 10.3,9.8 L 12,14.6 L 13.4,9.6 L 14.6,12 H 17.5" />
 </vector>

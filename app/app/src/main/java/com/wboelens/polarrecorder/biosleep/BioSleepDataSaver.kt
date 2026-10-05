@@ -5,11 +5,15 @@ import android.database.SQLException
 import android.util.Log
 import com.polar.sdk.api.model.PolarAccelerometerData
 import com.polar.sdk.api.model.PolarHrData
+import com.wboelens.polarrecorder.biosleep.finalize.NightFinalizeWorker
+import com.wboelens.polarrecorder.biosleep.watchdog.AutoStopLog
+import com.wboelens.polarrecorder.biosleep.watchdog.BeatLiveness
 import com.polar.sdk.api.model.PolarPpiData
 import com.wboelens.polarrecorder.biosleep.auto.NightNotifier
 import com.wboelens.polarrecorder.biosleep.intervals.IntervalsResult
 import com.wboelens.polarrecorder.biosleep.intervals.IntervalsSettings
 import com.wboelens.polarrecorder.biosleep.intervals.IntervalsSync
+import com.wboelens.polarrecorder.biosleep.live.CampioneAcc
 import com.wboelens.polarrecorder.dataSavers.DataSaver
 import com.wboelens.polarrecorder.dataSavers.InitializationState
 import com.wboelens.polarrecorder.managers.DeviceInfoForDataSaver
@@ -65,6 +69,13 @@ class BioSleepDataSaver(
      */
     val battiti =
         MutableSharedFlow<Int>(extraBufferCapacity = 64, onBufferOverflow = BufferOverflow.DROP_OLDEST)
+
+    /**
+     * Accelerometro in diretta (H10), un pacchetto alla volta, per il fiore che segue il respiro.
+     * Stesse regole dei battiti: senza nessuno in ascolto si scarta tutto.
+     */
+    val accLive =
+        MutableSharedFlow<List<CampioneAcc>>(extraBufferCapacity = 16, onBufferOverflow = BufferOverflow.DROP_OLDEST)
   }
 
   private val appContext = context.applicationContext
@@ -76,10 +87,21 @@ class BioSleepDataSaver(
   private var lastFlushMs = 0L
   private var firstBeatLogged = false
 
-  /** Orario dell'ultimo battito valido ricevuto: serve allo stop automatico del mattino. */
+  /**
+   * Ultimo istante con una sequenza di battiti plausibili (vedi BeatLiveness): serve allo stop
+   * automatico del mattino. Non basta il "contatto" segnalato dalla fascia.
+   */
   @Volatile
   var lastValidBeatMs: Long = 0L
     private set
+
+  /** Ultimo pacchetto ricevuto dalla fascia, anche senza battiti (solo per il registro). */
+  @Volatile
+  var lastPacketMs: Long = 0L
+    private set
+
+  private val liveness = BeatLiveness()
+  private val finalizeLock = Any()
 
   // Un solo thread per l'analisi: non blocca mai la registrazione
   private val analysisExecutor = Executors.newSingleThreadExecutor()
@@ -106,9 +128,48 @@ class BioSleepDataSaver(
     } catch (e: SQLException) {
       logState.addLogError("BioSleep: impossibile aprire il database: ${e.message}")
     }
+    // Nessuna notte deve restare aperta: all'avvio del processo (riavvio del servizio, apertura
+    // dell'app) le notti rimaste aperte o senza analisi vengono chiuse da NightFinalizeWorker
+    analysisExecutor.execute { finalizeIfPending("avvio dell'app") }
     // Fase 7: calcola le fasi del sonno anche per le notti registrate prima dell'aggiornamento
     analysisExecutor.execute { stageOldNights() }
   }
+
+  @Suppress("TooGenericExceptionCaught")
+  private fun finalizeIfPending(reason: String) {
+    try {
+      val current = sessions.values.toSet()
+      val pending =
+          db.openSessions().filter { it !in current } +
+              db.sessionsToAnalyze().filter { it !in current }
+      if (pending.isNotEmpty()) NightFinalizeWorker.enqueue(appContext, "$reason: ${pending.distinct().size} notti in sospeso")
+    } catch (e: Exception) {
+      Log.e(TAG, "Controllo notti in sospeso fallito", e)
+    }
+  }
+
+  /**
+   * Chiamata da NightFinalizeWorker, fuori dal main thread. Chiude le sessioni rimaste aperte
+   * (non quella in registrazione) all'ultimo battito salvato, poi analizza, archivia, invia e
+   * notifica tutte le notti senza risultato. Ritorna quante notti ha analizzato.
+   */
+  fun finalizePendingNights(): Int =
+      synchronized(finalizeLock) {
+        val current = sessions.values.toSet()
+        for (id in db.openSessions()) {
+          if (id in current) continue
+          val end = db.lastBeatMs(id) ?: System.currentTimeMillis()
+          db.closeSession(id, end)
+          AutoStopLog.write(appContext, "Recupero: sessione $id rimasta aperta, chiusa all'ultimo battito")
+        }
+        val pending = db.sessionsToAnalyze().filter { it !in current }
+        for (id in pending) {
+          AutoStopLog.write(appContext, "Analisi della sessione $id")
+          analyze(id, isNewNight = true)
+        }
+        analyzing.value = false
+        pending.size
+      }
 
   override fun enable() {
     _isEnabled.value = true
@@ -141,6 +202,8 @@ class BioSleepDataSaver(
         lastFlushMs = now
         firstBeatLogged = false
         lastValidBeatMs = now
+        lastPacketMs = now
+        liveness.reset(now)
         accBuffer.clear()
         accSec = -1L
         accN = 0
@@ -173,12 +236,14 @@ class BioSleepDataSaver(
       for (s in samples) {
         when (s) {
           is PolarHrData.PolarHrSample -> {
+            lastPacketMs = phoneTimestamp
             if (s.contactStatusSupported && !s.contactStatus) continue // fascia staccata
             for (rr in s.rrsMs) {
               buffer.add(RrRow(sessionId, phoneTimestamp, rr))
               battiti.tryEmit(rr)
+              liveness.add(rr, phoneTimestamp)
             }
-            if (s.rrsMs.isNotEmpty()) lastValidBeatMs = phoneTimestamp
+            lastValidBeatMs = liveness.lastSustainedMs
           }
           is PolarPpiData.PolarPpiSample -> {
             if (s.ppi <= 0) continue
@@ -188,8 +253,10 @@ class BioSleepDataSaver(
                     s.errorEstimate > PPI_MAX_ERROR_MS
             // Non valido -> salvato negativo: tiene il tempo, ma e' escluso dall'HRV
             buffer.add(RrRow(sessionId, phoneTimestamp, if (invalid) -s.ppi else s.ppi))
+            lastPacketMs = phoneTimestamp
             if (!invalid) {
-              lastValidBeatMs = phoneTimestamp
+              liveness.add(s.ppi, phoneTimestamp)
+              lastValidBeatMs = liveness.lastSustainedMs
               battiti.tryEmit(s.ppi)
             }
           }
@@ -211,6 +278,10 @@ class BioSleepDataSaver(
       // si usa l'orologio della fascia, ancorato all'orario di arrivo dell'ultimo campione.
       // Con secondi precisi il respiro (un atto ogni ~4 s) resta leggibile.
       val lastTs = list.last().timeStamp
+      if (accLive.subscriptionCount.value > 0) {
+        accLive.tryEmit(
+            list.map { a -> CampioneAcc(phoneTimestamp - (lastTs - a.timeStamp) / 1_000_000, a.x, a.y, a.z) })
+      }
       for (a in list) {
         val sec = (phoneTimestamp - (lastTs - a.timeStamp) / 1_000_000) / 1000
         if (accSec == -1L) accSec = sec
@@ -300,15 +371,18 @@ class BioSleepDataSaver(
     val ended = sessions.values.toList()
     sessions.clear()
     sources.clear()
-    if (ended.isNotEmpty()) analyzing.value = true
+    if (ended.isEmpty()) return
+    analyzing.value = true
     for (id in ended) {
       try {
         db.closeSession(id, now)
       } catch (e: SQLException) {
         logState.addLogError("BioSleep: impossibile chiudere la sessione $id: ${e.message}")
       }
-      analysisExecutor.execute { analyze(id) }
     }
+    // Analisi, invio a Intervals.icu e coach: in un lavoro protetto, non su un thread qualunque
+    // (con l'app chiusa Android congelerebbe il processo a meta' analisi)
+    NightFinalizeWorker.enqueue(appContext, "fine registrazione, sessioni $ended")
   }
 
   override fun stopSaving() {
@@ -321,8 +395,9 @@ class BioSleepDataSaver(
    * L'elenco si legge subito, prima di creare la nuova sessione, cosi' quella nuova non ci finisce.
    */
   private fun analyzeLeftovers() {
-    val leftovers = db.sessionsToAnalyze()
-    for (id in leftovers) analysisExecutor.execute { analyze(id) }
+    if (db.sessionsToAnalyze().isNotEmpty() || db.openSessions().isNotEmpty()) {
+      NightFinalizeWorker.enqueue(appContext, "notti in sospeso trovate all'avvio di una registrazione")
+    }
     val toArchive = db.sessionsToArchive()
     if (toArchive.isNotEmpty()) analysisExecutor.execute { archiveOnly(toArchive) }
   }
@@ -374,9 +449,14 @@ class BioSleepDataSaver(
       // Fase 6: invio automatico a Intervals.icu (se configurato)
       val settings = IntervalsSettings(appContext)
       var intervalsLine: String? = null
-      if (settings.isConfigured && settings.autoUpload) {
+      if (AutoStopLog.testMode(appContext)) {
+        AutoStopLog.write(appContext, "Notte $sessionId analizzata [PROVA]: invio a Intervals.icu e coach saltati")
+      } else if (settings.isConfigured && settings.autoUpload) {
         val sync = IntervalsSync.syncNight(appContext, sessionId)
         Log.i(TAG, "Intervals.icu: ${sync.message}")
+        // IntervalsSync, se l'invio della notte di oggi riesce, avvia il coach (coach-<data>)
+        AutoStopLog.write(appContext, "Notte $sessionId: ${sync.message}" +
+            if (sync is IntervalsResult.Ok) " -> IntervalsSync avvia coach-<data> se è la notte di oggi" else "")
         if (sync is IntervalsResult.Ok) {
           logState.addLogSuccess("BioSleep: ${sync.message}")
           intervalsLine = "✓ Inviata a Intervals.icu"

@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Icona di notifica: solo bianco su trasparente (Android usa solo l'alpha) -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp" android:height="24dp"
+    android:viewportWidth="24" android:viewportHeight="24">
+    <path android:strokeColor="#FFFFFF" android:strokeWidth="1.8" android:strokeLineCap="round" android:strokeLineJoin="round"
+        android:pathData="M 19.5,12 A 7.5,7.5 0 1,1 17.3,6.7 M 17.6,3.2 V 6.9 H 13.9" />
+    <path android:strokeColor="#FFFFFF" android:strokeWidth="1.8" android:strokeLineCap="round" android:strokeLineJoin="round"
+        android:pathData="M 8,12.5 H 9.8 L 11,10 L 12.6,15 L 13.8,12.5 H 16" />
+</vector>

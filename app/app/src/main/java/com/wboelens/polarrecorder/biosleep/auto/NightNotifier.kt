@@ -14,6 +14,7 @@ import com.wboelens.polarrecorder.biosleep.NightSummary
 import com.wboelens.polarrecorder.biosleep.SleepStages
 import com.wboelens.polarrecorder.biosleep.ui.fmt
 import com.wboelens.polarrecorder.biosleep.ui.hm
+import com.wboelens.polarrecorder.R
 
 /** Notifiche BioSleep: riepilogo del mattino e avvisi se l'avvio della notte non riesce. */
 object NightNotifier {
@@ -34,18 +35,18 @@ object NightNotifier {
     val text =
         "$first\nFC riposo ${fmt(s.restingHr)} · rMSSD ${fmt(s.rmssd, 1)} ms" +
             (intervalsLine?.let { "\n$it" } ?: "")
-    post(context, SUMMARY_ID, "La tua notte", text, s.sessionId)
+    post(context, SUMMARY_ID, "La tua notte", text, sessionId = s.sessionId, icona = R.drawable.ic_notifica_biosleep)
   }
 
   fun notifyAlert(context: Context, title: String, text: String) {
-    post(context, ALERT_ID, title, text, null)
+    post(context, ALERT_ID, title, text, icona = R.drawable.ic_notifica_avviso)
   }
 
-  private fun post(context: Context, id: Int, title: String, text: String, sessionId: Long? = null) {
+  private fun post(context: Context, id: Int, title: String, text: String, sessionId: Long? = null, icona: Int) {
     if (
-        Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU &&
-            ContextCompat.checkSelfPermission(context, Manifest.permission.POST_NOTIFICATIONS) !=
-                PackageManager.PERMISSION_GRANTED
+      Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU &&
+      ContextCompat.checkSelfPermission(context, Manifest.permission.POST_NOTIFICATIONS) !=
+      PackageManager.PERMISSION_GRANTED
     ) {
       return // notifiche non permesse: si vede tutto comunque nell'app
     }
@@ -65,7 +66,8 @@ object NightNotifier {
         )
     val notification =
         NotificationCompat.Builder(context, CHANNEL_ID)
-            .setSmallIcon(android.R.drawable.ic_dialog_info)
+            .setSmallIcon(icona)
+            .setColor(ContextCompat.getColor(context, R.color.biosleep_notifica))
             .setContentTitle(title)
             .setContentText(text.lineSequence().first())
             .setStyle(NotificationCompat.BigTextStyle().bigText(text))

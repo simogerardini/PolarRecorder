@@ -505,6 +505,18 @@ class SleepDb private constructor(context: Context) :
     }
   }
 
+  /** Sessioni mai chiuse (servizio chiuso dal sistema durante la notte). */
+  fun openSessions(): List<Long> =
+      readableDatabase
+          .rawQuery("SELECT id FROM sessions WHERE end_ms IS NULL", null)
+          .use { c -> buildList { while (c.moveToNext()) add(c.getLong(0)) } }
+
+  /** Orario dell'ultimo battito salvato di una sessione (null se nessuno). */
+  fun lastBeatMs(sessionId: Long): Long? =
+      readableDatabase
+          .rawQuery("SELECT MAX(phone_ms) FROM rr WHERE session_id = ?", arrayOf(sessionId.toString()))
+          .use { c -> if (c.moveToNext() && !c.isNull(0)) c.getLong(0) else null }
+
   /** Sessioni con battiti ma senza analisi (es. app chiusa dal sistema durante la notte). */
   fun sessionsToAnalyze(): List<Long> =
       readableDatabase

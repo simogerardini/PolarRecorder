@@ -20,10 +20,14 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.Card
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChip
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -53,7 +57,6 @@ import com.wboelens.polarrecorder.biosleep.training.Formato
 import com.wboelens.polarrecorder.biosleep.training.GiornoCal
 import com.wboelens.polarrecorder.biosleep.training.Metrica
 import com.wboelens.polarrecorder.biosleep.training.SedutaPianificata
-import com.wboelens.polarrecorder.biosleep.ui.AvvisoAvvioCoach
 import java.time.LocalDate
 
 /** Una notte dalla wellness: valori BioSleep inviati da questa app. */
@@ -114,7 +117,16 @@ fun OggiScreen(
 ) {
   val dati = rememberDallaCache { repo, oggi -> DatiOggi.carica(repo, oggi) }
   Scaffold(
-      topBar = { TopAppBar(title = { Text("Oggi") }, actions = { AzioneAggiorna() }) },
+      topBar = {
+        TopAppBar(
+            title = { Text("Oggi") },
+            actions = {
+              AzioneAggiorna()
+              // Impostazioni di tutta l'app (Intervals.icu, coach, profilo atleta): dalla home
+              IconButton(onClick = onApriImpostazioni) { Icon(Icons.Filled.Settings, "Impostazioni") }
+            },
+        )
+      },
       bottomBar = bottomBar,
   ) { padding ->
     Column(
@@ -122,7 +134,6 @@ fun OggiScreen(
         verticalArrangement = Arrangement.spacedBy(16.dp),
     ) {
       StatoAggiornamento()
-      AvvisoAvvioCoach(onApriImpostazioni)
       RiquadroRiepilogo(LocalDate.now(), onApriRiepilogo)
       if (dati == null) {
         Box(Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) { CircularProgressIndicator() }

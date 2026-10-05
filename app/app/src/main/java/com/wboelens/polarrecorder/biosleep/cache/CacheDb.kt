@@ -49,7 +49,10 @@ class CacheDb internal constructor(context: Context, nomeFile: String?) :
   companion object {
     private const val DB_NAME = "biosleep_cache.db"
     // 2 (03/10/2026): colonna "conserva" per le NOTE specchio passate. La cache si ricrea.
-    private const val DB_VERSION = 2
+    // 3 (04/10/2026): tabella "dettagli" (analisi delle sedute svolte). La cache si ricrea.
+    private const val DB_VERSION = 3
+    /** Dettagli tenuti: le sedute aperte piu' di recente. */
+    private const val DETTAGLI_MAX = 200
 
     @Volatile private var instance: CacheDb? = null
 
@@ -73,6 +76,8 @@ class CacheDb internal constructor(context: Context, nomeFile: String?) :
       db.execSQL("CREATE INDEX idx_${t.sql}_data ON ${t.sql}(data)")
     }
     db.execSQL("CREATE TABLE meta(chiave TEXT PRIMARY KEY, valore TEXT)")
+    // Analisi di una seduta svolta: attivita' di Intervals.icu e serie gia' ridotte per i grafici
+    db.execSQL("CREATE TABLE dettagli(id TEXT PRIMARY KEY, attivita TEXT NOT NULL, flussi TEXT NOT NULL, salvato_ms INTEGER NOT NULL)")
   }
 
   /** Cache ricostruibile: a ogni cambio di versione si cancella e si rilegge da Intervals.icu. */
@@ -83,6 +88,7 @@ class CacheDb internal constructor(context: Context, nomeFile: String?) :
   private fun ricrea(db: SQLiteDatabase) {
     for (t in Tabella.entries) db.execSQL("DROP TABLE IF EXISTS ${t.sql}")
     db.execSQL("DROP TABLE IF EXISTS meta")
+    db.execSQL("DROP TABLE IF EXISTS dettagli")
     onCreate(db)
   }
 
@@ -127,6 +133,25 @@ class CacheDb internal constructor(context: Context, nomeFile: String?) :
             "SELECT json FROM ${tabella.sql} WHERE data BETWEEN ? AND ? ORDER BY data, id", arrayOf(da, a))
         .use { c -> while (c.moveToNext()) out.add(c.getString(0)) }
     return out
+  }
+
+  /** Attivita' (JSON di Intervals.icu) e serie ridotte di una seduta svolta, se gia' scaricate. */
+  fun dettaglio(id: String): Pair<String, String>? =
+      readableDatabase.rawQuery("SELECT attivita, flussi FROM dettagli WHERE id = ?", arrayOf(id)).use { c ->
+        if (c.moveToFirst()) c.getString(0) to c.getString(1) else null
+      }
+
+  fun salvaDettaglio(id: String, attivita: String, flussi: String) {
+    val db = writableDatabase
+    val v = ContentValues().apply {
+      put("id", id)
+      put("attivita", attivita)
+      put("flussi", flussi)
+      put("salvato_ms", System.currentTimeMillis())
+    }
+    db.insertWithOnConflict("dettagli", null, v, SQLiteDatabase.CONFLICT_REPLACE)
+    db.execSQL(
+        "DELETE FROM dettagli WHERE id NOT IN (SELECT id FROM dettagli ORDER BY salvato_ms DESC LIMIT $DETTAGLI_MAX)")
   }
 
   fun meta(chiave: String): String? =

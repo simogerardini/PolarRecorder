@@ -11,7 +11,7 @@ import org.robolectric.RobolectricTestRunner
 import org.robolectric.RuntimeEnvironment
 import org.robolectric.annotation.Config
 
-/** Una notifica sola per data, riepilogo che sopravvive, attesa che scade anche senza l'ultimo giro. */
+/** Una sola notifica "Piano pronto" per data, riepilogo che sopravvive, storico limitato. */
 @RunWith(RobolectricTestRunner::class)
 @Config(manifest = Config.NONE)
 class RiepilogoDbTest {
@@ -31,21 +31,9 @@ class RiepilogoDbTest {
     db.salva(data, """{"data":"$data"}""")
     assertTrue(db.segnaNotificato(data))
     assertFalse("seconda volta: niente notifica", db.segnaNotificato(data))
-    db.salva(data, """{"data":"$data","v":1}""") // il coach riscrive la NOTE: resta notificato
+    db.salva(data, """{"data":"$data","v":1}""") // un secondo run nello stesso giorno: resta notificato
     assertTrue(db.notificato(data))
     assertEquals("""{"data":"$data","v":1}""", db.json(data))
-  }
-
-  @Test
-  fun attesaScadutaDopoDueOreAncheSenzaUltimoGiro() {
-    val t0 = 1_000_000L
-    db.iniziaAttesa(data, t0)
-    assertFalse(db.scaduta(data, t0 + Attesa.DURATA_MS - 1))
-    assertTrue(db.scaduta(data, t0 + Attesa.DURATA_MS))
-    db.iniziaAttesa(data, t0 + Attesa.DURATA_MS) // notte reinviata: si riparte
-    assertFalse(db.scaduta(data, t0 + Attesa.DURATA_MS + 1))
-    db.segnaScaduta(data)
-    assertTrue(db.scaduta(data, t0 + Attesa.DURATA_MS + 1))
   }
 
   @Test

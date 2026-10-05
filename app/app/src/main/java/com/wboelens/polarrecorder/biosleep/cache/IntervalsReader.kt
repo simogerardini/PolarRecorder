@@ -26,8 +26,14 @@ object IntervalsReader {
   private const val PAUSA_MS = 2_000L
 
   /** risorsa: "wellness", "events" o "activities". Da chiamare fuori dal main thread. */
-  fun leggi(apiKey: String, risorsa: String, da: LocalDate, a: LocalDate): Lettura {
-    val url = "$BASE_URL/$risorsa?oldest=$da&newest=$a"
+  fun leggi(apiKey: String, risorsa: String, da: LocalDate, a: LocalDate): Lettura =
+      conRitentativi("$BASE_URL/$risorsa?oldest=$da&newest=$a", apiKey, risorsa)
+
+  /** Una risorsa qualsiasi dell'API, es. "/activity/i123?intervals=true". Fuori dal main thread. */
+  fun leggiPercorso(apiKey: String, percorso: String): Lettura =
+      conRitentativi("https://intervals.icu/api/v1$percorso", apiKey, percorso.substringBefore('?'))
+
+  private fun conRitentativi(url: String, apiKey: String, risorsa: String): Lettura {
     var ultimo: Lettura.Errore = Lettura.Errore("nessun tentativo")
     for (tentativo in 1..TENTATIVI) {
       val esito = get(url, apiKey)

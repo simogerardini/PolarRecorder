@@ -16,7 +16,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.text.selection.SelectionContainer
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
@@ -35,25 +35,41 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.produceState
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.PathEffect
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.drawText
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.rememberTextMeasurer
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import com.wboelens.polarrecorder.biosleep.readiness.FormaCalc
+import com.wboelens.polarrecorder.biosleep.riepilogo.AltaIntensita
 import com.wboelens.polarrecorder.biosleep.riepilogo.BiometriaCoach
+import com.wboelens.polarrecorder.biosleep.riepilogo.Carico
 import com.wboelens.polarrecorder.biosleep.riepilogo.FormaCoach
+import com.wboelens.polarrecorder.biosleep.riepilogo.QuotaDisciplina
 import com.wboelens.polarrecorder.biosleep.riepilogo.Riepilogo
 import com.wboelens.polarrecorder.biosleep.riepilogo.RiepilogoDb
 import com.wboelens.polarrecorder.biosleep.riepilogo.RiepilogoLink
+import com.wboelens.polarrecorder.biosleep.riepilogo.RiepilogoLocale
+import com.wboelens.polarrecorder.biosleep.riepilogo.SedutaPiano
+import com.wboelens.polarrecorder.biosleep.riepilogo.Volume
+import com.wboelens.polarrecorder.biosleep.training.Allenamenti
 import com.wboelens.polarrecorder.biosleep.training.Formato
+import com.wboelens.polarrecorder.biosleep.training.Sport
 import java.time.LocalDate
+import java.time.temporal.ChronoUnit
 import kotlin.math.max
 import kotlin.math.min
 import kotlinx.coroutines.Dispatchers
@@ -61,23 +77,25 @@ import kotlinx.coroutines.withContext
 
 // --- Dati ----------------------------------------------------------------------------------------
 
-/** Il riepilogo di una data e lo stato dell'attesa, riletti a ogni cambio del database. */
-data class StatoRiepilogo(val riepilogo: Riepilogo?, val scaduto: Boolean)
-
+/** Il riepilogo di una data (null se non c'e'), riletto a ogni salvataggio. first = caricato. */
 @Composable
-fun rememberRiepilogo(data: String): StatoRiepilogo? {
+fun rememberRiepilogo(data: String): Pair<Boolean, Riepilogo?> {
   val context = LocalContext.current.applicationContext
   val versione by RiepilogoDb.versione.collectAsState()
   val stato by
-      produceState<StatoRiepilogo?>(null, data, versione) {
-        value =
-            withContext(Dispatchers.IO) {
-              val db = RiepilogoDb.get(context)
-              StatoRiepilogo(db.leggi(data), db.scaduta(data))
-            }
+      produceState<Pair<Boolean, Riepilogo?>>(false to null, data, versione) {
+        value = true to withContext(Dispatchers.IO) { RiepilogoDb.get(context).leggi(data) }
       }
   return stato
 }
+
+/** Titolo quando il riepilogo non porta una decisione con etichetta. */
+private fun titolo(r: Riepilogo) =
+    r.decisione.etichetta ?: if (r.settimanale) "Piano della settimana" else "Seduta di oggi aggiornata"
+
+/** Sottotitolo: motivo della decisione, oppure il primo motivo, oppure la prima riga del testo. */
+private fun motivo(r: Riepilogo) =
+    r.decisione.motivo ?: r.motivi.firstOrNull() ?: r.testo?.lines()?.firstOrNull { it.isNotBlank() }
 
 /** Da chiamare subito prima di NavHost: apre il riepilogo quando si tocca la notifica. */
 @Composable
@@ -92,28 +110,19 @@ fun GestisciLinkRiepilogo(navController: NavController) {
 
 // --- Riquadro nella schermata Oggi ---------------------------------------------------------------
 
-/** Decisione del coach di oggi (tocco = riepilogo), oppure una riga discreta se non e' arrivato. */
+/** Decisione del coach di oggi (tocco = riepilogo). Niente se oggi il coach non ha ancora scritto. */
 @Composable
 fun RiquadroRiepilogo(oggi: LocalDate, onApri: (String) -> Unit) {
-  val s = rememberRiepilogo(oggi.toString()) ?: return
-  val r = s.riepilogo
-  when {
-    r != null ->
-        Card(Modifier.fillMaxWidth().clickable { onApri(r.data) }) {
-          Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
-            Text("Coach · ${r.ora ?: ""}", style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
-            Text(r.decisione.etichetta ?: "Riepilogo del coach", style = MaterialTheme.typography.titleLarge)
-            r.decisione.motivo?.let { Text(it, style = MaterialTheme.typography.bodyMedium, maxLines = 3) }
-            if (r.avvisi != null || r.nonScritte.isNotEmpty()) {
-              Text("Ci sono avvisi: apri il riepilogo", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.error)
-            }
-          }
-        }
-    s.scaduto ->
-        Text(
-            "Riepilogo del coach non ancora disponibile",
-            style = MaterialTheme.typography.bodySmall,
-            color = MaterialTheme.colorScheme.onSurfaceVariant)
+  val r = rememberRiepilogo(oggi.toString()).second ?: return
+  Card(Modifier.fillMaxWidth().clickable { onApri(r.data) }) {
+    Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
+      Text("Coach" + (r.ora?.let { " · $it" } ?: ""), style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
+      Text(titolo(r), style = MaterialTheme.typography.titleLarge)
+      motivo(r)?.let { Text(it, style = MaterialTheme.typography.bodyMedium, maxLines = 3) }
+      if (r.avvisi != null || r.nonScritte.isNotEmpty()) {
+        Text("Ci sono avvisi: apri il riepilogo", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.error)
+      }
+    }
   }
 }
 
@@ -122,45 +131,57 @@ fun RiquadroRiepilogo(oggi: LocalDate, onApri: (String) -> Unit) {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun RiepilogoScreen(data: String, onBack: () -> Unit, onApriSeduta: (String) -> Unit) {
-  val stato = rememberRiepilogo(data)
+  val (caricato, r) = rememberRiepilogo(data)
+  // Dall'app solo la seduta del giorno (calendario) e la storia della TSB: il resto e' del coach
+  val locale = rememberDallaCache(data) { repo, oggi -> RiepilogoLocale.calcola(repo, LocalDate.parse(data), oggi) }
   Scaffold(
       topBar = {
         TopAppBar(
-            title = { Text("Riepilogo del ${DateIt.breve(LocalDate.parse(data))}") },
+            title = { Text("Coach · ${DateIt.breve(LocalDate.parse(data))}") },
             navigationIcon = { IconButton(onClick = onBack) { Icon(Icons.AutoMirrored.Filled.ArrowBack, "Indietro") } },
         )
       },
   ) { padding ->
-    val r = stato?.riepilogo
     if (r == null) {
       Box(Modifier.fillMaxSize().padding(padding), contentAlignment = Alignment.Center) {
-        if (stato == null) CircularProgressIndicator()
+        if (!caricato) CircularProgressIndicator()
         else Text("Riepilogo non disponibile per questa data", color = MaterialTheme.colorScheme.onSurfaceVariant)
       }
       return@Scaffold
     }
+    val biometria = r.biometria
+    val forma = r.forma
+    val discipline = r.discipline
+    val volume = r.volume
+    val carico = r.carico
     Column(
         Modifier.fillMaxSize().padding(padding).verticalScroll(rememberScrollState()).padding(16.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp),
     ) {
       Avvisi(r)
       Intestazione(r)
-      r.oggi?.let { testo ->
+      val giorno = locale?.giorno
+      if (r.oggi != null || giorno != null) {
         Sezione("Oggi") {
-          Text(testo, style = MaterialTheme.typography.bodyMedium)
-          TextButton(onClick = { onApriSeduta(r.data) }) { Text("Apri la seduta nel calendario") }
+          // dal calendario (con lo stato svolta/da fare); il testo del coach solo se il calendario non c'e'
+          if (giorno == null) r.oggi?.let { Text(it, style = MaterialTheme.typography.bodyMedium) }
+          giorno?.let { g ->
+            if (g.pianificate.isEmpty() && g.nonPianificate.isEmpty()) Text("Riposo", style = MaterialTheme.typography.bodyMedium)
+            for (s in g.pianificate) CardSeduta(s, onClick = { onApriSeduta(data) })
+            for (a in g.nonPianificate) CardAttivita(a, onClick = { onApriSeduta(data) })
+          }
+          TextButton(onClick = { onApriSeduta(data) }) { Text("Apri nel calendario") }
         }
       }
-      r.biometria?.let { Sezione("Biometria") { Biometria(it) } }
-      r.forma?.let { Sezione("Forma") { Forma(it) } }
-      if (r.discipline.isNotEmpty()) Sezione("Discipline") { Discipline(r) }
-      r.intensita?.takeIf { it.pctFacile != null || it.pctIntenso != null }?.let { i ->
-        Sezione("Intensità") { Intensita(i.pctFacile, i.pctIntenso) }
+      biometria?.let { Sezione("Biometria") { Biometria(it) } }
+      forma?.let { Sezione("Forma") { Forma(it, LocalDate.parse(data), locale?.storicoTsb.orEmpty(), r.avvisi) } }
+      if (discipline.isNotEmpty()) Sezione("Discipline") { Discipline(discipline) }
+      when {
+        r.altaIntensita != null -> Sezione("Intensità") { AltaIntensitaSettimana(r.altaIntensita) }
+        r.intensita != null -> Sezione("Intensità") { FacileIntenso(r.intensita.pctFacile, r.intensita.pctIntenso) }
       }
-      if (r.volume != null || r.carico != null) Sezione("Settimana") { Settimana(r) }
-      r.testo?.let { t ->
-        Sezione("Messaggio completo") { SelectionContainer { Text(t, style = MaterialTheme.typography.bodySmall) } }
-      }
+      if (volume != null || carico != null) Sezione("Settimana") { Settimana(volume, carico) }
+      if (r.sedute.isNotEmpty()) Sezione("Sedute della settimana") { SeduteDellaSettimana(r.sedute, onApriSeduta) }
     }
   }
 }
@@ -184,9 +205,15 @@ private fun Avvisi(r: Riepilogo) {
 @Composable
 private fun Intestazione(r: Riepilogo) {
   Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
-    Text(r.decisione.etichetta ?: "Riepilogo del coach", style = MaterialTheme.typography.headlineMedium)
-    r.decisione.motivo?.let { Text(it, style = MaterialTheme.typography.bodyLarge) }
-    val sotto = listOfNotNull(r.fase, r.gara?.let { "gara: $it" }, r.ora?.let { "ore $it" })
+    Text(titolo(r), style = MaterialTheme.typography.headlineMedium)
+    motivo(r)?.let { Text(it, style = MaterialTheme.typography.bodyLarge) }
+    // gli altri motivi del piano (il primo e' gia' sopra se manca la decisione)
+    val altri = if (r.decisione.motivo == null) r.motivi.drop(1) else r.motivi
+    for (m in altri) Text("• $m", style = MaterialTheme.typography.bodyMedium)
+    val sotto =
+        listOfNotNull(
+            r.fase, r.gara?.let { "gara: $it" },
+            r.oreTarget?.let { "obiettivo settimana ${ore(it)}" }, r.ora?.let { "ore $it" })
     if (sotto.isNotEmpty()) {
       Text(sotto.joinToString(" · "), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
     }
@@ -266,7 +293,20 @@ private fun BarraRange(valore: Double, range: Pair<Double, Double>, colore: Colo
 // --- Forma ---------------------------------------------------------------------------------------
 
 @Composable
-private fun Forma(f: FormaCoach) {
+private fun Forma(f: FormaCoach, giorno: LocalDate, storico: List<Pair<LocalDate, Double>>, avvisi: String?) {
+  // Avviso del coach sulla fascia: in evidenza qui, accanto al grafico a cui si riferisce
+  val fuoriFascia =
+      avvisi?.lines()?.filter { it.contains("fuori dalla fascia", ignoreCase = true) }?.map { it.trim() }.orEmpty()
+  if (fuoriFascia.isNotEmpty()) {
+    Column(
+        Modifier.fillMaxWidth()
+            .background(MaterialTheme.colorScheme.errorContainer, RoundedCornerShape(8.dp))
+            .padding(10.dp),
+        verticalArrangement = Arrangement.spacedBy(4.dp)) {
+          Text("Fuori dalla fascia attesa", style = MaterialTheme.typography.titleSmall, color = MaterialTheme.colorScheme.onErrorContainer, fontWeight = FontWeight.Bold)
+          for (riga in fuoriFascia) Text(riga, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onErrorContainer)
+        }
+  }
   Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
     f.ctl?.let { Cifra("CTL", Formato.decimale(it), ColoriBio.ctl) }
     f.atl?.let { Cifra("ATL", Formato.decimale(it), ColoriBio.atl) }
@@ -274,9 +314,9 @@ private fun Forma(f: FormaCoach) {
   }
   val zona = listOfNotNull(f.zona?.let { "zona $it" }, f.zonaAttesa?.let { "attesa in questa fase: $it" })
   if (zona.isNotEmpty()) Text(zona.joinToString(" · "), style = MaterialTheme.typography.bodySmall)
-  if (f.tsb != null && (f.fascia != null || f.tsbDomenica != null)) GraficoTsb(f)
+  if (f.tsb != null) GraficoTsb(f, giorno, storico)
   f.tsbObiettivo?.let {
-    Text("Obiettivo a domenica: TSB ${Formato.conSegno(it)}" + (f.fascia?.let { (a, b) -> " (fascia ${Formato.conSegno(a)} / ${Formato.conSegno(b)})" } ?: ""),
+    Text("Obiettivo a domenica: TSB ${Formato.conSegno(it)}" + (f.fascia?.let { (a, b) -> " (fascia attesa ${Formato.conSegno(a)} / ${Formato.conSegno(b)})" } ?: ""),
         style = MaterialTheme.typography.bodySmall)
   }
   if (f.ramp != null) {
@@ -287,34 +327,83 @@ private fun Forma(f: FormaCoach) {
   }
 }
 
-/** TSB oggi -> domenica, con la fascia obiettivo colorata e la linea dello zero. */
+/**
+ * TSB: gli ultimi 14 giorni (linea piena), oggi (punto) e la previsione del coach a domenica
+ * (tratteggio). Sullo sfondo le zone di forma del coach con i loro colori, come nella schermata
+ * Grafici; l'obiettivo della settimana e' un riquadro tratteggiato, non un'altra zona colorata.
+ * La scala include sempre le zone vicine, cosi' la direzione si legge anche quando la TSB varia poco.
+ */
 @Composable
-private fun GraficoTsb(f: FormaCoach) {
+private fun GraficoTsb(f: FormaCoach, giorno: LocalDate, storico: List<Pair<LocalDate, Double>>) {
   val tsb = f.tsb ?: return
-  val valori = listOfNotNull(tsb, f.tsbDomenica, f.fascia?.first, f.fascia?.second, 0.0)
-  val lo = valori.min() - 3
-  val hi = valori.max() + 3
-  val fascia = ColoriBio.verde.copy(alpha = 0.2f)
-  val linea = ColoriBio.tsb
-  val zero = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.3f)
+  val passato = storico.filter { it.first < giorno }.takeLast(14)
+  val domenica = Allenamenti.lunedi(giorno).plusDays(6)
+  val inizio = passato.firstOrNull()?.first ?: giorno
+  val fine = if (f.tsbDomenica != null && domenica > giorno) domenica else giorno
+  val valori = passato.map { it.second } + listOfNotNull(tsb, f.tsbDomenica, f.fascia?.first, f.fascia?.second)
+  val lo = minOf(valori.min() - 6, -15.0)
+  val hi = maxOf(valori.max() + 6, 10.0)
+  val misuratore = rememberTextMeasurer()
+  val stileZona = MaterialTheme.typography.labelSmall.copy(color = MaterialTheme.colorScheme.onSurfaceVariant)
+  val linea = MaterialTheme.colorScheme.onSurface
+  val obiettivo = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
+  val giorni = ChronoUnit.DAYS.between(inizio, fine).coerceAtLeast(1).toFloat()
   Column {
-    Canvas(Modifier.fillMaxWidth().height(110.dp)) {
+    Canvas(Modifier.fillMaxWidth().height(170.dp)) {
       fun y(v: Double) = (size.height * (1 - (v - lo) / (hi - lo))).toFloat()
-      val x0 = 12.dp.toPx()
-      val x1 = size.width - 12.dp.toPx()
-      f.fascia?.let { (a, b) -> drawRect(fascia, Offset(0f, y(b)), Size(size.width, y(a) - y(b))) }
-      drawLine(zero, Offset(0f, y(0.0)), Offset(size.width, y(0.0)), strokeWidth = 1.dp.toPx())
-      f.tsbDomenica?.let { d ->
-        drawLine(linea, Offset(x0, y(tsb)), Offset(x1, y(d)), strokeWidth = 2.dp.toPx(),
-            pathEffect = PathEffect.dashPathEffect(floatArrayOf(12f, 8f)))
-        drawCircle(linea, 5.dp.toPx(), Offset(x1, y(d)), style = Stroke(2.dp.toPx()))
+      fun x(d: LocalDate) = size.width * ChronoUnit.DAYS.between(inizio, d) / giorni
+      // zone del coach (stato_forma), dall'alto: Transizione, Fresco, Grigia, Ottimale, Alto rischio
+      var sopra = hi
+      for ((soglia, nome, colore) in FormaCalc.BANDE + Triple(lo, "Alto rischio", "rosso")) {
+        val alto = y(minOf(sopra, hi))
+        val basso = y(maxOf(soglia, lo))
+        if (basso > alto) {
+          drawRect(ColoriBio.daNome(colore).copy(alpha = 0.16f), Offset(0f, alto), Size(size.width, basso - alto))
+          val t = misuratore.measure(nome, stileZona)
+          // nome della zona a sinistra: a destra c'e' il riquadro dell'obiettivo
+          if (basso - alto > t.size.height) drawText(t, topLeft = Offset(4.dp.toPx(), alto + 2.dp.toPx()))
+        }
+        sopra = soglia
+        if (soglia <= lo) break
       }
-      drawCircle(linea, 5.dp.toPx(), Offset(x0, y(tsb)))
+      drawLine(linea.copy(alpha = 0.35f), Offset(0f, y(0.0)), Offset(size.width, y(0.0)), strokeWidth = 1.dp.toPx())
+      // obiettivo a domenica: riquadro tratteggiato sulla parte della settimana ancora da fare
+      f.fascia?.let { (a, b) ->
+        val x0 = x(giorno)
+        val tratteggio = PathEffect.dashPathEffect(floatArrayOf(10f, 6f))
+        drawRect(obiettivo.copy(alpha = 0.08f), Offset(x0, y(b)), Size(size.width - x0, y(a) - y(b)))
+        drawRect(obiettivo, Offset(x0, y(b)), Size(size.width - x0, y(a) - y(b)), style = Stroke(1.5.dp.toPx(), pathEffect = tratteggio))
+      }
+      // ultimi 14 giorni
+      val punti = passato.map { Offset(x(it.first), y(it.second)) } + Offset(x(giorno), y(tsb))
+      for (k in 1 until punti.size) drawLine(linea, punti[k - 1], punti[k], strokeWidth = 2.5.dp.toPx())
+      // previsione del coach a domenica
+      f.tsbDomenica?.takeIf { fine > giorno }?.let { d ->
+        drawLine(linea, Offset(x(giorno), y(tsb)), Offset(x(fine), y(d)), strokeWidth = 2.dp.toPx(),
+            pathEffect = PathEffect.dashPathEffect(floatArrayOf(12f, 8f)))
+        val fuori = f.fascia?.let { (a, b) -> d < a || d > b } == true
+        drawCircle(if (fuori) ColoriBio.rosso else linea, 6.dp.toPx(), Offset(x(fine), y(d)), style = Stroke(2.5.dp.toPx()))
+      }
+      drawCircle(linea, 5.dp.toPx(), Offset(x(giorno), y(tsb)))
     }
     Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-      Text("oggi ${Formato.conSegno(tsb)}", style = MaterialTheme.typography.labelSmall)
-      f.tsbDomenica?.let { Text("domenica ${Formato.conSegno(it)}", style = MaterialTheme.typography.labelSmall) }
+      Text(DateIt.asse(inizio), style = MaterialTheme.typography.labelSmall)
+      Text("oggi ${Formato.conSegno(tsb)}", style = MaterialTheme.typography.labelSmall, fontWeight = FontWeight.Bold)
+      f.tsbDomenica?.takeIf { fine > giorno }?.let {
+        val fuori = f.fascia?.let { (a, b) -> it < a || it > b } == true
+        Text(
+            "domenica ${Formato.conSegno(it)} (previsto)",
+            style = MaterialTheme.typography.labelSmall,
+            color = if (fuori) ColoriBio.rosso else MaterialTheme.colorScheme.onSurface,
+            fontWeight = if (fuori) FontWeight.Bold else FontWeight.Normal)
+      }
     }
+    val legenda =
+        listOfNotNull(
+            "linea: ultimi 14 giorni",
+            "tratteggio: previsione del coach".takeIf { f.tsbDomenica != null },
+            "riquadro: fascia attesa a domenica".takeIf { f.fascia != null })
+    Text(legenda.joinToString(" · "), style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
   }
 }
 
@@ -323,9 +412,9 @@ private fun GraficoTsb(f: FormaCoach) {
 private val SPORT = listOf("nuoto" to "Nuoto", "bici" to "Bici", "corsa" to "Corsa")
 
 @Composable
-private fun Discipline(r: Riepilogo) {
-  val sett = r.discipline["7gg"].orEmpty()
-  val mese = r.discipline["28gg"].orEmpty()
+private fun Discipline(discipline: Map<String, Map<String, QuotaDisciplina>>) {
+  val sett = discipline["7gg"].orEmpty()
+  val mese = discipline["28gg"].orEmpty()
   for ((chiave, nome) in SPORT) {
     val a = sett[chiave]
     val b = mese[chiave]
@@ -359,44 +448,92 @@ private fun RigaQuota(etichetta: String, pct: Double, target: Double?, ore: Doub
   }
 }
 
-/** Anello facile/intenso con il riferimento 80/20 segnato. */
+/**
+ * Facile / intenso su una barra sola: verde il facile, rosso l'intenso, e la linea dell'80% che
+ * indica dove dovrebbe finire il verde secondo la regola 80/20.
+ */
 @Composable
-private fun Intensita(facile: Double?, intenso: Double?) {
+private fun FacileIntenso(facile: Double?, intenso: Double?) {
   val f = facile ?: intenso?.let { 100 - it } ?: return
   val i = intenso ?: (100 - f)
+  val totale = (f + i).takeIf { it > 0 } ?: 100.0
   val verde = ColoriBio.verde
   val rosso = ColoriBio.rosso
-  val rif = MaterialTheme.colorScheme.onSurface
-  Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(16.dp)) {
-    Canvas(Modifier.size(96.dp)) {
-      val spessore = 14.dp.toPx()
-      val lato = size.minDimension - spessore
-      val tl = Offset(spessore / 2, spessore / 2)
-      val totale = (f + i).takeIf { it > 0 } ?: 100.0
-      val angoloF = (360 * f / totale).toFloat()
-      drawArc(verde, -90f, angoloF, false, tl, Size(lato, lato), style = Stroke(spessore))
-      drawArc(rosso, -90f + angoloF, 360f - angoloF, false, tl, Size(lato, lato), style = Stroke(spessore))
-      // riferimento 80%: tacca sul bordo
-      val a = Math.toRadians(-90.0 + 360 * 0.8)
-      val c = Offset(size.width / 2, size.height / 2)
-      val r1 = lato / 2 - spessore
-      val r2 = lato / 2 + spessore
-      drawLine(rif, Offset(c.x + (r1 * Math.cos(a)).toFloat(), c.y + (r1 * Math.sin(a)).toFloat()),
-          Offset(c.x + (r2 * Math.cos(a)).toFloat(), c.y + (r2 * Math.sin(a)).toFloat()), strokeWidth = 2.dp.toPx())
-    }
-    Column {
-      facile?.let { Text("Facile ${Formato.decimale(it, 0)}%", color = verde, fontWeight = FontWeight.Bold) }
-      intenso?.let { Text("Intenso ${Formato.decimale(it, 0)}%", color = rosso, fontWeight = FontWeight.Bold) }
-      Text("riferimento 80/20", style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+  val segno = MaterialTheme.colorScheme.onSurface
+  Canvas(Modifier.fillMaxWidth().height(28.dp)) {
+    val h = 16.dp.toPx()
+    val y = (size.height - h) / 2
+    val xF = (size.width * f / totale).toFloat()
+    drawRoundRect(verde, Offset(0f, y), Size(xF, h), CornerRadius(4.dp.toPx()))
+    drawRoundRect(rosso, Offset(xF, y), Size(size.width - xF, h), CornerRadius(4.dp.toPx()))
+    val x80 = size.width * 0.8f
+    drawLine(segno, Offset(x80, 0f), Offset(x80, size.height), strokeWidth = 2.dp.toPx())
+  }
+  Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
+    Text("Facile ${Formato.decimale(f, 0)}%", color = verde, fontWeight = FontWeight.Bold)
+    Text("Intenso ${Formato.decimale(i, 0)}%", color = rosso, fontWeight = FontWeight.Bold)
+  }
+  Text(
+      "La linea segna l'80%: con la regola 80/20 il verde dovrebbe arrivare fin lì.",
+      style = MaterialTheme.typography.bodySmall,
+      color = MaterialTheme.colorScheme.onSurfaceVariant)
+}
+
+/**
+ * La quota di alta intensita' come la controlla il coach: minuti di lavoro intenso su minuti di
+ * bici e corsa. Barra = quota pianificata, linea = tetto della fase dato dal coach (tetto_pct).
+ * Rosso solo se la quota supera davvero il tetto.
+ */
+@Composable
+private fun AltaIntensitaSettimana(a: AltaIntensita) {
+  val colore = if (a.sopraTetto) ColoriBio.rosso else MaterialTheme.colorScheme.primary
+  val fondo = MaterialTheme.colorScheme.surfaceVariant
+  val segno = MaterialTheme.colorScheme.onSurface
+  val tetto = a.tettoPct
+  val scala = maxOf((tetto ?: a.pct) * 2, a.pct * 1.2, 1.0)
+  Text(
+      "${Formato.decimale(a.pct)}% di alta intensità",
+      style = MaterialTheme.typography.titleMedium,
+      color = colore,
+      fontWeight = FontWeight.Bold)
+  Canvas(Modifier.fillMaxWidth().height(28.dp)) {
+    val h = 14.dp.toPx()
+    val y = (size.height - h) / 2
+    val r = CornerRadius(h / 2)
+    drawRoundRect(fondo, Offset(0f, y), Size(size.width, h), r)
+    drawRoundRect(colore, Offset(0f, y), Size((size.width * a.pct / scala).toFloat().coerceAtLeast(h), h), r)
+    if (tetto != null) {
+      val xt = (size.width * tetto / scala).toFloat()
+      drawLine(segno, Offset(xt, 0f), Offset(xt, size.height), strokeWidth = 2.dp.toPx())
     }
   }
+  Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
+    Text("${a.minuti}' intensi su ${a.suMinuti}' di bici e corsa", style = MaterialTheme.typography.bodySmall)
+    tetto?.let {
+      Text(
+          "tetto ${Formato.decimale(it, 0)}%",
+          style = MaterialTheme.typography.bodySmall,
+          fontWeight = FontWeight.Bold,
+          color = if (a.sopraTetto) ColoriBio.rosso else MaterialTheme.colorScheme.onSurface)
+    }
+  }
+  Text(
+      // la regola della fase scritta dal coach; nei riepiloghi vecchi, la frase di prima
+      a.regola?.replaceFirstChar { it.uppercase() }
+          ?: "Il resto del volume è aerobico facile. La linea è il tetto che il coach non supera.",
+      style = MaterialTheme.typography.bodySmall,
+      color = MaterialTheme.colorScheme.onSurfaceVariant)
 }
 
 // --- Settimana -----------------------------------------------------------------------------------
 
 @Composable
-private fun Settimana(r: Riepilogo) {
-  r.volume?.let { v ->
+private fun Settimana(volume: Volume?, carico: Carico?) {
+  Text(
+      "Pieno = fatto · chiaro = con le sedute ancora in calendario · linea = obiettivo · rosso = tetto",
+      style = MaterialTheme.typography.labelSmall,
+      color = MaterialTheme.colorScheme.onSurfaceVariant)
+  volume?.let { v ->
     val fatte = v.fatteH
     val target = v.targetH
     if (fatte != null && target != null) {
@@ -407,14 +544,16 @@ private fun Settimana(r: Riepilogo) {
       BarraAvanzamento(fatte, max(v.tettoH ?: target, target), target, tetto = v.tettoH)
     }
   }
-  r.carico?.let { c ->
+  carico?.let { c ->
     val fatti = c.fatti
     val tetto = c.tetto
-    if (fatti != null && tetto != null) {
+    if (fatti != null) {
       Text(
-          "TSS: ${fatti.toInt()} di ${tetto.toInt()}" + (c.calendario?.let { " · a calendario ${it.toInt()}" } ?: ""),
+          "TSS: ${fatti.toInt()} fatti" + (tetto?.let { " di ${it.toInt()}" } ?: "") +
+              (c.calendario?.let { " · ${it.toInt()} con le sedute in calendario" } ?: ""),
           style = MaterialTheme.typography.bodyMedium)
-      BarraAvanzamento(fatti, max(tetto, c.calendario ?: 0.0), c.sostenibile, previsione = c.calendario, tetto = tetto)
+      val scala = max(tetto ?: 0.0, c.calendario ?: 0.0)
+      if (scala > 0) BarraAvanzamento(fatti, scala, c.sostenibile, previsione = c.calendario, tetto = tetto)
     }
   }
 }
@@ -448,4 +587,64 @@ private fun Cifra(etichetta: String, valore: String, colore: Color) {
     Text(etichetta, style = MaterialTheme.typography.labelMedium, color = colore, fontWeight = FontWeight.Bold)
     Text(valore, style = MaterialTheme.typography.titleLarge)
   }
+}
+
+// --- Sedute per giorno ---------------------------------------------------------------------------
+
+@Composable
+private fun SeduteDellaSettimana(sedute: List<SedutaPiano>, onApriSeduta: (String) -> Unit) {
+  for ((giorno, delGiorno) in sedute.groupBy { it.data }) {
+    val d = runCatching { LocalDate.parse(giorno) }.getOrNull()
+    Text(
+        d?.let { DateIt.breve(it) } ?: giorno,
+        style = MaterialTheme.typography.titleSmall,
+        modifier = Modifier.padding(top = 4.dp))
+    for (s in delGiorno) Seduta(s, onApri = { onApriSeduta(s.data) })
+  }
+}
+
+@Composable
+private fun Seduta(s: SedutaPiano, onApri: () -> Unit) {
+  var aperta by remember { mutableStateOf(false) }
+  val sport = Sport.da(s.tipo)
+  val colore = ColoriBio.sport(sport)
+  val forma = RoundedCornerShape(10.dp)
+  Column(
+      Modifier.fillMaxWidth()
+          .background(colore.copy(alpha = 0.08f), forma)
+          .clickable { aperta = !aperta }
+          .padding(12.dp),
+      verticalArrangement = Arrangement.spacedBy(4.dp),
+  ) {
+    Row(verticalAlignment = Alignment.CenterVertically) {
+      Box(Modifier.width(4.dp).height(32.dp).background(colore, RoundedCornerShape(2.dp)))
+      Spacer(Modifier.width(10.dp))
+      Column(Modifier.weight(1f)) {
+        Text(s.nome, style = MaterialTheme.typography.bodyMedium, fontWeight = FontWeight.SemiBold)
+        Text(
+            listOfNotNull(sport.etichetta, s.durataMin?.let { Formato.durata(it * 60) }).joinToString(" · "),
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant)
+      }
+      if (s.qualita) Etichetta("qualità", ColoriBio.rosso)
+      if (s.declassata) Etichetta("alleggerita", ColoriBio.giallo)
+    }
+    if (aperta) {
+      s.descrizione?.let { Text(it, style = MaterialTheme.typography.bodySmall) }
+      Text(
+          "Apri nel calendario",
+          style = MaterialTheme.typography.labelLarge,
+          color = MaterialTheme.colorScheme.primary,
+          modifier = Modifier.clickable(onClick = onApri).padding(vertical = 4.dp))
+    }
+  }
+}
+
+@Composable
+private fun Etichetta(testo: String, colore: Color) {
+  Text(
+      testo,
+      style = MaterialTheme.typography.labelSmall,
+      color = colore,
+      modifier = Modifier.padding(start = 6.dp).background(colore.copy(alpha = 0.12f), RoundedCornerShape(6.dp)).padding(horizontal = 6.dp, vertical = 2.dp))
 }

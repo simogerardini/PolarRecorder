@@ -47,7 +47,14 @@
     <!-- Permissions needed for staying active in the background, for long running recordings -->
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_CONNECTED_DEVICE" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_DATA_SYNC" />
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+
+    <!-- BioSleep, stop automatico: la CPU resta sveglia durante la registrazione e un allarme di
+         riserva fa il controllo anche in Doze (esatto se l'utente lo consente, altrimenti
+         approssimato di qualche minuto). -->
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+    <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" />
 
     <!-- BioSleep, avvio automatico: Android avvisa l'app quando la fascia associata compare
          e le permette di avviare la registrazione anche se l'app non e' aperta. -->
@@ -96,7 +103,18 @@
             </intent-filter>
         </service>
 
+        <!-- Notifica "Coach al lavoro": il servizio in primo piano di WorkManager, tipo dataSync -->
+        <service
+            android:name="androidx.work.impl.foreground.SystemForegroundService"
+            android:foregroundServiceType="dataSync"
+            tools:node="merge" />
+
         <!-- BioSleep: ricontrollo periodico delle condizioni di avvio automatico -->
+        <!-- BioSleep: allarme di riserva dello stop automatico -->
+        <receiver
+            android:name=".biosleep.watchdog.AutoStopAlarmReceiver"
+            android:exported="false" />
+
         <receiver
             android:name=".biosleep.auto.AutoStartAlarmReceiver"
             android:exported="false" />
