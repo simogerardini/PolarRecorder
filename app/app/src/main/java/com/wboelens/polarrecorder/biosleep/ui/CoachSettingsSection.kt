@@ -31,6 +31,7 @@ import com.wboelens.polarrecorder.biosleep.cervello.ConfigCervello
 import com.wboelens.polarrecorder.biosleep.cervello.ProfiloRepo
 import com.wboelens.polarrecorder.biosleep.cervello.RisultatoCervello
 import com.wboelens.polarrecorder.biosleep.intervals.IntervalsSettings
+import com.wboelens.polarrecorder.biosleep.tag.TagDb
 import java.io.File
 import java.io.IOException
 import kotlinx.coroutines.Dispatchers
@@ -118,7 +119,8 @@ fun SezioneCoach(onApriProfilo: () -> Unit = {}) {
                       ConfigCervello(
                           settings.apiKey, settings.athleteId, Cervello.cartella(ctx).absolutePath,
                           modo = "settimanale", dryRun = true, senzaAttesa = true,
-                          profilo = ProfiloRepo.effettivo(ctx)))
+                          profilo = ProfiloRepo.effettivo(ctx),
+                          tag = runCatching { TagDb.get(ctx).perCervello() }.getOrNull()))
                 }
             val ms = System.currentTimeMillis() - t0
             if (r.esito == RisultatoCervello.PIANIFICATA) stato.registraProva(ms)

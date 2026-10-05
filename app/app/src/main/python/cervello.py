@@ -10,6 +10,8 @@ config (JSON):
   modo            "auto" (default) | "settimanale" | "giornaliero"
   dry_run         true = calcola senza scrivere su Intervals.icu
   senza_attesa    true = procede anche senza i biometrici della notte (avvio di ripiego)
+  tag             facoltativo: {"giorni": {"YYYY-MM-DD": [chiavi]}, "sedute": {"<id attivita'>": [chiavi]}}
+                  vocabolario in coach_settimanale.TAG_GIORNO / TAG_SEDUTA
   profilo         facoltativo: {"fc_max", "fc_riposo", "tetto_ore",
                   "disponibilita": {"lun".."dom": minuti massimi, 0 = non disponibile}}
 risultato (JSON):
@@ -34,6 +36,20 @@ _VARIABILI_ESTERNE = ("GH_TOKEN", "GITHUB_REPOSITORY", "TELEGRAM_TOKEN", "TELEGR
 cs = None
 
 
+def valida_tag(tag):
+    """({"giorni", "sedute"} con le sole chiavi del vocabolario, [chiavi scartate])."""
+    import coach_settimanale as voc
+    tag = tag or {}
+    validi, scartati = {"giorni": {}, "sedute": {}}, []
+    for gruppo, ammesse in (("giorni", voc.TAG_GIORNO), ("sedute", voc.TAG_SEDUTA)):
+        for k, chiavi in (tag.get(gruppo) or {}).items():
+            buone = [t for t in chiavi or [] if t in ammesse]
+            scartati += [t for t in chiavi or [] if t not in ammesse]
+            if buone:
+                validi[gruppo][str(k)] = buone
+    return validi, scartati
+
+
 def _carica_moduli():
     global cs
     import sedute, biometria, carico, coach_settimanale
@@ -49,7 +65,7 @@ def _blocchi(oggi, ore_target):
     lun = cs.lunedi_di(oggi)
     dom = (cs._dt(lun) + cs.timedelta(days=6)).strftime("%Y-%m-%d")
     wellness60 = cs.get_wellness(60)
-    serie, _ = cs.storia_biometrica(wellness60)
+    serie, _ = cs.storia_biometrica(wellness60, cs.TAG_GIORNI)
     baseline = cs.calc_baseline_hrv(serie, oggi)
     pos = cs.posizione_ciclo(lun, cs.get_races(), pause=cs.pause_recenti(lun))
     mod = cs.modulazione_biometrica(baseline, cs.stato_forma(wellness60), pos["fase"])
@@ -133,6 +149,9 @@ def esegui_app(config_json):
         with contextlib.redirect_stdout(buf):
             sedute = _carica_moduli()
             cs.telegram = out["notifiche"].append      # gli avvisi tornano all'app
+            # 05/10/2026: tag dell'app (vocabolario fisso; chiavi sconosciute ignorate)
+            tag_validi, tag_scartati = valida_tag(cfg.get("tag"))
+            cs.TAG_GIORNI, cs.TAG_SEDUTE = tag_validi["giorni"], tag_validi["sedute"]
             # Il riepilogo vive nell'app (riepilogo_<data>.json): nessuna NOTE di piano sul
             # calendario di Intervals.icu (coach silenzioso, decisione di Simone).
             cs.scrivi_nota = lambda *a, **k: None
@@ -161,6 +180,13 @@ def esegui_app(config_json):
                     print(traceback.format_exc())
                 percorso = os.path.join(cartella, f"riepilogo_{oggi}.json")
                 rie = _unisci_al_settimanale(percorso, rie)
+                # 05/10/2026: decisioni prese per un tag, visibili nell'app
+                if cs._MOTIVI_TAG or tag_scartati:
+                    rie["motivi"] = list(dict.fromkeys((rie.get("motivi") or []) + cs._MOTIVI_TAG))
+                    righe = [f"tag: {m}" for m in cs._MOTIVI_TAG]
+                    if tag_scartati:
+                        righe.append("tag sconosciuti ignorati: " + ", ".join(sorted(set(tag_scartati))))
+                    rie["avvisi"] = "\n".join(x for x in [rie.get("avvisi") or ""] + righe if x)
                 with open(percorso + ".tmp", "w", encoding="utf-8") as f:
                     f.write(json.dumps(rie, ensure_ascii=False))
                 os.replace(percorso + ".tmp", percorso)

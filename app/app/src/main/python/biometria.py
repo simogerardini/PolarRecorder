@@ -260,11 +260,14 @@ def zona_forma_attesa(fase):
         return "Grigia", "risalita fisiologica dello scarico, attesa e voluta: non e' un problema"
     return "Ottimale", "e' la zona in cui il carico produce adattamento"
 
-# tag che confondono il dato biometrico (non contano come segnale di carico):
-_BASELINE_TAG_CONFONDENTI = ["alcohol", "late_night", "stress", "screens", "travel",
-    "sick", "illness", "hangover", "heat", "humidity", "altitude", "poor_diet",
-    "party", "alcol", "stress_lavoro", "caldo", "schermi", "viaggio", "malato",
-    "febbre", "festa", "cena", "social", "compleanno"]
+# tag che confondono il dato biometrico (non contano come segnale di carico).
+# MODIFICA (05/10/2026 — contratto con l'app BioSleep): i tag arrivano solo dall'app, con un
+# vocabolario fisso; il confronto e' ESATTO sulla chiave (prima: sottostringa sui nomi dei
+# tag Oura, per cui "malattia", "altitudine", "sonno_disturbato" e "caffeina_tardi" non
+# venivano riconosciuti). La copia Kotlin nell'app usa lo stesso elenco.
+TAG_CONFONDENTI = ("alcol", "cena_tardiva", "caffeina_tardi", "stress", "viaggio",
+                   "malattia", "sonno_disturbato", "caldo", "altitudine")
+_BASELINE_TAG_CONFONDENTI = TAG_CONFONDENTI
 
 def _bio_media_sd(vals):
     vals = [v for v in vals if isinstance(v, (int, float))]
@@ -281,8 +284,7 @@ def calc_baseline_biometrici(oura_history_long, phase=None, today_str=None):
     metodologico sopra. Richiede una finestra Oura lunga (~60gg) per una baseline
     stabile; degrada con grazia se ci sono pochi giorni."""
     def has_conf(tags):
-        return any(any(k in (t or "").lower() for k in _BASELINE_TAG_CONFONDENTI)
-                   for t in (tags or []))
+        return any((t or "") in _BASELINE_TAG_CONFONDENTI for t in (tags or []))
 
     hist = sorted([d for d in (oura_history_long or []) if d.get("data")],
                   key=lambda x: x["data"])

@@ -17,6 +17,11 @@ object BaselineParity {
     val doc = JsonParser.parseString(json).asJsonObject
     val casi = doc.getAsJsonArray("casi")
     val diff = ArrayList<String>()
+    // l'elenco dei tag confondenti deve essere lo stesso del cervello (confronto esatto)
+    doc.get("tag_confondenti")?.takeIf { it.isJsonArray }?.asJsonArray?.let { a ->
+      val py = a.map { it.asString }.toSet()
+      if (py != BioBaselineCalc.TAG_CONFONDENTI) diff.add("tag_confondenti: Kotlin ${BioBaselineCalc.TAG_CONFONDENTI}, cervello $py")
+    }
     casi.forEachIndexed { i, el ->
       val c = el.asJsonObject
       val nome = "caso $i (${c.get("fonte")!!.asString}, oggi ${c.get("oggi")!!.asString})"

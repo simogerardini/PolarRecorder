@@ -418,12 +418,14 @@ def calc_baseline_hrv(oura_history, today_str=None):
 BIOSLEEP_NOTTI_MIN = 14   # sotto queste notti la baseline BioSleep non e' affidabile
 
 
-def storia_biometrica(wellness):
+def storia_biometrica(wellness, tag_giorni=None):
     """(serie, fonte) per la banda, dalla wellness di Intervals.icu. BioSleep (campi
     BioSleep*) decide solo con >= BIOSLEEP_NOTTI_MIN notti valide; prima valgono i campi
     standard (hrv/restingHR, sincronizzati da Oura o Garmin). Mai le due serie insieme:
     fascia e anello/orologio hanno livelli assoluti diversi."""
-    bs = biometria.biosleep_history_da_wellness(wellness)
+    # 05/10/2026: tag di giorno dell'app sulla serie (esclusione dei confondenti)
+    tag_l = [{"data": d, "tags": list(v)} for d, v in (tag_giorni or {}).items() if v]
+    bs = biometria.biosleep_history_da_wellness(wellness, tag_l)
     if len(bs) >= BIOSLEEP_NOTTI_MIN:
         return bs, f"BioSleep, {len(bs)} notti"
     out = []
@@ -433,6 +435,13 @@ def storia_biometrica(wellness):
         if not d or not isinstance(hrv, (int, float)) or hrv <= 0:
             continue
         sonno = w.get("sleepSecs")
+        if (tag_giorni or {}).get(d):
+            out.append({"data": d, "hrv_ms": hrv, "resting_hr": w.get("restingHR"),
+                        "tags": list(tag_giorni[d]),
+                        "sleep_h": round(w["sleepSecs"] / 3600, 1)
+                        if isinstance(w.get("sleepSecs"), (int, float)) and w["sleepSecs"] else None,
+                        "readiness": w.get("readiness")})
+            continue
         out.append({"data": d, "hrv_ms": hrv, "resting_hr": w.get("restingHR"),
                     "sleep_h": round(sonno / 3600, 1) if isinstance(sonno, (int, float)) and sonno else None,
                     "readiness": w.get("readiness")})
@@ -2060,6 +2069,148 @@ def limita_tss(sedute_sett, activities, lunedi, forma, pos):
             "tasso": round(tassi["medio"], 1)}
 
 
+
+# ═════════════════════════════════════════════════════════════════════════════
+# 4e. TAG DALL'APP (05/10/2026 — contratto con la Parte 3)
+# ═════════════════════════════════════════════════════════════════════════════
+# Vocabolario fisso, senza testo libero: il cervello e' deterministico. Tag di giorno con
+# la data della mattina (come la wellness); tag di seduta con l'id dell'attivita'.
+ZONE_INFORTUNIO = {   # zona -> famiglie che la caricano (si tolgono finche' il tag resta)
+    "ginocchio": {"corsa", "bici", "forza"}, "caviglia": {"corsa"}, "piede": {"corsa"},
+    "polpaccio": {"corsa"}, "anca": {"corsa", "forza"}, "schiena": {"corsa", "forza"},
+    "spalla": {"nuoto", "forza"},
+}
+TAG_GIORNO = {
+    "alcol": "Alcol", "cena_tardiva": "Cena tardiva", "caffeina_tardi": "Caffeina tardi",
+    "stress": "Stress", "viaggio": "Viaggio", "malattia": "Malattia",
+    "sonno_disturbato": "Sonno disturbato", "caldo": "Caldo", "altitudine": "Altitudine",
+    "dolore_muscolare": "Dolore muscolare",
+    **{f"infortunio:{z}": f"Infortunio — {z}" for z in ZONE_INFORTUNIO},
+}
+TAG_SEDUTA = {
+    "fatica_alta": "Fatica alta", "gambe_pesanti": "Gambe pesanti", "malessere": "Malessere",
+    **{f"dolore:{z}": f"Dolore — {z}" for z in ZONE_INFORTUNIO},
+}
+TAG_GIORNI = {}     # "YYYY-MM-DD" -> [chiavi]          (impostati da cervello.esegui_app)
+TAG_SEDUTE = {}     # "<id attivita'>" -> [chiavi]
+_MOTIVI_TAG = []    # decisioni prese per un tag in questo run (per il riepilogo)
+TAG_FATICA = ("fatica_alta", "gambe_pesanti", "malessere")
+
+
+def _piu(d, n):
+    return (_dt(d) + timedelta(days=n)).strftime("%Y-%m-%d")
+
+
+def effetti_tag(d, ref, tag_giorni, tag_sedute, activities):
+    """Effetti dei tag sul giorno d (ref = giorno della decisione). Regole:
+    - malattia sul giorno: riposo; il giorno dopo (rientro) solo attivita' leggera;
+    - malattia o infortunio taggati negli ultimi 2 giorni prima di ref valgono anche per
+      i giorni seguenti ("finche' il tag resta": l'app li rimanda finche' ci sono);
+      la malattia che prosegue cosi' vale come solo leggero;
+    - infortunio:<zona>: niente discipline che caricano la zona;
+    - viaggio: niente qualita' ne' forza, al massimo 45';
+    - dolore_muscolare: niente qualita';
+    - fatica_alta / gambe_pesanti / malessere su una seduta: la prima qualita' entro 3
+      giorni diventa aerobica; dolore:<zona> su una seduta: zona scarica il giorno dopo."""
+    tg = tag_giorni or {}
+    eff = {"riposo": False, "leggero": False, "no_qualita": False, "no_forza": False,
+           "max_min": None, "vietate": set(), "fatica_da": [], "motivi": []}
+    oggi_t = set(tg.get(d) or [])
+    ieri_t = set(tg.get(_piu(d, -1)) or [])
+    recenti = set()
+    for k in range(0, 3):
+        x = _piu(ref, -k)
+        if x <= d:
+            recenti |= {t for t in (tg.get(x) or []) if t == "malattia" or t.startswith("infortunio:")}
+    if "malattia" in oggi_t:
+        eff["riposo"] = True
+        eff["motivi"].append(f"tag malattia del {d}: riposo")
+    elif "malattia" in ieri_t or "malattia" in recenti:
+        eff["leggero"] = True
+        eff["motivi"].append(f"tag malattia: {d} solo attivita' leggera")
+    for t in sorted(oggi_t | recenti):
+        if t.startswith("infortunio:") and t.split(":", 1)[1] in ZONE_INFORTUNIO:
+            z = t.split(":", 1)[1]
+            eff["vietate"] |= ZONE_INFORTUNIO[z]
+            eff["motivi"].append(f"tag infortunio {z}: {d} senza {', '.join(sorted(ZONE_INFORTUNIO[z]))}")
+    if "viaggio" in oggi_t:
+        eff.update(no_qualita=True, no_forza=True)
+        eff["max_min"] = 45
+        eff["motivi"].append(f"tag viaggio del {d}: niente qualita' ne' forza, max 45'")
+    if "dolore_muscolare" in oggi_t:
+        eff["no_qualita"] = True
+        eff["motivi"].append(f"tag dolore muscolare del {d}: niente qualita'")
+    for a in activities or []:
+        tags = (tag_sedute or {}).get(str(a.get("id"))) or []
+        ad = (a.get("start_date_local") or "")[:10]
+        if not tags or not ad:
+            continue
+        if ad < d <= _piu(ad, 3) and any(t in TAG_FATICA for t in tags):
+            eff["fatica_da"].append(ad)
+        if d == _piu(ad, 1):
+            for t in tags:
+                if t.startswith("dolore:") and t.split(":", 1)[1] in ZONE_INFORTUNIO:
+                    z = t.split(":", 1)[1]
+                    eff["vietate"] |= ZONE_INFORTUNIO[z]
+                    eff["motivi"].append(f"tag dolore {z} nella seduta del {ad}: {d} senza "
+                                         f"{', '.join(sorted(ZONE_INFORTUNIO[z]))}")
+    if eff["leggero"]:
+        eff.update(no_qualita=True, no_forza=True)
+        eff["max_min"] = 45
+    return eff
+
+
+def applica_tag(sedute_sett, giorni, ref, tag_giorni, tag_sedute, activities):
+    """Effetti dei tag sul piano della settimana; motivi in _MOTIVI_TAG."""
+    if not tag_giorni and not tag_sedute:
+        return sedute_sett
+    consumate = set()
+    for s in sorted(sedute_sett, key=lambda x: (x["giorno"], x["slot"])):
+        d = giorni[s["giorno"]]
+        eff = effetti_tag(d, ref, tag_giorni, tag_sedute, activities)
+        motivo = None
+        if eff["riposo"] or s["famiglia"] in eff["vietate"] or (eff["no_forza"] and s["famiglia"] == "forza"):
+            s["durata"] = 0
+            motivo = "tolta"
+        else:
+            nuove = [a for a in eff["fatica_da"] if a not in consumate]
+            if s.get("qualita") and (eff["no_qualita"] or nuove):
+                s["qualita"], s["declassata"] = False, True
+                consumate.update(nuove)
+                motivo = "resa aerobica"
+                if nuove and not eff["no_qualita"]:
+                    eff["motivi"].append(f"tag di fatica sulla seduta del {nuove[0]}: "
+                                         f"{NOMI.get(s['key'], s['key'])} del {d} resa aerobica")
+            if eff["max_min"] and s["durata"] > eff["max_min"]:
+                s["durata"] = eff["max_min"]
+                s["min"] = min(s["min"], eff["max_min"])
+                motivo = motivo or f"ridotta a {eff['max_min']}'"
+        if motivo:
+            s["note"].append(f"{motivo} per i tag: " + "; ".join(eff["motivi"]))
+            for m in eff["motivi"]:
+                if m not in _MOTIVI_TAG:
+                    _MOTIVI_TAG.append(m)
+    return [s for s in sedute_sett if s["durata"] > 0]
+
+
+def rimodula_per_tag(ev, eff):
+    """(azione, motivo, durata_max) per la seduta di oggi, o None se i tag non c'entrano."""
+    key = (ev.get("external_id") or ":").split(":")[1]
+    if key not in CATALOGO:
+        return None
+    fam, motivo = CATALOGO[key]["famiglia"], "; ".join(eff["motivi"])
+    if eff["riposo"] or fam in eff["vietate"] or (eff["no_forza"] and fam == "forza"):
+        return "togli", motivo, None
+    durata = round((ev.get("moving_time") or 0) / 60)
+    if CATALOGO[key]["qualita"] and (eff["no_qualita"] or eff["fatica_da"]):
+        if eff["fatica_da"] and not eff["no_qualita"]:
+            motivo = f"tag di fatica sulla seduta del {eff['fatica_da'][0]}"
+        return "declassa", motivo, eff["max_min"]
+    if eff["max_min"] and durata > eff["max_min"]:
+        return "declassa", motivo, eff["max_min"]
+    return None
+
+
 def scelta_seduta(s):
     """(sessione_tipo, params) della libreria per questa seduta. Rotazione deterministica."""
     rot = (_dt(s["data"]).isocalendar()[1] + s.get("giorno", 0)) if s.get("data") else 0
@@ -2088,7 +2239,10 @@ def eventi_da_libreria(s):
         evs = sedute.eventi_seduta(s["data"], "Brick", "Brick", tot, "Ride", lthr,
                                    dict(params_bici, rep_min=rep_min), bike_lthr, swim_lthr, fase_ic)
         return [e for e in evs if (e["type"] == "Run") == (s["key"] == "brick_corsa")]
-    if s.get("scelta") and (s.get("qualita") or s["key"] not in LIBRERIA):
+    if s["key"] == "brick_bici" and not s.get("brick"):
+        # 05/10/2026: corsa del brick tolta (es. tag infortunio): resta il lungo bici Z2
+        tipo, params = "BikeCross", {"profilo": "recovery"}
+    elif s.get("scelta") and (s.get("qualita") or s["key"] not in LIBRERIA):
         # 04/10/2026: seduta scelta dalla settimana tipo del ciclo continuo
         tipo, params = s["scelta"][0], dict(s["scelta"][1])
     elif s["key"] == "brick_corsa":     # 15' a seguire il lungo bici: corsa facile
@@ -2619,6 +2773,10 @@ def costruisci_settimana(lunedi, races, oura_hist, wellness, activities,
 
     # 04/10/2026: profilo dall'app (minuti per giorno, tetto ore cardio) e TSS come
     # limite reale del piano (regola 1 di Simone), sulle durate definitive.
+    sedute = applica_tag(sedute, giorni, lunedi, TAG_GIORNI, TAG_SEDUTE, activities)
+    for m in _MOTIVI_TAG:
+        if m not in mod["motivi"]:
+            mod["motivi"].append(m)
     sedute = applica_disponibilita(sedute, DISPONIBILITA)
     sedute = applica_tetto_ore(sedute, MAX_ORE_CARDIO)
     info_carico = limita_tss(sedute, activities, lunedi, forma, pos)
@@ -2646,7 +2804,7 @@ def esegui(lunedi, dry=False, solo_futuro=True, pre_lock=None, senza_attesa=Fals
     print(f"\n═══ COACH SETTIMANALE — settimana del {lunedi} ═══")
     races = get_races()
     print(f"  Gare a calendario: {len(races)}")
-    oura_hist, fonte_bio = storia_biometrica(get_wellness(60))
+    oura_hist, fonte_bio = storia_biometrica(get_wellness(60), TAG_GIORNI)
     print(f"  Biometria: {len(oura_hist)} notti ({fonte_bio})")
     wellness = get_wellness(42)
     activities = get_activities(42)
@@ -2755,7 +2913,7 @@ def esegui_giornaliero(dry=False, force=False, pre_lock=None):
     oggi = now_local().strftime("%Y-%m-%d")
     lunedi = lunedi_di(oggi)
     races = get_races()
-    oura_hist, _fonte_bio = storia_biometrica(get_wellness(60))
+    oura_hist, _fonte_bio = storia_biometrica(get_wellness(60), TAG_GIORNI)
     wellness = get_wellness(42)
     activities = get_activities(42)
     pos = posizione_ciclo(lunedi, races, pause=pause_recenti(lunedi))
@@ -2796,8 +2954,18 @@ def esegui_giornaliero(dry=False, force=False, pre_lock=None):
             coach = [e for e in coach if not (e.get("external_id") or "").startswith(
                 ("sw:brick_bici:", "sw:brick_corsa:"))]
             azioni.append("brick alleggerito: corsa di qualita' di ieri oltre il 125% del TSS pianificato")
+    eff_tag = effetti_tag(oggi, oggi, TAG_GIORNI, TAG_SEDUTE, activities)
     for ev in coach:
-        azione, motivo = rimodula_seduta(ev, mod, pos, ctx)
+        per_tag = rimodula_per_tag(ev, eff_tag)    # 05/10/2026: i tag dell'app vengono prima
+        if per_tag:
+            azione, motivo, durata_max = per_tag
+            # BUG FIX (05/10/2026): _MOTIVI_TAG senza prefisso, come nel run settimanale;
+            # "tag: " lo aggiunge solo chi scrive gli avvisi (prima: "tag: tag: ...").
+            if motivo not in _MOTIVI_TAG:
+                _MOTIVI_TAG.append(motivo)
+        else:
+            azione, motivo = rimodula_seduta(ev, mod, pos, ctx)
+            durata_max = None
         key = (ev.get("external_id") or "").split(":")[1]
         if azione == "tieni":
             print(f"    = {ev.get('name')}: invariata ({motivo})")
@@ -2808,6 +2976,8 @@ def esegui_giornaliero(dry=False, force=False, pre_lock=None):
             azioni.append(f"{NOMI.get(key, key)} rimossa — {motivo}")
             continue
         durata = int((ev.get("moving_time") or 0) / 60) or CATALOGO[key]["min"]
+        if durata_max:
+            durata = min(durata, durata_max)
         s = {"key": key, "sport": ev.get("type"), "famiglia": CATALOGO[key]["famiglia"],
              "qualita": False, "declassata": True, "durata": durata,
              "min": CATALOGO[key]["min"], "prio": CATALOGO[key]["prio"],
@@ -2981,6 +3151,7 @@ def esegui_auto(modo="auto", dry=False, force=False, lunedi=None, senza_attesa=F
 
     _SCRITTURE[0] = 0
     _NON_SCRITTE.clear()
+    _MOTIVI_TAG.clear()
     try:
         if modo == "giornaliero":
             esito = esegui_giornaliero(dry, force, pre_lock=prendi_lock)

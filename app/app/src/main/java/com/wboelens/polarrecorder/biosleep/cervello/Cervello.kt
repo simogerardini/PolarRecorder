@@ -19,6 +19,8 @@ data class ConfigCervello(
     val senzaAttesa: Boolean = false,
     /** Profilo dell'atleta: le FC dell'app hanno la precedenza su quelle di Intervals.icu. */
     val profilo: ProfiloAtleta? = null,
+    /** {"giorni": {data: [chiavi]}, "sedute": {id: [chiavi]}} dal TagDb. */
+    val tag: com.google.gson.JsonObject? = null,
 ) {
   /** JSON costruito con Gson: le virgolette nella API key non possono rompere il formato. */
   fun json(): String =
@@ -31,6 +33,7 @@ data class ConfigCervello(
             addProperty("dry_run", dryRun)
             addProperty("senza_attesa", senzaAttesa)
             profilo?.json()?.let { add("profilo", it) }
+            tag?.let { add("tag", it) }
           }
           .toString()
 

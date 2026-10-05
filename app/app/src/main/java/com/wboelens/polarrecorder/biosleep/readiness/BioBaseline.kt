@@ -55,11 +55,13 @@ data class BioBaseline(
  */
 object BioBaselineCalc {
 
-  private val TAG_CONFONDENTI =
-      listOf(
-          "alcohol", "late_night", "stress", "screens", "travel", "sick", "illness", "hangover",
-          "heat", "humidity", "altitude", "poor_diet", "party", "alcol", "stress_lavoro", "caldo",
-          "schermi", "viaggio", "malato", "febbre", "festa", "cena", "social", "compleanno")
+  /**
+   * Tag di giorno che escludono una notte dalla baseline (biometria.TAG_CONFONDENTI del cervello).
+   * Dal 05/10/2026 confronto ESATTO con la chiave del vocabolario dell'app (prima: sottostringa
+   * dei tag Oura). Il test di parita' verifica che l'elenco coincida con quello del cervello.
+   */
+  val TAG_CONFONDENTI =
+      setOf("alcol", "cena_tardiva", "caffeina_tardi", "stress", "viaggio", "malattia", "sonno_disturbato", "caldo", "altitudine")
 
   private const val BASELINE_SD_GG = 42
   private const val SWC_PCT_MIN = 3.0
@@ -91,8 +93,7 @@ object BioBaselineCalc {
   }
 
   fun calcola(serie: List<GiornoBio>, oggi: LocalDate?): BioBaseline {
-    fun hasConf(tags: List<String?>) =
-        tags.any { t -> val s = (t ?: "").lowercase(); TAG_CONFONDENTI.any { s.contains(it) } }
+    fun hasConf(tags: List<String?>) = tags.any { (it ?: "") in TAG_CONFONDENTI }
 
     val hist = serie.filter { !it.data.isNullOrEmpty() }.sortedBy { it.data!! }
     val hrv = hist.filter { it.hrvMs != null && it.hrvMs.v != 0.0 }.map { Punto(it.data!!, it.hrvMs!!, hasConf(it.tags)) }

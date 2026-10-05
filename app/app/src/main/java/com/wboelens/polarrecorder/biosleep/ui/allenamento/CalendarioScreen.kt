@@ -42,6 +42,7 @@ import com.wboelens.polarrecorder.biosleep.training.GiornoCal
 import com.wboelens.polarrecorder.biosleep.training.Metrica
 import com.wboelens.polarrecorder.biosleep.training.SedutaPianificata
 import com.wboelens.polarrecorder.biosleep.training.Struttura
+import com.wboelens.polarrecorder.biosleep.ui.TagSeduta
 import java.time.DayOfWeek
 import java.time.LocalDate
 import java.time.temporal.ChronoUnit
@@ -200,6 +201,8 @@ private fun SchedaDettaglio(det: Dettaglio, onApriAttivita: (String) -> Unit) {
                 Text("Analisi della seduta" + if (det.s.svolte.size > 1) " · ${a.sport.etichetta}" else "")
               }
             }
+            // tag per il coach: per il multisport sulla prima parte svolta
+            det.s.svolte.firstOrNull()?.let { a -> TagSeduta(a.id, a.data.toString()) }
           }
           det.s.esito == Esito.NON_SVOLTA ->
               Text("Non svolta", color = ColoriBio.rosso, fontWeight = FontWeight.Bold)
@@ -211,6 +214,7 @@ private fun SchedaDettaglio(det: Dettaglio, onApriAttivita: (String) -> Unit) {
         Text(a.nome, style = MaterialTheme.typography.titleLarge)
         Text("${DateIt.lunga(a.data)} · ${a.sport.etichetta} · non pianificata", color = MaterialTheme.colorScheme.onSurfaceVariant)
         TextButton(onClick = { onApriAttivita(a.id) }) { Text("Analisi della seduta") }
+        TagSeduta(a.id, a.data.toString())
         Blocco("Svolto", a.durataS, a.tss, a.distanzaM, null)
       }
     }

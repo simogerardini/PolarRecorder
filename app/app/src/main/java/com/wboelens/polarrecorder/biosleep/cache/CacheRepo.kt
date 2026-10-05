@@ -10,6 +10,7 @@ import com.wboelens.polarrecorder.biosleep.readiness.FormaCalc
 import com.wboelens.polarrecorder.biosleep.readiness.PyJson
 import com.wboelens.polarrecorder.biosleep.readiness.RigaForma
 import com.wboelens.polarrecorder.biosleep.readiness.StatoForma
+import com.wboelens.polarrecorder.biosleep.tag.TagDb
 import java.time.LocalDate
 
 /** Riga CTL/ATL/TSB della home: oggi, ieri (per la freccia) e la serie per il grafico a 90 giorni. */
@@ -31,12 +32,15 @@ sealed interface Prontezza {
  * Lettura della cache per le schermate. Solo database locale: funziona offline e risponde subito.
  * Da chiamare fuori dal main thread (es. withContext(Dispatchers.IO) in una schermata).
  */
-class CacheRepo(private val db: CacheDb) {
+class CacheRepo(private val db: CacheDb, private val tagGiorni: (LocalDate, LocalDate) -> Map<String, Set<String>> = { _, _ -> emptyMap() }) {
   companion object {
     /** BIOSLEEP_LOOKBACK_DAYS del coach: la banda si calcola sugli stessi 60 giorni. */
     const val GG_BANDA = 60L
 
-    fun get(context: Context) = CacheRepo(CacheDb.get(context))
+    fun get(context: Context): CacheRepo {
+      val tag = TagDb.get(context)
+      return CacheRepo(CacheDb.get(context)) { da, a -> tag.giorni(da, a) }
+    }
   }
 
   private fun oggetti(t: Tabella, da: LocalDate, a: LocalDate): List<JsonObject> =
@@ -58,7 +62,9 @@ class CacheRepo(private val db: CacheDb) {
   /** Banda biometrica come il coach: serie BioSleep degli ultimi 60 giorni, filtro qualita'. */
   fun baseline(oggi: LocalDate): BioBaseline {
     val righe = oggetti(Tabella.WELLNESS, oggi.minusDays(GG_BANDA), oggi).map { PyJson.wellnessBio(it) }
-    return BioBaselineCalc.calcola(BioSleepSeries.daWellness(righe), oggi)
+    // tag di giorno dell'app: quelli confondenti escludono la notte dalla baseline, come nel cervello
+    val tag = tagGiorni(oggi.minusDays(GG_BANDA), oggi).mapValues { it.value.toList() }
+    return BioBaselineCalc.calcola(BioSleepSeries.daWellness(righe, tag), oggi)
   }
 
   fun prontezza(oggi: LocalDate): Prontezza {

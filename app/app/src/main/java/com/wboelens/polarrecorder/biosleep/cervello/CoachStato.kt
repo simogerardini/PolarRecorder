@@ -39,6 +39,13 @@ class CoachStato(context: Context) {
     _versione.update { it + 1 }
   }
 
+  /** Fino a quando (ms) il coach di oggi aspetta i tag del mattino; 0 = nessuna attesa. */
+  var attesaTagFinoMs: Long
+    get() = prefs.getLong(K_ATTESA_TAG, 0L)
+    set(v) {
+      prefs.edit().putLong(K_ATTESA_TAG, v).apply()
+    }
+
   /** Il coach di questa data ha gia' fatto il suo lavoro: il ripiego delle 10:30 non serve. */
   fun fatto(data: String) =
       this.data == data &&
@@ -55,6 +62,7 @@ class CoachStato(context: Context) {
     private const val K_ERRORE = "errore"
     private const val K_MODO = "modo"
     private const val K_DURATA_SETT = "durata_settimanale_ms"
+    private const val K_ATTESA_TAG = "attesa_tag_fino_ms"
 
     private val _versione = MutableStateFlow(0)
     val versione: StateFlow<Int> = _versione.asStateFlow()

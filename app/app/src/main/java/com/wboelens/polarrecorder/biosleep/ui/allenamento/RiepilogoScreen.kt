@@ -20,6 +20,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.Sell
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
@@ -102,9 +103,44 @@ private fun motivo(r: Riepilogo) =
 fun GestisciLinkRiepilogo(navController: NavController) {
   val richiesta by RiepilogoLink.richiesta.collectAsState()
   LaunchedEffect(richiesta) {
-    val data = richiesta ?: return@LaunchedEffect
+    val rotta = richiesta ?: return@LaunchedEffect
     RiepilogoLink.richiesta.value = null
-    navController.navigate("riepilogo/$data") { launchSingleTop = true }
+    navController.navigate(rotta) { launchSingleTop = true }
+  }
+}
+
+// --- Decisioni prese per un tag --------------------------------------------------------------------
+
+private val PREFISSO_TAG = Regex("""^(\s*tag:\s*)+""", RegexOption.IGNORE_CASE)
+
+/**
+ * Motivi nati da un tag. Il cervello li segna con "tag:" negli avvisi; nei motivi il prefisso c'e'
+ * nei run giornalieri e manca in quelli settimanali, quindi si riconoscono anche confrontandoli
+ * con gli avvisi "tag: ...".
+ */
+private fun motiviDaTag(r: Riepilogo): Set<String> {
+  val dagliAvvisi =
+      r.avvisi?.lines()?.filter { PREFISSO_TAG.containsMatchIn(it) }?.map { it.replace(PREFISSO_TAG, "").trim() }.orEmpty().toSet()
+  return r.motivi.filter { PREFISSO_TAG.containsMatchIn(it) || it.replace(PREFISSO_TAG, "").trim() in dagliAvvisi }.toSet()
+}
+
+/** Una riga di motivo o avviso; se viene da un tag, con l'icona del tag e senza il prefisso "tag:". */
+@Composable
+private fun RigaConTag(
+    testo: String,
+    stile: androidx.compose.ui.text.TextStyle,
+    colore: Color,
+    daTag: Boolean = PREFISSO_TAG.containsMatchIn(testo),
+    puntato: Boolean = false,
+) {
+  val pulito = testo.replace(PREFISSO_TAG, "").trim()
+  if (!daTag) {
+    Text(if (puntato) "• $pulito" else pulito, style = stile, color = colore)
+    return
+  }
+  Row(verticalAlignment = Alignment.Top) {
+    Icon(Icons.Filled.Sell, "Tag", Modifier.padding(top = 2.dp, end = 6.dp).size(16.dp), tint = colore)
+    Text(pulito.replaceFirstChar { it.uppercase() }, style = stile, color = colore)
   }
 }
 
@@ -118,7 +154,7 @@ fun RiquadroRiepilogo(oggi: LocalDate, onApri: (String) -> Unit) {
     Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
       Text("Coach" + (r.ora?.let { " · $it" } ?: ""), style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
       Text(titolo(r), style = MaterialTheme.typography.titleLarge)
-      motivo(r)?.let { Text(it, style = MaterialTheme.typography.bodyMedium, maxLines = 3) }
+      motivo(r)?.let { RigaConTag(it, MaterialTheme.typography.bodyMedium, MaterialTheme.colorScheme.onSurface, it in motiviDaTag(r)) }
       if (r.avvisi != null || r.nonScritte.isNotEmpty()) {
         Text("Ci sono avvisi: apri il riepilogo", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.error)
       }
@@ -193,7 +229,7 @@ private fun Avvisi(r: Riepilogo) {
     Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
       val colore = MaterialTheme.colorScheme.onErrorContainer
       Text("Avvisi", style = MaterialTheme.typography.titleSmall, color = colore, fontWeight = FontWeight.Bold)
-      r.avvisi?.let { Text(it, style = MaterialTheme.typography.bodyMedium, color = colore) }
+      r.avvisi?.lines()?.filter { it.isNotBlank() }?.forEach { RigaConTag(it, MaterialTheme.typography.bodyMedium, colore) }
       if (r.nonScritte.isNotEmpty()) {
         Text("Sedute che il coach non è riuscito a scrivere a calendario:", style = MaterialTheme.typography.bodyMedium, color = colore)
         for (s in r.nonScritte) Text("• $s", style = MaterialTheme.typography.bodyMedium, color = colore)
@@ -206,10 +242,11 @@ private fun Avvisi(r: Riepilogo) {
 private fun Intestazione(r: Riepilogo) {
   Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
     Text(titolo(r), style = MaterialTheme.typography.headlineMedium)
-    motivo(r)?.let { Text(it, style = MaterialTheme.typography.bodyLarge) }
+    val daTag = motiviDaTag(r)
+    motivo(r)?.let { RigaConTag(it, MaterialTheme.typography.bodyLarge, MaterialTheme.colorScheme.onSurface, it in daTag) }
     // gli altri motivi del piano (il primo e' gia' sopra se manca la decisione)
     val altri = if (r.decisione.motivo == null) r.motivi.drop(1) else r.motivi
-    for (m in altri) Text("• $m", style = MaterialTheme.typography.bodyMedium)
+    for (m in altri) RigaConTag(m, MaterialTheme.typography.bodyMedium, MaterialTheme.colorScheme.onSurface, m in daTag, puntato = true)
     val sotto =
         listOfNotNull(
             r.fase, r.gara?.let { "gara: $it" },

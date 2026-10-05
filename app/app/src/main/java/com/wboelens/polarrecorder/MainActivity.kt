@@ -7,10 +7,8 @@ import android.os.Bundle
 import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.SystemBarStyle
-import androidx.activity.compose.BackHandler
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.padding
@@ -25,7 +23,6 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import android.content.Intent
-import androidx.compose.runtime.remember
 import androidx.core.content.ContextCompat
 import com.wboelens.polarrecorder.biosleep.BioSleepDataSaver
 import com.wboelens.polarrecorder.biosleep.SleepDb
@@ -40,6 +37,7 @@ import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.withTimeoutOrNull
 import com.wboelens.polarrecorder.biosleep.ui.ProfiloScreen
+import com.wboelens.polarrecorder.biosleep.ui.TagScreen
 import com.wboelens.polarrecorder.biosleep.ui.SonnoScreen
 import com.wboelens.polarrecorder.biosleep.ui.BioAgeScreen
 import com.wboelens.polarrecorder.biosleep.ui.HomeScreen
@@ -54,22 +52,13 @@ import com.wboelens.polarrecorder.biosleep.ui.allenamento.GestisciLinkRiepilogo
 import com.wboelens.polarrecorder.biosleep.ui.allenamento.GraficiScreen
 import com.wboelens.polarrecorder.biosleep.ui.allenamento.OggiScreen
 import com.wboelens.polarrecorder.biosleep.ui.allenamento.RiepilogoScreen
-import com.wboelens.polarrecorder.dataSavers.DataSavers
 import com.wboelens.polarrecorder.managers.PermissionManager
 import com.wboelens.polarrecorder.managers.PolarManager
 import com.wboelens.polarrecorder.managers.PreferencesManager
 import com.wboelens.polarrecorder.services.RecordingServiceConnection
 import com.wboelens.polarrecorder.ui.components.LogMessageSnackbarHost
 import com.wboelens.polarrecorder.ui.components.SnackbarMessageDisplayer
-import com.wboelens.polarrecorder.ui.screens.DataSaverInitializationScreen
-import com.wboelens.polarrecorder.ui.screens.DeviceConnectionScreen
-import com.wboelens.polarrecorder.ui.screens.DeviceSelectionScreen
-import com.wboelens.polarrecorder.ui.screens.DeviceSettingsScreen
-import com.wboelens.polarrecorder.ui.screens.RecordingScreen
-import com.wboelens.polarrecorder.ui.screens.RecordingSettingsScreen
 import com.wboelens.polarrecorder.ui.theme.AppTheme
-import com.wboelens.polarrecorder.viewModels.DeviceViewModel
-import com.wboelens.polarrecorder.viewModels.FileSystemSettingsViewModel
 import com.wboelens.polarrecorder.viewModels.LogViewModel
 import com.wboelens.polarrecorder.viewModels.ViewModelFactory
 
@@ -79,19 +68,14 @@ class MainActivity : ComponentActivity() {
     get() = application as PolarRecorderApplication
 
   // ViewModels use factory to inject Application-scoped state
-  private val deviceViewModel: DeviceViewModel by viewModels {
-    ViewModelFactory(app.deviceState, app.logState)
-  }
   private val logViewModel: LogViewModel by viewModels {
     ViewModelFactory(app.deviceState, app.logState)
   }
-  private val fileSystemViewModel: FileSystemSettingsViewModel by viewModels()
 
   // These are now retrieved from Application
   private lateinit var polarManager: PolarManager
   private lateinit var permissionManager: PermissionManager
   private lateinit var preferencesManager: PreferencesManager
-  private lateinit var dataSavers: DataSavers
 
   // Service connection for recording control
   private lateinit var serviceConnection: RecordingServiceConnection
@@ -193,7 +177,6 @@ class MainActivity : ComponentActivity() {
 
     // Get references to Application-scoped managers
     polarManager = app.polarManager!!
-    dataSavers = app.dataSavers!!
 
     // Get service connection from Application
     serviceConnection = app.getServiceConnection()
@@ -204,19 +187,9 @@ class MainActivity : ComponentActivity() {
 
     permissionManager = PermissionManager(this)
 
-    registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
-      if (result.resultCode == RESULT_OK) {
-        fileSystemViewModel.handleDirectoryResult(this, result.data?.data)
-      }
-    }
-
     setContent {
       AppTheme {
         val navController = rememberNavController()
-        // BioSleep: fascia dell'ultima registrazione (null = nessuna registrazione fatta ancora)
-        val nightDeviceName = remember {
-          NightProfileStore(this@MainActivity).load()?.let { it.deviceName.ifBlank { it.deviceId } }
-        }
 
         // Get the snackbarHostState from the ErrorHandler
         val (snackbarHostState, currentLogType) =
@@ -278,6 +251,7 @@ class MainActivity : ComponentActivity() {
                   },
                   onApriRiepilogo = { data -> navController.navigate("riepilogo/$data") },
                   onApriImpostazioni = { navController.navigate("intervalsSettings") },
+                  onApriTag = { data -> navController.navigate("tag/$data") },
               )
             }
             composable(
@@ -306,6 +280,11 @@ class MainActivity : ComponentActivity() {
             composable("grafici") { GraficiScreen(bottomBar = { BarraBioSleep(navController) }) }
             composable("sonno") { SonnoScreen(onBack = { navController.navigateUp() }) }
             composable("profilo") { ProfiloScreen(onBack = { navController.navigateUp() }) }
+            composable("tag/{data}") { entry ->
+              TagScreen(
+                  dataIniziale = entry.arguments?.getString("data") ?: java.time.LocalDate.now().toString(),
+                  onBack = { navController.navigateUp() })
+            }
             composable("attivita/{id}") { entry ->
               AttivitaScreen(id = entry.arguments?.getString("id") ?: "", onBack = { navController.navigateUp() })
             }
@@ -335,31 +314,6 @@ class MainActivity : ComponentActivity() {
                   onOpenSleep = { navController.navigate("sonno") },
               )
             }
-            // Schermate originali di Polar Recorder: non piu' raggiungibili dall'app
-            composable("deviceSelection") {
-              DeviceSelectionScreen(
-                  deviceViewModel = deviceViewModel,
-                  polarManager = polarManager,
-                  onContinue = { navController.navigate("deviceConnection") },
-                  onOpenNights = { navController.navigate("nights") },
-                  nightDeviceName = nightDeviceName,
-                  onStartNight = {
-                    val intent =
-                        Intent(this@MainActivity, RecordingService::class.java)
-                            .setAction(RecordingService.ACTION_START_NIGHT)
-                    ContextCompat.startForegroundService(this@MainActivity, intent)
-                  },
-              )
-              // Quando la notte e' partita si passa alla schermata di registrazione
-              val binder by serviceConnection.binder.collectAsState()
-              val nightRecording =
-                  binder?.recordingState?.collectAsState()?.value?.isRecording == true
-              LaunchedEffect(nightRecording) {
-                // Dopo la chiusura al mattino il servizio resta "in registrazione" per un attimo:
-                // non bisogna tornare alla schermata di registrazione
-                if (nightRecording && !stoppedOnOpen) navController.navigate("recording")
-              }
-            }
             // BioSleep: elenco notti e dettaglio di una notte
             composable("nights") {
               NightsScreen(
@@ -383,82 +337,6 @@ class MainActivity : ComponentActivity() {
               NightDetailScreen(
                   sessionId = entry.arguments?.getLong("sessionId") ?: 0L,
                   onBack = { navController.navigateUp() },
-              )
-            }
-            composable("deviceConnection") {
-              DeviceConnectionScreen(
-                  deviceViewModel = deviceViewModel,
-                  polarManager = polarManager,
-                  onBackPressed = { navController.navigateUp() },
-                  onContinue = { navController.navigate("deviceSettings") },
-              )
-            }
-            composable("deviceSettings") {
-              // skip device connection screen
-              val backAction = {
-                polarManager.disconnectAllDevices()
-                navController.navigate("deviceSelection") {
-                  popUpTo("deviceSelection") { inclusive = true }
-                }
-              }
-
-              BackHandler(onBack = backAction)
-              DeviceSettingsScreen(
-                  deviceViewModel = deviceViewModel,
-                  polarManager = polarManager,
-                  onBackPressed = backAction,
-                  onContinue = { navController.navigate("recordingSettings") },
-              )
-            }
-            composable("recordingSettings") {
-              RecordingSettingsScreen(
-                  deviceViewModel = deviceViewModel,
-                  fileSystemSettingsViewModel = fileSystemViewModel,
-                  dataSavers = dataSavers,
-                  preferencesManager = preferencesManager,
-                  onBackPressed = { navController.navigateUp() },
-                  onContinue = { navController.navigate("dataSaverInitialization") },
-              )
-            }
-            composable("dataSaverInitialization") {
-              DataSaverInitializationScreen(
-                  dataSavers = dataSavers,
-                  deviceViewModel = deviceViewModel,
-                  serviceConnection = serviceConnection,
-                  preferencesManager = preferencesManager,
-                  onBackPressed = { navController.navigateUp() },
-                  onContinue = { navController.navigate("recording") },
-              )
-            }
-            composable("recording") {
-              // Observe recording state from service
-              val binder by serviceConnection.binder.collectAsState()
-              val recordingState by
-                  binder?.recordingState?.collectAsState()
-                      ?: androidx.compose.runtime.remember {
-                        androidx.compose.runtime.mutableStateOf(
-                            com.wboelens.polarrecorder.services.RecordingState()
-                        )
-                      }
-
-              // skip data saver initialisation screen
-              val backAction = {
-                if (recordingState.isRecording) {
-                  serviceConnection.stopRecordingService()
-                }
-                navController.navigate("recordingSettings") {
-                  popUpTo("recordingSettings") { inclusive = true }
-                }
-              }
-
-              BackHandler(onBack = backAction)
-              RecordingScreen(
-                  deviceViewModel = deviceViewModel,
-                  serviceConnection = serviceConnection,
-                  dataSavers = dataSavers,
-                  onBackPressed = backAction,
-                  onRestartRecording = { navController.navigate("dataSaverInitialization") },
-                  onOpenNights = { navController.navigate("nights") },
               )
             }
           }

@@ -292,6 +292,8 @@ private fun ReadyCard(
           style = MaterialTheme.typography.bodySmall,
           color = MaterialTheme.colorScheme.onSurfaceVariant,
       )
+      // Tag della sera per il coach (alcol, cena tardiva, caffeina, stress): valgono per domattina
+      TagSera()
       // Ultima lettura: la fascia ora e' scollegata, il valore vero arriva all'avvio della notte
       RigaBatteria(ultimaBatteria?.first, ultimaBatteria?.second?.let { "letta il ${quandoLetta(it)}" })
       (avvio as? AvvioNotte.Fallito)?.let {

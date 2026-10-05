@@ -444,7 +444,7 @@ class RecordingService : Service() {
       val channel =
           NotificationChannel(
               CHANNEL_ID,
-              "Recording Service Channel",
+              "Notte in corso", // nome visibile in Impostazioni > Notifiche
               NotificationManager.IMPORTANCE_LOW,
           )
       val manager = getSystemService(NotificationManager::class.java)
@@ -456,12 +456,8 @@ class RecordingService : Service() {
     val durationMs =
         System.currentTimeMillis() - orchestrator.recordingState.value.recordingStartTime
     val minutes = TimeUnit.MILLISECONDS.toMinutes(durationMs)
-    val durationText =
-        if (minutes == 1L) {
-          "1 minute"
-        } else {
-          "$minutes minutes"
-        }
+    // es. "da 6 h 05'" oppure "da 12'"
+    val durationText = if (minutes >= 60) "da ${minutes / 60} h %02d'".format(minutes % 60) else "da $minutes'"
 
     val pendingIntent =
         PendingIntent.getActivity(
@@ -472,8 +468,8 @@ class RecordingService : Service() {
         )
 
     return NotificationCompat.Builder(this, CHANNEL_ID)
-        .setContentTitle("Recording in progress")
-        .setContentText("Recording for $durationText")
+        .setContentTitle("Notte in corso")
+        .setContentText("Registrazione $durationText · si ferma da sola quando togli la fascia")
         .setSmallIcon(R.drawable.ic_notifica_notte)
         .setColor(ContextCompat.getColor(this, R.color.biosleep_notifica))
         .setOngoing(true)

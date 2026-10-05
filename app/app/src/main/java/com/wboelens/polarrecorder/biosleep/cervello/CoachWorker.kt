@@ -30,6 +30,7 @@ import com.wboelens.polarrecorder.biosleep.riepilogo.Riepilogo
 import com.wboelens.polarrecorder.biosleep.riepilogo.RiepilogoDb
 import com.wboelens.polarrecorder.biosleep.riepilogo.RiepilogoLink
 import com.wboelens.polarrecorder.biosleep.riepilogo.RiepilogoParser
+import com.wboelens.polarrecorder.biosleep.tag.TagDb
 import java.io.File
 import java.io.IOException
 import java.time.Duration
@@ -80,7 +81,7 @@ class CoachWorker(context: Context, params: WorkerParameters) : CoroutineWorker(
      * fa nulla; altrimenti sostituisce il ripiego delle 10:30 in attesa e parte subito.
      * Da chiamare fuori dal main thread (legge lo stato di WorkManager).
      */
-    fun dopoNotte(context: Context, data: String) {
+    fun dopoNotte(context: Context, data: String, ritardoMs: Long = 0) {
       val wm = WorkManager.getInstance(context)
       val inCorso =
           try {
@@ -92,7 +93,23 @@ class CoachWorker(context: Context, params: WorkerParameters) : CoroutineWorker(
             false
           }
       if (inCorso) return
-      wm.enqueueUniqueWork(nome(data), ExistingWorkPolicy.REPLACE, richiesta(data, 1, false, 0))
+      wm.enqueueUniqueWork(nome(data), ExistingWorkPolicy.REPLACE, richiesta(data, 1, false, ritardoMs))
+      CoachStato(context).attesaTagFinoMs = if (ritardoMs > 0) System.currentTimeMillis() + ritardoMs else 0L
+    }
+
+    /** Attesa dei tag del mattino dopo l'invio della notte (scelta B). */
+    const val ATTESA_TAG_MS = 15 * 60_000L
+
+    /**
+     * Tag di oggi appena salvati: se il coach li stava aspettando, parte subito. Se il coach e'
+     * gia' partito (o la notte non e' ancora inviata) non fa nulla: i tag valgono dal run dopo.
+     * Fuori dal main thread. Ritorna true se il coach e' stato anticipato.
+     */
+    fun anticipaPerTag(context: Context, oggi: String = LocalDate.now().toString()): Boolean {
+      val stato = CoachStato(context)
+      if (System.currentTimeMillis() >= stato.attesaTagFinoMs) return false
+      dopoNotte(context, oggi, 0)
+      return true
     }
 
     /**
@@ -135,7 +152,9 @@ class CoachWorker(context: Context, params: WorkerParameters) : CoroutineWorker(
     val config =
         ConfigCervello(
             apiKey, settings.athleteId, Cervello.cartella(ctx).absolutePath, "auto", false, senzaAttesa,
-            profilo = ProfiloRepo.effettivo(ctx))
+            profilo = ProfiloRepo.effettivo(ctx),
+            tag = runCatching { TagDb.get(ctx).perCervello() }.getOrNull())
+    CoachStato(ctx).attesaTagFinoMs = 0L // il coach parte: i tag di adesso in poi valgono dal run dopo
     val t0 = System.currentTimeMillis()
     val r = withContext(Dispatchers.IO) { Cervello.esegui(ctx, config) }
     val durata = System.currentTimeMillis() - t0
@@ -246,6 +265,27 @@ object NotificheCoach {
     val titolo = righe.first().take(60)
     val corpo = righe.drop(1).joinToString("\n").trim().ifEmpty { righe.first() }
     mostra(context, testo.hashCode(), titolo, corpo, null)
+  }
+
+  /** Dopo l'invio della notte: il tocco apre i tag del mattino; il coach aspetta fino a 15 minuti. */
+  fun chiediTag(context: Context, data: String) {
+    if (!permesso(context)) return
+    canali(context)
+    val i =
+        Intent(context, MainActivity::class.java)
+            .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP)
+            .putExtra(RiepilogoLink.EXTRA_ROTTA, "tag/$data")
+    val pi = PendingIntent.getActivity(context, ("tag" + data).hashCode(), i, PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT)
+    val n =
+        NotificationCompat.Builder(context, CANALE)
+            .setSmallIcon(R.drawable.ic_notifica_biosleep)
+            .setContentTitle("Com'è andata la notte?")
+            .setContentText("Aggiungi i tag: il coach li aspetta 15 minuti")
+            .setContentIntent(pi)
+            .setAutoCancel(true)
+            .setTimeoutAfter(CoachWorker.ATTESA_TAG_MS)
+            .build()
+    NotificationManagerCompat.from(context).notify(("tag" + data).hashCode(), n)
   }
 
   /** "Piano pronto": il tocco apre la schermata Riepilogo di quella data. */

@@ -57,6 +57,7 @@ import com.wboelens.polarrecorder.biosleep.training.Formato
 import com.wboelens.polarrecorder.biosleep.training.GiornoCal
 import com.wboelens.polarrecorder.biosleep.training.Metrica
 import com.wboelens.polarrecorder.biosleep.training.SedutaPianificata
+import com.wboelens.polarrecorder.biosleep.ui.RigaTagOggi
 import java.time.LocalDate
 
 /** Una notte dalla wellness: valori BioSleep inviati da questa app. */
@@ -114,6 +115,7 @@ fun OggiScreen(
     onApriSeduta: (LocalDate, String?) -> Unit,
     onApriRiepilogo: (String) -> Unit,
     onApriImpostazioni: () -> Unit = {},
+    onApriTag: (String) -> Unit = {},
 ) {
   val dati = rememberDallaCache { repo, oggi -> DatiOggi.carica(repo, oggi) }
   Scaffold(
@@ -135,6 +137,7 @@ fun OggiScreen(
     ) {
       StatoAggiornamento()
       RiquadroRiepilogo(LocalDate.now(), onApriRiepilogo)
+      RigaTagOggi(onApriTag)
       if (dati == null) {
         Box(Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) { CircularProgressIndicator() }
         return@Column

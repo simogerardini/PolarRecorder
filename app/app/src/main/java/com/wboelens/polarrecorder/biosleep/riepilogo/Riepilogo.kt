@@ -279,14 +279,22 @@ object RiepilogoParser {
       runCatching { JsonParser.parseString(testo).asJsonObject }.getOrNull()?.let { leggi(it) }
 }
 
-/** Il tocco sulla notifica "Piano pronto" arriva a MainActivity: la data passa da qui alla navigazione. */
+/**
+ * Il tocco su una notifica del coach arriva a MainActivity: la rotta da aprire passa da qui alla
+ * navigazione. "Piano pronto" -> riepilogo/<data>; "Com'e' andata la notte?" -> tag/<data>.
+ */
 object RiepilogoLink {
   const val EXTRA_RIEPILOGO = "biosleep_riepilogo_data"
+  const val EXTRA_ROTTA = "biosleep_rotta"
   val richiesta = MutableStateFlow<String?>(null)
 
   fun daIntent(intent: Intent?) {
-    val data = intent?.getStringExtra(EXTRA_RIEPILOGO) ?: return
-    intent.removeExtra(EXTRA_RIEPILOGO) // non riaprire il riepilogo a ogni rotazione
-    richiesta.value = data
+    intent ?: return
+    val rotta =
+        intent.getStringExtra(EXTRA_ROTTA) ?: intent.getStringExtra(EXTRA_RIEPILOGO)?.let { "riepilogo/$it" } ?: return
+    // non riaprire la schermata a ogni rotazione
+    intent.removeExtra(EXTRA_ROTTA)
+    intent.removeExtra(EXTRA_RIEPILOGO)
+    richiesta.value = rotta
   }
 }
