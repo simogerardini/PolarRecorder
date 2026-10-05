@@ -1,10 +1,49 @@
 package com.wboelens.polarrecorder.biosleep.cervello
 
 import android.content.Context
+import com.google.gson.JsonNull
 import com.google.gson.JsonObject
 
 /** Giorni come li vuole il cervello. */
 val GIORNI = listOf("lun", "mar", "mer", "gio", "ven", "sab", "dom")
+
+/**
+ * Settimana tipo (cervello: coach_settimanale.settimana_tipo_valida): giorni dei due lunghi, giorno
+ * di riposo facoltativo, sedute per disciplina. I valori predefiniti sono quelli del cervello.
+ */
+data class SettimanaTipo(
+    val lungoBici: String = "sab",
+    val lungoCorsa: String = "dom",
+    val riposo: String? = null,
+    val sedute: Map<String, Int> = PREDEFINITE,
+) {
+  /** Errori come li conta il cervello; vuoto = valida. */
+  fun errori(): List<String> = buildList {
+    if (lungoBici !in GIORNI) add("lungo bici: giorno non valido")
+    if (lungoCorsa !in GIORNI) add("lungo corsa: giorno non valido")
+    if (riposo != null && riposo !in GIORNI) add("riposo: giorno non valido")
+    for ((f, n) in sedute) {
+      val l = LIMITI[f]
+      if (l == null || n !in l) add("sedute $f fuori dai limiti")
+    }
+    if (lungoBici == lungoCorsa) add("lungo bici e lungo corsa nello stesso giorno")
+    if (riposo != null && (riposo == lungoBici || riposo == lungoCorsa)) add("il riposo coincide con un lungo")
+  }
+
+  fun json(): JsonObject =
+      JsonObject().apply {
+        addProperty("lungo_bici", lungoBici)
+        addProperty("lungo_corsa", lungoCorsa)
+        if (riposo == null) add("riposo", JsonNull.INSTANCE) else addProperty("riposo", riposo)
+        add("sedute", JsonObject().apply { for (f in DISCIPLINE) addProperty(f, sedute[f] ?: PREDEFINITE.getValue(f)) })
+      }
+
+  companion object {
+    val DISCIPLINE = listOf("nuoto", "bici", "corsa", "forza")
+    val PREDEFINITE = mapOf("nuoto" to 2, "bici" to 2, "corsa" to 3, "forza" to 2)
+    val LIMITI = mapOf("nuoto" to 1..4, "bici" to 1..4, "corsa" to 1..4, "forza" to 0..2)
+  }
+}
 
 /**
  * Profilo dell'atleta passato al cervello in "profilo". Ogni campo e' facoltativo: un campo
@@ -16,10 +55,11 @@ data class ProfiloAtleta(
     val fcRiposo: Int? = null,
     val tettoOre: Double? = null,
     val disponibilita: Map<String, Int> = emptyMap(),
+    /** Sempre mandata: senza modifiche coincide con quella predefinita del cervello. */
+    val settimana: SettimanaTipo = SettimanaTipo(),
 ) {
-  /** Il blocco "profilo" del configJson; null se non c'e' niente da mandare. */
-  fun json(): JsonObject? {
-    if (fcMax == null && fcRiposo == null && tettoOre == null && disponibilita.isEmpty()) return null
+  /** Il blocco "profilo" del configJson (contiene sempre almeno la settimana tipo). */
+  fun json(): JsonObject {
     return JsonObject().apply {
       fcMax?.let { addProperty("fc_max", it) }
       fcRiposo?.let { addProperty("fc_riposo", it) }
@@ -27,6 +67,7 @@ data class ProfiloAtleta(
       if (disponibilita.isNotEmpty()) {
         add("disponibilita", JsonObject().apply { for (g in GIORNI) disponibilita[g]?.let { addProperty(g, it) } })
       }
+      add("settimana", settimana.json())
     }
   }
 
@@ -68,6 +109,15 @@ class ProfiloStore(context: Context) {
           fcRiposo = prefs.getInt("fc_riposo", -1).takeIf { it > 0 },
           tettoOre = prefs.getString("tetto_ore", null)?.toDoubleOrNull(),
           disponibilita = GIORNI.mapNotNull { g -> prefs.getInt("disp_$g", -1).takeIf { it >= 0 }?.let { g to it } }.toMap(),
+          settimana =
+              SettimanaTipo(
+                  lungoBici = prefs.getString("sett_lungo_bici", null) ?: "sab",
+                  lungoCorsa = prefs.getString("sett_lungo_corsa", null) ?: "dom",
+                  riposo = prefs.getString("sett_riposo", null),
+                  sedute =
+                      SettimanaTipo.DISCIPLINE.associateWith { f ->
+                        prefs.getInt("sett_$f", SettimanaTipo.PREDEFINITE.getValue(f))
+                      }),
       )
 
   fun salva(p: ProfiloAtleta) {
@@ -76,6 +126,10 @@ class ProfiloStore(context: Context) {
       if (p.fcRiposo != null) putInt("fc_riposo", p.fcRiposo) else remove("fc_riposo")
       if (p.tettoOre != null) putString("tetto_ore", p.tettoOre.toString()) else remove("tetto_ore")
       for (g in GIORNI) p.disponibilita[g]?.let { putInt("disp_$g", it) } ?: remove("disp_$g")
+      putString("sett_lungo_bici", p.settimana.lungoBici)
+      putString("sett_lungo_corsa", p.settimana.lungoCorsa)
+      if (p.settimana.riposo != null) putString("sett_riposo", p.settimana.riposo) else remove("sett_riposo")
+      for (f in SettimanaTipo.DISCIPLINE) putInt("sett_$f", p.settimana.sedute[f] ?: SettimanaTipo.PREDEFINITE.getValue(f))
     }.apply()
   }
 }

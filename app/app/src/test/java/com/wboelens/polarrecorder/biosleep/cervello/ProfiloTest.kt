@@ -23,10 +23,37 @@ class ProfiloTest {
   }
 
   @Test
-  fun profiloVuotoNonSiManda() {
-    assertNull(ProfiloAtleta().json())
-    val o = JsonParser.parseString(ConfigCervello(Credenziali.Chiave("k", "0"), "/c").json()).asJsonObject
-    assertTrue(!o.has("profilo"))
+  fun settimanaTipoSempreMandata() {
+    // senza modifiche: i valori predefiniti del cervello
+    val o = ProfiloAtleta().json().getAsJsonObject("settimana")
+    assertEquals("sab", o.get("lungo_bici")!!.asString)
+    assertEquals("dom", o.get("lungo_corsa")!!.asString)
+    assertTrue(o.get("riposo")!!.isJsonNull, "riposo null = nessuno")
+    val s = o.getAsJsonObject("sedute")
+    assertEquals(listOf(2, 2, 3, 2), listOf("nuoto", "bici", "corsa", "forza").map { s.get(it)!!.asInt })
+    // senza profilo nel config non si manda niente
+    assertTrue(!JsonParser.parseString(ConfigCervello(Credenziali.Chiave("k", "0"), "/c").json()).asJsonObject.has("profilo"))
+  }
+
+  @Test
+  fun settimanaTipoValidaComeIlCervello() {
+    assertTrue(SettimanaTipo().errori().isEmpty())
+    assertTrue(SettimanaTipo(lungoBici = "dom").errori().isNotEmpty(), "lunghi nello stesso giorno")
+    assertTrue(SettimanaTipo(riposo = "sab").errori().isNotEmpty(), "riposo su un lungo")
+    assertTrue(SettimanaTipo(riposo = "lun").errori().isEmpty())
+    assertTrue(SettimanaTipo(sedute = SettimanaTipo.PREDEFINITE + ("forza" to 3)).errori().isNotEmpty(), "forza 0-2")
+    assertTrue(SettimanaTipo(sedute = SettimanaTipo.PREDEFINITE + ("nuoto" to 0)).errori().isNotEmpty(), "nuoto 1-4")
+    val o = ProfiloAtleta(settimana = SettimanaTipo(riposo = "lun")).json().getAsJsonObject("settimana")
+    assertEquals("lun", o.get("riposo")!!.asString)
+  }
+
+  @Test
+  fun forzaSoloQuandoServe() {
+    val senza = JsonParser.parseString(ConfigCervello(Credenziali.Chiave("k", "0"), "/c").json()).asJsonObject
+    assertTrue(!senza.has("forza"))
+    val con = JsonParser.parseString(ConfigCervello(Credenziali.Token("t"), "/c", modo = "settimanale", forza = true).json()).asJsonObject
+    assertEquals(true, con.get("forza")!!.asBoolean)
+    assertEquals("settimanale", con.get("modo")!!.asString)
   }
 
   @Test

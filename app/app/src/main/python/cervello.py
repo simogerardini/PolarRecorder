@@ -11,10 +11,14 @@ config (JSON):
   modo            "auto" (default) | "settimanale" | "giornaliero"
   dry_run         true = calcola senza scrivere su Intervals.icu
   senza_attesa    true = procede anche senza i biometrici della notte (avvio di ripiego)
+  forza           true = rifa' il lavoro anche se gia' fatto oggi/questa settimana
+                  ("Ripianifica questa settimana"); le sedute passate non si toccano
   tag             facoltativo: {"giorni": {"YYYY-MM-DD": [chiavi]}, "sedute": {"<id attivita'>": [chiavi]}}
                   vocabolario in coach_settimanale.TAG_GIORNO / TAG_SEDUTA
   profilo         facoltativo: {"fc_max", "fc_riposo", "tetto_ore",
-                  "disponibilita": {"lun".."dom": minuti massimi, 0 = non disponibile}}
+                  "disponibilita": {"lun".."dom": minuti massimi, 0 = non disponibile},
+                  "settimana": {"lungo_bici": "sab", "lungo_corsa": "dom", "riposo": null,
+                                "sedute": {"nuoto": 2, "bici": 2, "corsa": 3, "forza": 2}}}
 risultato (JSON):
   esito           "pianificata" | "fatto" | "niente" | "attesa" | "gia_fatto" | "errore"
                   ("niente": giornaliero senza sedute da rimodulare oggi; riepilogo prodotto)
@@ -219,7 +223,7 @@ def esegui_app(config_json):
     # 04/10/2026: profilo atleta dall'app. FC massima e a riposo (aggiornate dall'app man
     # mano che raccoglie dati) valgono piu' di quelle su Intervals.icu; disponibilita' per
     # giorno in minuti (0 = non disponibile); tetto ore cardio settimanale.
-    for k in ("FCMAX", "FCREST", "FC_DA_APP", "MAX_ORE_CARDIO_SETT", "DISPONIBILITA"):
+    for k in ("FCMAX", "FCREST", "FC_DA_APP", "MAX_ORE_CARDIO_SETT", "DISPONIBILITA", "SETTIMANA_TIPO"):
         os.environ.pop(k, None)
     prof = cfg.get("profilo") or {}
     if prof.get("fc_max") and prof.get("fc_riposo"):
@@ -229,6 +233,8 @@ def esegui_app(config_json):
         os.environ["MAX_ORE_CARDIO_SETT"] = str(float(prof["tetto_ore"]))
     if prof.get("disponibilita"):
         os.environ["DISPONIBILITA"] = json.dumps(prof["disponibilita"])
+    if prof.get("settimana"):     # 06/10/2026: settimana tipo configurabile (roadmap punto 2)
+        os.environ["SETTIMANA_TIPO"] = json.dumps(prof["settimana"])
     out = {"esito": "errore", "notifiche": [], "riepilogo_file": None, "log_file": None}
     buf = io.StringIO()
     try:
@@ -245,8 +251,10 @@ def esegui_app(config_json):
             atleta = r.json() if r.status_code == 200 else {}
             sedute.configura(atleta, cs.get_activities(42))
             oggi = cs.now_local().strftime("%Y-%m-%d")
+            # 06/10/2026: "forza" = "Ripianifica questa settimana" dall'app (ignora il flag;
+            # il passato non si riscrive comunque).
             esito, piano = cs.esegui_auto(cfg.get("modo", "auto"), bool(cfg.get("dry_run")),
-                                          False, None, bool(cfg.get("senza_attesa")))
+                                          bool(cfg.get("forza")), None, bool(cfg.get("senza_attesa")))
             out["esito"] = esito
             if esito in ("pianificata", "fatto", "niente") and not cfg.get("dry_run"):
                 rie = _riepilogo(piano, esito, out["notifiche"], oggi)
@@ -266,6 +274,11 @@ def esegui_app(config_json):
                     print(traceback.format_exc())
                 percorso = os.path.join(cartella, f"riepilogo_{oggi}.json")
                 rie = _unisci_al_settimanale(percorso, rie)
+                errori_sett = cs.settimana_tipo_valida(prof.get("settimana"))[1] if prof.get("settimana") else []
+                if errori_sett:
+                    rie["avvisi"] = "\n".join(x for x in [rie.get("avvisi") or "",
+                                                         "settimana tipo non valida, uso quella predefinita: "
+                                                         + "; ".join(errori_sett)] if x)
                 # 05/10/2026: decisioni prese per un tag, visibili nell'app
                 if cs._MOTIVI_TAG or tag_scartati:
                     rie["motivi"] = list(dict.fromkeys((rie.get("motivi") or []) + cs._MOTIVI_TAG))

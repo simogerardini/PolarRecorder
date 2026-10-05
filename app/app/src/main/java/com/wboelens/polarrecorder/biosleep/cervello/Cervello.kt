@@ -17,6 +17,8 @@ data class ConfigCervello(
     val modo: String = "auto",
     val dryRun: Boolean = false,
     val senzaAttesa: Boolean = false,
+    /** true = rifa' il lavoro anche se gia' fatto (solo "Ripianifica questa settimana"). */
+    val forza: Boolean = false,
     /** Profilo dell'atleta: le FC dell'app hanno la precedenza su quelle di Intervals.icu. */
     val profilo: ProfiloAtleta? = null,
     /** {"giorni": {data: [chiavi]}, "sedute": {id: [chiavi]}} dal TagDb. */
@@ -38,7 +40,8 @@ data class ConfigCervello(
             addProperty("modo", modo)
             addProperty("dry_run", dryRun)
             addProperty("senza_attesa", senzaAttesa)
-            profilo?.json()?.let { add("profilo", it) }
+            if (forza) addProperty("forza", true)
+            profilo?.let { add("profilo", it.json()) }
             tag?.let { add("tag", it) }
           }
           .toString()

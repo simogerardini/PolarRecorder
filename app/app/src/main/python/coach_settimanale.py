@@ -1853,21 +1853,173 @@ LIBRERIA_AEROBICA = {
 # corsa di qualita'. Chiavi della stessa disciplina ad almeno 48h. Brick nel weekend.
 # Le sedute sono quelle della libreria (sedute.py); qui si scelgono tipo e durata.
 #
-# giorno, slot, chiave, durate W1..W5 (None = assente quella settimana)
-PERPETUO = [
-    (0, 0, "forza",          (45, 45, 45, 45, 35)),    # full body / scarico: condensata
-    (0, 1, "nuoto_supporto", (45, 45, 50, 45, 40)),    # nuoto Z1-Z2 dopo la forza
-    (1, 0, "bici_chiave",    (75, 75, 80, 75, 60)),    # rullo, qualita' del blocco
-    (2, 0, "corsa_supporto", (50, 50, 55, 50, 40)),    # easy Z2 + allunghi
-    (2, 1, "forza",          (40, 40, 40, 40, None)),  # companion pre-hab dopo la corsa
-    (3, 0, "nuoto_chiave",   (60, 65, 75, 70, 45)),    # CSS / soglia
-    (4, 0, "corsa_chiave",   (60, 60, 60, 60, 45)),    # intervalli / ritmo gara
-    (5, 0, "brick_bici",     (180, 180, 195, 195, 105)),
-    (5, 1, "brick_corsa",    (15, 20, 20, 20, 10)),
-    (6, 0, "lungo_corsa",    (80, None, 90, 90, 45)),  # W2: bi-giornaliero
-    (6, 0, "nuoto_supporto", (None, 50, None, None, None)),
-    (6, 1, "corsa_supporto", (None, 60, None, None, None)),
-]
+# ── SETTIMANA TIPO CONFIGURABILE (06/10/2026 — roadmap punto 2) ───────────────────
+# Il profilo dell'app sceglie da elenchi: giorno del lungo bici + brick, giorno del lungo
+# corsa, giorno di riposo, sedute per disciplina. struttura_settimana() colloca le sedute
+# con regole fisse; con il profilo predefinito la settimana e' quella decisa da Simone.
+_GG = ("lun", "mar", "mer", "gio", "ven", "sab", "dom")
+SETTIMANA_PREDEFINITA = {"lungo_bici": "sab", "lungo_corsa": "dom", "riposo": None,
+                         "sedute": {"nuoto": 2, "bici": 2, "corsa": 3, "forza": 2}}
+LIMITI_SEDUTE = {"nuoto": (1, 4), "bici": (1, 4), "corsa": (1, 4), "forza": (0, 2)}
+# Durate W1..W5 per chiave (minuti). La forza dura quanto la sua scheda.
+DURATE_PERPETUO = {
+    "nuoto_supporto": (45, 45, 50, 45, 40),
+    "bici_chiave":    (75, 75, 80, 75, 60),
+    "bici_supporto":  (60, 60, 60, 60, 45),
+    "corsa_supporto": (50, 50, 55, 50, 40),
+    "nuoto_chiave":   (60, 65, 75, 70, 45),
+    "corsa_chiave":   (60, 60, 60, 60, 45),
+    "brick_bici":     (180, 180, 195, 195, 105),
+    "brick_corsa":    (15, 20, 20, 20, 10),
+    "lungo_corsa":    (80, 80, 90, 90, 45),
+}
+# W2: domenica bi-giornaliera (nuoto + corsa Z2) al posto del lungo corsa
+BIGIORNALIERO_W2 = (("nuoto_supporto", 50), ("corsa_supporto", 60))
+# Preferenze di collocazione (prima scelta valida), pensate per i lunghi nel weekend
+PREF_GIORNI = {"bici_chiave": (1, 2, 3, 0, 4, 5, 6), "nuoto_chiave": (3, 2, 1, 4, 0, 5, 6),
+               "corsa_chiave": (4, 3, 2, 1, 0, 5, 6), "forza_full": (0, 1, 2, 3, 4, 5, 6),
+               "libero": (0, 1, 2, 3, 4, 5, 6)}
+_MOTIVI_SETTIMANA = []
+
+
+def settimana_tipo_valida(cfg):
+    """(profilo completo e valido, [errori]). Con un errore qualsiasi vale il predefinito."""
+    cfg = cfg or {}
+    out = {**SETTIMANA_PREDEFINITA, "sedute": dict(SETTIMANA_PREDEFINITA["sedute"])}
+    errori = []
+    for k in ("lungo_bici", "lungo_corsa", "riposo"):
+        if k in cfg:
+            v = cfg[k]
+            if v is not None and v not in _GG:
+                errori.append(f"{k}: giorno non valido ({v})")
+            else:
+                out[k] = v
+    for f, n in (cfg.get("sedute") or {}).items():
+        lo, hi = LIMITI_SEDUTE.get(f, (None, None))
+        if lo is None or not isinstance(n, int) or not lo <= n <= hi:
+            errori.append(f"sedute {f}: {n} fuori da {lo}-{hi}")
+        else:
+            out["sedute"][f] = n
+    if out["lungo_bici"] == out["lungo_corsa"]:
+        errori.append("lungo bici e lungo corsa nello stesso giorno")
+    if out["riposo"] in (out["lungo_bici"], out["lungo_corsa"]):
+        errori.append("giorno di riposo coincide con un lungo")
+    if errori:
+        return settimana_tipo_valida({})[0] if cfg else out, errori
+    return out, []
+
+
+SETTIMANA_TIPO = settimana_tipo_valida(json.loads(os.getenv("SETTIMANA_TIPO", "{}") or "{}"))[0]
+
+
+def _dist_gg(a, b):
+    d = abs(a - b) % 7
+    return min(d, 7 - d)
+
+
+def struttura_settimana(cfg, disponibili, w):
+    """[(giorno, slot, chiave, gym_day_type|None)] della settimana W(w+1) del ciclo."""
+    lb, lc = _GG.index(cfg["lungo_bici"]), _GG.index(cfg["lungo_corsa"])
+    n = dict(cfg["sedute"])
+    liberi = [g for g in range(7) if g in disponibili and g not in (lb, lc)]
+    piano = {g: [] for g in range(7)}          # giorno -> [chiavi]
+    _MOTIVI_SETTIMANA.clear()
+
+    def cardio(g):
+        return [k for k in piano[g] if CATALOGO[k]["famiglia"] != "forza"]
+
+    def manca(chiave):
+        _MOTIVI_SETTIMANA.append(f"{NOMI.get(chiave, chiave)}: non c'e' spazio nella settimana tipo")
+
+    # lunghi
+    if lb in disponibili:
+        piano[lb] += ["brick_bici", "brick_corsa"]
+        n["bici"] -= 1
+    if lc in disponibili:
+        if w == 1 and n["nuoto"] >= 2:
+            piano[lc] += ["nuoto_supporto", "corsa_supporto"]
+        else:
+            piano[lc].append("lungo_corsa")
+        n["corsa"] -= 1
+    lunghi = {"bici": [lb] if lb in disponibili else [], "corsa": [lc] if lc in disponibili else []}
+
+    # qualita': una per disciplina se ce ne sono almeno 2 a settimana
+    chiave_di = {"bici": "bici_chiave", "nuoto": "nuoto_chiave", "corsa": "corsa_chiave"}
+    giorni_q = {}
+    for fam in ("bici", "nuoto", "corsa"):
+        if cfg["sedute"][fam] < 2 or n[fam] < 1:
+            continue
+        key = chiave_di[fam]
+        for g in PREF_GIORNI[key]:
+            if g not in liberi or cardio(g):
+                continue
+            vicini = lunghi.get(fam, []) + [x for f2, x in giorni_q.items() if f2 == fam]
+            if any(_dist_gg(g, x) < 2 for x in vicini):
+                continue
+            piano[g].append(key)
+            giorni_q[fam] = g
+            n[fam] -= 1
+            break
+        else:
+            pass   # nessun giorno valido: la seduta resta di supporto
+
+    # forza full body: niente qualita' quel giorno, niente corsa di qualita' il giorno dopo
+    full = None
+    if n["forza"] >= 1:
+        for g in PREF_GIORNI["forza_full"]:
+            if g in liberi and not any(CATALOGO[k]["qualita"] for k in piano[g]) \
+                    and "corsa_chiave" not in piano[(g + 1) % 7]:
+                piano[g].insert(0, "forza")
+                full = g
+                n["forza"] -= 1
+                break
+        else:
+            manca("forza")
+            n["forza"] -= 1
+
+    # supporto: il nuoto Z2 dopo la forza full body, poi i giorni liberi (1 cardio al giorno)
+    # corsa e bici prima: il nuoto in piu' puo' andare nel weekend, accanto a un lungo di
+    # un'altra disciplina (il weekend non ha il limite di 1 cardio dei feriali)
+    supporto = (("corsa", "corsa_supporto"), ("bici", "bici_supporto"), ("nuoto", "nuoto_supporto"))
+    weekend = [g for g in (lc, lb) if g in disponibili]
+    if full is not None and n["nuoto"] >= 1 and not cardio(full):
+        piano[full].append("nuoto_supporto")
+        n["nuoto"] -= 1
+    for fam, key in supporto:
+        while n[fam] > 0:
+            g = next((g for g in PREF_GIORNI["libero"] if g in liberi and not cardio(g)), None)
+            if g is None:
+                g = next((g for g in weekend if fam not in
+                          {CATALOGO[k]["famiglia"] for k in piano[g]}), None)
+            if g is None:
+                manca(key)
+                n[fam] -= 1
+                continue
+            piano[g].append(key)
+            n[fam] -= 1
+
+    # forza companion: dopo una corsa facile, se c'e'; altrimenti in un giorno senza qualita'
+    while n["forza"] > 0:
+        g = next((g for g in liberi if "corsa_supporto" in piano[g] and "forza" not in piano[g]), None)
+        if g is None:
+            g = next((g for g in liberi if "forza" not in piano[g]
+                      and not any(CATALOGO[k]["qualita"] for k in piano[g])), None)
+        if g is None:
+            manca("forza")
+        else:
+            piano[g].append("forza")
+        n["forza"] -= 1
+
+    out = []
+    for g in range(7):
+        for slot, k in enumerate(piano[g]):
+            tipo = None
+            if k == "forza":
+                tipo = "strength" if g == full else "companion"
+            out.append((g, slot, k, tipo))
+    return out
+
+
 # Qualita' per settimana e blocco: (tipo libreria, params). W1 richiamo soglia, W2-W3
 # focus del blocco, W4 specificita' ritmo gara, W5 brevi richiami neuromuscolari.
 QUALITA_PERPETUO = {
@@ -1884,28 +2036,37 @@ QUALITA_PERPETUO = {
 }
 AEROBICHE_PERPETUO = {
     "nuoto_supporto": ("Swim", {"profilo": "endurance"}),
+    "bici_supporto":  ("BikeCross", {"profilo": "recovery"}),
     "corsa_supporto": ("Easy", {"strides_reps": 5}),
     "lungo_corsa":    ("Long", {}),
 }
 
 
-def settimana_perpetua(pos):
+def settimana_perpetua(pos, cfg=None, disponibili=None):
     w = pos.get("idx_fase", 0)
+    cfg = cfg or SETTIMANA_TIPO
+    if disponibili is None:
+        riposo = _GG.index(cfg["riposo"]) if cfg.get("riposo") else None
+        disponibili = {g for g in range(7) if g != riposo and DISPONIBILITA.get(g, 1) != 0}
+    lc = _GG.index(cfg["lungo_corsa"])
     out = []
-    for giorno, slot, key, durate in PERPETUO:
-        d = durate[w]
-        if d is None:
-            continue
+    for giorno, slot, key, gym in struttura_settimana(cfg, disponibili, w):
         s = _seduta(key, giorno, slot, "olimpico", pos)
-        s["durata"] = s["nominale"] = d
-        s["min"] = min(s["min"], d)
         if key == "forza":
-            # Lunedi' scheda di forza massimale, mercoledi' scheda dopo la corsa; scarico:
-            # scheda condensata (serie ridotte, carico invariato ~80% 1RM).
+            # Full body: scheda di forza massimale (scarico: condensata, serie ridotte e
+            # carico invariato); companion pre-hab dopo la corsa; niente companion in scarico.
+            if gym == "companion" and w == 4:
+                continue
             s["fisso"] = True
-            s["gym_day_type"] = ("b2b" if w == 4 else "strength") if giorno == 0 else "companion"
+            s["gym_day_type"] = ("b2b" if w == 4 else "strength") if gym == "strength" else "companion"
             s["durata"] = s["nominale"] = sedute.gym_durata_target(
                 sedute.FASE_IC["senza_gara"], s["gym_day_type"])
+        else:
+            d = DURATE_PERPETUO[key][w]
+            if w == 1 and giorno == lc and key in dict(BIGIORNALIERO_W2):
+                d = dict(BIGIORNALIERO_W2)[key]
+            s["durata"] = s["nominale"] = d
+            s["min"] = min(s["min"], d)
         if key in QUALITA_PERPETUO:
             tab = QUALITA_PERPETUO[key]
             s["scelta"] = tab[w] if w in (0, 3, 4) else tab[pos.get("blocco", "A")]
@@ -2764,6 +2925,9 @@ def costruisci_settimana(lunedi, races, oura_hist, wellness, activities,
         # 04/10/2026: ciclo continuo con settimana tipo e durate proprie (PERPETUO).
         # Niente Word ne' dimensionamento per quote: solo i freni biometrici sul volume.
         sedute = settimana_perpetua(pos)
+        for m in _MOTIVI_SETTIMANA:
+            if m not in mod["motivi"]:
+                mod["motivi"].append(m)
         sedute = applica_vincoli(sedute, pos, indisp)
         sedute = applica_modulazione(sedute, mod, pos)
         sedute = scala_biometrica(sedute, mod)

@@ -82,6 +82,12 @@ class RiepilogoDb internal constructor(context: Context, nomeFile: String?) :
 
   fun leggi(data: String): Riepilogo? = json(data)?.let { RiepilogoParser.leggi(it) }
 
+  /** Il riepilogo piu' recente (per gli avvisi sulla settimana tipo nella schermata Profilo). */
+  fun ultimo(): Riepilogo? =
+      readableDatabase.rawQuery("SELECT json FROM riepiloghi ORDER BY data DESC LIMIT 1", null).use { c ->
+        if (c.moveToFirst()) RiepilogoParser.leggi(c.getString(0)) else null
+      }
+
   /** true solo per chi passa da "non notificato" a "notificato": una notifica sola per data. */
   fun segnaNotificato(data: String): Boolean {
     val v = ContentValues().apply { put("notificato", 1L) }
