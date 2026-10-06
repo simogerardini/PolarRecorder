@@ -2,21 +2,10 @@ package com.wboelens.polarrecorder.managers
 
 import android.content.Context
 import android.content.SharedPreferences
-import com.wboelens.polarrecorder.dataSavers.MQTTConfig
 
 data class PreferenceConfig<T>(val key: String, val defaultValue: T)
 
 object Preferences {
-  val MQTT_HOST = PreferenceConfig("mqtt_broker_host", "")
-  val MQTT_PORT = PreferenceConfig("mqtt_broker_port", MQTTConfig.DEFAULT_MQTT_PORT)
-  val MQTT_USE_SSL = PreferenceConfig("mqtt_broker_use_ssl", false)
-  val MQTT_USERNAME = PreferenceConfig("mqtt_username", "")
-  val MQTT_PASSWORD = PreferenceConfig("mqtt_password", "")
-  val MQTT_CLIENT_ID = PreferenceConfig("mqtt_client_id", "")
-  val MQTT_TOPIC_PREFIX = PreferenceConfig("mqtt_topic_prefix", "")
-  val MQTT_ENABLED = PreferenceConfig("mqtt_enabled", false)
-
-
   val RECORDING_NAME = PreferenceConfig("recording_name", "PolarRecording")
   val RECORDING_NAME_APPEND_TIMESTAMP = PreferenceConfig("recording_name_append_timestamp", true)
   val RECORDING_STOP_ON_DISCONNECT = PreferenceConfig("recording_stop_on_disconnect", false)
@@ -29,54 +18,6 @@ class PreferencesManager(context: Context) {
 
   private val mPref: SharedPreferences =
       context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE)
-
-  var mqttConfig: MQTTConfig
-    get() {
-      return MQTTConfig(
-          host = mPref.getString(Preferences.MQTT_HOST.key, Preferences.MQTT_HOST.defaultValue)!!,
-          port = mPref.getInt(Preferences.MQTT_PORT.key, Preferences.MQTT_PORT.defaultValue),
-          useSSL =
-              mPref.getBoolean(Preferences.MQTT_USE_SSL.key, Preferences.MQTT_USE_SSL.defaultValue),
-          username =
-              mPref.getString(
-                  Preferences.MQTT_USERNAME.key,
-                  Preferences.MQTT_USERNAME.defaultValue,
-              )!!,
-          password =
-              mPref.getString(
-                  Preferences.MQTT_PASSWORD.key,
-                  Preferences.MQTT_PASSWORD.defaultValue,
-              )!!,
-          clientId =
-              mPref.getString(
-                  Preferences.MQTT_CLIENT_ID.key,
-                  Preferences.MQTT_CLIENT_ID.defaultValue,
-              )!!,
-          topicPrefix =
-              mPref.getString(
-                  Preferences.MQTT_TOPIC_PREFIX.key,
-                  Preferences.MQTT_TOPIC_PREFIX.defaultValue,
-              )!!,
-      )
-    }
-    set(config) {
-      mPref.edit().apply {
-        putString(Preferences.MQTT_HOST.key, config.host)
-        putInt(Preferences.MQTT_PORT.key, config.port)
-        putBoolean(Preferences.MQTT_USE_SSL.key, config.useSSL)
-        putString(Preferences.MQTT_USERNAME.key, config.username)
-        putString(Preferences.MQTT_PASSWORD.key, config.password)
-        putString(Preferences.MQTT_TOPIC_PREFIX.key, config.topicPrefix)
-        putString(Preferences.MQTT_CLIENT_ID.key, config.clientId)
-        apply()
-      }
-    }
-
-  var mqttEnabled: Boolean
-    get() = mPref.getBoolean(Preferences.MQTT_ENABLED.key, Preferences.MQTT_ENABLED.defaultValue)
-    set(enabled) {
-      mPref.edit().putBoolean(Preferences.MQTT_ENABLED.key, enabled).apply()
-    }
 
   var recordingName: String
     get() =

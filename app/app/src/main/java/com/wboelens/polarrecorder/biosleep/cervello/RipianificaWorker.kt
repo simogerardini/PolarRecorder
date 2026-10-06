@@ -65,7 +65,8 @@ class RipianificaWorker(context: Context, params: WorkerParameters) : CoroutineW
     val config =
         ConfigCervello(
             credenziali, Cervello.cartella(ctx).absolutePath, modo = "settimanale", senzaAttesa = true, forza = true,
-            profilo = ProfiloRepo.effettivo(ctx), tag = runCatching { TagDb.get(ctx).perCervello() }.getOrNull())
+            profilo = ProfiloRepo.effettivo(ctx), tag = runCatching { TagDb.get(ctx).perCervello() }.getOrNull(),
+            posizione = PosizioneTelefono.ultima(ctx))
     val r = withContext(Dispatchers.IO) { Cervello.esegui(ctx, config) }
     Log.i("BioSleepCoach", "Ripianifica: ${r.esito}")
     r.notifiche.forEach { NotificheCoach.testo(ctx, it) }

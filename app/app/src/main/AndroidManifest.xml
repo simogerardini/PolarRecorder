@@ -32,14 +32,13 @@
         android:name="android.permission.ACCESS_FINE_LOCATION"
         android:maxSdkVersion="30" />
 
-    <!-- The coarse location permission is needed, if fine location permission is requested. Request
-      coarse location permission on devices with API 30 (Android Q). Note, if your application
-     needs location for other purposes than bluetooth then remove android:maxSdkVersion="30" -->
-    <uses-permission
-        android:name="android.permission.ACCESS_COARSE_LOCATION"
-        android:maxSdkVersion="30" />
+    <!-- Posizione approssimativa: fino ad Android 11 serve alla scansione Bluetooth (con la fine),
+     da Android 12 SOLO alle previsioni del caldo (BioSleep, punto 7). Per questo qui non c'e'
+     maxSdkVersion: con maxSdkVersion="30" il permesso non esisterebbe da Android 12 in poi e la
+     richiesta verrebbe rifiutata senza mostrare nulla. La posizione precisa resta limitata ad API 30. -->
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
 
-    <!-- Allow MQTTDataSaver to publish data to MQTT broker -->
+    <!-- Internet: invio delle notti a Intervals.icu e coach -->
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 

@@ -3,7 +3,6 @@ package com.wboelens.polarrecorder.biosleep.setup
 import android.content.Context
 import com.polar.sdk.api.PolarBleApi.PolarDeviceDataType
 import com.polar.sdk.api.model.PolarSensorSetting.SettingType
-import com.wboelens.polarrecorder.PolarRecorderApplication
 import com.wboelens.polarrecorder.biosleep.auto.NightProfile
 import com.wboelens.polarrecorder.biosleep.auto.NightProfileStore
 import com.wboelens.polarrecorder.managers.DeviceStreamCapabilities
@@ -15,7 +14,7 @@ import com.wboelens.polarrecorder.managers.DeviceStreamCapabilities
  *    Parametri: 25 Hz (la frequenza piu' bassa disponibile: basta per movimento e respiro e
  *    consuma meno batteria), il fondo scala piu' piccolo (2 g: massima precisione per i pochi mg
  *    del respiro), la risoluzione piu' alta.
- *  - Niente ECG, PPG o MQTT: non servono all'app. I dati restano nel database di BioSleep.
+ *  - Niente ECG o PPG: non servono all'app. I dati restano nel database di BioSleep.
  */
 object BioSleepSetup {
   private const val TARGET_ACC_HZ = 25
@@ -48,12 +47,8 @@ object BioSleepSetup {
     }
   }
 
-  /** Salva il profilo e spegne l'invio MQTT di Polar Recorder, che BioSleep non usa. */
+  /** Salva il profilo della fascia: da qui in poi "Avvia notte" e l'avvio automatico lo usano. */
   fun finish(context: Context, profile: NightProfile) {
     NightProfileStore(context).save(profile)
-    val app = context.applicationContext as PolarRecorderApplication
-    app.dataSavers?.let { savers ->
-      savers.mqtt.disable()
-    }
   }
 }

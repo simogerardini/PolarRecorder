@@ -28,6 +28,7 @@ import androidx.compose.ui.unit.dp
 import com.wboelens.polarrecorder.biosleep.cervello.Cervello
 import com.wboelens.polarrecorder.biosleep.cervello.CoachStato
 import com.wboelens.polarrecorder.biosleep.cervello.ConfigCervello
+import com.wboelens.polarrecorder.biosleep.cervello.PosizioneTelefono
 import com.wboelens.polarrecorder.biosleep.cervello.ProfiloRepo
 import com.wboelens.polarrecorder.biosleep.cervello.RisultatoCervello
 import com.wboelens.polarrecorder.biosleep.intervals.IntervalsSettings
@@ -48,7 +49,7 @@ private fun durata(ms: Long): String {
  * log se non e' riuscito, misura della durata di un run settimanale (prova che non scrive nulla).
  */
 @Composable
-fun SezioneCoach(onApriProfilo: () -> Unit = {}) {
+fun SezioneCoach(onApriProfilo: () -> Unit = {}, onApriGare: () -> Unit = {}) {
   val context = LocalContext.current
   val settings = remember { IntervalsSettings(context) }
   val stato = remember { CoachStato(context) }
@@ -105,6 +106,7 @@ fun SezioneCoach(onApriProfilo: () -> Unit = {}) {
     }
 
     OutlinedButton(onClick = onApriProfilo) { Text("Profilo atleta: FC, ore massime, disponibilità") }
+    OutlinedButton(onClick = onApriGare) { Text("Gare") }
     OutlinedButton(
         onClick = {
           inMisura = true
@@ -122,7 +124,8 @@ fun SezioneCoach(onApriProfilo: () -> Unit = {}) {
                           Cervello.cartella(ctx).absolutePath,
                           modo = "settimanale", dryRun = true, senzaAttesa = true,
                           profilo = ProfiloRepo.effettivo(ctx),
-                          tag = runCatching { TagDb.get(ctx).perCervello() }.getOrNull()))
+                          tag = runCatching { TagDb.get(ctx).perCervello() }.getOrNull(),
+                          posizione = PosizioneTelefono.ultima(ctx)))
                 }
             val ms = System.currentTimeMillis() - t0
             if (r.esito == RisultatoCervello.PIANIFICATA) stato.registraProva(ms)

@@ -1,7 +1,6 @@
 package com.wboelens.polarrecorder.managers
 
 import android.content.Context
-import com.wboelens.polarrecorder.dataSavers.MQTTConfig
 import com.wboelens.polarrecorder.testutil.BaseRobolectricTest
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
@@ -12,7 +11,7 @@ import org.robolectric.RuntimeEnvironment
 
 /**
  * Unit tests for PreferencesManager - verifies persistence and retrieval of all preference types
- * including MQTT config, file system config, and recording settings.
+ * (recording settings).
  */
 class PreferencesManagerTest : BaseRobolectricTest() {
 
@@ -23,78 +22,6 @@ class PreferencesManagerTest : BaseRobolectricTest() {
   fun setup() {
     context = RuntimeEnvironment.getApplication()
     preferencesManager = PreferencesManager(context)
-  }
-
-  // ==================== MQTT Config Tests ====================
-
-  @Test
-  fun `mqttConfig returns default values initially`() {
-    val config = preferencesManager.mqttConfig
-
-    assertEquals("", config.host)
-    assertEquals(MQTTConfig.DEFAULT_MQTT_PORT, config.port)
-    assertFalse(config.useSSL)
-    assertEquals("", config.username)
-    assertEquals("", config.password)
-  }
-
-  @Test
-  fun `mqttConfig setter persists all fields`() {
-    val config =
-        MQTTConfig(
-            host = "broker.example.com",
-            port = 8883,
-            useSSL = true,
-            username = "user",
-            password = "pass",
-            clientId = "test-client",
-            topicPrefix = "test/prefix",
-        )
-
-    preferencesManager.mqttConfig = config
-
-    // Re-create manager to verify persistence
-    val newManager = PreferencesManager(context)
-    val retrieved = newManager.mqttConfig
-
-    assertEquals("broker.example.com", retrieved.host)
-    assertEquals(8883, retrieved.port)
-    assertTrue(retrieved.useSSL)
-    assertEquals("user", retrieved.username)
-    assertEquals("pass", retrieved.password)
-    assertEquals("test-client", retrieved.clientId)
-    assertEquals("test/prefix", retrieved.topicPrefix)
-  }
-
-  @Test
-  fun `mqttEnabled default is false`() {
-    assertFalse(preferencesManager.mqttEnabled)
-  }
-
-  @Test
-  fun `mqttEnabled setter persists value`() {
-    preferencesManager.mqttEnabled = true
-
-    val newManager = PreferencesManager(context)
-    assertTrue(newManager.mqttEnabled)
-  }
-
-  @Test
-  fun `mqttConfig handles empty username and password`() {
-    val config =
-        MQTTConfig(
-            host = "broker.example.com",
-            port = 1883,
-            useSSL = false,
-            username = "",
-            password = "",
-        )
-
-    preferencesManager.mqttConfig = config
-
-    val retrieved = preferencesManager.mqttConfig
-    assertEquals("", retrieved.username)
-    assertEquals("", retrieved.password)
   }
 
   // ==================== Recording Settings Tests ====================
@@ -143,12 +70,10 @@ class PreferencesManagerTest : BaseRobolectricTest() {
   @Test
   fun `preferences persist across manager instances`() {
     preferencesManager.recordingName = "TestName"
-    preferencesManager.mqttEnabled = true
 
     val newManager = PreferencesManager(context)
 
     assertEquals("TestName", newManager.recordingName)
-    assertTrue(newManager.mqttEnabled)
   }
 
   @Test

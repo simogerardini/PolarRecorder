@@ -10,18 +10,11 @@ class DataSavers(
     logState: LogState,
     preferencesManager: PreferencesManager,
 ) {
-  val mqtt: MQTTDataSaver = MQTTDataSaver(logState, preferencesManager)
   val bioSleep: BioSleepDataSaver = BioSleepDataSaver(context, logState, preferencesManager)
 
   private val savers = mutableListOf<DataSaver>()
 
   init {
-    mqtt.configure(preferencesManager.mqttConfig)
-    if (preferencesManager.mqttEnabled) {
-      mqtt.enable()
-    }
-    savers.add(mqtt)
-
     // BioSleep: database locale + analisi notturna, sempre attivo
     bioSleep.enable()
     savers.add(bioSleep)

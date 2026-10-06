@@ -46,6 +46,56 @@ data class SettimanaTipo(
 }
 
 /**
+ * Palestra (cervello: palestra.scegli_scheda): attrezzatura disponibile e livello. Corpo libero e
+ * trasferta/hotel sono sempre inclusi e si mandano sempre: una lista vuota il cervello la
+ * leggerebbe come "predefinita" (bilanciere, kettlebell, elastici).
+ */
+data class Palestra(
+    val attrezzatura: Set<String> = PREDEFINITA,
+    val livello: String = "intermediate",
+) {
+  fun json(): JsonObject =
+      JsonObject().apply {
+        add("attrezzatura", com.google.gson.JsonArray().apply { ATTREZZI.map { it.first }.filter { it in tutta }.forEach { add(it) } })
+        addProperty("livello", livello)
+      }
+
+  /** Quella mandata al cervello: le scelte piu' quelle sempre incluse. */
+  val tutta: Set<String> get() = attrezzatura + SEMPRE
+
+  companion object {
+    val ATTREZZI =
+        listOf(
+            "barbell_gym" to "Palestra con bilanciere",
+            "kettlebell" to "Kettlebell",
+            "trx_suspension" to "TRX",
+            "resistance_bands" to "Elastici",
+            "bodyweight_only" to "Corpo libero",
+            "hotel_minimal" to "Trasferta / hotel")
+    val SEMPRE = setOf("bodyweight_only", "hotel_minimal")
+    val PREDEFINITA = setOf("barbell_gym", "kettlebell", "resistance_bands")
+    val LIVELLI = listOf("beginner" to "Principiante", "intermediate" to "Intermedio", "advanced" to "Avanzato")
+  }
+}
+
+/**
+ * Giorni caldi (cervello: caldo.py): se trasformare la corsa facile in bici indoor e a che ora
+ * ci si allena di solito, per leggere la previsione all'ora giusta.
+ */
+data class Caldo(val convertiCorsa: Boolean = true, val oraFeriale: Int = 18, val oraWeekend: Int = 10) {
+  fun json(): JsonObject =
+      JsonObject().apply {
+        addProperty("converti_corsa", convertiCorsa)
+        addProperty("ora_feriale", oraFeriale)
+        addProperty("ora_weekend", oraWeekend)
+      }
+
+  companion object {
+    val ORE = 5..21
+  }
+}
+
+/**
  * Profilo dell'atleta passato al cervello in "profilo". Ogni campo e' facoltativo: un campo
  * assente non si manda, e il cervello usa i valori di Intervals.icu. Disponibilita': minuti per
  * giorno, 0 = non disponibile, giorno assente = nessun limite.
@@ -57,6 +107,10 @@ data class ProfiloAtleta(
     val disponibilita: Map<String, Int> = emptyMap(),
     /** Sempre mandata: senza modifiche coincide con quella predefinita del cervello. */
     val settimana: SettimanaTipo = SettimanaTipo(),
+    /** Sempre mandata: senza modifiche coincide con quella predefinita del cervello. */
+    val palestra: Palestra = Palestra(),
+    /** Sempre mandata: senza modifiche coincide con quella predefinita del cervello. */
+    val caldo: Caldo = Caldo(),
 ) {
   /** Il blocco "profilo" del configJson (contiene sempre almeno la settimana tipo). */
   fun json(): JsonObject {
@@ -68,6 +122,8 @@ data class ProfiloAtleta(
         add("disponibilita", JsonObject().apply { for (g in GIORNI) disponibilita[g]?.let { addProperty(g, it) } })
       }
       add("settimana", settimana.json())
+      add("palestra", palestra.json())
+      add("caldo", caldo.json())
     }
   }
 
@@ -118,6 +174,15 @@ class ProfiloStore(context: Context) {
                       SettimanaTipo.DISCIPLINE.associateWith { f ->
                         prefs.getInt("sett_$f", SettimanaTipo.PREDEFINITE.getValue(f))
                       }),
+          palestra =
+              Palestra(
+                  attrezzatura = prefs.getStringSet("palestra_attrezzi", null)?.toSet() ?: Palestra.PREDEFINITA,
+                  livello = prefs.getString("palestra_livello", null) ?: "intermediate"),
+          caldo =
+              Caldo(
+                  convertiCorsa = prefs.getBoolean("caldo_converti", true),
+                  oraFeriale = prefs.getInt("caldo_ora_feriale", 18),
+                  oraWeekend = prefs.getInt("caldo_ora_weekend", 10)),
       )
 
   fun salva(p: ProfiloAtleta) {
@@ -130,6 +195,11 @@ class ProfiloStore(context: Context) {
       putString("sett_lungo_corsa", p.settimana.lungoCorsa)
       if (p.settimana.riposo != null) putString("sett_riposo", p.settimana.riposo) else remove("sett_riposo")
       for (f in SettimanaTipo.DISCIPLINE) putInt("sett_$f", p.settimana.sedute[f] ?: SettimanaTipo.PREDEFINITE.getValue(f))
+      putStringSet("palestra_attrezzi", p.palestra.attrezzatura - Palestra.SEMPRE)
+      putString("palestra_livello", p.palestra.livello)
+      putBoolean("caldo_converti", p.caldo.convertiCorsa)
+      putInt("caldo_ora_feriale", p.caldo.oraFeriale)
+      putInt("caldo_ora_weekend", p.caldo.oraWeekend)
     }.apply()
   }
 }

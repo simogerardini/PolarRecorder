@@ -56,6 +56,9 @@ import requests
 import sedute   # libreria e sintassi delle sedute (estratta da intervals_coach.py)
 import biometria   # banda biometrica di intervals_coach (formula unica)
 import carico      # forma attesa, TSB a domenica, tetto TSS (da intervals_coach)
+import soglie      # LTHR/FTP automatiche e test periodici (da intervals_coach)
+import palestra    # libreria delle schede di forza (documento di Simone, 06/10/2026)
+import caldo       # previsioni nel luogo del telefono e regole dei giorni caldi
 from requests.adapters import HTTPAdapter
 from urllib3.util.retry import Retry
 
@@ -2050,6 +2053,7 @@ def settimana_perpetua(pos, cfg=None, disponibili=None):
         disponibili = {g for g in range(7) if g != riposo and DISPONIBILITA.get(g, 1) != 0}
     lc = _GG.index(cfg["lungo_corsa"])
     out = []
+    test_da_fare = TEST_PROSSIMO if w == 0 else None   # 06/10/2026: test solo in W1
     for giorno, slot, key, gym in struttura_settimana(cfg, disponibili, w):
         s = _seduta(key, giorno, slot, "olimpico", pos)
         if key == "forza":
@@ -2076,6 +2080,12 @@ def settimana_perpetua(pos, cfg=None, disponibili=None):
         if key in ("brick_bici", "brick_corsa"):
             s["qualita"] = False          # lungo Z2 + transizione: volume, non intensita'
             s["fisso"] = True
+        if test_da_fare and soglie.SEDUTA_DEL_TEST[test_da_fare["chiave"]] == key:
+            s["test"] = test_da_fare      # la prima seduta di quella chiave diventa il test
+            s["fisso"] = True
+            s["qualita"] = test_da_fare["chiave"] != "run_maf"
+            s["durata"] = s["nominale"] = soglie._DESCRIZIONI_TEST[test_da_fare["chiave"]][1]
+            test_da_fare = None
         out.append(s)
     return out
 
@@ -2281,7 +2291,7 @@ def effetti_tag(d, ref, tag_giorni, tag_sedute, activities):
       giorni diventa aerobica; dolore:<zona> su una seduta: zona scarica il giorno dopo."""
     tg = tag_giorni or {}
     eff = {"riposo": False, "leggero": False, "no_qualita": False, "no_forza": False,
-           "max_min": None, "vietate": set(), "fatica_da": [], "motivi": []}
+           "max_min": None, "vietate": set(), "fatica_da": [], "motivi": [], "prevenzione": None}
     oggi_t = set(tg.get(d) or [])
     ieri_t = set(tg.get(_piu(d, -1)) or [])
     recenti = set()
@@ -2299,6 +2309,7 @@ def effetti_tag(d, ref, tag_giorni, tag_sedute, activities):
         if t.startswith("infortunio:") and t.split(":", 1)[1] in ZONE_INFORTUNIO:
             z = t.split(":", 1)[1]
             eff["vietate"] |= ZONE_INFORTUNIO[z]
+            eff["prevenzione"] = eff["prevenzione"] or z
             eff["motivi"].append(f"tag infortunio {z}: {d} senza {', '.join(sorted(ZONE_INFORTUNIO[z]))}")
     if "viaggio" in oggi_t:
         eff.update(no_qualita=True, no_forza=True)
@@ -2318,9 +2329,14 @@ def effetti_tag(d, ref, tag_giorni, tag_sedute, activities):
             for t in tags:
                 if t.startswith("dolore:") and t.split(":", 1)[1] in ZONE_INFORTUNIO:
                     z = t.split(":", 1)[1]
-                    eff["vietate"] |= ZONE_INFORTUNIO[z]
-                    eff["motivi"].append(f"tag dolore {z} nella seduta del {ad}: {d} senza "
-                                         f"{', '.join(sorted(ZONE_INFORTUNIO[z]))}")
+                    # 06/10/2026 (punto 6): col dolore la forza resta; la companion diventa
+                    # la scheda di prevenzione della zona
+                    eff["vietate"] |= ZONE_INFORTUNIO[z] - {"forza"}
+                    eff["prevenzione"] = eff["prevenzione"] or z
+                    vietate_txt = ", ".join(sorted(ZONE_INFORTUNIO[z] - {"forza"}))
+                    eff["motivi"].append(f"tag dolore {z} nella seduta del {ad}: {d} "
+                                         + (f"senza {vietate_txt}" if vietate_txt else "")
+                                         + "; companion di prevenzione")
     if eff["leggero"]:
         eff.update(no_qualita=True, no_forza=True)
         eff["max_min"] = 45
@@ -2336,6 +2352,15 @@ def applica_tag(sedute_sett, giorni, ref, tag_giorni, tag_sedute, activities):
         d = giorni[s["giorno"]]
         eff = effetti_tag(d, ref, tag_giorni, tag_sedute, activities)
         motivo = None
+        if (s["key"] == "forza" and s.get("gym_day_type") == "companion" and eff["prevenzione"]
+                and not eff["riposo"]):
+            # 06/10/2026 (punto 6): con un infortunio o un dolore la companion non si toglie,
+            # diventa la scheda di prevenzione della zona (assegna_schede)
+            s["prevenzione"] = eff["prevenzione"]
+            for m in eff["motivi"]:
+                if m not in _MOTIVI_TAG:
+                    _MOTIVI_TAG.append(m)
+            continue
         if eff["riposo"] or s["famiglia"] in eff["vietate"] or (eff["no_forza"] and s["famiglia"] == "forza"):
             s["durata"] = 0
             motivo = "tolta"
@@ -2378,6 +2403,122 @@ def rimodula_per_tag(ev, eff):
     return None
 
 
+
+def assegna_schede(sedute_sett, pos, giorni, races):
+    """06/10/2026 (punto 6): per ogni seduta di forza sceglie la scheda della libreria
+    (palestra.scegli_scheda). Lunedi' full body, mercoledi' companion; gara A entro 14
+    giorni, tempo del giorno, profilo e prevenzione decidono quali schede sono ammesse.
+    Se nessuna va bene la seduta si toglie, con il motivo."""
+    rot = _dt(giorni[0]).isocalendar()[1]
+    gare_a = sorted(g["date"] for g in races or [] if g.get("category") == "RACE_A")
+    out = []
+    for s in sedute_sett:
+        if s["key"] != "forza":
+            out.append(s)
+            continue
+        d = giorni[s["giorno"]]
+        prossima_a = next((g for g in gare_a if g >= d), None)
+        gg_a = (_dt(prossima_a) - _dt(d)).days if prossima_a else None
+        slot = "companion" if s.get("gym_day_type") == "companion" else "full"
+        sch, motivo = palestra.scegli_scheda(
+            slot, pos, PROFILO_PALESTRA, rot + (1 if slot == "companion" else 0), gg_a,
+            DISPONIBILITA.get(s["giorno"]), s.get("prevenzione"), FORZA_SETTIMANE)
+        if not sch:
+            m = f"forza del {d} tolta: {motivo}"
+            if m not in _MOTIVI_SETTIMANA:
+                _MOTIVI_SETTIMANA.append(m)
+            continue
+        s["scheda"] = sch
+        s["durata"] = s["nominale"] = sch["durata"]
+        s["min"] = min(s["min"], sch["durata"])
+        if motivo:
+            s["note"].append(f"scheda {sch['titolo']} ({motivo})")
+        out.append(s)
+    return out
+
+
+
+# ═════════════════════════════════════════════════════════════════════════════
+# 4f. CALDO (06/10/2026 — roadmap punto 7, regole di Simone da intervals_coach)
+# ═════════════════════════════════════════════════════════════════════════════
+_MOTIVI_CALDO = []
+_CORSE_FACILI = ("corsa_supporto",)
+_CORSE_DA_ACCORCIARE = {"corsa_chiave": 0.90, "lungo_corsa": 0.85, "brick_corsa": 0.90,
+                        "gara_richiami": 0.90}
+
+
+def giorno_caldo(d):
+    """Meteo del giorno se caldo (previsione) o taggato "caldo" dall'app, altrimenti None."""
+    m = (METEO or {}).get(d)
+    if m and caldo.e_caldo(m.get("temp_c"), m.get("umidita_pct")):
+        return m
+    if "caldo" in (TAG_GIORNI.get(d) or []):
+        return {"temp_c": None, "umidita_pct": None, "ora": None, "tag": True}
+    return None
+
+
+def _descr_meteo(d, m):
+    if m.get("tag"):
+        return f"caldo del {d} (tag)"
+    ora = f" alle {m['ora']}" if m.get("ora") is not None else ""
+    return f"caldo del {d}: {round(m['temp_c'])} °C, umidita' {round(m.get('umidita_pct') or 0)}%{ora}"
+
+
+def _a5(x):
+    return int(round(x / 5.0) * 5)
+
+
+def applica_caldo(sedute_sett, giorni, activities):
+    """Regole del caldo sul piano: corsa facile -> bici indoor (se l'atleta non lo
+    esclude), qualita' e lunghi di corsa accorciati. Nuoto, forza e bici invariati."""
+    if METEO is None and not any("caldo" in (v or []) for v in TAG_GIORNI.values()):
+        return sedute_sett
+    fattore = caldo.calc_bike_run_conversion(activities)[0]
+    converti = PROFILO_CALDO.get("converti_corsa", True)
+    for s in sedute_sett:
+        d = giorni[s["giorno"]]
+        m = giorno_caldo(d)
+        if not m or s.get("test"):
+            continue
+        if s["key"] in _CORSE_FACILI and converti:
+            minuti = _a5(s["durata"] * fattore)
+            motivo = (f"{_descr_meteo(d, m)}: corsa facile convertita in bici indoor "
+                      f"{minuti}' (x{fattore:g})")
+            s.update(key="bici_supporto", sport="Ride", famiglia="bici", indoor=True,
+                     durata=minuti, nominale=minuti, scelta=("BikeCross", {"profilo": "recovery"}))
+            s["min"] = min(s["min"], minuti)
+        elif s["key"] in _CORSE_DA_ACCORCIARE or (s["key"] in _CORSE_FACILI and not converti):
+            k = _CORSE_DA_ACCORCIARE.get(s["key"], 0.90)
+            minuti = max(s["min"] if s["min"] < s["durata"] else 0, _a5(s["durata"] * k))
+            motivo = (f"{_descr_meteo(d, m)}: {NOMI.get(s['key'], s['key'])} accorciata a {minuti}' "
+                      f"— esci nelle ore piu' fresche, idratazione ed elettroliti")
+            s["durata"] = s["nominale"] = minuti
+        else:
+            continue
+        s["note"].append(motivo)
+        if motivo not in _MOTIVI_CALDO:
+            _MOTIVI_CALDO.append(motivo)
+    return sedute_sett
+
+
+def rimodula_per_caldo(ev, m, oggi, activities, profilo):
+    """(azione, motivo, minuti) per la seduta di oggi con il caldo, o None."""
+    if not m or not caldo.e_caldo(m.get("temp_c"), m.get("umidita_pct")) and not m.get("tag"):
+        return None
+    key = (ev.get("external_id") or ":").split(":")[1]
+    durata = round((ev.get("moving_time") or 0) / 60)
+    if key in _CORSE_FACILI and (profilo or {}).get("converti_corsa", True):
+        f = caldo.calc_bike_run_conversion(activities)[0]
+        minuti = _a5(durata * f)
+        return "converti", (f"{_descr_meteo(oggi, m)}: corsa facile convertita in bici indoor "
+                            f"{minuti}' (x{f:g})"), minuti
+    if key in _CORSE_DA_ACCORCIARE or key in _CORSE_FACILI:
+        minuti = _a5(durata * _CORSE_DA_ACCORCIARE.get(key, 0.90))
+        return "accorcia", (f"{_descr_meteo(oggi, m)}: accorciata a {minuti}' — esci nelle ore "
+                            f"piu' fresche, idratazione ed elettroliti"), minuti
+    return None
+
+
 def scelta_seduta(s):
     """(sessione_tipo, params) della libreria per questa seduta. Rotazione deterministica."""
     rot = (_dt(s["data"]).isocalendar()[1] + s.get("giorno", 0)) if s.get("data") else 0
@@ -2390,14 +2531,29 @@ def scelta_seduta(s):
     return tipo, dict(params)
 
 
+TEST_PROSSIMO = None   # test periodico da mettere nella W1 (impostato dal cervello)
+# 06/10/2026 (punto 6): profilo palestra dall'app {"attrezzatura": [...], "livello": ...};
+# FORZA_SETTIMANE = settimane dal primo uso (onboarding dei principianti), dal cervello.
+PROFILO_PALESTRA = json.loads(os.getenv("PALESTRA", "{}") or "{}")
+FORZA_SETTIMANE = None
+# 06/10/2026 (punto 7): previsioni {data: {temp_c, umidita_pct, ora}} dal cervello (None =
+# nessuna previsione: nessuna regola del caldo) e preferenze {"converti_corsa": bool}.
+METEO = None
+PROFILO_CALDO = json.loads(os.getenv("CALDO", "{}") or "{}")
+
+
 def eventi_da_libreria(s):
     """Eventi Intervals.icu della seduta, scritti da sedute.py. None per la mobilita'."""
+    if s.get("test"):
+        return soglie.eventi_test(s["test"], s["data"])
     fase_ic = sedute.FASE_IC.get(s.get("fase"), "Base")
     lthr = sedute.get_lthr("Run")
     bike_lthr, swim_lthr = sedute.get_lthr("Ride"), sedute.get_lthr("Swim")
     params_bici = {"ambiente": "indoor" if s.get("indoor") else "outdoor"}
     if s["key"] == "mobilita":
         return None
+    if s["key"] == "forza" and s.get("scheda"):     # 06/10/2026: libreria del documento
+        return [palestra.evento(s["scheda"], s["data"])]
     if s["key"] == "forza":
         return sedute.eventi_seduta(s["data"], s["nome"], "Gym", s["durata"], "WeightTraining",
                                     fase=fase_ic, gym_day_type=s.get("gym_day_type", "strength"))
@@ -2947,6 +3103,16 @@ def costruisci_settimana(lunedi, races, oura_hist, wellness, activities,
     for m in _MOTIVI_TAG:
         if m not in mod["motivi"]:
             mod["motivi"].append(m)
+    _MOTIVI_SETTIMANA[:] = [m for m in _MOTIVI_SETTIMANA if not m.startswith("forza del ")] \
+        if pos["fase"] != "senza_gara" else _MOTIVI_SETTIMANA
+    sedute = applica_caldo(sedute, giorni, activities)
+    for m in _MOTIVI_CALDO:
+        if m not in mod["motivi"]:
+            mod["motivi"].append(m)
+    sedute = assegna_schede(sedute, pos, giorni, races)
+    for m in _MOTIVI_SETTIMANA:
+        if m.startswith("forza del ") and m not in mod["motivi"]:
+            mod["motivi"].append(m)
     sedute = applica_disponibilita(sedute, DISPONIBILITA)
     sedute = applica_tetto_ore(sedute, MAX_ORE_CARDIO)
     info_carico = limita_tss(sedute, activities, lunedi, forma, pos)
@@ -3125,7 +3291,52 @@ def esegui_giornaliero(dry=False, force=False, pre_lock=None):
                 ("sw:brick_bici:", "sw:brick_corsa:"))]
             azioni.append("brick alleggerito: corsa di qualita' di ieri oltre il 125% del TSS pianificato")
     eff_tag = effetti_tag(oggi, oggi, TAG_GIORNI, TAG_SEDUTE, activities)
+    meteo_oggi = giorno_caldo(oggi)
     for ev in coach:
+        sch = palestra.scheda_da_nome(ev.get("name"))
+        if (sch and eff_tag["prevenzione"] and not eff_tag["riposo"]
+                and palestra.e_companion(sch)):
+            # 06/10/2026 (punto 6): la companion di oggi diventa la scheda di prevenzione
+            prev, _ = palestra.scegli_scheda("companion", pos, PROFILO_PALESTRA,
+                                             _dt(oggi).isocalendar()[1], prevenzione=eff_tag["prevenzione"])
+            if prev and prev["id"] != sch["id"]:
+                p = palestra.evento(prev, oggi)
+                p["external_id"] = ev.get("external_id")
+                scrivi_evento(p, ev, dry)
+                m = f"companion sostituita con {prev['titolo']} (prevenzione {eff_tag['prevenzione']})"
+                azioni.append(m)
+                if m not in _MOTIVI_TAG:
+                    _MOTIVI_TAG.append(m)
+            continue
+        per_caldo = rimodula_per_caldo(ev, meteo_oggi, oggi, activities, PROFILO_CALDO) if meteo_oggi else None
+        if per_caldo and per_caldo[0] == "converti":
+            # 06/10/2026 (punto 7): corsa facile -> bici indoor, evento nuovo
+            _, motivo, minuti = per_caldo
+            s = {"key": "bici_supporto", "sport": "Ride", "famiglia": "bici", "qualita": False,
+                 "declassata": False, "durata": minuti, "nominale": minuti, "indoor": True,
+                 "min": CATALOGO["bici_supporto"]["min"], "prio": CATALOGO["bici_supporto"]["prio"],
+                 "fase": pos["fase"], "distanza": pos["distanza"], "giorno": _dt(oggi).weekday(),
+                 "slot": 0, "note": [motivo], "companion": False, "data": oggi,
+                 "scelta": ("BikeCross", {"profilo": "recovery"})}
+            componi(s, ctx)
+            cancella_evento(ev, dry)
+            for p in payload_eventi(s, oggi):
+                scrivi_evento(p, None, dry)
+            azioni.append(motivo)
+            if motivo not in _MOTIVI_CALDO:
+                _MOTIVI_CALDO.append(motivo)
+            continue
+        if per_caldo and per_caldo[0] == "accorcia":
+            _, motivo, minuti = per_caldo
+            nuovo = dict(ev, moving_time=minuti * 60,
+                         description=(ev.get("description") or "") + f"\n{motivo}")
+            scrivi_evento({k: nuovo[k] for k in ("category", "start_date_local", "type", "name",
+                                                 "description", "moving_time", "external_id")
+                           if k in nuovo}, ev, dry)
+            azioni.append(motivo)
+            if motivo not in _MOTIVI_CALDO:
+                _MOTIVI_CALDO.append(motivo)
+            continue
         per_tag = rimodula_per_tag(ev, eff_tag)    # 05/10/2026: i tag dell'app vengono prima
         if per_tag:
             azione, motivo, durata_max = per_tag
@@ -3322,6 +3533,7 @@ def esegui_auto(modo="auto", dry=False, force=False, lunedi=None, senza_attesa=F
     _SCRITTURE[0] = 0
     _NON_SCRITTE.clear()
     _MOTIVI_TAG.clear()
+    _MOTIVI_CALDO.clear()
     try:
         if modo == "giornaliero":
             esito = esegui_giornaliero(dry, force, pre_lock=prendi_lock)

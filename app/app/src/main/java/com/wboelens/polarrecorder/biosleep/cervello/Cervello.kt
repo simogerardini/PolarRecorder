@@ -19,6 +19,8 @@ data class ConfigCervello(
     val senzaAttesa: Boolean = false,
     /** true = rifa' il lavoro anche se gia' fatto (solo "Ripianifica questa settimana"). */
     val forza: Boolean = false,
+    /** Posizione approssimativa per le previsioni del caldo; null = campo omesso. */
+    val posizione: Posizione? = null,
     /** Profilo dell'atleta: le FC dell'app hanno la precedenza su quelle di Intervals.icu. */
     val profilo: ProfiloAtleta? = null,
     /** {"giorni": {data: [chiavi]}, "sedute": {id: [chiavi]}} dal TagDb. */
@@ -41,14 +43,21 @@ data class ConfigCervello(
             addProperty("dry_run", dryRun)
             addProperty("senza_attesa", senzaAttesa)
             if (forza) addProperty("forza", true)
+            posizione?.let { p ->
+              add("posizione", JsonObject().apply {
+                addProperty("lat", p.lat)
+                addProperty("lon", p.lon)
+              })
+            }
             profilo?.let { add("profilo", it.json()) }
             tag?.let { add("tag", it) }
           }
           .toString()
 
   /** Per i log: mai la API key. */
+  /** Per i log: niente credenziali ne' posizione. */
   override fun toString() =
-      "ConfigCervello(credenziali=$credenziali, cartella=$cartella, modo=$modo, dryRun=$dryRun, senzaAttesa=$senzaAttesa)"
+      "ConfigCervello(credenziali=$credenziali, cartella=$cartella, modo=$modo, dryRun=$dryRun, senzaAttesa=$senzaAttesa, posizione=${if (posizione != null) "si" else "no"})"
 }
 
 /**
@@ -166,6 +175,51 @@ object Cervello {
           EsitoSoglie(Soglie.ERRORE, emptyList(), emptyMap(), "https://intervals.icu/settings", "Python: ${e.message}")
         }
       }
+
+  /** cervello.registra_css: tempi del test CSS (secondi) -> CSS su Intervals.icu, test chiuso. */
+  fun registraCss(context: Context, c: Credenziali, t400: Int, t200: Int): EsitoCss =
+      synchronized(lucchetto) {
+        if (!Python.isStarted()) Python.start(AndroidPlatform(context.applicationContext))
+        val cfg = JsonParser.parseString(ConfigCervello(c, cartella(context).absolutePath).json()).asJsonObject
+        cfg.addProperty("t400", t400)
+        cfg.addProperty("t200", t200)
+        try {
+          EsitoCss.da(Python.getInstance().getModule("cervello").callAttr("registra_css", cfg.toString()).toString())
+        } catch (e: PyException) {
+          EsitoCss("errore", null, "Python: ${e.message}")
+        }
+      }
+
+  /** Chiama una funzione del modulo con le credenziali piu' i campi in [extra]. */
+  private fun chiama(context: Context, funzione: String, c: Credenziali, extra: JsonObject.() -> Unit): String? =
+      synchronized(lucchetto) {
+        if (!Python.isStarted()) Python.start(AndroidPlatform(context.applicationContext))
+        val cfg = JsonParser.parseString(ConfigCervello(c, cartella(context).absolutePath).json()).asJsonObject.apply(extra)
+        try {
+          Python.getInstance().getModule("cervello").callAttr(funzione, cfg.toString()).toString()
+        } catch (e: PyException) {
+          null
+        }
+      }
+
+  /** cervello.gare: gare future con distanza riconosciuta e quella che detta la preparazione. */
+  fun gare(context: Context, c: Credenziali): EsitoGare =
+      chiama(context, "gare", c) {}?.let { Gare.elenco(it) } ?: EsitoGare("errore", emptyList(), "Python non disponibile")
+
+  /** cervello.salva_gara: nuova gara, o modifica con [id]. */
+  fun salvaGara(context: Context, c: Credenziali, nome: String, data: String, priorita: String, distanza: String, id: String?): EsitoGara =
+      chiama(context, "salva_gara", c) {
+        addProperty("nome", nome)
+        addProperty("data", data)
+        addProperty("priorita", priorita)
+        addProperty("distanza", distanza)
+        id?.let { addProperty("id", it) }
+      }?.let { Gare.esito(it) } ?: EsitoGara("errore", null, false, "Python non disponibile")
+
+  /** cervello.elimina_gara: solo eventi che sono davvero gare. */
+  fun eliminaGara(context: Context, c: Credenziali, id: String): EsitoGara =
+      chiama(context, "elimina_gara", c) { addProperty("id", id) }?.let { Gare.esito(it) }
+          ?: EsitoGara("errore", null, false, "Python non disponibile")
 
   fun esegui(context: Context, config: ConfigCervello): RisultatoCervello =
       synchronized(lucchetto) {

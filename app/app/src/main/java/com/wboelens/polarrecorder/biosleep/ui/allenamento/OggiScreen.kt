@@ -58,7 +58,9 @@ import com.wboelens.polarrecorder.biosleep.training.GiornoCal
 import com.wboelens.polarrecorder.biosleep.training.Metrica
 import com.wboelens.polarrecorder.biosleep.training.SedutaPianificata
 import com.wboelens.polarrecorder.biosleep.ui.RigaTagOggi
+import com.wboelens.polarrecorder.biosleep.ui.MessaggioCss
 import com.wboelens.polarrecorder.biosleep.ui.SoglieOggi
+import com.wboelens.polarrecorder.biosleep.ui.TestOggi
 import java.time.LocalDate
 
 /** Una notte dalla wellness: valori BioSleep inviati da questa app. */
@@ -140,6 +142,9 @@ fun OggiScreen(
       RiquadroRiepilogo(LocalDate.now(), onApriRiepilogo)
       // soglie mancanti su Intervals.icu: card solo se servono
       SoglieOggi()
+      // test periodici: test in programma questa settimana, tempi del test CSS
+      TestOggi()
+      MessaggioCss()
       RigaTagOggi(onApriTag)
       if (dati == null) {
         Box(Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) { CircularProgressIndicator() }

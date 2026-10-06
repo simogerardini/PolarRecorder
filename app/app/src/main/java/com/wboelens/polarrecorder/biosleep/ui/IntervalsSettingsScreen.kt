@@ -58,7 +58,12 @@ import kotlinx.coroutines.withContext
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun IntervalsSettingsScreen(onBack: () -> Unit, onApriProfilo: () -> Unit = {}) {
+fun IntervalsSettingsScreen(
+    onBack: () -> Unit,
+    onApriProfilo: () -> Unit = {},
+    onApriGare: () -> Unit = {},
+    onApriLicenze: () -> Unit = {},
+) {
   val context = LocalContext.current
   val settings = remember { IntervalsSettings(context) }
   val scope = rememberCoroutineScope()
@@ -110,9 +115,10 @@ fun IntervalsSettingsScreen(onBack: () -> Unit, onApriProfilo: () -> Unit = {}) 
       } else {
         Text(
             "Collega il tuo account: BioSleep potrà inviare le notti, leggere sedute e calendario e " +
-                "creare da solo i campi BioSleep.",
+                "creare da solo i campi BioSleep. Prima di collegarti leggi quali dati vanno a Intervals.icu.",
             style = MaterialTheme.typography.bodySmall,
             color = MaterialTheme.colorScheme.onSurfaceVariant)
+        RigaInformativa()
         Button(onClick = { OAuthIntervals.avvia(context) }) { Text("Collega Intervals.icu") }
       }
       stato.messaggio?.let { Text(it, style = MaterialTheme.typography.bodySmall) }
@@ -213,7 +219,10 @@ fun IntervalsSettingsScreen(onBack: () -> Unit, onApriProfilo: () -> Unit = {}) 
 
       HorizontalDivider()
       // Il coach nell'app (cervello Python): id atleta per la API key, ultimo run, profilo, misura
-      SezioneCoach(onApriProfilo)
+      SezioneCoach(onApriProfilo, onApriGare)
+
+      HorizontalDivider()
+      SezioneInformazioni(onApriLicenze)
     }
   }
 }

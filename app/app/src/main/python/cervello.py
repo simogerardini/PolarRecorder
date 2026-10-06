@@ -15,7 +15,13 @@ config (JSON):
                   ("Ripianifica questa settimana"); le sedute passate non si toccano
   tag             facoltativo: {"giorni": {"YYYY-MM-DD": [chiavi]}, "sedute": {"<id attivita'>": [chiavi]}}
                   vocabolario in coach_settimanale.TAG_GIORNO / TAG_SEDUTA
+  posizione       facoltativo: {"lat", "lon"} dal telefono (meteo per i giorni caldi;
+                  arrotondata a 2 decimali prima di chiedere le previsioni)
   profilo         facoltativo: {"fc_max", "fc_riposo", "tetto_ore",
+                  "caldo": {"converti_corsa": true, "ora_feriale": 18, "ora_weekend": 10},
+                  "palestra": {"attrezzatura": [barbell_gym, kettlebell, trx_suspension,
+                               resistance_bands, bodyweight_only, hotel_minimal],
+                               "livello": "beginner"|"intermediate"|"advanced"},
                   "disponibilita": {"lun".."dom": minuti massimi, 0 = non disponibile},
                   "settimana": {"lungo_bici": "sab", "lungo_corsa": "dom", "riposo": null,
                                 "sedute": {"nuoto": 2, "bici": 2, "corsa": 3, "forza": 2}}}
@@ -35,7 +41,7 @@ Nessuna chiamata a GitHub o Telegram: solo Intervals.icu (Oura rimossa il 04/10/
 ricaricati a ogni avvio perche' l'interprete resta vivo nel processo dell'app e le
 variabili globali di un run non devono passare al successivo.
 """
-import contextlib, importlib, io, json, os, sys, traceback
+import contextlib, importlib, io, json, os, re, sys, traceback
 
 _VARIABILI_ESTERNE = ("GH_TOKEN", "GITHUB_REPOSITORY", "TELEGRAM_TOKEN", "TELEGRAM_CHAT_ID")
 cs = None
@@ -210,6 +216,193 @@ def controlla_soglie(config_json):
     return json.dumps(out, ensure_ascii=False)
 
 
+def registra_css(config_json):
+    """Tempi del test CSS inseriti nell'app: {"t400": secondi, "t200": secondi}.
+    Calcola il CSS, lo scrive come passo soglia del nuoto su Intervals.icu e chiude il
+    test nello stato. Risultato: {"esito": "ok"|"valori_non_validi"|"permesso_mancante"|
+    "errore", "css": "m:ss/100m"}."""
+    import soglie as sg
+    cfg = json.loads(config_json)
+    out = {"esito": "errore"}
+    css = sg.css_da_tempi(cfg.get("t400"), cfg.get("t200"))
+    if css is None:
+        out["esito"] = "valori_non_validi"
+        out["errore"] = "tempi incoerenti: il 400 deve durare circa il doppio del 200"
+        return json.dumps(out)
+    try:
+        h, atleta = _intestazioni(cfg)
+        sg.configura(h, atleta)
+        r = sg._http().put(f"https://intervals.icu/api/v1/athlete/{atleta}/sport-settings/Swim",
+                           headers=h, json={"threshold_pace": round(css, 4)}, timeout=30)
+        if r.status_code in (401, 403):
+            out["esito"] = "permesso_mancante"
+            return json.dumps(out)
+        if r.status_code not in (200, 204):
+            out["errore"] = f"scrittura CSS: HTTP {r.status_code}"
+            return json.dumps(out)
+        out.update(esito="ok", css=sg._passo_txt(css, 100, "100m"))
+        if cfg.get("cartella"):        # chiude il test nello stato del coach
+            import coach_settimanale as cs_
+            cs_.STATE_FILE = os.path.join(os.path.abspath(cfg["cartella"]), "stato_coach.json")
+            st = cs_.carica_stato()
+            t = st.get("ultimo_test") or {}
+            if t.get("chiave") == "swim_css":
+                t.update(elaborato=True, attesa_tempi=False, css=round(css, 4))
+                cs_.salva_stato(st)
+    except Exception as e:
+        out["errore"] = f"{type(e).__name__}: {e}"
+    return json.dumps(out)
+
+
+# ── GARE CREATE DALL'APP (06/10/2026 — roadmap punto 5) ─────────────────────────────
+# Una gara e' un evento RACE_A/B/C su Intervals.icu: la periodizzazione del coach la legge
+# gia' (get_races / gara_obiettivo / classifica_distanza). La distanza va nel nome e nella
+# descrizione con le parole che classifica_distanza riconosce. Lo sprint si prepara come
+# l'olimpico (stesse tabelle).
+DISTANZE_GARA = {
+    "sprint":   ("Triathlon sprint", "distanza: sprint (0,75 / 20 / 5 km) — preparazione olimpica"),
+    "olimpico": ("Triathlon olimpico", "distanza: olimpico (1,5 / 40 / 10 km)"),
+    "70.3":     ("Triathlon 70.3", "distanza: 70.3 half (1,9 / 90 / 21,1 km)"),
+    "full":     ("Triathlon full distance", "distanza: full distance (3,8 / 180 / 42,2 km)"),
+}
+GARA_MESI_MAX = 18
+_RE_SUFFISSO_DISTANZA = re.compile(
+    r"(?:\s+—\s+(?:" + "|".join(re.escape(t) for t, _ in DISTANZE_GARA.values()) + r"))+\s*$")
+_RE_DISTANZA_SCELTA = re.compile(r"^distanza:\s*(sprint|olimpico|70\.3|full)\b", re.M | re.I)
+
+
+def _http_icu(cfg):
+    import requests
+    h, atleta = _intestazioni(cfg)
+    return requests.Session(), h, f"https://intervals.icu/api/v1/athlete/{atleta}"
+
+
+def salva_gara(config_json):
+    """Crea (o modifica, con "id") una gara: {"nome", "data": "YYYY-MM-DD",
+    "priorita": "A"|"B"|"C", "distanza": "sprint"|"olimpico"|"70.3"|"full"}.
+    Risultato: {"esito": "ok"|"valori_non_validi"|"permesso_mancante"|"errore", "id",
+    "ripianifica": true -> l'app lancia la ripianificazione forzata della settimana}."""
+    from datetime import datetime, timedelta
+    cfg = json.loads(config_json)
+    out = {"esito": "errore"}
+    nome = (cfg.get("nome") or "").strip()[:60]
+    try:
+        data = datetime.strptime(cfg.get("data") or "", "%Y-%m-%d")
+    except ValueError:
+        data = None
+    oggi = datetime.now().replace(hour=0, minute=0, second=0, microsecond=0)
+    errori = []
+    if not nome:
+        errori.append("nome mancante")
+    if not data or data < oggi or data > oggi + timedelta(days=GARA_MESI_MAX * 31):
+        errori.append(f"data non valida: da oggi a {GARA_MESI_MAX} mesi")
+    if cfg.get("priorita") not in ("A", "B", "C"):
+        errori.append("priorita' A, B o C")
+    if cfg.get("distanza") not in DISTANZE_GARA:
+        errori.append("distanza: sprint, olimpico, 70.3 o full")
+    if errori:
+        out.update(esito="valori_non_validi", errore="; ".join(errori))
+        return json.dumps(out)
+    titolo, descr = DISTANZE_GARA[cfg["distanza"]]
+    giorno = data.strftime("%Y-%m-%d")
+    # BUG FIX (06/10/2026): in modifica il nome arriva con il suffisso della distanza
+    # precedente; senza toglierlo si accumulava ("Lago — Triathlon sprint — Triathlon
+    # olimpico"). Si tolgono tutti i suffissi " — <titolo di distanza>" in coda.
+    nome = _RE_SUFFISSO_DISTANZA.sub("", nome).strip() or nome
+    ev = {"category": f"RACE_{cfg['priorita']}", "start_date_local": f"{giorno}T00:00:00",
+          "name": f"{nome} — {titolo}" if titolo.lower() not in nome.lower() else nome,
+          "description": f"{descr}\nGara {cfg['priorita']} creata da BioSleep.",
+          "external_id": f"app:gara:{cfg.get('id') or giorno}"}
+    try:
+        http, h, base = _http_icu(cfg)
+        if cfg.get("id"):
+            r = http.put(f"{base}/events/{cfg['id']}", headers=h, json=ev, timeout=30)
+        else:
+            r = http.post(f"{base}/events", headers=h, json=ev, timeout=30)
+        if r.status_code in (401, 403):
+            out["esito"] = "permesso_mancante"
+        elif r.status_code in (200, 201):
+            out.update(esito="ok", id=(r.json() or {}).get("id") or cfg.get("id"), ripianifica=True)
+        else:
+            out["errore"] = f"HTTP {r.status_code} {r.text[:120]}"
+    except Exception as e:
+        out["errore"] = f"{type(e).__name__}: {e}"
+    return json.dumps(out)
+
+
+def elimina_gara(config_json):
+    """Elimina la gara {"id"} solo se l'evento e' davvero una gara (RACE_*)."""
+    from datetime import datetime, timedelta
+    cfg = json.loads(config_json)
+    out = {"esito": "errore"}
+    try:
+        http, h, base = _http_icu(cfg)
+        oggi = datetime.now()
+        r = http.get(f"{base}/events", headers=h, timeout=30,
+                     params={"oldest": (oggi - timedelta(days=30)).strftime("%Y-%m-%d"),
+                             "newest": (oggi + timedelta(days=GARA_MESI_MAX * 31)).strftime("%Y-%m-%d")})
+        if r.status_code in (401, 403):
+            out["esito"] = "permesso_mancante"
+            return json.dumps(out)
+        ev = next((e for e in (r.json() or []) if str(e.get("id")) == str(cfg.get("id"))), None)
+        if not ev or not (ev.get("category") or "").startswith("RACE"):
+            out["esito"] = "non_trovata"
+            return json.dumps(out)
+        rd = http.delete(f"{base}/events/{cfg['id']}", headers=h, timeout=30)
+        if rd.status_code in (200, 204):
+            out.update(esito="ok", ripianifica=True)
+        else:
+            out["errore"] = f"HTTP {rd.status_code}"
+    except Exception as e:
+        out["errore"] = f"{type(e).__name__}: {e}"
+    return json.dumps(out)
+
+
+def gare(config_json):
+    """Elenco delle gare future per l'app: id, nome, data, priorita', distanza come la
+    riconosce il coach, settimane alla gara, e quale detta la periodizzazione."""
+    from datetime import datetime, timedelta
+    import coach_settimanale as voc
+    cfg = json.loads(config_json)
+    out = {"esito": "errore", "gare": []}
+    try:
+        http, h, base = _http_icu(cfg)
+        oggi = datetime.now()
+        oggi_s = oggi.strftime("%Y-%m-%d")
+        r = http.get(f"{base}/events", headers=h, timeout=30,
+                     params={"oldest": oggi_s,
+                             "newest": (oggi + timedelta(days=GARA_MESI_MAX * 31)).strftime("%Y-%m-%d")})
+        if r.status_code in (401, 403):
+            out["esito"] = "permesso_mancante"
+            return json.dumps(out)
+        lista = []
+        for e in r.json() or []:
+            cat = e.get("category") or ""
+            if not cat.startswith("RACE"):
+                continue
+            g = {"id": e.get("id"), "name": e.get("name") or "", "date": (e.get("start_date_local") or "")[:10],
+                 "category": cat, "priorita": {"RACE_A": 1, "RACE_B": 2, "RACE_C": 3}.get(cat, 9),
+                 "dist_km": round((e.get("distance") or 0) / 1000, 1),
+                 "desc": (e.get("description") or "")[:300]}
+            lista.append(g)
+        obiettivo = voc.gara_obiettivo(lista, oggi_s)
+        lun = voc.lunedi_di(oggi_s)
+        for g in sorted(lista, key=lambda x: x["date"]):
+            out["gare"].append({
+                "id": g["id"], "nome": g["name"], "data": g["date"], "priorita": g["category"][-1],
+                "distanza": voc.classifica_distanza(g),
+                # 06/10/2026: la distanza scelta dall'utente (riga "distanza:" scritta da
+                # salva_gara); "distanza" resta quella della preparazione (sprint -> olimpico)
+                "distanza_scelta": (lambda m: m.group(1).lower() if m else None)(
+                    _RE_DISTANZA_SCELTA.search(g.get("desc") or "")),
+                "settimane": voc.settimane_alla_gara(lun, g["date"]),
+                "obiettivo": bool(obiettivo and obiettivo["id"] == g["id"])})
+        out["esito"] = "ok"
+    except Exception as e:
+        out["errore"] = f"{type(e).__name__}: {e}"
+    return json.dumps(out, ensure_ascii=False)
+
+
 def valida_tag(tag):
     """({"giorni", "sedute"} con le sole chiavi del vocabolario, [chiavi scartate])."""
     import coach_settimanale as voc
@@ -226,8 +419,8 @@ def valida_tag(tag):
 
 def _carica_moduli():
     global cs
-    import sedute, biometria, carico, coach_settimanale
-    for m in (sedute, biometria, carico, coach_settimanale):
+    import sedute, biometria, carico, soglie, palestra, caldo, coach_settimanale
+    for m in (sedute, biometria, carico, soglie, palestra, caldo, coach_settimanale):
         importlib.reload(m)
     cs = coach_settimanale
     return sedute
@@ -272,6 +465,37 @@ def _unisci_al_settimanale(percorso, rie):
     return unito
 
 
+_NOMI_SPORT = {"Run": "corsa", "Ride": "bici", "Swim": "nuoto"}
+
+
+def _aggiorna_soglie(piano, atleta, oggi):
+    """Punto 4: registra il test messo nel piano e alza LTHR/FTP dagli sforzi reali
+    (algoritmi di intervals_coach: solo al rialzo). Righe per gli avvisi del riepilogo.
+    Un errore qui non ferma il run: finisce nel log."""
+    righe = []
+    try:
+        stato = cs.carica_stato()
+        for s in (piano or {}).get("sedute", []):
+            if s.get("test"):
+                stato["ultimo_test"] = {"data": s["data"], "chiave": s["test"]["chiave"],
+                                        "nome": s["test"]["nome"]}
+                righe.append(f"test in programma il {s['data']}: {s['test']['nome']}")
+        cs.soglie.configura(cs.ICU, cs.ATHLETE_ID, atleta,
+                            cs.get_activities(cs.soglie.LTHR_LOOKBACK_DAYS))
+        righe += cs.soglie.elabora_test(stato, oggi)      # passo soglia dal test, CSS
+        agg, _ = cs.soglie.aggiorna_lthr_automatico(stato, oggi)
+        for a in agg:
+            righe.append(f"LTHR {_NOMI_SPORT.get(a['sport'], a['sport'])} {a['da']} -> {a['a']} "
+                         f"aggiornata su Intervals.icu dagli sforzi reali")
+        agg_ftp, _ = cs.soglie.aggiorna_bike_ftp_automatico(stato, oggi)
+        for a in agg_ftp or []:
+            righe.append(f"FTP bici {a.get('da') or 'nessuna'} -> {a['a']} W aggiornata su Intervals.icu")
+        cs.salva_stato(stato)
+    except Exception:
+        print("  ⚠️ Aggiornamento soglie non riuscito:\n" + traceback.format_exc())
+    return righe
+
+
 def _riepilogo(piano, esito, notifiche, oggi):
     if piano:
         mod = piano.get("mod") or {}
@@ -314,7 +538,8 @@ def esegui_app(config_json):
     # 04/10/2026: profilo atleta dall'app. FC massima e a riposo (aggiornate dall'app man
     # mano che raccoglie dati) valgono piu' di quelle su Intervals.icu; disponibilita' per
     # giorno in minuti (0 = non disponibile); tetto ore cardio settimanale.
-    for k in ("FCMAX", "FCREST", "FC_DA_APP", "MAX_ORE_CARDIO_SETT", "DISPONIBILITA", "SETTIMANA_TIPO"):
+    for k in ("FCMAX", "FCREST", "FC_DA_APP", "MAX_ORE_CARDIO_SETT", "DISPONIBILITA", "SETTIMANA_TIPO",
+              "PALESTRA", "CALDO"):
         os.environ.pop(k, None)
     prof = cfg.get("profilo") or {}
     if prof.get("fc_max") and prof.get("fc_riposo"):
@@ -324,6 +549,10 @@ def esegui_app(config_json):
         os.environ["MAX_ORE_CARDIO_SETT"] = str(float(prof["tetto_ore"]))
     if prof.get("disponibilita"):
         os.environ["DISPONIBILITA"] = json.dumps(prof["disponibilita"])
+    if prof.get("caldo"):         # 06/10/2026: preferenze per i giorni caldi (punto 7)
+        os.environ["CALDO"] = json.dumps(prof["caldo"])
+    if prof.get("palestra"):      # 06/10/2026: attrezzatura e livello (roadmap punto 6)
+        os.environ["PALESTRA"] = json.dumps(prof["palestra"])
     if prof.get("settimana"):     # 06/10/2026: settimana tipo configurabile (roadmap punto 2)
         os.environ["SETTIMANA_TIPO"] = json.dumps(prof["settimana"])
     out = {"esito": "errore", "notifiche": [], "riepilogo_file": None, "log_file": None}
@@ -342,11 +571,35 @@ def esegui_app(config_json):
             atleta = r.json() if r.status_code == 200 else {}
             sedute.configura(atleta, cs.get_activities(42))
             oggi = cs.now_local().strftime("%Y-%m-%d")
+            # 06/10/2026 (punto 7): previsioni nel luogo del telefono, oggi + 7 giorni
+            posiz = cfg.get("posizione") or {}
+            if posiz.get("lat") is not None and posiz.get("lon") is not None:
+                d0 = cs._dt(oggi)
+                cs.METEO = cs.caldo.previsioni(
+                    posiz["lat"], posiz["lon"],
+                    [(d0 + cs.timedelta(days=i)).strftime("%Y-%m-%d") for i in range(8)],
+                    cs.PROFILO_CALDO)
+            # 06/10/2026 (punto 4): test periodico da proporre se l'ultimo e' vecchio
+            stato0 = cs.carica_stato()
+            # 06/10/2026 (punto 6): settimane dal primo uso della forza (onboarding)
+            if not stato0.get("forza_inizio") and not cfg.get("dry_run"):
+                stato0["forza_inizio"] = oggi
+                cs.salva_stato(stato0)
+            if stato0.get("forza_inizio"):
+                cs.FORZA_SETTIMANE = (cs._dt(oggi) - cs._dt(stato0["forza_inizio"])).days // 7
+            gg_test = cs.soglie.giorni_da_ultimo_test(stato0, oggi)
+            if gg_test is None or gg_test >= cs.soglie.TEST_TARGET_GG:
+                cs.TEST_PROSSIMO = cs.soglie.prossimo_test_in_rotazione(stato0)
             # 06/10/2026: "forza" = "Ripianifica questa settimana" dall'app (ignora il flag;
             # il passato non si riscrive comunque).
             esito, piano = cs.esegui_auto(cfg.get("modo", "auto"), bool(cfg.get("dry_run")),
                                           bool(cfg.get("forza")), None, bool(cfg.get("senza_attesa")))
             out["esito"] = esito
+            cs.TEST_PROSSIMO = None     # vale solo per questo run
+            cs.METEO = None
+            soglie_agg = []
+            if not cfg.get("dry_run") and esito in ("pianificata", "fatto", "niente"):
+                soglie_agg = _aggiorna_soglie(piano, atleta, oggi)
             if esito in ("pianificata", "fatto", "niente") and not cfg.get("dry_run"):
                 rie = _riepilogo(piano, esito, out["notifiche"], oggi)
                 stato = cs.carica_stato()
@@ -370,6 +623,11 @@ def esegui_app(config_json):
                     rie["avvisi"] = "\n".join(x for x in [rie.get("avvisi") or "",
                                                          "settimana tipo non valida, uso quella predefinita: "
                                                          + "; ".join(errori_sett)] if x)
+                if soglie_agg:
+                    rie["avvisi"] = "\n".join(x for x in [rie.get("avvisi") or ""] + soglie_agg if x)
+                da_compl = cs.soglie.test_da_completare(cs.carica_stato())
+                if da_compl:
+                    rie["test_da_completare"] = da_compl
                 # 06/10/2026: soglie bloccanti mancanti su Intervals.icu (punto 3)
                 bloccanti = [f"{m['disciplina']} {m['campo']}" for m in verifica_soglie(atleta)[0]
                              if m["gravita"] == "bloccante"]

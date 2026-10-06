@@ -1,5 +1,8 @@
 package com.wboelens.polarrecorder.biosleep.ui
 
+import android.Manifest
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
@@ -16,6 +19,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
+import androidx.compose.material3.Checkbox
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.Icon
@@ -24,6 +28,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
@@ -31,6 +36,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.produceState
 import androidx.compose.runtime.remember
@@ -43,7 +49,10 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.work.WorkInfo
 import androidx.work.WorkManager
+import com.wboelens.polarrecorder.biosleep.cervello.Caldo
 import com.wboelens.polarrecorder.biosleep.cervello.GIORNI
+import com.wboelens.polarrecorder.biosleep.cervello.Palestra
+import com.wboelens.polarrecorder.biosleep.cervello.PosizioneTelefono
 import com.wboelens.polarrecorder.biosleep.cervello.ProfiloAtleta
 import com.wboelens.polarrecorder.biosleep.cervello.ProfiloRepo
 import com.wboelens.polarrecorder.biosleep.cervello.ProfiloStore
@@ -71,7 +80,7 @@ private fun numeroIntero(t: String, limiti: IntRange): Int? = t.trim().toIntOrNu
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ProfiloScreen(onBack: () -> Unit) {
+fun ProfiloScreen(onBack: () -> Unit, onApriGare: () -> Unit = {}) {
   val context = LocalContext.current.applicationContext
   val store = remember { ProfiloStore(context) }
   val iniziale = remember { store.leggi() }
@@ -88,6 +97,22 @@ fun ProfiloScreen(onBack: () -> Unit) {
   var riposo by remember { mutableStateOf(iniziale.settimana.riposo) }
   var sedute by remember { mutableStateOf(iniziale.settimana.sedute) }
   val settimana = SettimanaTipo(lungoBici, lungoCorsa, riposo, sedute)
+  // Palestra
+  var attrezzi by remember { mutableStateOf(iniziale.palestra.attrezzatura - Palestra.SEMPRE) }
+  var livello by remember { mutableStateOf(iniziale.palestra.livello) }
+  val palestra = Palestra(attrezzi, livello)
+  var palestraSalvata by remember { mutableStateOf(iniziale.palestra) }
+  // Caldo
+  var converti by remember { mutableStateOf(iniziale.caldo.convertiCorsa) }
+  var oraFeriale by remember { mutableIntStateOf(iniziale.caldo.oraFeriale) }
+  var oraWeekend by remember { mutableIntStateOf(iniziale.caldo.oraWeekend) }
+  var posizioneOk by remember { mutableStateOf(PosizioneTelefono.permesso(context)) }
+  var posizioneNegata by remember { mutableStateOf(false) }
+  val chiediPosizione =
+      rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission()) { ok ->
+        posizioneOk = ok
+        posizioneNegata = !ok
+      }
   // Avvisi del coach sulla settimana tipo, dal riepilogo piu' recente
   val versioneRie by RiepilogoDb.versione.collectAsState()
   val ultimo by produceState<Riepilogo?>(null, versioneRie) { value = withContext(Dispatchers.IO) { RiepilogoDb.get(context).ultimo() } }
@@ -119,7 +144,9 @@ fun ProfiloScreen(onBack: () -> Unit) {
           fcRiposo = numeroIntero(fcRiposo, ProfiloAtleta.LIMITI_FC_RIPOSO),
           tettoOre = tettoNum.takeIf { tetto.isNotBlank() },
           disponibilita = minuti.mapNotNull { (g, v) -> numeroIntero(v, ProfiloAtleta.LIMITI_MINUTI)?.let { g to it } }.toMap(),
-          settimana = settimana)
+          settimana = settimana,
+          palestra = palestra,
+          caldo = Caldo(converti, oraFeriale, oraWeekend))
 
   Scaffold(
       topBar = {
@@ -136,6 +163,9 @@ fun ProfiloScreen(onBack: () -> Unit) {
           "Il coach usa questi valori al posto di quelli di Intervals.icu. Un campo vuoto non viene mandato.",
           style = MaterialTheme.typography.bodySmall,
           color = MaterialTheme.colorScheme.onSurfaceVariant)
+
+      // Gare: la preparazione si costruisce su quella che detta la stagione
+      OutlinedButton(onClick = onApriGare) { Text("Gare in programma") }
 
       // Soglie di corsa, bici e nuoto su Intervals.icu (controllate a ogni apertura)
       SezioneSoglie()
@@ -205,10 +235,59 @@ fun ProfiloScreen(onBack: () -> Unit) {
             color = ColoriBio.giallo)
       }
 
+      // --- Palestra ------------------------------------------------------------------------------
+      Text("Palestra", style = MaterialTheme.typography.titleSmall)
+      Nota("Attrezzatura disponibile: il coach sceglie le schede di forza tra quelle che puoi fare.")
+      for ((k, etichetta) in Palestra.ATTREZZI) {
+        val sempre = k in Palestra.SEMPRE
+        Row(verticalAlignment = Alignment.CenterVertically) {
+          Checkbox(
+              checked = sempre || k in attrezzi,
+              onCheckedChange = { on -> attrezzi = if (on) attrezzi + k else attrezzi - k; esito = null },
+              enabled = !sempre)
+          Text(etichetta + if (sempre) " (sempre incluso)" else "")
+        }
+      }
+      Text("Livello", style = MaterialTheme.typography.labelLarge)
+      Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+        for ((k, etichetta) in Palestra.LIVELLI) FilterChip(selected = livello == k, onClick = { livello = k; esito = null }, label = { Text(etichetta) })
+      }
+      Nota("Principiante: le prime 4 settimane una scheda di adattamento.")
+      // nel riepilogo piu' recente: sedute di forza tolte dal coach (e perche')
+      ultimo?.motivi?.filter { Regex("""forza del .* tolta""", RegexOption.IGNORE_CASE).containsMatchIn(it) }?.forEach {
+        Text("• " + it.trim(), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+      }
+
+      // --- Caldo --------------------------------------------------------------------------------
+      Text("Caldo", style = MaterialTheme.typography.titleSmall)
+      Row(verticalAlignment = Alignment.CenterVertically) {
+        Text("Nei giorni caldi trasforma la corsa facile in bici indoor", Modifier.weight(1f))
+        Switch(checked = converti, onCheckedChange = { converti = it; esito = null })
+      }
+      Text("Di solito mi alleno alle…", style = MaterialTheme.typography.labelLarge)
+      OraAllenamento("Giorni feriali", oraFeriale) { oraFeriale = it; esito = null }
+      OraAllenamento("Weekend", oraWeekend) { oraWeekend = it; esito = null }
+      Nota("Il coach legge la previsione a quest'ora.")
+      if (posizioneOk) {
+        Nota("Posizione approssimativa consentita: il coach usa le previsioni del luogo in cui ti trovi.")
+      } else {
+        Nota("Serve per le previsioni meteo: nei giorni caldi il coach adatta le corse. Senza, il coach funziona uguale, senza regole del caldo.")
+        RigaInformativa("Come viene usata la posizione")
+        OutlinedButton(onClick = { chiediPosizione.launch(Manifest.permission.ACCESS_COARSE_LOCATION) }) {
+          Text("Consenti la posizione approssimativa")
+        }
+        if (posizioneNegata) {
+          Nota("Se Android non la chiede più: Impostazioni di Android → App → BioSleep → Autorizzazioni → Posizione.")
+        }
+      }
+
       Button(
           onClick = {
             store.salva(profilo())
             esito = "Salvato: vale dalla prossima pianificazione settimanale"
+            // palestra cambiata: le schede della settimana sono gia' scritte, si propone di rifarle
+            if (palestra != palestraSalvata) conferma = true
+            palestraSalvata = palestra
           },
           enabled = valido,
       ) {
@@ -282,6 +361,17 @@ private fun SceltaGiorno(titolo: String, scelto: String?, vietati: Set<String>, 
             label = { Text(SIGLE.getValue(g)) })
       }
     }
+  }
+}
+
+/** Ora di allenamento abituale (5:00-21:00), per la previsione del caldo. */
+@Composable
+private fun OraAllenamento(titolo: String, ora: Int, onCambia: (Int) -> Unit) {
+  Row(verticalAlignment = Alignment.CenterVertically) {
+    Text(titolo, Modifier.weight(1f))
+    OutlinedButton(onClick = { onCambia(ora - 1) }, enabled = ora > Caldo.ORE.first) { Text("−") }
+    Text("%02d:00".format(ora), Modifier.width(64.dp), style = MaterialTheme.typography.titleMedium, textAlign = TextAlign.Center)
+    OutlinedButton(onClick = { onCambia(ora + 1) }, enabled = ora < Caldo.ORE.last) { Text("+") }
   }
 }
 

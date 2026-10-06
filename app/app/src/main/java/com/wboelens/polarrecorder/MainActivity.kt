@@ -37,6 +37,8 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.withTimeoutOrNull
+import com.wboelens.polarrecorder.biosleep.ui.GareScreen
+import com.wboelens.polarrecorder.biosleep.ui.LicenzeScreen
 import com.wboelens.polarrecorder.biosleep.ui.ProfiloScreen
 import com.wboelens.polarrecorder.biosleep.ui.TagScreen
 import com.wboelens.polarrecorder.biosleep.ui.SonnoScreen
@@ -283,7 +285,11 @@ class MainActivity : ComponentActivity() {
             }
             composable("grafici") { GraficiScreen(bottomBar = { BarraBioSleep(navController) }) }
             composable("sonno") { SonnoScreen(onBack = { navController.navigateUp() }) }
-            composable("profilo") { ProfiloScreen(onBack = { navController.navigateUp() }) }
+            composable("profilo") {
+              ProfiloScreen(onBack = { navController.navigateUp() }, onApriGare = { navController.navigate("gare") })
+            }
+            composable("gare") { GareScreen(onBack = { navController.navigateUp() }) }
+            composable("licenze") { LicenzeScreen(onBack = { navController.navigateUp() }) }
             composable("tag/{data}") { entry ->
               TagScreen(
                   dataIniziale = entry.arguments?.getString("data") ?: java.time.LocalDate.now().toString(),
@@ -332,6 +338,8 @@ class MainActivity : ComponentActivity() {
               IntervalsSettingsScreen(
                   onBack = { navController.navigateUp() },
                   onApriProfilo = { navController.navigate("profilo") },
+                  onApriGare = { navController.navigate("gare") },
+                  onApriLicenze = { navController.navigate("licenze") },
               )
             }
             composable(

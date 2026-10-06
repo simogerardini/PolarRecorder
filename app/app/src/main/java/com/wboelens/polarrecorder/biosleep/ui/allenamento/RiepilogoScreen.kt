@@ -21,6 +21,8 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Sell
+import androidx.compose.material.icons.filled.Update
+import androidx.compose.material.icons.filled.WbSunny
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
@@ -54,6 +56,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.rememberTextMeasurer
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import com.wboelens.polarrecorder.biosleep.cervello.AvvisiSoglie
 import com.wboelens.polarrecorder.biosleep.readiness.FormaCalc
 import com.wboelens.polarrecorder.biosleep.riepilogo.AltaIntensita
 import com.wboelens.polarrecorder.biosleep.riepilogo.BiometriaCoach
@@ -96,7 +99,14 @@ private fun titolo(r: Riepilogo) =
 
 /** Sottotitolo: motivo della decisione, oppure il primo motivo, oppure la prima riga del testo. */
 private fun motivo(r: Riepilogo) =
-    r.decisione.motivo ?: r.motivi.firstOrNull() ?: r.testo?.lines()?.firstOrNull { it.isNotBlank() }
+    r.decisione.motivo ?: motiviPiano(r).firstOrNull() ?: r.testo?.lines()?.firstOrNull { it.isNotBlank() }
+
+private val FORZA_TOLTA = Regex("""forza del .* tolta""", RegexOption.IGNORE_CASE)
+
+/** "forza del <data> tolta: ..." stanno nella sezione Settimana, non tra i motivi del piano. */
+private fun forzaTolta(r: Riepilogo) = r.motivi.filter { FORZA_TOLTA.containsMatchIn(it) }
+
+private fun motiviPiano(r: Riepilogo) = r.motivi.filterNot { FORZA_TOLTA.containsMatchIn(it) }
 
 /** Da chiamare subito prima di NavHost: apre il riepilogo quando si tocca la notifica. */
 @Composable
@@ -124,7 +134,10 @@ private fun motiviDaTag(r: Riepilogo): Set<String> {
   return r.motivi.filter { PREFISSO_TAG.containsMatchIn(it) || it.replace(PREFISSO_TAG, "").trim() in dagliAvvisi }.toSet()
 }
 
-/** Una riga di motivo o avviso; se viene da un tag, con l'icona del tag e senza il prefisso "tag:". */
+/**
+ * Una riga di motivo o avviso: se viene da un tag, con l'icona del tag e senza il prefisso "tag:";
+ * se e' una regola del caldo ("caldo del ..."), con l'icona del sole.
+ */
 @Composable
 private fun RigaConTag(
     testo: String,
@@ -134,12 +147,17 @@ private fun RigaConTag(
     puntato: Boolean = false,
 ) {
   val pulito = testo.replace(PREFISSO_TAG, "").trim()
-  if (!daTag) {
+  val caldo = pulito.startsWith("caldo del", ignoreCase = true)
+  if (!daTag && !caldo) {
     Text(if (puntato) "• $pulito" else pulito, style = stile, color = colore)
     return
   }
   Row(verticalAlignment = Alignment.Top) {
-    Icon(Icons.Filled.Sell, "Tag", Modifier.padding(top = 2.dp, end = 6.dp).size(16.dp), tint = colore)
+    if (caldo) {
+      Icon(Icons.Filled.WbSunny, "Caldo", Modifier.padding(top = 2.dp, end = 6.dp).size(16.dp), tint = ColoriBio.giallo)
+    } else {
+      Icon(Icons.Filled.Sell, "Tag", Modifier.padding(top = 2.dp, end = 6.dp).size(16.dp), tint = colore)
+    }
     Text(pulito.replaceFirstChar { it.uppercase() }, style = stile, color = colore)
   }
 }
@@ -196,6 +214,17 @@ fun RiepilogoScreen(data: String, onBack: () -> Unit, onApriSeduta: (String) -> 
     ) {
       Avvisi(r)
       Intestazione(r)
+      // LTHR, FTP e passo soglia aggiornati dal coach su Intervals.icu (avvisi del riepilogo)
+      AvvisiSoglie.aggiornate(r.avvisi).takeIf { it.isNotEmpty() }?.let { righe ->
+        Sezione("Soglie aggiornate") {
+          for (riga in righe) {
+            Row(verticalAlignment = Alignment.Top) {
+              Icon(Icons.Filled.Update, "Aggiornata", Modifier.padding(top = 2.dp, end = 6.dp).size(16.dp), tint = MaterialTheme.colorScheme.primary)
+              Text(riga.replaceFirstChar { it.uppercase() }, style = MaterialTheme.typography.bodyMedium)
+            }
+          }
+        }
+      }
       val giorno = locale?.giorno
       if (r.oggi != null || giorno != null) {
         Sezione("Oggi") {
@@ -216,7 +245,14 @@ fun RiepilogoScreen(data: String, onBack: () -> Unit, onApriSeduta: (String) -> 
         r.altaIntensita != null -> Sezione("Intensità") { AltaIntensitaSettimana(r.altaIntensita) }
         r.intensita != null -> Sezione("Intensità") { FacileIntenso(r.intensita.pctFacile, r.intensita.pctIntenso) }
       }
-      if (volume != null || carico != null) Sezione("Settimana") { Settimana(volume, carico) }
+      val forza = forzaTolta(r)
+      if (volume != null || carico != null || forza.isNotEmpty()) {
+        Sezione("Settimana") {
+          Settimana(volume, carico)
+          // sedute di forza che il coach non ha potuto mettere, con il motivo
+          for (m in forza) Text("• " + m.trim().replaceFirstChar { it.uppercase() }, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+        }
+      }
       if (r.sedute.isNotEmpty()) Sezione("Sedute della settimana") { SeduteDellaSettimana(r.sedute, onApriSeduta) }
     }
   }
@@ -224,12 +260,15 @@ fun RiepilogoScreen(data: String, onBack: () -> Unit, onApriSeduta: (String) -> 
 
 @Composable
 private fun Avvisi(r: Riepilogo) {
-  if (r.avvisi == null && r.nonScritte.isEmpty()) return
+  // le soglie aggiornate hanno una sezione loro: qui solo gli avvisi veri
+  val aggiornate = AvvisiSoglie.aggiornate(r.avvisi).toSet()
+  val righe = r.avvisi?.lines()?.filter { it.isNotBlank() && it.trim() !in aggiornate }.orEmpty()
+  if (righe.isEmpty() && r.nonScritte.isEmpty()) return
   Card(Modifier.fillMaxWidth(), colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.errorContainer)) {
     Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
       val colore = MaterialTheme.colorScheme.onErrorContainer
       Text("Avvisi", style = MaterialTheme.typography.titleSmall, color = colore, fontWeight = FontWeight.Bold)
-      r.avvisi?.lines()?.filter { it.isNotBlank() }?.forEach { RigaConTag(it, MaterialTheme.typography.bodyMedium, colore) }
+      righe.forEach { RigaConTag(it, MaterialTheme.typography.bodyMedium, colore) }
       if (r.nonScritte.isNotEmpty()) {
         Text("Sedute che il coach non è riuscito a scrivere a calendario:", style = MaterialTheme.typography.bodyMedium, color = colore)
         for (s in r.nonScritte) Text("• $s", style = MaterialTheme.typography.bodyMedium, color = colore)
@@ -245,7 +284,7 @@ private fun Intestazione(r: Riepilogo) {
     val daTag = motiviDaTag(r)
     motivo(r)?.let { RigaConTag(it, MaterialTheme.typography.bodyLarge, MaterialTheme.colorScheme.onSurface, it in daTag) }
     // gli altri motivi del piano (il primo e' gia' sopra se manca la decisione)
-    val altri = if (r.decisione.motivo == null) r.motivi.drop(1) else r.motivi
+    val altri = if (r.decisione.motivo == null) motiviPiano(r).drop(1) else motiviPiano(r)
     for (m in altri) RigaConTag(m, MaterialTheme.typography.bodyMedium, MaterialTheme.colorScheme.onSurface, m in daTag, puntato = true)
     val sotto =
         listOfNotNull(
@@ -566,6 +605,7 @@ private fun AltaIntensitaSettimana(a: AltaIntensita) {
 
 @Composable
 private fun Settimana(volume: Volume?, carico: Carico?) {
+  if (volume == null && carico == null) return
   Text(
       "Pieno = fatto · chiaro = con le sedute ancora in calendario · linea = obiettivo · rosso = tetto",
       style = MaterialTheme.typography.labelSmall,

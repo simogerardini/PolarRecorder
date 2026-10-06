@@ -1,48 +1,20 @@
-# Polar Recorder
+# BioSleep
 
-Polar Recorder is an open-source application designed for researchers, developers, and enthusiasts who need to capture raw biometric signals from Polar devices. It provides a simple way to record, store, and stream physiological data.
+App Android per il monitoraggio notturno con una fascia cardio Bluetooth (Polar H10 o qualsiasi fascia con il profilo standard Heart Rate): frequenza cardiaca, HRV e fasi del sonno, con un coach di triathlon che gira sul telefono e pianifica gli allenamenti su [Intervals.icu](https://intervals.icu).
 
-## Features
+## Cosa fa
 
-- **Records Raw Data** – Capture signals such as ECG, PPG, and heart rate from Polar sensors
-- **Supports All Polar Devices** – Compatible with all Polar hardware capable of streaming raw data (tested with H10, H7, and OH1+)
-- **Flexible Data Storage** – Save recordings to a file for offline analysis
-- **Live Data Streaming** – Transmit data in real-time via MQTT
-- **Event Logging** – Mark timestamped events during a recording to annotate moments of interest
-- **Resilient** – Auto-reconnects on connection failures and continues the recording
-- **Fully Open Source** – Developed with transparency and collaboration in mind
+- Registra la notte in background: battito, intervalli RR e, con la Polar H10, movimento e respiro.
+- Calcola FC a riposo, HRV (rMSSD, SDNN), fasi del sonno, punteggio e deficit di sonno, cronotipo.
+- Invia il riassunto della notte al tuo account Intervals.icu.
+- Il coach (Python sul telefono) legge notte, forma e calendario e pianifica o adatta le sedute: settimana tipo, gare, soglie, schede di forza, giorni caldi.
 
-## Installing
+## Privacy
 
-Polar Recorder is available on the [Play Store](https://play.google.com/store/apps/details?id=com.wboelens.polarrecorder). You can also download the APK directly from the [Releases](https://github.com/boelensman1/polarrecorder/releases) section and install it manually on your device.
+I dati restano sul telefono, tranne quelli che invii al tuo account Intervals.icu. Informativa completa: https://biosleep-oauth.simonegerardini.workers.dev/privacy
 
-## Using the app with Polar Watches
-The app supports data streaming from Polar watches, however, specific setup steps are required. See [the official Polar documentation](https://github.com/polarofficial/polar-ble-sdk/blob/master/documentation/UsingSDKWithWatches.md#step-by-step-how-to) for step-by-step setup instructions.
+## Origine e licenza
 
-## Code Examples
+BioSleep nasce da un fork di [Polar Recorder](https://github.com/boelensman1/PolarRecorder) di Wigger Boelens, distribuito con licenza MIT: il file `LICENSE` conserva la sua nota di copyright, come richiesto dalla licenza. Le licenze delle librerie usate sono nell'app, in Impostazioni → Licenze open source.
 
-The `code_examples/` directory contains sample code for processing recorded data in Python and R. More examples will be added over time, contributions are welcome!
-
-## Contributing
-
-Contributions are welcome! Please feel free to submit a Pull Request.
-
-Kotlin sources are formatted with [ktfmt](https://github.com/facebook/ktfmt) **0.61**. Please run `ktfmt .` from the `app/` directory before submitting a PR so the diff stays clean.
-
-## Citing This Project
-
-If you use Polar Recorder in your research, please cite it using the information provided in the repository's `citation.cff` file. You can cite this project directly from GitHub by:
-
-1. Navigating to the repository's main page
-2. Clicking on the "Cite this repository" button in the sidebar
-3. Using either the APA or BibTeX format provided
-
-Alternatively, you can generate citations in various formats using tools that support the Citation File Format (CFF) standard.
-
-## License
-
-This project is licensed under the MIT License - see the LICENSE file for details.
-
-## Disclaimer
-
-Polar Recorder is an independent open-source project and is not affiliated with, endorsed by, or officially connected to Polar Electro or any of its products. "Polar" and associated device names are trademarks of their respective owners. This app is intended for research and development purposes only and comes with no guarantees regarding data accuracy or medical reliability.
+BioSleep è un progetto indipendente, non affiliato né approvato da Polar Electro o da Intervals.icu. "Polar" e i nomi dei dispositivi sono marchi dei rispettivi proprietari. Non è un dispositivo medico: le stime (in particolare le fasi del sonno) sono indicative.

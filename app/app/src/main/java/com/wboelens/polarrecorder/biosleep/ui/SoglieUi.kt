@@ -28,6 +28,7 @@ import com.wboelens.polarrecorder.biosleep.cervello.Soglie
 import com.wboelens.polarrecorder.biosleep.cervello.SoglieRepo
 import com.wboelens.polarrecorder.biosleep.intervals.OAuthIntervals
 import com.wboelens.polarrecorder.biosleep.riepilogo.RiepilogoDb
+import com.wboelens.polarrecorder.biosleep.ui.allenamento.DateIt
 import java.time.LocalDate
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -122,8 +123,12 @@ fun SezioneSoglie() {
   val stato by SoglieRepo.stato.collectAsState()
   val avviso = avvisoSoglieDiOggi()
   LaunchedEffect(Unit) { withContext(Dispatchers.IO) { SoglieRepo.carica(context); SoglieRepo.controlla(context, forza = true) } }
+  val ultimoTest = rememberUltimoTest()
   Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
     Text("Soglie su Intervals.icu", style = MaterialTheme.typography.titleSmall)
+    ultimoTest?.let {
+      Text("Ultimo test: ${it.nome}, ${DateIt.breve(it.data)}", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+    }
     val e = stato
     if (e == null || e.esito == Soglie.ERRORE) {
       Text(

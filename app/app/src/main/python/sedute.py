@@ -2531,6 +2531,21 @@ def _gym_rec_sec(riga):
         return 30
     return int(m.group(1)) * 60 + int(m.group(2) or 0) if m.group(1) else int(m.group(3))
 
+def _gym_secondi_a_tempo(e):
+    """Durata in secondi di un esercizio A TEMPO (isometria, plank, foam roller), None se
+    e' a ripetizioni. 06/10/2026 — regola di Simone: gli esercizi a tempo sono step a
+    durata, senza "Press lap". Durata = contrazioni x secondi x lati."""
+    if re.search(r"\brip\b|\bripetizion", e.lower()):
+        return None
+    m = re.search(r"(\d+)\s*(?:\"|secondi\b|sec\b)", e) or re.search(r"(\d+)'", e)
+    if not m:
+        return None
+    sec = int(m.group(1)) * (60 if m.group(0).endswith("'") else 1)
+    n = re.search(r"(\d+)\s*(?:contrazioni|tenute)", e)
+    lati = 2 if re.search(r"(per|x)\s+lato", e) else 1
+    return sec * (int(n.group(1)) if n else 1) * lati
+
+
 def gym_in_step(desc, durata_min):
     """Testo di build_gym_description -> workout a step Intervals.icu (Press lap / Rest)."""
     testo, blocchi, sez, gruppo = [], [], None, []
@@ -2576,12 +2591,17 @@ def gym_in_step(desc, durata_min):
         chiudi()
     if not blocchi:
         return desc
+    # 06/10/2026: gli esercizi a tempo hanno la loro durata e non entrano nella stima
+    # della durata media degli esercizi a ripetizioni.
+    a_tempo = sum(n * (_gym_secondi_a_tempo(e) or 0) for n, g, _ in blocchi for e in g)
     rec_tot = sum(n * r for n, _, r in blocchi)
-    esec    = sum(n * len(g) for n, g, _ in blocchi)
-    stima   = max(30, min(120, round((durata_min * 60 - rec_tot) / max(esec, 1))))
+    esec    = sum(n * sum(1 for e in g if _gym_secondi_a_tempo(e) is None) for n, g, _ in blocchi)
+    stima   = max(30, min(120, round((durata_min * 60 - rec_tot - a_tempo) / max(esec, 1))))
     out = ["\n".join(testo)]
     for n, g, r in blocchi:
-        righe = [f"- Press lap {_gym_testo_step(e)} {stima}s intensity=active" for e in g]
+        righe = [(f"- {_gym_testo_step(e)} {_gym_secondi_a_tempo(e)}s intensity=active"
+                  if _gym_secondi_a_tempo(e) else
+                  f"- Press lap {_gym_testo_step(e)} {stima}s intensity=active") for e in g]
         if r:
             righe.append(f"- Rest {r}s intensity=rest")
         out.append((f"{n}x\n" if n > 1 else "") + "\n".join(righe))

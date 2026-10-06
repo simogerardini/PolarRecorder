@@ -5,22 +5,15 @@ import com.wboelens.polarrecorder.biosleep.BioSleepDataSaver
 import com.wboelens.polarrecorder.managers.PreferencesManager
 import com.wboelens.polarrecorder.state.LogState
 import com.wboelens.polarrecorder.testutil.BaseRobolectricTest
-import io.mockk.every
-import io.mockk.just
 import io.mockk.mockk
-import io.mockk.runs
 import org.junit.Assert.assertEquals
-import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
 import org.robolectric.RuntimeEnvironment
 
-/**
- * Unit tests for DataSavers container class - verifies initialization from preferences, iterator
- * access, and enabled count tracking.
- */
+/** BioSleep salva solo nel proprio database: DataSavers contiene un solo salvataggio, sempre attivo. */
 class DataSaversTest : BaseRobolectricTest() {
 
   private lateinit var context: Context
@@ -31,96 +24,48 @@ class DataSaversTest : BaseRobolectricTest() {
   fun setup() {
     context = RuntimeEnvironment.getApplication()
     logState = mockk(relaxed = true)
-    preferencesManager = mockk {
-      every { mqttConfig } returns
-          MQTTConfig(host = "", port = MQTTConfig.DEFAULT_MQTT_PORT, useSSL = false)
-      every { mqttEnabled } returns false
-      every { mqttConfig = any() } just runs
-      every { mqttEnabled = any() } just runs
-    }
+    preferencesManager = mockk(relaxed = true)
   }
 
   @Test
-  fun `mqtt saver is created and configured`() {
+  fun `bioSleep saver is created`() {
     val dataSavers = DataSavers(context, logState, preferencesManager)
 
-    assertNotNull(dataSavers.mqtt)
+    assertNotNull(dataSavers.bioSleep)
   }
 
   @Test
-  fun `mqtt saver enabled when mqttEnabled is true`() {
-    every { preferencesManager.mqttEnabled } returns true
-    every { preferencesManager.mqttConfig } returns
-        MQTTConfig(host = "broker.test.com", port = 1883, useSSL = false)
-
+  fun `bioSleep saver is always enabled`() {
     val dataSavers = DataSavers(context, logState, preferencesManager)
 
-    assertTrue(dataSavers.mqtt.isEnabled.value)
+    assertTrue(dataSavers.bioSleep.isEnabled.value)
   }
 
   @Test
-  fun `mqtt saver disabled when mqttEnabled is false`() {
-    every { preferencesManager.mqttEnabled } returns false
-
-    val dataSavers = DataSavers(context, logState, preferencesManager)
-
-    assertFalse(dataSavers.mqtt.isEnabled.value)
-  }
-
-  @Test
-  fun `mqtt saver configured from preferences`() {
-    val testConfig =
-        MQTTConfig(
-            host = "custom.broker.com",
-            port = 8883,
-            useSSL = true,
-            username = "user",
-            password = "pass",
-            topicPrefix = "custom/prefix",
-        )
-    every { preferencesManager.mqttConfig } returns testConfig
-
-    val dataSavers = DataSavers(context, logState, preferencesManager)
-
-    assertTrue(dataSavers.mqtt.isConfigured)
-  }
-
-  @Test
-  fun `iterator returns MQTT and BioSleep`() {
+  fun `iterator returns only BioSleep`() {
     val dataSavers = DataSavers(context, logState, preferencesManager)
 
     val saverList = mutableListOf<DataSaver>()
     dataSavers.iterator().forEach { saverList.add(it) }
 
-    assertEquals(2, saverList.size) // MQTT e BioSleep (il salvataggio su file non c'e' piu')
+    assertEquals(1, saverList.size)
+    assertTrue(saverList.single() is BioSleepDataSaver)
   }
 
   @Test
-  fun `asList returns MQTT and BioSleep`() {
+  fun `asList returns only BioSleep`() {
     val dataSavers = DataSavers(context, logState, preferencesManager)
 
     val list = dataSavers.asList()
 
-    assertEquals(2, list.size)
-    assertTrue(list.any { it is MQTTDataSaver })
-    assertTrue(list.any { it is BioSleepDataSaver })
+    assertEquals(1, list.size)
+    assertTrue(list.single() is BioSleepDataSaver)
   }
 
   @Test
-  fun `enabledCount is 1 when only BioSleep is enabled`() {
+  fun `enabledCount is 1`() {
     val dataSavers = DataSavers(context, logState, preferencesManager)
 
-    assertEquals(1, dataSavers.enabledCount) // BioSleep e' sempre attivo
-  }
-
-  @Test
-  fun `enabledCount is 2 when MQTT is also enabled`() {
-    every { preferencesManager.mqttEnabled } returns true
-    every { preferencesManager.mqttConfig } returns
-        MQTTConfig(host = "broker.test.com", port = 1883, useSSL = false)
-
-    val dataSavers = DataSavers(context, logState, preferencesManager)
-
-    assertEquals(2, dataSavers.enabledCount) // MQTT + BioSleep
+    assertEquals(1, dataSavers.enabledCount)
   }
 }

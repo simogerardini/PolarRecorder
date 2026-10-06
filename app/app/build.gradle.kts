@@ -102,13 +102,13 @@ dependencies {
   androidTestImplementation(libs.androidx.espresso.core)
 
   implementation(libs.polar.ble.sdk)
-  implementation(libs.hivemq.mqtt.client.shaded)
   implementation(libs.rxjava)
   implementation(libs.rxandroid)
   implementation(libs.kotlinx.coroutines.android)
   implementation(libs.kotlinx.coroutines.rx3)
   implementation(libs.androidx.activity.ktx)
   implementation(libs.androidx.fragment.ktx)
+  implementation(libs.play.services.location)
 
   implementation(libs.androidx.material3)
   implementation(libs.androidx.material3.windowsizeclass)

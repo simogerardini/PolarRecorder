@@ -30,7 +30,7 @@ import kotlin.math.sqrt
 
 /**
  * Salva i battiti (RR) nel database locale e, a fine registrazione, analizza la notte.
- * Si affianca agli altri DataSaver (file, MQTT): e' sempre attivo.
+ * E' l'unico salvataggio di BioSleep ed e' sempre attivo.
  */
 class BioSleepDataSaver(
     context: Context,
