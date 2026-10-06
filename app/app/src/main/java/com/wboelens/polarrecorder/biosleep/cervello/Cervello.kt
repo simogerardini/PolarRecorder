@@ -148,6 +148,25 @@ object Cervello {
         }
       }
 
+  /** Testo grezzo dell'ultima risposta di controlla_soglie (per salvarla cosi' com'e'). */
+  @Volatile var ultimaRispostaSoglie: String = "{}"
+    private set
+
+  /** cervello.controlla_soglie: soglie di corsa, bici e nuoto su Intervals.icu. */
+  fun controllaSoglie(context: Context, c: Credenziali): EsitoSoglie =
+      synchronized(lucchetto) {
+        if (!Python.isStarted()) Python.start(AndroidPlatform(context.applicationContext))
+        try {
+          val testo =
+              Python.getInstance().getModule("cervello")
+                  .callAttr("controlla_soglie", ConfigCervello(c, cartella(context).absolutePath).json()).toString()
+          ultimaRispostaSoglie = testo
+          Soglie.da(testo)
+        } catch (e: PyException) {
+          EsitoSoglie(Soglie.ERRORE, emptyList(), emptyMap(), "https://intervals.icu/settings", "Python: ${e.message}")
+        }
+      }
+
   fun esegui(context: Context, config: ConfigCervello): RisultatoCervello =
       synchronized(lucchetto) {
         if (!Python.isStarted()) Python.start(AndroidPlatform(context.applicationContext))

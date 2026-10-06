@@ -119,6 +119,97 @@ def prepara_account(config_json):
     return json.dumps(out)
 
 
+# ── CONTROLLO DELLE SOGLIE (06/10/2026 — roadmap punto 3) ───────────────────────────
+# Le sedute scritte dal coach si appoggiano alle soglie configurate su Intervals.icu:
+# "Zn HR" e "% LTHR" -> LTHR della disciplina; "% Pace" -> passo soglia (corsa) e CSS
+# (nuoto, threshold_pace di Swim). Se mancano, l'orologio riceve step senza target.
+# "bloccante" = target mancanti sull'orologio; "consigliato" = funziona, ma peggio.
+_SOGLIE = (
+    # disciplina, tipi Intervals, campo app, campo Intervals, gravita', effetto
+    ("corsa", ("Run",), "lthr", "lthr", "bloccante",
+     "le sedute di corsa in FC (Zn HR, % LTHR) arrivano sull'orologio senza target"),
+    ("corsa", ("Run",), "passo_soglia", "threshold_pace", "bloccante",
+     "le ripetute brevi di corsa in % Pace arrivano sull'orologio senza target"),
+    ("bici", ("Ride", "VirtualRide"), "lthr", "lthr", "bloccante",
+     "le sedute di bici in FC (Zn HR, % LTHR) arrivano sull'orologio senza target"),
+    ("bici", ("Ride", "VirtualRide"), "ftp", "ftp", "consigliato",
+     "senza FTP Intervals.icu non stima bene il carico (TSS) delle uscite senza FC"),
+    ("nuoto", ("Swim",), "css", "threshold_pace", "bloccante",
+     "le sedute di nuoto in % Pace arrivano sull'orologio senza target"),
+    ("nuoto", ("Swim",), "lthr", "lthr", "consigliato",
+     "senza LTHR del nuoto il carico delle nuotate e' stimato peggio"),
+)
+
+
+def _passo(m_s, per_metri, unita):
+    """m/s -> "m:ss/unita'" (es. 3.70 m/s -> 4:30/km)."""
+    if not isinstance(m_s, (int, float)) or m_s <= 0:
+        return None
+    sec = round(per_metri / m_s)
+    return f"{sec // 60}:{sec % 60:02d}/{unita}"
+
+
+def verifica_soglie(atleta):
+    """([mancanti], {valori}) dal JSON di GET /athlete. Pura: usata da controlla_soglie e
+    dagli avvisi di ogni riepilogo."""
+    out = {"mancanti": [], "valori": {}}
+    sport = (atleta or {}).get("sportSettings") or []
+
+    def impostazioni(tipi):
+        return next((x for x in sport if set(tipi) & set(x.get("types") or [])), None)
+
+    sport_mancante = set()
+    for disc, tipi, campo, campo_icu, gravita, effetto in _SOGLIE:
+        st = impostazioni(tipi)
+        if st is None:
+            if disc not in sport_mancante:
+                sport_mancante.add(disc)
+                out["mancanti"].append({
+                    "disciplina": disc, "campo": "sport", "gravita": "bloccante",
+                    "effetto": f"nessuna impostazione per {disc} su Intervals.icu: "
+                               f"le sedute di {disc} arrivano sull'orologio senza target"})
+            continue
+        v = st.get(campo_icu)
+        if not isinstance(v, (int, float)) or v <= 0:
+            out["mancanti"].append({"disciplina": disc, "campo": campo,
+                                    "gravita": gravita, "effetto": effetto})
+            continue
+        if campo == "passo_soglia":
+            v = _passo(v, 1000, "km")
+        elif campo == "css":
+            v = _passo(v, 100, "100m")
+        out["valori"].setdefault(disc, {})[campo] = v
+    return out["mancanti"], out["valori"]
+
+
+def controlla_soglie(config_json):
+    """Soglie di corsa, bici e nuoto su Intervals.icu e cosa succede se mancano.
+    Risultato JSON: {"esito": "ok"|"da_completare"|"permesso_mancante"|"errore",
+    "mancanti": [{"disciplina", "campo", "gravita", "effetto"}], "valori": {...},
+    "link": pagina delle impostazioni sport di Intervals.icu}."""
+    import requests
+    cfg = json.loads(config_json)
+    out = {"esito": "errore", "mancanti": [], "valori": {},
+           "link": "https://intervals.icu/settings"}
+    try:
+        h, atleta = _intestazioni(cfg)
+        r = requests.Session().get(f"https://intervals.icu/api/v1/athlete/{atleta}",
+                                   headers=h, timeout=30)
+        if r.status_code in (401, 403):
+            out["esito"] = "permesso_mancante"
+            return json.dumps(out)
+        if r.status_code != 200:
+            out["errore"] = f"lettura atleta: HTTP {r.status_code}"
+            return json.dumps(out)
+        mancanti, valori = verifica_soglie(r.json() or {})
+        out["mancanti"], out["valori"] = mancanti, valori
+        bloccanti = any(m["gravita"] == "bloccante" for m in out["mancanti"])
+        out["esito"] = "da_completare" if bloccanti else "ok"
+    except Exception as e:
+        out["errore"] = f"{type(e).__name__}: {e}"
+    return json.dumps(out, ensure_ascii=False)
+
+
 def valida_tag(tag):
     """({"giorni", "sedute"} con le sole chiavi del vocabolario, [chiavi scartate])."""
     import coach_settimanale as voc
@@ -279,6 +370,13 @@ def esegui_app(config_json):
                     rie["avvisi"] = "\n".join(x for x in [rie.get("avvisi") or "",
                                                          "settimana tipo non valida, uso quella predefinita: "
                                                          + "; ".join(errori_sett)] if x)
+                # 06/10/2026: soglie bloccanti mancanti su Intervals.icu (punto 3)
+                bloccanti = [f"{m['disciplina']} {m['campo']}" for m in verifica_soglie(atleta)[0]
+                             if m["gravita"] == "bloccante"]
+                if bloccanti:
+                    rie["avvisi"] = "\n".join(x for x in [rie.get("avvisi") or "",
+                                                         "soglie da completare su Intervals.icu: "
+                                                         + ", ".join(bloccanti)] if x)
                 # 05/10/2026: decisioni prese per un tag, visibili nell'app
                 if cs._MOTIVI_TAG or tag_scartati:
                     rie["motivi"] = list(dict.fromkeys((rie.get("motivi") or []) + cs._MOTIVI_TAG))

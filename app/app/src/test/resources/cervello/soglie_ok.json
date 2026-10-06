@@ -1,0 +1,1 @@
+{"esito": "ok", "mancanti": [{"disciplina": "nuoto", "campo": "lthr", "gravita": "consigliato", "effetto": "senza LTHR del nuoto il carico delle nuotate e' stimato peggio"}], "valori": {"corsa": {"lthr": 167, "passo_soglia": "4:30/km"}, "bici": {"lthr": 160, "ftp": 260}, "nuoto": {"css": "1:35/100m"}}, "link": "https://intervals.icu/settings"}

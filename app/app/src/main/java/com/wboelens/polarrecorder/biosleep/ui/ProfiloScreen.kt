@@ -137,6 +137,9 @@ fun ProfiloScreen(onBack: () -> Unit) {
           style = MaterialTheme.typography.bodySmall,
           color = MaterialTheme.colorScheme.onSurfaceVariant)
 
+      // Soglie di corsa, bici e nuoto su Intervals.icu (controllate a ogni apertura)
+      SezioneSoglie()
+
       Text("Frequenza cardiaca", style = MaterialTheme.typography.titleSmall)
       CampoNumero(fcMax, { fcMax = it; esito = null }, "FC massima (bpm)", errFcMax)
       suggerimenti?.fcMax?.let { s ->

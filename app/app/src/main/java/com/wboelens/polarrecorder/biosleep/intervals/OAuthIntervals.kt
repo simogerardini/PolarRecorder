@@ -15,6 +15,7 @@ import androidx.work.WorkerParameters
 import com.wboelens.polarrecorder.BuildConfig
 import com.wboelens.polarrecorder.biosleep.cervello.Cervello
 import com.wboelens.polarrecorder.biosleep.cervello.EsitoPrepara
+import com.wboelens.polarrecorder.biosleep.cervello.SoglieRepo
 import java.io.IOException
 import java.net.HttpURLConnection
 import java.net.URL
@@ -95,6 +96,8 @@ object OAuthIntervals {
     val e = Cervello.preparaAccount(context, c)
     if (e.esito == EsitoPrepara.OK) ultimaVersionePreparata(context, BuildConfig.VERSION_CODE)
     _stato.value = StatoAccount(inCorso = false, esito = e)
+    // onboarding: subito dopo i campi, il controllo delle soglie (card in Oggi e Profilo)
+    if (e.esito == EsitoPrepara.OK) SoglieRepo.controlla(context, forza = true)
     return e
   }
 
