@@ -21,6 +21,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Sell
+import androidx.compose.material.icons.filled.Thermostat
 import androidx.compose.material.icons.filled.Update
 import androidx.compose.material.icons.filled.WbSunny
 import androidx.compose.material3.Card
@@ -136,7 +137,8 @@ private fun motiviDaTag(r: Riepilogo): Set<String> {
 
 /**
  * Una riga di motivo o avviso: se viene da un tag, con l'icona del tag e senza il prefisso "tag:";
- * se e' una regola del caldo ("caldo del ..."), con l'icona del sole.
+ * se e' una regola del caldo ("caldo del ..."), con l'icona del sole; se e' del protocollo DETP,
+ * con il termometro.
  */
 @Composable
 private fun RigaConTag(
@@ -148,12 +150,15 @@ private fun RigaConTag(
 ) {
   val pulito = testo.replace(PREFISSO_TAG, "").trim()
   val caldo = pulito.startsWith("caldo del", ignoreCase = true)
-  if (!daTag && !caldo) {
+  val detp = pulito.startsWith("DETP", ignoreCase = true)
+  if (!daTag && !caldo && !detp) {
     Text(if (puntato) "• $pulito" else pulito, style = stile, color = colore)
     return
   }
   Row(verticalAlignment = Alignment.Top) {
-    if (caldo) {
+    if (detp) {
+      Icon(Icons.Filled.Thermostat, "DETP", Modifier.padding(top = 2.dp, end = 6.dp).size(16.dp), tint = ColoriBio.rosso)
+    } else if (caldo) {
       Icon(Icons.Filled.WbSunny, "Caldo", Modifier.padding(top = 2.dp, end = 6.dp).size(16.dp), tint = ColoriBio.giallo)
     } else {
       Icon(Icons.Filled.Sell, "Tag", Modifier.padding(top = 2.dp, end = 6.dp).size(16.dp), tint = colore)

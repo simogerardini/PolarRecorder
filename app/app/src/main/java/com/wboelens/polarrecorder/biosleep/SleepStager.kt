@@ -80,7 +80,7 @@ data class SleepStages(
  */
 object SleepStager {
   /** Da aumentare quando cambiano profili o regole: le notti passate vengono ricalcolate. */
-  const val VERSION = 5 // 5: respiro dal torace (regolarita' e variabilita' della frequenza)
+  const val VERSION = 6 // 6: profili ed equilibrio tarati con Oura (7 notti); 5: respiro dal torace
 
   private const val WINDOW_HALF_MS = 150_000.0 // finestra HRV di 5 minuti centrata sull'epoca
   private const val MIN_WINDOW_BEATS = 120
@@ -301,20 +301,19 @@ object SleepStager {
    */
   private val PROTOTYPES =
       arrayOf(
-          // Provvisori: medie misurate sulla notte del 01/10 secondo le fasi di Oura.
-          // Attivita' ACC ancora ipotizzata (nessuna notte con accelerometro confrontabile).
-          // Ultime due colonne (respiro): ipotesi moderate dalla letteratura, da tarare con Oura.
-          doubleArrayOf(0.46, -0.32, 0.31, 0.54, 0.54, 0.18, 2.0, -0.5, 0.5), // Veglia
-          doubleArrayOf(0.22, 0.22, -0.10, 0.02, 0.10, 0.13, 0.1, 0.0, 0.0), // Leggero
-          doubleArrayOf(-0.10, 0.44, -0.42, -0.18, -0.12, 0.04, -0.2, 0.6, -0.5), // Profondo
-          doubleArrayOf(-0.05, -0.43, 0.50, 0.76, 0.84, 0.29, -0.2, -0.6, 0.5), // REM
+          // Tarati con confronta_oura.py su 7 notti (01-07/10/2026, 5 con accelerometro e respiro):
+          // kappa su notti non usate per tarare 0,30 -> 0,37. Valori misurati su una persona.
+          doubleArrayOf(0.44, -0.20, 0.30, 0.45, 0.52, 0.18, 0.48, -0.41, 0.39), // Veglia
+          doubleArrayOf(-0.11, 0.16, -0.10, 0.08, 0.15, 0.13, -0.12, -0.02, -0.09), // Leggero
+          doubleArrayOf(0.27, 0.37, -0.30, -0.11, -0.08, 0.08, -0.10, 0.14, -0.20), // Profondo
+          doubleArrayOf(-0.07, -0.45, 0.57, 0.83, 0.86, 0.42, 0.56, -0.52, 0.32), // REM
       )
 
   /**
    * Correzione di equilibrio tra le fasi, tarata con confronta_oura.py perche' la proporzione
    * di ogni fase stimata segua quella del riferimento. Zero = nessuna correzione.
    */
-  private val BIAS = doubleArrayOf(0.0, 0.0, 0.0, 0.0)
+  private val BIAS = doubleArrayOf(-0.45, 0.00, -0.43, -0.53)
 
   // --- Viterbi: sequenza di fasi piu' probabile con transizioni plausibili --------------------
   private val TRANSITIONS =

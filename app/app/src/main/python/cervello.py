@@ -19,6 +19,8 @@ config (JSON):
                   arrotondata a 2 decimali prima di chiedere le previsioni)
   profilo         facoltativo: {"fc_max", "fc_riposo", "tetto_ore",
                   "caldo": {"converti_corsa": true, "ora_feriale": 18, "ora_weekend": 10},
+                  "detp": {"core2": true, "detp": true},
+                  "stryd": true|false (qualita' di corsa in potenza se la CP e' configurata),
                   "palestra": {"attrezzatura": [barbell_gym, kettlebell, trx_suspension,
                                resistance_bands, bodyweight_only, hotel_minimal],
                                "livello": "beginner"|"intermediate"|"advanced"},
@@ -155,9 +157,20 @@ def _passo(m_s, per_metri, unita):
     return f"{sec // 60}:{sec % 60:02d}/{unita}"
 
 
-def verifica_soglie(atleta):
+def potenza_corsa_attiva(profilo, atleta):
+    """07/10/2026 (punto 12): qualita' di corsa in potenza solo con Stryd nel profilo E la CP
+    (FTP dello sport Run) configurata su Intervals.icu. Altrimenti FC/passo come prima."""
+    if not (profilo or {}).get("stryd"):
+        return False
+    for s in (atleta or {}).get("sportSettings", []):
+        if "Run" in (s.get("types") or []):
+            return isinstance(s.get("ftp"), (int, float)) and s["ftp"] > 0
+    return False
+
+
+def verifica_soglie(atleta, stryd=False):
     """([mancanti], {valori}) dal JSON di GET /athlete. Pura: usata da controlla_soglie e
-    dagli avvisi di ogni riepilogo."""
+    dagli avvisi di ogni riepilogo. stryd=True: la CP di corsa diventa necessaria."""
     out = {"mancanti": [], "valori": {}}
     sport = (atleta or {}).get("sportSettings") or []
 
@@ -185,6 +198,15 @@ def verifica_soglie(atleta):
         elif campo == "css":
             v = _passo(v, 100, "100m")
         out["valori"].setdefault(disc, {})[campo] = v
+    if stryd:     # 07/10/2026 (punto 12): con Stryd la CP (FTP Run) serve ai target in potenza
+        run = next((x for x in (atleta or {}).get("sportSettings") or [] if "Run" in (x.get("types") or [])), None)
+        cp = (run or {}).get("ftp")
+        if isinstance(cp, (int, float)) and cp > 0:
+            out["valori"].setdefault("corsa", {})["cp"] = cp
+        else:
+            out["mancanti"].append({"disciplina": "corsa", "campo": "cp", "gravita": "bloccante",
+                                    "effetto": "senza CP (FTP corsa) le sedute restano in FC/passo: "
+                                               "Stryd non viene usato"})
     return out["mancanti"], out["valori"]
 
 
@@ -207,7 +229,7 @@ def controlla_soglie(config_json):
         if r.status_code != 200:
             out["errore"] = f"lettura atleta: HTTP {r.status_code}"
             return json.dumps(out)
-        mancanti, valori = verifica_soglie(r.json() or {})
+        mancanti, valori = verifica_soglie(r.json() or {}, (cfg.get("profilo") or {}).get("stryd"))
         out["mancanti"], out["valori"] = mancanti, valori
         bloccanti = any(m["gravita"] == "bloccante" for m in out["mancanti"])
         out["esito"] = "da_completare" if bloccanti else "ok"
@@ -309,6 +331,8 @@ def salva_gara(config_json):
     # precedente; senza toglierlo si accumulava ("Lago — Triathlon sprint — Triathlon
     # olimpico"). Si tolgono tutti i suffissi " — <titolo di distanza>" in coda.
     nome = _RE_SUFFISSO_DISTANZA.sub("", nome).strip() or nome
+    if cfg.get("calda"):      # 07/10/2026 (punto 11): gara calda -> acclimatazione DETP
+        descr += "\ncaldo: si"
     ev = {"category": f"RACE_{cfg['priorita']}", "start_date_local": f"{giorno}T00:00:00",
           "name": f"{nome} — {titolo}" if titolo.lower() not in nome.lower() else nome,
           "description": f"{descr}\nGara {cfg['priorita']} creata da BioSleep.",
@@ -396,6 +420,7 @@ def gare(config_json):
                 "distanza_scelta": (lambda m: m.group(1).lower() if m else None)(
                     _RE_DISTANZA_SCELTA.search(g.get("desc") or "")),
                 "settimane": voc.settimane_alla_gara(lun, g["date"]),
+                "calda": voc.detp.gara_calda(g),
                 "obiettivo": bool(obiettivo and obiettivo["id"] == g["id"])})
         out["esito"] = "ok"
     except Exception as e:
@@ -509,6 +534,27 @@ def importa_stato(config_json):
     return json.dumps(out)
 
 
+def registra_sweat(config_json):
+    """Sweat test (07/10/2026, punto 11): {"cartella", "p1", "p2" (kg nudo prima/dopo),
+    "b1", "b2" (kg borraccia), "urine" (kg, di solito 0), "minuti", "sodio_mg_l"
+    (facoltativo, dal patch)}. Salva {"litri_h", "sodio_mg_l"} nello stato del coach."""
+    import detp as dt
+    cfg = json.loads(config_json)
+    sr = dt.sweat_rate(cfg.get("p1"), cfg.get("p2"), cfg.get("b1"), cfg.get("b2"),
+                       cfg.get("urine"), cfg.get("minuti"))
+    if sr is None:
+        return json.dumps({"esito": "valori_non_validi",
+                           "errore": "valori non plausibili (sudorazione tra 0,2 e 4 L/h, durata >= 30')"})
+    import coach_settimanale as cs_
+    cs_.STATE_FILE = os.path.join(os.path.abspath(cfg["cartella"]), "stato_coach.json")
+    st = cs_.carica_stato()
+    st["sweat"] = {"litri_h": sr}
+    if isinstance(cfg.get("sodio_mg_l"), (int, float)) and 100 <= cfg["sodio_mg_l"] <= 3000:
+        st["sweat"]["sodio_mg_l"] = cfg["sodio_mg_l"]
+    cs_.salva_stato(st)
+    return json.dumps({"esito": "ok", "litri_h": sr, "sodio_mg_l": st["sweat"].get("sodio_mg_l")})
+
+
 def valida_tag(tag):
     """({"giorni", "sedute"} con le sole chiavi del vocabolario, [chiavi scartate])."""
     import coach_settimanale as voc
@@ -525,8 +571,8 @@ def valida_tag(tag):
 
 def _carica_moduli():
     global cs
-    import sedute, biometria, carico, soglie, palestra, caldo, coach_settimanale
-    for m in (sedute, biometria, carico, soglie, palestra, caldo, coach_settimanale):
+    import sedute, biometria, carico, soglie, palestra, caldo, detp, coach_settimanale
+    for m in (sedute, biometria, carico, soglie, palestra, caldo, detp, coach_settimanale):
         importlib.reload(m)
     cs = coach_settimanale
     return sedute
@@ -574,7 +620,7 @@ def _unisci_al_settimanale(percorso, rie):
 _NOMI_SPORT = {"Run": "corsa", "Ride": "bici", "Swim": "nuoto"}
 
 
-def _aggiorna_soglie(piano, atleta, oggi):
+def _aggiorna_soglie(piano, atleta, oggi, cfg_profilo=None):
     """Punto 4: registra il test messo nel piano e alza LTHR/FTP dagli sforzi reali
     (algoritmi di intervals_coach: solo al rialzo). Righe per gli avvisi del riepilogo.
     Un errore qui non ferma il run: finisce nel log."""
@@ -582,6 +628,9 @@ def _aggiorna_soglie(piano, atleta, oggi):
     try:
         stato = cs.carica_stato()
         for s in (piano or {}).get("sedute", []):
+            if s.get("detp") == "sweat":                    # 07/10/2026 (punto 11)
+                stato["ultimo_sweat_test"] = s["data"]
+                righe.append(f"sweat test CORE in programma il {s['data']}")
             if s.get("test"):
                 stato["ultimo_test"] = {"data": s["data"], "chiave": s["test"]["chiave"],
                                         "nome": s["test"]["nome"]}
@@ -593,6 +642,10 @@ def _aggiorna_soglie(piano, atleta, oggi):
         for a in agg:
             righe.append(f"LTHR {_NOMI_SPORT.get(a['sport'], a['sport'])} {a['da']} -> {a['a']} "
                          f"aggiornata su Intervals.icu dagli sforzi reali")
+        if (cfg_profilo or {}).get("stryd"):        # 07/10/2026 (punto 12): CP corsa da Stryd
+            agg_cp, _ = cs.soglie.aggiorna_run_cp_automatico(stato, oggi)
+            for a in agg_cp:
+                righe.append(f"CP corsa {a.get('da') or 'nessuna'} -> {a['a']} W aggiornata su Intervals.icu")
         agg_ftp, _ = cs.soglie.aggiorna_bike_ftp_automatico(stato, oggi)
         for a in agg_ftp or []:
             righe.append(f"FTP bici {a.get('da') or 'nessuna'} -> {a['a']} W aggiornata su Intervals.icu")
@@ -645,7 +698,7 @@ def esegui_app(config_json):
     # mano che raccoglie dati) valgono piu' di quelle su Intervals.icu; disponibilita' per
     # giorno in minuti (0 = non disponibile); tetto ore cardio settimanale.
     for k in ("FCMAX", "FCREST", "FC_DA_APP", "MAX_ORE_CARDIO_SETT", "DISPONIBILITA", "SETTIMANA_TIPO",
-              "PALESTRA", "CALDO"):
+              "PALESTRA", "CALDO", "DETP"):
         os.environ.pop(k, None)
     prof = cfg.get("profilo") or {}
     if prof.get("fc_max") and prof.get("fc_riposo"):
@@ -655,6 +708,8 @@ def esegui_app(config_json):
         os.environ["MAX_ORE_CARDIO_SETT"] = str(float(prof["tetto_ore"]))
     if prof.get("disponibilita"):
         os.environ["DISPONIBILITA"] = json.dumps(prof["disponibilita"])
+    if prof.get("detp"):          # 07/10/2026: CORE 2 e protocollo DETP (punto 11)
+        os.environ["DETP"] = json.dumps(prof["detp"])
     if prof.get("caldo"):         # 06/10/2026: preferenze per i giorni caldi (punto 7)
         os.environ["CALDO"] = json.dumps(prof["caldo"])
     if prof.get("palestra"):      # 06/10/2026: attrezzatura e livello (roadmap punto 6)
@@ -675,7 +730,8 @@ def esegui_app(config_json):
             cs.scrivi_nota = lambda *a, **k: None
             r = cs.requests.get(f"{cs.ICU_BASE}/athlete/{cs.ATHLETE_ID}", headers=cs.ICU)
             atleta = r.json() if r.status_code == 200 else {}
-            sedute.configura(atleta, cs.get_activities(42))
+            sedute.configura(atleta, cs.get_activities(42),
+                             potenza_corsa=potenza_corsa_attiva(prof, atleta))   # punto 12
             oggi = cs.now_local().strftime("%Y-%m-%d")
             # 06/10/2026 (punto 7): previsioni nel luogo del telefono, oggi + 7 giorni
             posiz = cfg.get("posizione") or {}
@@ -685,8 +741,16 @@ def esegui_app(config_json):
                     posiz["lat"], posiz["lon"],
                     [(d0 + cs.timedelta(days=i)).strftime("%Y-%m-%d") for i in range(8)],
                     cs.PROFILO_CALDO)
-            # 06/10/2026 (punto 4): test periodico da proporre se l'ultimo e' vecchio
             stato0 = cs.carica_stato()
+            # 07/10/2026 (punto 11): sudorazione dallo sweat test salvato; sweat test da
+            # proporre se mai fatto o piu' vecchio di un anno
+            if cs.detp.attivo(cs.PROFILO_DETP):
+                if not cs.PROFILO_DETP.get("sweat") and stato0.get("sweat"):
+                    cs.PROFILO_DETP["sweat"] = stato0["sweat"]
+                ult = stato0.get("ultimo_sweat_test")
+                cs.SWEAT_TEST_DA_FARE = not cs.PROFILO_DETP.get("sweat") and (
+                    not ult or (cs._dt(oggi) - cs._dt(ult)).days > 365)
+            # 06/10/2026 (punto 4): test periodico da proporre se l'ultimo e' vecchio
             # 06/10/2026 (punto 6): settimane dal primo uso della forza (onboarding)
             if not stato0.get("forza_inizio") and not cfg.get("dry_run"):
                 stato0["forza_inizio"] = oggi
@@ -703,9 +767,10 @@ def esegui_app(config_json):
             out["esito"] = esito
             cs.TEST_PROSSIMO = None     # vale solo per questo run
             cs.METEO = None
+            cs.SWEAT_TEST_DA_FARE = False
             soglie_agg = []
             if not cfg.get("dry_run") and esito in ("pianificata", "fatto", "niente"):
-                soglie_agg = _aggiorna_soglie(piano, atleta, oggi)
+                soglie_agg = _aggiorna_soglie(piano, atleta, oggi, prof)
             if esito in ("pianificata", "fatto", "niente") and not cfg.get("dry_run"):
                 rie = _riepilogo(piano, esito, out["notifiche"], oggi)
                 stato = cs.carica_stato()
@@ -735,7 +800,7 @@ def esegui_app(config_json):
                 if da_compl:
                     rie["test_da_completare"] = da_compl
                 # 06/10/2026: soglie bloccanti mancanti su Intervals.icu (punto 3)
-                bloccanti = [f"{m['disciplina']} {m['campo']}" for m in verifica_soglie(atleta)[0]
+                bloccanti = [f"{m['disciplina']} {m['campo']}" for m in verifica_soglie(atleta, prof.get("stryd"))[0]
                              if m["gravita"] == "bloccante"]
                 if bloccanti:
                     rie["avvisi"] = "\n".join(x for x in [rie.get("avvisi") or "",

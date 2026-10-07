@@ -52,8 +52,9 @@ class TestSoglieTest {
         "LTHR corsa 160 -> 167 aggiornata su Intervals.icu dagli sforzi reali\n" +
             "test in programma il 2026-10-10: Test 30' corsa\n" +
             "passo soglia corsa 4:25/km dal test del 2026-10-03, aggiornato su Intervals.icu\n" +
+            "CP corsa 280 -> 290 W aggiornata su Intervals.icu\n" +
             "test di corsa del 2026-10-03: passo 3:50/km troppo diverso dall'attuale 4:30/km (oltre il 15%): non scritto, conferma tu il valore su Intervals.icu"
-    assertEquals(2, AvvisiSoglie.aggiornate(avvisi).size)
+    assertEquals(3, AvvisiSoglie.aggiornate(avvisi).size, "anche la CP di Stryd va in Soglie aggiornate")
     assertTrue(AvvisiSoglie.aggiornate(avvisi).all { !it.contains("troppo diverso") })
   }
 }

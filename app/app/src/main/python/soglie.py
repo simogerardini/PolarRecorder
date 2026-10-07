@@ -587,6 +587,134 @@ def aggiorna_bike_ftp_automatico(state, today_str):
     return [], True
 
 
+
+# ── CP CORSA CON STRYD (07/10/2026, punto 12: estratto da intervals_coach.py, invariato) ──
+# ── AUTODETECT CP CORSA DA POTENZA STRYD (periodico) ─────────
+# Stessa architettura e stesso principio dell'autodetect LTHR qui sopra, applicati
+# alla critical power di corsa: TUTTI i target %Power dei workout (file .zwo %FTP e
+# "%Power" nelle description) vengono risolti dal server Intervals.icu sul campo FTP
+# dello sport Run — che con Stryd E' la CP. Se quel valore invecchia, ogni qualita'
+# a potenza punta al bersaglio sbagliato, esattamente come le zone HR con una LTHR
+# stantia. La stima e' un LOWER BOUND dagli sforzi sostenuti reali:
+#   max(best-30' watt, 0.95 x best-20' watt)
+# — la CP e' ~ la potenza massima sostenibile 30-40' (Jones et al.; Vance 'Run with
+# Power'), quindi la best-30' e' un limite inferiore diretto; 0.95 x best-20' e'
+# l'approssimazione FTP-style (Coggan, portata alla corsa da Palladino/Stryd). E'
+# il canale con cui i test run_tt30/TestRace e le gare vengono raccolti da soli.
+# SOLO AL RIALZO, mai al ribasso in automatico: l'assenza di sforzi duri non e'
+# evidenza di CP scesa. Un ribasso reale (detraining, o il passaggio dalla potenza
+# nativa Suunto a Stryd, che legge tipicamente piu' basso) richiede il test CP
+# dedicato e la conferma manuale del valore su Intervals.icu — il log lo suggerisce
+# quando i dati non validano il configurato da troppo tempo.
+CP_MIN_DELTA_W  = 3
+
+CP_MAX_STEP_W   = 10
+
+CP_STALE_PCT    = 0.95
+
+CP_PLAUSIBLE_W  = (100, 500)
+
+def get_run_cp():
+    """FTP corsa (= CP Stryd) configurata su Intervals.icu, None se assente."""
+    get_lthr()   # popola _ATHLETE_CACHE
+    for s in (_ATHLETE_CACHE or {}).get("sportSettings", []):
+        if "Run" in s.get("types", []):
+            return s.get("ftp")
+    return None
+
+def set_run_cp_on_intervals(watts):
+    """Scrive la CP corsa come FTP dello sport Run su Intervals.icu: e' il valore su
+    cui il server risolve gli step %FTP dei .zwo e i '%Power' delle description
+    (le zone potenza espresse in percentuale seguono automaticamente)."""
+    r = _http().put(
+        f"https://intervals.icu/api/v1/athlete/{ATHLETE_ID}/sport-settings/Run",
+        headers=ICU, json={"ftp": watts})
+    if r.status_code not in (200, 204):
+        print(f"  ATTENZIONE: scrittura CP corsa su Intervals.icu fallita ({r.status_code}) "
+              f"— verifica che l'API key abbia lo scope SETTINGS:WRITE")
+        return False
+    return True
+
+def stima_run_cp(activities, cp_corrente):
+    """LOWER BOUND della CP corsa dagli sforzi con potenza del periodo. Solo
+    attivita' corsa >=25' con potenza media registrata (Stryd); gli streams si
+    scaricano solo per le 4 sedute a potenza media piu' alta. Ritorna (lb|None, nota)."""
+    cand = [a for a in activities or []
+            if (a.get("type") or "") in LTHR_SPORTS["Run"]
+            and (a.get("moving_time") or 0) >= 25 * 60
+            and (a.get("average_watts") or 0) > 0]
+    if not cand:
+        return None, "nessuna attivita' corsa con potenza (Stryd) di almeno 25' nel periodo"
+    cand.sort(key=lambda a: a.get("average_watts") or 0, reverse=True)
+    best20, best30 = None, None
+    for a in cand[:4]:
+        serie = get_activity_power_series(a.get("id"))
+        if not serie:
+            continue
+        b20 = _best_rolling_hr(serie, 1200)
+        b30 = _best_rolling_hr(serie, 1800)
+        if b20 and (best20 is None or b20 > best20):
+            best20 = b20
+        if b30 and (best30 is None or b30 > best30):
+            best30 = b30
+    if not best20:
+        return None, "streams potenza non disponibili/insufficienti sulle sedute candidate"
+    lb = max(round(best30) if best30 else 0, round(best20 * 0.95))
+    if not (CP_PLAUSIBLE_W[0] <= lb <= CP_PLAUSIBLE_W[1]):
+        return None, f"lower bound {lb}W fuori dal range plausibile {CP_PLAUSIBLE_W}"
+    fonte = (f"best-30' {round(best30)}W" if best30 and round(best30) >= round(best20 * 0.95)
+             else f"0.95 x best-20' {round(best20)}W")
+    return lb, (f"lower bound da {fonte} (best-20' {round(best20)}W"
+                + (f", best-30' {round(best30)}W" if best30 else "")
+                + f"; analizzate {min(len(cand), 4)} sedute a potenza piu' alta)")
+
+def aggiorna_run_cp_automatico(state, today_str):
+    """Come aggiorna_lthr_automatico ma per la CP corsa: stessa periodicita'
+    (LTHR_CHECK_DAYS/LTHR_RETRY_DAYS, finestra LTHR_LOOKBACK_DAYS), stesso principio
+    solo-al-rialzo. Ritorna (lista_aggiornamenti, state_modificato)."""
+    global _ATHLETE_CACHE
+    rec      = state.setdefault("cp_auto", {})
+    today_dt = datetime.strptime(today_str, "%Y-%m-%d")
+    last = rec.get("last_check")
+    if last:
+        try:
+            passati = (today_dt - datetime.strptime(last, "%Y-%m-%d")).days
+        except ValueError:
+            passati = 10**6
+        if passati < (LTHR_CHECK_DAYS if rec.get("esito") == "ok" else LTHR_RETRY_DAYS):
+            return [], False
+
+    corrente  = get_run_cp()
+    est, nota = stima_run_cp(get_activities(LTHR_LOOKBACK_DAYS), corrente)
+    if est is None:
+        rec.update({"last_check": today_str, "esito": "skip", "nota": nota})
+        print(f"  CP corsa: stima saltata — {nota}")
+        return [], True
+    if corrente and est < corrente + CP_MIN_DELTA_W:
+        stantio = est < corrente * CP_STALE_PCT
+        rec.update({"last_check": today_str, "esito": "ok", "cp": corrente,
+                    "nota": f"lower bound {est}W non supera il configurato {corrente}W"})
+        print(f"  CP corsa: {corrente}W confermata (lower bound {est}W — {nota})"
+              + ("\n    💡 Da un mesociclo nessuno sforzo valida questa CP (o la fonte "
+                 "potenza e' cambiata, es. passaggio a Stryd): pianifica il test CP "
+                 "(30' TT — run_tt30); al ribasso non si aggiorna mai in automatico."
+                 if stantio else ""))
+        return [], True
+    nuovo = est
+    if corrente and est - corrente > CP_MAX_STEP_W:
+        nuovo = corrente + CP_MAX_STEP_W
+    if set_run_cp_on_intervals(nuovo):
+        _ATHLETE_CACHE = None   # eventuali riletture vedono il valore appena scritto
+        rec.update({"last_check": today_str, "esito": "ok", "cp": nuovo,
+                    "precedente": corrente, "nota": nota})
+        print(f"  CP corsa: {corrente or 'ND'} -> {nuovo}W (FTP Run aggiornata: tutti i "
+              f"target %Power si risolvono sul nuovo valore) — {nota}"
+              + (f" [rialzo clampato a +{CP_MAX_STEP_W}W su lower bound {est}]"
+                 if nuovo != est else ""))
+        return [{"da": corrente, "a": nuovo}], True
+    rec.update({"last_check": today_str, "esito": "errore_scrittura", "nota": nota})
+    return [], True
+
 # ── EVENTI DEI TEST (06/10/2026 — nuovo, roadmap punto 4) ──────────────────────────
 # Sintassi delle altre sedute (sedute.py): step con durata o distanza, una sola unita' di
 # target per evento, nuoto con "% Pace" e "Press lap". Gli step di test non hanno target:
@@ -621,8 +749,11 @@ SEDUTA_DEL_TEST = {"run_tt30": "corsa_chiave", "bike_ftp20": "bici_chiave",
                    "swim_css": "nuoto_chiave", "run_maf": "corsa_supporto"}
 
 
-def eventi_test(test, data_str):
+def eventi_test(test, data_str, stryd=False):
     sport, minuti, desc = _DESCRIZIONI_TEST[test["chiave"]]
+    if stryd and test["chiave"] == "run_tt30":   # 07/10/2026 (punto 12)
+        test = dict(test, misura=test["misura"] + ". Con Stryd: CP = potenza media dei 30', raccolta "
+                                                  "in automatico (solo al rialzo)")
     # Il "%" nelle note verrebbe letto da Intervals.icu come target in potenza: si scrive
     # "per cento" (test bici: "95% della potenza media" -> target misti HR/Power).
     note = (f"\n{test['protocollo']}\nMisura: {test['misura']}\n").replace("%", " per cento")

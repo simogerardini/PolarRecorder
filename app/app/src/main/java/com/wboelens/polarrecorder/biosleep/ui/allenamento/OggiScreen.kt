@@ -60,6 +60,7 @@ import com.wboelens.polarrecorder.biosleep.training.SedutaPianificata
 import com.wboelens.polarrecorder.biosleep.ui.RigaTagOggi
 import com.wboelens.polarrecorder.biosleep.ui.CardInterruzione
 import com.wboelens.polarrecorder.biosleep.ui.CardProtezione
+import com.wboelens.polarrecorder.biosleep.ui.CardSweat
 import com.wboelens.polarrecorder.biosleep.ui.MessaggioCss
 import com.wboelens.polarrecorder.biosleep.ui.SoglieOggi
 import com.wboelens.polarrecorder.biosleep.ui.TestOggi
@@ -150,6 +151,8 @@ fun OggiScreen(
       SoglieOggi()
       // test periodici: test in programma questa settimana, tempi del test CSS
       TestOggi()
+      // DETP: dati dello sweat test, dal giorno del test
+      CardSweat()
       MessaggioCss()
       RigaTagOggi(onApriTag)
       if (dati == null) {

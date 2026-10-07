@@ -162,13 +162,14 @@ object Cervello {
     private set
 
   /** cervello.controlla_soglie: soglie di corsa, bici e nuoto su Intervals.icu. */
-  fun controllaSoglie(context: Context, c: Credenziali): EsitoSoglie =
+  fun controllaSoglie(context: Context, c: Credenziali, profilo: ProfiloAtleta? = null): EsitoSoglie =
       synchronized(lucchetto) {
         if (!Python.isStarted()) Python.start(AndroidPlatform(context.applicationContext))
         try {
           val testo =
               Python.getInstance().getModule("cervello")
-                  .callAttr("controlla_soglie", ConfigCervello(c, cartella(context).absolutePath).json()).toString()
+                  // il profilo serve a sapere se la CP di corsa e' necessaria (Stryd)
+                  .callAttr("controlla_soglie", ConfigCervello(c, cartella(context).absolutePath, profilo = profilo).json()).toString()
           ultimaRispostaSoglie = testo
           Soglie.da(testo)
         } catch (e: PyException) {
@@ -207,12 +208,22 @@ object Cervello {
       chiama(context, "gare", c) {}?.let { Gare.elenco(it) } ?: EsitoGare("errore", emptyList(), "Python non disponibile")
 
   /** cervello.salva_gara: nuova gara, o modifica con [id]. */
-  fun salvaGara(context: Context, c: Credenziali, nome: String, data: String, priorita: String, distanza: String, id: String?): EsitoGara =
+  fun salvaGara(
+      context: Context,
+      c: Credenziali,
+      nome: String,
+      data: String,
+      priorita: String,
+      distanza: String,
+      id: String?,
+      calda: Boolean = false,
+  ): EsitoGara =
       chiama(context, "salva_gara", c) {
         addProperty("nome", nome)
         addProperty("data", data)
         addProperty("priorita", priorita)
         addProperty("distanza", distanza)
+        if (calda) addProperty("calda", true)
         id?.let { addProperty("id", it) }
       }?.let { Gare.esito(it) } ?: EsitoGara("errore", null, false, "Python non disponibile")
 
@@ -237,6 +248,18 @@ object Cervello {
           null
         } catch (e: RuntimeException) {
           null
+        }
+      }
+
+  /** cervello.registra_sweat: dati dello sweat test -> sudorazione nello stato del coach. */
+  fun registraSweat(context: Context, d: DatiSweat): EsitoSweat =
+      synchronized(lucchetto) {
+        if (!Python.isStarted()) Python.start(AndroidPlatform(context.applicationContext))
+        val cfg = d.json().apply { addProperty("cartella", cartella(context).absolutePath) }
+        try {
+          EsitoSweat.da(Python.getInstance().getModule("cervello").callAttr("registra_sweat", cfg.toString()).toString())
+        } catch (e: PyException) {
+          EsitoSweat("errore", null, "Python: ${e.message}")
         }
       }
 

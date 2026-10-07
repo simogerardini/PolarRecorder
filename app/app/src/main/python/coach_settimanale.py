@@ -59,6 +59,7 @@ import carico      # forma attesa, TSB a domenica, tetto TSS (da intervals_coach
 import soglie      # LTHR/FTP automatiche e test periodici (da intervals_coach)
 import palestra    # libreria delle schede di forza (documento di Simone, 06/10/2026)
 import caldo       # previsioni nel luogo del telefono e regole dei giorni caldi
+import detp        # protocollo DETP con sensore CORE 2 (punto 11)
 from requests.adapters import HTTPAdapter
 from urllib3.util.retry import Retry
 
@@ -2519,6 +2520,120 @@ def rimodula_per_caldo(ev, m, oggi, activities, profilo):
     return None
 
 
+
+# ═════════════════════════════════════════════════════════════════════════════
+# 4g. DETP — HEAT BLOCK CON SENSORE CORE 2 (07/10/2026 — punto 11, approvato da Simone)
+# ═════════════════════════════════════════════════════════════════════════════
+_MOTIVI_DETP = []
+_FACILI_DETP = ("corsa_supporto", "bici_supporto")
+HEAT_MINUTI, HEAT_AGGIUNTO_MINUTI = 65, 45
+ACCL_DA, ACCL_A, MANT_GG = 20, 7, 4        # acclimatazione G-20..G-7, mantenimento G-4
+ACCL_MAX_SETTIMANA = 5
+
+
+def _duro(s):
+    """Qualita' di corsa/bici o lungo: giorni in cui l'heat block non va."""
+    return (s["famiglia"] in ("bici", "corsa") and s.get("qualita")) or \
+        s["key"] in ("brick_bici", "brick_corsa", "lungo_bici", "lungo_corsa")
+
+
+def _heat(base_s, giorno, d, pos, minuti, sostituisce=None):
+    s = dict(base_s) if base_s else _seduta("bici_supporto", giorno, 9, pos["distanza"], pos)
+    s.update(key="bici_supporto", sport="Ride", famiglia="bici", qualita=False, indoor=True,
+             detp="heat", durata=minuti, nominale=minuti, fisso=True, data=d)
+    s["min"] = min(s.get("min", minuti), minuti)
+    s["note"] = list(s.get("note") or []) + [f"heat block CORE{' al posto di ' + sostituisce if sostituisce else ''}"]
+    return s
+
+
+def applica_detp(sedute_sett, giorni, pos, mod, races, indisp):
+    """Heat block secondo il DETP:
+    - gara A segnata calda: acclimatazione nei giorni G-20..G-7 (max 5 a settimana), poi
+      un mantenimento a G-4; mai negli ultimi 3 giorni;
+    - altrimenti 1 a settimana: ciclo continuo W2-W4, con gara in costruzione/specifico;
+      mai in scarico, taper, settimana di gara, W1 (test).
+    Sostituisce una corsa/bici facile; senza un giorno facile utile, non si fa.
+    Freni: banda non verde (gialla, rossa o grigia), tag malattia/sonno_disturbato/alcol/
+    viaggio quel giorno;
+    nella frequenza settimanale anche mai il giorno prima di una qualita' di corsa/bici o di
+    un lungo. Nell'acclimatazione quel vincolo cade (8-10 sedute in 14 giorni non stanno
+    altrimenti in una settimana con 4 giorni duri): la bici di qualita' diventa heat block e
+    si aggiungono heat block brevi ai giorni facili."""
+    if not detp.attivo(PROFILO_DETP):
+        return sedute_sett
+    # 07/10/2026 (decisione di Simone): heat block solo con banda VERDE. Anche la grigia
+    # (baseline in calibrazione) sospende: senza baseline non ci si accorge dello stress.
+    banda = (mod or {}).get("banda")
+    if banda != "verde":
+        _MOTIVI_DETP.append(f"DETP: heat block sospeso, banda biometrica {banda or 'assente'}")
+        return sedute_sett
+    calda = next((g for g in sorted(races or [], key=lambda x: x["date"])
+                  if g.get("category") == "RACE_A" and detp.gara_calda(g) and g["date"] >= giorni[0]), None)
+    per_g = {g: [x for x in sedute_sett if x["giorno"] == g] for g in range(7)}
+
+    def libero_da_tag(d):
+        return not any(t in (TAG_GIORNI.get(d) or []) for t in detp.TAG_STOP)
+
+    def giorno_ok(g, prima_dura=True):
+        d = giorni[g]
+        if g in indisp or not libero_da_tag(d) or any(_duro(x) and not x.get("detp") for x in per_g[g]):
+            return False
+        if prima_dura and g < 6 and any(_duro(x) for x in per_g[g + 1]):
+            return False
+        return True
+
+    def metti(g, minuti_aggiunto, ammessi):
+        d = giorni[g]
+        facile = next((x for x in per_g[g] if x["key"] in ammessi and not x.get("detp")), None)
+        if facile:
+            nuovo = _heat(facile, g, d, pos, HEAT_MINUTI, NOMI.get(facile["key"], facile["key"]))
+            sedute_sett[sedute_sett.index(facile)] = nuovo
+            per_g[g][per_g[g].index(facile)] = nuovo
+            return True
+        if minuti_aggiunto:
+            nuovo = _heat(None, g, d, pos, minuti_aggiunto)
+            nuovo["slot"] = len(per_g[g])
+            sedute_sett.append(nuovo)
+            per_g[g].append(nuovo)
+            return True
+        return False
+
+    if calda:
+        fin = _dt(calda["date"])
+        messi = 0
+        for g in range(7):
+            gg = (fin - _dt(giorni[g])).days
+            if messi >= ACCL_MAX_SETTIMANA or gg < 3:
+                continue
+            if ACCL_A <= gg <= ACCL_DA and giorno_ok(g, prima_dura=False):
+                if metti(g, HEAT_AGGIUNTO_MINUTI, _FACILI_DETP):
+                    messi += 1
+            elif ACCL_A <= gg <= ACCL_DA:
+                # giorno con la bici di qualita': diventa heat block (sezione 4.1, potenza bassa)
+                q = next((x for x in per_g[g] if x["key"] == "bici_chiave"), None)
+                if q and g not in indisp and libero_da_tag(giorni[g]) and metti(g, None, ("bici_chiave",)):
+                    messi += 1
+            elif gg == MANT_GG and giorno_ok(g, prima_dura=False):
+                messi += metti(g, HEAT_AGGIUNTO_MINUTI, _FACILI_DETP)
+        if messi:
+            _MOTIVI_DETP.append(f"DETP: {messi} heat block per la gara calda del {calda['date']}")
+        return sedute_sett
+    settimana_ok = (pos["fase"] == "senza_gara" and pos.get("idx_fase") in (1, 2, 3)) or \
+        (pos["fase"] in ("build", "peak") and not pos.get("scarico"))
+    if not settimana_ok:
+        return sedute_sett
+    for g in range(7):
+        if giorno_ok(g) and metti(g, None, _FACILI_DETP):
+            if SWEAT_TEST_DA_FARE:
+                h = next(x for x in per_g[g] if x.get("detp") == "heat")
+                h.update(detp="sweat", durata=60, nominale=60)
+                _MOTIVI_DETP.append(f"DETP: sweat test il {giorni[g]}")
+            else:
+                _MOTIVI_DETP.append(f"DETP: heat block il {giorni[g]}")
+            break
+    return sedute_sett
+
+
 def scelta_seduta(s):
     """(sessione_tipo, params) della libreria per questa seduta. Rotazione deterministica."""
     rot = (_dt(s["data"]).isocalendar()[1] + s.get("giorno", 0)) if s.get("data") else 0
@@ -2539,13 +2654,35 @@ FORZA_SETTIMANE = None
 # 06/10/2026 (punto 7): previsioni {data: {temp_c, umidita_pct, ora}} dal cervello (None =
 # nessuna previsione: nessuna regola del caldo) e preferenze {"converti_corsa": bool}.
 METEO = None
+# 07/10/2026 (punto 11): {"core2": bool, "detp": bool, "sweat": {"litri_h", "sodio_mg_l"}}
+PROFILO_DETP = json.loads(os.getenv("DETP", "{}") or "{}")
+SWEAT_TEST_DA_FARE = False      # impostato dal cervello (mai fatto o piu' vecchio di un anno)
 PROFILO_CALDO = json.loads(os.getenv("CALDO", "{}") or "{}")
 
 
 def eventi_da_libreria(s):
+    """Eventi Intervals.icu della seduta. 07/10/2026: con il DETP attivo note HSI brevi
+    sugli step di qualita' e brick, riga di idratazione su lunghi e brick."""
+    evs = _eventi_da_libreria(s)
+    if not evs or not detp.attivo(PROFILO_DETP) or s.get("detp"):
+        return evs
+    evs = [detp.annota(e, s["key"], s.get("qualita"), s.get("distanza")) for e in evs]
+    if s["key"] in ("brick_bici", "lungo_bici", "lungo_corsa"):
+        riga = detp.nota_idratazione(PROFILO_DETP.get("sweat"))
+        evs[0] = dict(evs[0], description=evs[0]["description"] + riga + "\n")
+    return evs
+
+
+def _eventi_da_libreria(s):
     """Eventi Intervals.icu della seduta, scritti da sedute.py. None per la mobilita'."""
+    if s.get("detp") in ("heat", "sweat"):
+        desc = detp.descrizione_heat(s["durata"]) if s["detp"] == "heat" else detp.descrizione_sweat_test()
+        nome = (f"Heat block CORE {s['durata']}min" if s["detp"] == "heat" else "Sweat test CORE 60min")
+        return [{"category": "WORKOUT", "start_date_local": f"{s['data']}T00:00:00", "type": "Ride",
+                 "name": nome, "description": desc, "moving_time": s["durata"] * 60,
+                 "external_id": f"coach:Detp:{s['data']}"}]
     if s.get("test"):
-        return soglie.eventi_test(s["test"], s["data"])
+        return soglie.eventi_test(s["test"], s["data"], sedute._POTENZA_CORSA[0])
     fase_ic = sedute.FASE_IC.get(s.get("fase"), "Base")
     lthr = sedute.get_lthr("Run")
     bike_lthr, swim_lthr = sedute.get_lthr("Ride"), sedute.get_lthr("Swim")
@@ -3106,6 +3243,10 @@ def costruisci_settimana(lunedi, races, oura_hist, wellness, activities,
     _MOTIVI_SETTIMANA[:] = [m for m in _MOTIVI_SETTIMANA if not m.startswith("forza del ")] \
         if pos["fase"] != "senza_gara" else _MOTIVI_SETTIMANA
     sedute = applica_caldo(sedute, giorni, activities)
+    sedute = applica_detp(sedute, giorni, pos, mod, races, indisp)
+    for m in _MOTIVI_DETP:
+        if m not in mod["motivi"]:
+            mod["motivi"].append(m)
     for m in _MOTIVI_CALDO:
         if m not in mod["motivi"]:
             mod["motivi"].append(m)
@@ -3534,6 +3675,7 @@ def esegui_auto(modo="auto", dry=False, force=False, lunedi=None, senza_attesa=F
     _NON_SCRITTE.clear()
     _MOTIVI_TAG.clear()
     _MOTIVI_CALDO.clear()
+    _MOTIVI_DETP.clear()
     try:
         if modo == "giornaliero":
             esito = esegui_giornaliero(dry, force, pre_lock=prendi_lock)

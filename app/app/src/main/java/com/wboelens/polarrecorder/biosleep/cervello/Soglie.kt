@@ -41,19 +41,21 @@ object Soglie {
         "css" -> "CSS nuoto"
         "lthr" -> "FC soglia (LTHR)"
         "ftp" -> "FTP"
+        "cp" -> "CP corsa (Stryd)"
         "sport" -> "Impostazioni $disciplina"
         else -> c
       }
 
   /** "LTHR 167 · passo soglia 4:30/km" per una disciplina. */
   fun valoriLeggibili(campi: Map<String, String>): String =
-      listOf("lthr", "passo_soglia", "ftp", "css")
+      listOf("lthr", "passo_soglia", "cp", "ftp", "css")
           .mapNotNull { k ->
             campi[k]?.let { v ->
               when (k) {
                 "lthr" -> "LTHR $v"
                 "passo_soglia" -> "passo soglia $v"
                 "ftp" -> "FTP $v W"
+                "cp" -> "CP ${v.toDoubleOrNull()?.let { Math.round(it).toString() } ?: v} W"
                 "css" -> "CSS $v"
                 else -> "$k $v"
               }
@@ -107,7 +109,7 @@ object SoglieRepo {
     val oggi = LocalDate.now().toString()
     if (!forza && prefs.getString("giorno", null) == oggi) return carica(context)
     val c = IntervalsSettings(context).credenziali ?: return carica(context)
-    val e = Cervello.controllaSoglie(context, c)
+    val e = Cervello.controllaSoglie(context, c, ProfiloRepo.effettivo(context))
     if (e.esito == Soglie.ERRORE) return carica(context) ?: e
     prefs.edit().putString("ultimo", Cervello.ultimaRispostaSoglie).putString("giorno", oggi).apply()
     _stato.value = e

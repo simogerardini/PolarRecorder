@@ -82,6 +82,14 @@ class RiepilogoDb internal constructor(context: Context, nomeFile: String?) :
 
   fun leggi(data: String): Riepilogo? = json(data)?.let { RiepilogoParser.leggi(it) }
 
+  /** Gli ultimi [n] riepiloghi, dal piu' recente (per lo sweat test, pianificato in un giorno qualsiasi). */
+  fun recenti(n: Int): List<Riepilogo> =
+      readableDatabase.rawQuery("SELECT json FROM riepiloghi ORDER BY data DESC LIMIT $n", null).use { c ->
+        val out = ArrayList<Riepilogo>()
+        while (c.moveToNext()) RiepilogoParser.leggi(c.getString(0))?.let { out.add(it) }
+        out
+      }
+
   /** Il riepilogo piu' recente (per gli avvisi sulla settimana tipo nella schermata Profilo). */
   fun ultimo(): Riepilogo? =
       readableDatabase.rawQuery("SELECT json FROM riepiloghi ORDER BY data DESC LIMIT 1", null).use { c ->

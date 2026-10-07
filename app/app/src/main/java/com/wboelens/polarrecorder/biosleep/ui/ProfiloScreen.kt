@@ -40,6 +40,7 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.produceState
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -50,6 +51,7 @@ import androidx.compose.ui.unit.dp
 import androidx.work.WorkInfo
 import androidx.work.WorkManager
 import com.wboelens.polarrecorder.biosleep.cervello.Caldo
+import com.wboelens.polarrecorder.biosleep.cervello.Detp
 import com.wboelens.polarrecorder.biosleep.cervello.GIORNI
 import com.wboelens.polarrecorder.biosleep.cervello.Palestra
 import com.wboelens.polarrecorder.biosleep.cervello.PosizioneTelefono
@@ -59,6 +61,7 @@ import com.wboelens.polarrecorder.biosleep.cervello.ProfiloStore
 import com.wboelens.polarrecorder.biosleep.cervello.RipianificaWorker
 import com.wboelens.polarrecorder.biosleep.cervello.RisultatoCervello
 import com.wboelens.polarrecorder.biosleep.cervello.SettimanaTipo
+import com.wboelens.polarrecorder.biosleep.cervello.SoglieRepo
 import com.wboelens.polarrecorder.biosleep.cervello.Suggerimenti
 import com.wboelens.polarrecorder.biosleep.riepilogo.Riepilogo
 import com.wboelens.polarrecorder.biosleep.riepilogo.RiepilogoDb
@@ -66,6 +69,7 @@ import com.wboelens.polarrecorder.biosleep.riepilogo.RiepilogoLink
 import com.wboelens.polarrecorder.biosleep.ui.allenamento.ColoriBio
 import java.time.LocalDate
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 private val NOMI_GIORNI =
@@ -83,6 +87,7 @@ private fun numeroIntero(t: String, limiti: IntRange): Int? = t.trim().toIntOrNu
 fun ProfiloScreen(onBack: () -> Unit, onApriGare: () -> Unit = {}) {
   val context = LocalContext.current.applicationContext
   val store = remember { ProfiloStore(context) }
+  val scope = rememberCoroutineScope()
   val iniziale = remember { store.leggi() }
   val suggerimenti by produceState<Suggerimenti?>(null) { value = withContext(Dispatchers.IO) { ProfiloRepo.suggerimenti(context) } }
 
@@ -108,6 +113,11 @@ fun ProfiloScreen(onBack: () -> Unit, onApriGare: () -> Unit = {}) {
   var oraWeekend by remember { mutableIntStateOf(iniziale.caldo.oraWeekend) }
   var posizioneOk by remember { mutableStateOf(PosizioneTelefono.permesso(context)) }
   var posizioneNegata by remember { mutableStateOf(false) }
+  // CORE 2 e DETP
+  var core2 by remember { mutableStateOf(iniziale.detp.core2) }
+  var detp by remember { mutableStateOf(iniziale.detp.attivo) }
+  var stryd by remember { mutableStateOf(iniziale.stryd) }
+  var strydSalvato by remember { mutableStateOf(iniziale.stryd) }
   val chiediPosizione =
       rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission()) { ok ->
         posizioneOk = ok
@@ -146,7 +156,9 @@ fun ProfiloScreen(onBack: () -> Unit, onApriGare: () -> Unit = {}) {
           disponibilita = minuti.mapNotNull { (g, v) -> numeroIntero(v, ProfiloAtleta.LIMITI_MINUTI)?.let { g to it } }.toMap(),
           settimana = settimana,
           palestra = palestra,
-          caldo = Caldo(converti, oraFeriale, oraWeekend))
+          caldo = Caldo(converti, oraFeriale, oraWeekend),
+          detp = Detp(core2, detp),
+          stryd = stryd)
 
   Scaffold(
       topBar = {
@@ -281,9 +293,36 @@ fun ProfiloScreen(onBack: () -> Unit, onApriGare: () -> Unit = {}) {
         }
       }
 
+      // --- Sensori: Stryd, CORE 2 e DETP ------------------------------------------------------------
+      Text("Sensori", style = MaterialTheme.typography.titleSmall)
+      Row(verticalAlignment = Alignment.CenterVertically) {
+        Text("Ho uno Stryd", Modifier.weight(1f))
+        Switch(checked = stryd, onCheckedChange = { stryd = it; esito = null })
+      }
+      Nota(
+          "Le sedute di qualità di corsa (salite, ripetute, soglia) useranno la potenza. Serve la CP su " +
+              "Intervals.icu (campo FTP della corsa): il coach la aggiorna da solo dalle corse con Stryd.")
+      Row(verticalAlignment = Alignment.CenterVertically) {
+        Text("Ho un sensore CORE 2", Modifier.weight(1f))
+        Switch(checked = core2, onCheckedChange = { core2 = it; if (!it) detp = false; esito = null })
+      }
+      Row(verticalAlignment = Alignment.CenterVertically) {
+        Text("Applica il protocollo DETP", Modifier.weight(1f), color = if (core2) MaterialTheme.colorScheme.onSurface else MaterialTheme.colorScheme.onSurfaceVariant)
+        Switch(checked = detp, onCheckedChange = { detp = it; esito = null }, enabled = core2)
+      }
+      Nota(
+          "Con il DETP il coach inserisce sedute di adattamento al caldo (heat block) e aggiunge i target HSI " +
+              "agli allenamenti. Interrompi sempre ai primi sintomi (capogiri, nausea, brividi). Non adatto in caso " +
+              "di malattia o problemi cardiovascolari.")
+
       Button(
           onClick = {
             store.salva(profilo())
+            // Stryd cambiato: la CP diventa (o smette di essere) necessaria, si ricontrollano le soglie
+            if (stryd != strydSalvato) {
+              strydSalvato = stryd
+              scope.launch(Dispatchers.IO) { SoglieRepo.controlla(context, forza = true) }
+            }
             esito = "Salvato: vale dalla prossima pianificazione settimanale"
             // palestra cambiata: le schede della settimana sono gia' scritte, si propone di rifarle
             if (palestra != palestraSalvata) conferma = true

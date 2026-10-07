@@ -96,6 +96,20 @@ data class Caldo(val convertiCorsa: Boolean = true, val oraFeriale: Int = 18, va
 }
 
 /**
+ * Sensore CORE 2 e protocollo DETP (cervello: detp.py). Il DETP richiede il CORE 2: senza
+ * sensore resta spento anche se salvato acceso.
+ */
+data class Detp(val core2: Boolean = false, val detp: Boolean = false) {
+  val attivo: Boolean get() = core2 && detp
+
+  fun json(): JsonObject =
+      JsonObject().apply {
+        addProperty("core2", core2)
+        addProperty("detp", attivo)
+      }
+}
+
+/**
  * Profilo dell'atleta passato al cervello in "profilo". Ogni campo e' facoltativo: un campo
  * assente non si manda, e il cervello usa i valori di Intervals.icu. Disponibilita': minuti per
  * giorno, 0 = non disponibile, giorno assente = nessun limite.
@@ -111,6 +125,10 @@ data class ProfiloAtleta(
     val palestra: Palestra = Palestra(),
     /** Sempre mandata: senza modifiche coincide con quella predefinita del cervello. */
     val caldo: Caldo = Caldo(),
+    /** Sempre mandato: spento finche' l'utente non dichiara il CORE 2. */
+    val detp: Detp = Detp(),
+    /** Stryd: qualita' di corsa in potenza (serve la CP su Intervals.icu). Sempre mandato. */
+    val stryd: Boolean = false,
 ) {
   /** Il blocco "profilo" del configJson (contiene sempre almeno la settimana tipo). */
   fun json(): JsonObject {
@@ -124,6 +142,8 @@ data class ProfiloAtleta(
       add("settimana", settimana.json())
       add("palestra", palestra.json())
       add("caldo", caldo.json())
+      add("detp", detp.json())
+      addProperty("stryd", stryd)
     }
   }
 
@@ -183,6 +203,8 @@ class ProfiloStore(context: Context) {
                   convertiCorsa = prefs.getBoolean("caldo_converti", true),
                   oraFeriale = prefs.getInt("caldo_ora_feriale", 18),
                   oraWeekend = prefs.getInt("caldo_ora_weekend", 10)),
+          detp = Detp(core2 = prefs.getBoolean("core2", false), detp = prefs.getBoolean("detp", false)),
+          stryd = prefs.getBoolean("stryd", false),
       )
 
   fun salva(p: ProfiloAtleta) {
@@ -200,6 +222,9 @@ class ProfiloStore(context: Context) {
       putBoolean("caldo_converti", p.caldo.convertiCorsa)
       putInt("caldo_ora_feriale", p.caldo.oraFeriale)
       putInt("caldo_ora_weekend", p.caldo.oraWeekend)
+      putBoolean("core2", p.detp.core2)
+      putBoolean("detp", p.detp.attivo)
+      putBoolean("stryd", p.stryd)
     }.apply()
   }
 }

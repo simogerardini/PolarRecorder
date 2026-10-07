@@ -14,6 +14,8 @@ data class Gara(
     val settimane: Int?,
     /** La gara che detta la preparazione. */
     val obiettivo: Boolean,
+    /** Prevista con caldo: il coach prepara l'acclimatazione (DETP). */
+    val calda: Boolean = false,
 )
 
 data class EsitoGare(val esito: String, val gare: List<Gara>, val errore: String?)
@@ -86,7 +88,8 @@ object Gare {
                   priorita = s("priorita") ?: "C",
                   distanza = s("distanza"),
                   settimane = s("settimane")?.toDoubleOrNull()?.toInt(),
-                  obiettivo = g.get("obiettivo")?.takeIf { it.isJsonPrimitive && it.asJsonPrimitive.isBoolean }?.asBoolean == true)
+                  obiettivo = g.get("obiettivo")?.takeIf { it.isJsonPrimitive && it.asJsonPrimitive.isBoolean }?.asBoolean == true,
+                  calda = g.get("calda")?.takeIf { it.isJsonPrimitive && it.asJsonPrimitive.isBoolean }?.asBoolean == true)
             }.orEmpty()
         EsitoGare(o.get("esito")?.asString ?: "errore", gare, o.get("errore")?.takeIf { it.isJsonPrimitive }?.asString)
       } catch (e: RuntimeException) {

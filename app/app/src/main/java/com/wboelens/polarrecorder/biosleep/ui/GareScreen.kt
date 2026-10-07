@@ -16,10 +16,12 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Flag
+import androidx.compose.material.icons.filled.WbSunny
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.Checkbox
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DatePicker
 import androidx.compose.material3.DatePickerDialog
@@ -58,6 +60,7 @@ import com.wboelens.polarrecorder.biosleep.cervello.Gare
 import com.wboelens.polarrecorder.biosleep.cervello.RipianificaWorker
 import com.wboelens.polarrecorder.biosleep.intervals.IntervalsSettings
 import com.wboelens.polarrecorder.biosleep.intervals.OAuthIntervals
+import com.wboelens.polarrecorder.biosleep.ui.allenamento.ColoriBio
 import com.wboelens.polarrecorder.biosleep.ui.allenamento.DateIt
 import java.time.Instant
 import java.time.LocalDate
@@ -182,6 +185,7 @@ private fun CardGara(g: Gara, onApri: () -> Unit) {
       Row(verticalAlignment = Alignment.CenterVertically) {
         if (g.obiettivo) Icon(Icons.Filled.Flag, null, Modifier.padding(end = 6.dp), tint = MaterialTheme.colorScheme.primary)
         Text(g.nome, style = MaterialTheme.typography.titleMedium, modifier = Modifier.weight(1f))
+        if (g.calda) Icon(Icons.Filled.WbSunny, "Gara calda", Modifier.padding(end = 6.dp), tint = ColoriBio.giallo)
         Text("Gara ${g.priorita}", style = MaterialTheme.typography.labelLarge, fontWeight = FontWeight.Bold)
       }
       Text(
@@ -214,6 +218,7 @@ private fun ModuloGara(gara: Gara?, onChiudi: () -> Unit, onSalvata: (EsitoGara)
   var data by remember { mutableStateOf(gara?.data) }
   var priorita by remember { mutableStateOf(gara?.priorita) }
   var distanza by remember { mutableStateOf(gara?.let { Gare.distanzaPerModulo(it) }) }
+  var calda by remember { mutableStateOf(gara?.calda ?: false) }
   var calendario by remember { mutableStateOf(false) }
   var inCorso by remember { mutableStateOf(false) }
   var errore by remember { mutableStateOf<String?>(null) }
@@ -262,6 +267,10 @@ private fun ModuloGara(gara: Gara?, onChiudi: () -> Unit, onSalvata: (EsitoGara)
           FlowRow(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
             for ((k, etichetta) in Gare.DISTANZE) FilterChip(selected = distanza == k, onClick = { distanza = k }, label = { Text(etichetta) })
           }
+          Row(verticalAlignment = Alignment.CenterVertically) {
+            Checkbox(checked = calda, onCheckedChange = { calda = it })
+            Text("Gara calda (prevista con caldo)")
+          }
           errore?.let { Text(it, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.error) }
           if (permesso) {
             Text("Il collegamento non permette di scrivere il calendario.", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.error)
@@ -281,7 +290,7 @@ private fun ModuloGara(gara: Gara?, onChiudi: () -> Unit, onSalvata: (EsitoGara)
               val d = data ?: return@salva
               val p = priorita ?: return@salva
               val dist = distanza ?: return@salva
-              esegui { c -> Cervello.salvaGara(context, c, nome.trim(), d.toString(), p, dist, gara?.id) }
+              esegui { c -> Cervello.salvaGara(context, c, nome.trim(), d.toString(), p, dist, gara?.id, calda) }
             },
             enabled = errori.isEmpty() && !inCorso) {
               Text("Salva")
