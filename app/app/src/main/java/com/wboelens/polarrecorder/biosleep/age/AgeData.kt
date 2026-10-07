@@ -2,8 +2,10 @@ package com.wboelens.polarrecorder.biosleep.age
 
 import android.content.Context
 import android.database.SQLException
+import android.util.Log
 import com.wboelens.polarrecorder.biosleep.SleepDb
 import com.wboelens.polarrecorder.biosleep.auto.HabitLearner
+import com.wboelens.polarrecorder.biosleep.intervals.IntervalsAuth
 import com.wboelens.polarrecorder.biosleep.intervals.IntervalsClient
 import com.wboelens.polarrecorder.biosleep.intervals.IntervalsSettings
 import java.io.IOException
@@ -59,6 +61,11 @@ data class BioAgeScreenData(
     /** Anni biologici per anno di calendario (1,0 = come il calendario); null se < 90 giorni. */
     val pace: Double?,
     val historyDays: Int,
+    /**
+     * Lettura da Intervals.icu non riuscita (es. "errore 401"): NON e' "nessun dato". La schermata
+     * lo mostra con "Riprova". null = letture riuscite, oppure Intervals.icu non collegato.
+     */
+    val erroreIntervals: String? = null,
 )
 
 /** Raccoglie i dati (database + Intervals.icu) e calcola. Da chiamare fuori dal main thread. */
@@ -98,15 +105,21 @@ object AgeRepository {
     // FC "a riposo" per la stima del VO2max: mediana della FC media notturna
     val hrRest = valid.map { it.summary.hrAvg }.sorted().let { if (it.isEmpty()) null else it[it.size / 2] }
 
-    // Intervals.icu: wellness (VO2max, peso) e attivita' (allenamento, stima VO2max)
-    val settings = IntervalsSettings(context)
+    // Intervals.icu: wellness (VO2max, peso) e attivita' (allenamento, stima VO2max).
+    // Stesse credenziali del resto dell'app: token OAuth (Bearer, atleta "0") o API key.
+    val credenziali = IntervalsSettings(context).credenziali
     var vo2: Double? = null
     var vo2Source = "Intervals.icu"
     var vo2Sd = 0.05
     var weekly: List<Double>? = null
-    if (settings.isConfigured) {
-      val wellness = fetchWellness(settings.apiKey)
-      val activities = fetchActivities(settings.apiKey)
+    var errore: String? = null
+    if (credenziali != null) {
+      val auth = IntervalsAuth.header(credenziali)
+      val wellnessLetto = fetchWellness(auth)
+      val activitiesLette = fetchActivities(auth)
+      errore = (activitiesLette as? Letto.Errore)?.messaggio ?: (wellnessLetto as? Letto.Errore)?.messaggio
+      val wellness = (wellnessLetto as? Letto.Ok)?.valore
+      val activities = (activitiesLette as? Letto.Ok)?.valore
       vo2 = wellness?.vo2max
       if (activities != null) weekly = weeklyMinutes(activities)
       if (vo2 == null && activities != null && hrRest != null) {
@@ -128,8 +141,31 @@ object AgeRepository {
     val store = AgeProfileStore(context)
     if (outcome is BioAgeOutcome.Ready) store.saveToday(outcome.result.age, chrono)
     val history = store.history()
-    return BioAgeScreenData(outcome, recent.size, lowQuality, noStages, pace(history), history.size)
+    return BioAgeScreenData(outcome, recent.size, lowQuality, noStages, pace(history), history.size, errore)
   }
+
+  /** Esito di una lettura: i dati, oppure l'errore (HTTP o rete) da mostrare all'utente. */
+  private sealed interface Letto<out T> {
+    data class Ok<T>(val valore: T) : Letto<T>
+
+    data class Errore(val messaggio: String) : Letto<Nothing>
+  }
+
+  private const val TAG = "BioSleepAge"
+
+  /** GET con l'header Authorization gia' pronto; mai il token nei log. */
+  private fun <T> leggi(nome: String, url: String, auth: String, interpreta: (String) -> T): Letto<T> =
+      try {
+        val (code, text) = IntervalsClient.request("GET", url, auth, null)
+        Log.i(TAG, "$nome: HTTP $code")
+        if (code != 200) Letto.Errore("errore $code") else Letto.Ok(interpreta(text))
+      } catch (e: IOException) {
+        Log.w(TAG, "$nome: connessione non riuscita: ${e.message}")
+        Letto.Errore("connessione non riuscita")
+      } catch (e: JSONException) {
+        Log.w(TAG, "$nome: risposta non valida")
+        Letto.Errore("risposta non valida")
+      }
 
   /** Ritmo = 1 + pendenza (anni di differenza per anno). Serve uno storico di almeno 90 giorni. */
   private fun pace(history: Map<LocalDate, Double>): Double? {
@@ -155,14 +191,10 @@ object AgeRepository {
   private class Activity(val day: LocalDate, val zones: DoubleArray?, val sample: ActivitySample)
 
   /** VO2max piu' recente (60 giorni) e peso piu' recente (90 giorni) dal wellness. */
-  private fun fetchWellness(apiKey: String): Wellness? {
+  private fun fetchWellness(auth: String): Letto<Wellness> {
     val newest = LocalDate.now()
     val oldest = newest.minusDays(ACTIVITY_DAYS)
-    return try {
-      val (code, text) =
-          IntervalsClient.request(
-              "GET", "${IntervalsClient.BASE_URL}/wellness?oldest=$oldest&newest=$newest", apiKey, null)
-      if (code != 200) return null
+    return leggi("wellness", "${IntervalsClient.BASE_URL}/wellness?oldest=$oldest&newest=$newest", auth) { text ->
       val arr = JSONArray(text)
       val days = (0 until arr.length()).map { arr.getJSONObject(it) }.sortedByDescending { it.optString("id") }
       fun num(o: JSONObject, k: String) = if (!o.has(k) || o.isNull(k)) null else o.getDouble(k)
@@ -172,27 +204,16 @@ object AgeRepository {
               ?.takeIf { it > 10 },
           weightKg = days.firstNotNullOfOrNull { num(it, "weight") }?.takeIf { it in 30.0..200.0 },
       )
-    } catch (e: IOException) {
-      null
-    } catch (e: JSONException) {
-      null
     }
   }
 
-  private fun fetchActivities(apiKey: String): List<Activity>? {
+  private fun fetchActivities(auth: String): Letto<List<Activity>> {
     val newest = LocalDate.now()
     val oldest = newest.minusDays(ACTIVITY_DAYS - 1)
     val fields =
         "start_date_local,type,distance,moving_time,average_heartrate,max_heartrate," +
             "total_elevation_gain,icu_average_watts,icu_hr_zone_times"
-    return try {
-      val (code, text) =
-          IntervalsClient.request(
-              "GET",
-              "${IntervalsClient.BASE_URL}/activities?oldest=$oldest&newest=$newest&fields=$fields",
-              apiKey,
-              null)
-      if (code != 200) return null
+    return leggi("activities", "${IntervalsClient.BASE_URL}/activities?oldest=$oldest&newest=$newest&fields=$fields", auth) { text ->
       val arr = JSONArray(text)
       (0 until arr.length()).mapNotNull { i ->
         val a = arr.getJSONObject(i)
@@ -215,10 +236,6 @@ object AgeRepository {
             ),
         )
       }
-    } catch (e: IOException) {
-      null
-    } catch (e: JSONException) {
-      null
     }
   }
 

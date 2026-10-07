@@ -56,6 +56,8 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import com.wboelens.polarrecorder.biosleep.BioSleepDataSaver
+import com.wboelens.polarrecorder.biosleep.hal.Fasce
+import androidx.compose.runtime.collectAsState
 import com.wboelens.polarrecorder.biosleep.live.RespiroAcc
 import com.wboelens.polarrecorder.biosleep.live.RespiroRsa
 import java.time.Instant
@@ -182,6 +184,11 @@ fun FioreNotte(
   val linea = remember { ArrayDeque<Pair<Long, Float>>() }
   var ritardo by remember { mutableLongStateOf(1_200L) }
   var aperturaRespiro by remember { mutableFloatStateOf(0.5f) }
+  // Punto 10: senza accelerometro (fasce non H10) il fiore segue il respiro letto dagli RR
+  var aperturaRsa by remember { mutableFloatStateOf(0.5f) }
+  var ultimoRsa by remember { mutableLongStateOf(0L) }
+  val fascia by Fasce.sessione.collectAsState()
+  val senzaRr = fascia?.senzaHrv == true
 
   LaunchedEffect(Unit) {
     val respiro = RespiroAcc()
@@ -191,7 +198,10 @@ fun FioreNotte(
         val t = System.currentTimeMillis()
         ultimoBattito = t
         respiro.battito(t, rr)
-        cuore.aggiungi(rr)
+        cuore.aggiungi(rr)?.let {
+          aperturaRsa = it
+          ultimoRsa = t
+        }
         cuore.bpm?.let { bpm = it }
         launch {
           impulso.snapTo(1f)
@@ -230,8 +240,9 @@ fun FioreNotte(
               label = "guida")
   val conBattito = adesso - ultimoBattito < 5_000
   val conRespiro = adesso - ultimoAcc < 5_000
-  val segue = modo == ModoFiore.SEGUI && conRespiro
-  val e = if (segue) aperturaRespiro else guida
+  val conRsa = !senzaRr && adesso - ultimoRsa < 5_000
+  val segue = modo == ModoFiore.SEGUI && (conRespiro || conRsa)
+  val e = if (segue) (if (conRespiro) aperturaRespiro else aperturaRsa) else guida
   val p = if (conBattito) impulso.value else 0f
 
   Dialog(onDismissRequest = onChiudi, properties = DialogProperties(usePlatformDefaultWidth = false)) {
@@ -269,7 +280,9 @@ fun FioreNotte(
             when {
               modo == ModoFiore.GUIDA -> "Inspira mentre si apre, espira mentre si chiude"
               !inRegistrazione -> "Il fiore seguirà il tuo respiro appena la fascia è collegata"
-              !conRespiro -> "In attesa del respiro dalla fascia (serve la Polar H10)"
+              senzaRr -> "Questa fascia non misura gli intervalli RR: il fiore ti guida"
+              !conRespiro && conRsa -> "Il fiore segue il tuo respiro, letto dal battito"
+              !conRespiro -> "In attesa del respiro dalla fascia"
               !tarato -> "Il fiore segue il tuo respiro · taratura in corso"
               else -> "Il fiore segue il tuo respiro"
             },

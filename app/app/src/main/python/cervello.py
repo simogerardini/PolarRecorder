@@ -403,6 +403,112 @@ def gare(config_json):
     return json.dumps(out, ensure_ascii=False)
 
 
+# ── BACKUP DELLO STATO DEL CERVELLO (06/10/2026 — roadmap punto 8) ──────────────────
+# Un solo file JSON con lo stato del coach (test, soglie, flag, ultimo piano...) e i
+# riepiloghi. La cifratura e la destinazione (file, Drive) le gestisce l'app: qui solo il
+# contenuto, con formato e versione per poter rifiutare un file sconosciuto.
+BACKUP_FORMATO, BACKUP_VERSIONE = "biosleep-cervello", 1
+_BACKUP_NOMI = re.compile(r"^(stato_coach|riepilogo_\d{4}-\d{2}-\d{2})\.json$")
+
+
+def esporta_stato(config_json):
+    """{"cartella", "file": percorso di destinazione} -> {"esito", "file", "voci"}."""
+    from datetime import datetime
+    cfg = json.loads(config_json)
+    cart = os.path.abspath(cfg["cartella"])
+    out = {"esito": "errore"}
+    try:
+        voci = {}
+        for nome in sorted(os.listdir(cart)):
+            if _BACKUP_NOMI.match(nome):
+                with open(os.path.join(cart, nome), encoding="utf-8") as f:
+                    voci[nome] = json.load(f)
+        pacco = {"formato": BACKUP_FORMATO, "versione": BACKUP_VERSIONE,
+                 "creato": datetime.now().isoformat(timespec="seconds"), "file": voci}
+        tmp = cfg["file"] + ".tmp"
+        with open(tmp, "w", encoding="utf-8") as f:
+            f.write(json.dumps(pacco, ensure_ascii=False))
+        os.replace(tmp, cfg["file"])
+        out.update(esito="ok", file=cfg["file"], voci=len(voci))
+    except Exception as e:
+        out["errore"] = f"{type(e).__name__}: {e}"
+    return json.dumps(out)
+
+
+def importa_stato(config_json):
+    """{"cartella", "file": backup} -> {"esito": "ok"|"non_valido"|"errore", "voci"}.
+    Prima controlla tutto il file; poi salva lo stato attuale come
+    stato_coach.prima_del_ripristino.json e scrive ogni voce in modo atomico. Accetta
+    solo stato_coach.json e riepilogo_<data>.json: nessun nome di file arbitrario."""
+    cfg = json.loads(config_json)
+    cart = os.path.abspath(cfg["cartella"])
+    out = {"esito": "non_valido"}
+    try:
+        with open(cfg["file"], encoding="utf-8") as f:
+            pacco = json.load(f)
+    except (OSError, ValueError) as e:
+        out["errore"] = f"file non leggibile: {type(e).__name__}"
+        return json.dumps(out)
+    if not isinstance(pacco, dict) or pacco.get("formato") != BACKUP_FORMATO:
+        out["errore"] = "non e' un backup del cervello BioSleep"
+        return json.dumps(out)
+    if not isinstance(pacco.get("versione"), int) or pacco["versione"] > BACKUP_VERSIONE:
+        out["errore"] = "backup di una versione piu' recente dell'app: aggiorna l'app"
+        return json.dumps(out)
+    voci = pacco.get("file")
+    if not isinstance(voci, dict) or not all(isinstance(k, str) and _BACKUP_NOMI.match(k)
+                                            and isinstance(v, dict) for k, v in voci.items()):
+        out["errore"] = "contenuto non valido"
+        return json.dumps(out)
+    if cfg.get("verifica"):          # 06/10/2026: solo controllo, nessuna scrittura
+        out.update(esito="ok", voci=len(voci))
+        return json.dumps(out)
+    # 06/10/2026 — TUTTO O NIENTE: (1) tutte le voci si scrivono in una cartella
+    # temporanea (dove avvengono quasi tutti gli errori possibili: disco pieno, permessi);
+    # (2) i file che verranno sostituiti si spostano in una seconda cartella temporanea;
+    # (3) le voci nuove si spostano al loro posto. Se (2) o (3) falliscono si rimettono i
+    # file di prima e si tolgono quelli nuovi. Le cartelle temporanee spariscono sempre.
+    import shutil, tempfile
+    nuove = vecchie = None
+    spostati, messi = [], []
+    try:
+        os.makedirs(cart, exist_ok=True)
+        nuove = tempfile.mkdtemp(prefix=".ripristino_nuovo_", dir=cart)
+        vecchie = tempfile.mkdtemp(prefix=".ripristino_vecchio_", dir=cart)
+        for nome, contenuto in voci.items():
+            with open(os.path.join(nuove, nome), "w", encoding="utf-8") as f:
+                f.write(json.dumps(contenuto, ensure_ascii=False))
+        for nome in voci:
+            if os.path.exists(os.path.join(cart, nome)):
+                os.replace(os.path.join(cart, nome), os.path.join(vecchie, nome))
+                spostati.append(nome)
+        for nome in voci:
+            os.replace(os.path.join(nuove, nome), os.path.join(cart, nome))
+            messi.append(nome)
+        if "stato_coach.json" in spostati:
+            shutil.copyfile(os.path.join(vecchie, "stato_coach.json"),
+                            os.path.join(cart, "stato_coach.prima_del_ripristino.json"))
+        out.update(esito="ok", voci=len(voci))
+    except Exception as e:
+        for nome in messi:
+            try:
+                os.remove(os.path.join(cart, nome))
+            except OSError:
+                pass
+        for nome in spostati:
+            try:
+                shutil.move(os.path.join(vecchie, nome), os.path.join(cart, nome))
+            except OSError:
+                pass
+        out.update(esito="errore", errore=f"{type(e).__name__}: {e} (ripristino annullato, "
+                                          f"nessun file cambiato)")
+    finally:
+        for d in (nuove, vecchie):
+            if d:
+                shutil.rmtree(d, ignore_errors=True)
+    return json.dumps(out)
+
+
 def valida_tag(tag):
     """({"giorni", "sedute"} con le sole chiavi del vocabolario, [chiavi scartate])."""
     import coach_settimanale as voc

@@ -221,6 +221,25 @@ object Cervello {
       chiama(context, "elimina_gara", c) { addProperty("id", id) }?.let { Gare.esito(it) }
           ?: EsitoGara("errore", null, false, "Python non disponibile")
 
+  /** Funzioni senza credenziali (esporta_stato, importa_stato): {"esito", ...} o null se Python fallisce. */
+  fun chiamaFile(context: Context, funzione: String, file: java.io.File, extra: JsonObject.() -> Unit = {}): JsonObject? =
+      synchronized(lucchetto) {
+        if (!Python.isStarted()) Python.start(AndroidPlatform(context.applicationContext))
+        val cfg =
+            JsonObject().apply {
+              addProperty("cartella", cartella(context).absolutePath)
+              addProperty("file", file.absolutePath)
+              extra()
+            }
+        try {
+          JsonParser.parseString(Python.getInstance().getModule("cervello").callAttr(funzione, cfg.toString()).toString()).asJsonObject
+        } catch (e: PyException) {
+          null
+        } catch (e: RuntimeException) {
+          null
+        }
+      }
+
   fun esegui(context: Context, config: ConfigCervello): RisultatoCervello =
       synchronized(lucchetto) {
         if (!Python.isStarted()) Python.start(AndroidPlatform(context.applicationContext))

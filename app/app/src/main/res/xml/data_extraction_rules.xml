@@ -1,15 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Backup su cloud e trasferimento a nuovo telefono (Android 12+): esclude la API key di
-     Intervals.icu, il token GitHub del coach e la cache -->
+<!--
+  Android 12 e successivi. BioSleep tratta dati sanitari: niente backup su Google e niente
+  copia diretta da telefono a telefono. Il backup lo fa l'utente, cifrato con la sua password,
+  da Impostazioni > Backup e ripristino (file .biosleep).
+  Nota: da Android 12 android:allowBackup="false" NON blocca il trasferimento tra telefoni:
+  per questo anche device-transfer esclude tutto.
+-->
 <data-extraction-rules>
     <cloud-backup>
-        <exclude domain="sharedpref" path="biosleep_intervals.xml" />
-        <exclude domain="sharedpref" path="biosleep_coach.xml" />
-        <exclude domain="database" path="biosleep_cache.db" />
+        <exclude domain="root" path="." />
+        <exclude domain="file" path="." />
+        <exclude domain="database" path="." />
+        <exclude domain="sharedpref" path="." />
+        <exclude domain="external" path="." />
     </cloud-backup>
     <device-transfer>
-        <exclude domain="sharedpref" path="biosleep_intervals.xml" />
-        <exclude domain="sharedpref" path="biosleep_coach.xml" />
-        <exclude domain="database" path="biosleep_cache.db" />
+        <exclude domain="root" path="." />
+        <exclude domain="file" path="." />
+        <exclude domain="database" path="." />
+        <exclude domain="sharedpref" path="." />
+        <exclude domain="external" path="." />
     </device-transfer>
 </data-extraction-rules>

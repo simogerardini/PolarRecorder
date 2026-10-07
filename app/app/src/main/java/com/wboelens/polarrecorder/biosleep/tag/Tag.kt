@@ -142,6 +142,58 @@ class TagDb private constructor(context: Context) : SQLiteOpenHelper(context, "b
     return out
   }
 
+  /** Tutti i tag, per il backup: {"giorni": {data: [chiavi]}, "sedute": [{id, data, chiavi}]}. */
+  fun esporta(): JsonObject {
+    val giorni = JsonObject()
+    readableDatabase.rawQuery("SELECT data, chiave FROM giorni ORDER BY data", null).use { c ->
+      while (c.moveToNext()) {
+        val a = giorni.get(c.getString(0))?.asJsonArray ?: JsonArray().also { giorni.add(c.getString(0), it) }
+        a.add(c.getString(1))
+      }
+    }
+    val sedute = LinkedHashMap<String, Pair<String, JsonArray>>()
+    readableDatabase.rawQuery("SELECT id, data, chiave FROM sedute ORDER BY data", null).use { c ->
+      while (c.moveToNext()) sedute.getOrPut(c.getString(0)) { c.getString(1) to JsonArray() }.second.add(c.getString(2))
+    }
+    return JsonObject().apply {
+      add("giorni", giorni)
+      add("sedute", JsonArray().apply {
+        for ((id, v) in sedute) add(JsonObject().apply {
+          addProperty("id", id)
+          addProperty("data", v.first)
+          add("chiavi", v.second)
+        })
+      })
+    }
+  }
+
+  /** Ripristino: sostituisce tutti i tag con quelli del backup, in una transazione. */
+  fun importa(o: JsonObject) {
+    val db = writableDatabase
+    db.beginTransaction()
+    try {
+      db.delete("giorni", null, null)
+      db.delete("sedute", null, null)
+      o.getAsJsonObject("giorni")?.entrySet()?.forEach { (data, chiavi) ->
+        for (k in chiavi.asJsonArray) db.insert("giorni", null, ContentValues().apply { put("data", data); put("chiave", k.asString) })
+      }
+      o.getAsJsonArray("sedute")?.forEach { el ->
+        val s = el.asJsonObject
+        for (k in s.getAsJsonArray("chiavi")) {
+          db.insert("sedute", null, ContentValues().apply {
+            put("id", s.get("id").asString)
+            put("data", s.get("data").asString)
+            put("chiave", k.asString)
+          })
+        }
+      }
+      db.setTransactionSuccessful()
+    } finally {
+      db.endTransaction()
+    }
+    _versione.update { it + 1 }
+  }
+
   /** Il campo "tag" per il cervello: giorni da 90 giorni fa a 14 avanti, sedute delle ultime 4 settimane. */
   fun perCervello(oggi: LocalDate = LocalDate.now()): JsonObject? =
       Vocabolario.json(giorni(oggi.minusDays(90), oggi.plusDays(14)), sedute(oggi.minusDays(28)))

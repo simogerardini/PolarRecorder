@@ -1,6 +1,8 @@
 package com.wboelens.polarrecorder.biosleep.auto
 
 import com.wboelens.polarrecorder.PolarRecorderApplication
+import com.polar.sdk.api.PolarBleApi.PolarDeviceDataType
+import com.wboelens.polarrecorder.biosleep.hal.FasceGatt
 import com.wboelens.polarrecorder.dataSavers.InitializationState
 import com.wboelens.polarrecorder.managers.DeviceInfoForDataSaver
 import com.wboelens.polarrecorder.recording.RecordingOrchestrator
@@ -41,6 +43,7 @@ class NightStarter(private val app: PolarRecorderApplication) {
     val savers = app.dataSavers ?: return Result.Failed("Salvataggi non disponibili")
     val state = app.deviceState
     val id = profile.deviceId
+    var profileForce: NightProfile? = null
 
     // 1. La fascia deve essere "vista": se non e' gia' in elenco si fa una scansione
     if (state.allDevices.value.none { it.info.deviceId == id }) {
@@ -70,14 +73,32 @@ class NightStarter(private val app: PolarRecorderApplication) {
                 ?.connectionState
           }
       if (outcome != ConnectionState.CONNECTED) {
-        return Result.Failed("Collegamento alla fascia non riuscito")
+        // Punto 10: una Polar che non risponde al driver Polar si prova con il GATT standard
+        val device = state.allDevices.value.find { it.info.deviceId == id }
+        if (device == null || !device.info.name.startsWith("Polar") || FasceGatt.isGatt(app, id)) {
+          return Result.Failed("Collegamento alla fascia non riuscito")
+        }
+        withContext(Dispatchers.Main) { polar.disconnectDevice(id) }
+        FasceGatt.registra(app, id, device.info.address)
+        withContext(Dispatchers.Main) { polar.connectToDevice(id) } // ora va al driver GATT
+        val gatt =
+            withTimeoutOrNull(CONNECT_TIMEOUT_MS) {
+              state.allDevices.first { l -> l.find { it.info.deviceId == id }?.connectionState == ConnectionState.CONNECTED }
+            }
+        if (gatt == null) {
+          FasceGatt.dimentica(app, id)
+          return Result.Failed("Collegamento alla fascia non riuscito (anche con il driver standard)")
+        }
+        // Solo battito: l'accelerometro della H10 si legge solo con il driver Polar
+        profileForce = profile.copy(dataTypes = setOf(PolarDeviceDataType.HR), sensorSettings = emptyMap())
       }
     }
     withContext(Dispatchers.Main) { polar.stopPeriodicScanning() }
 
-    // 4. Dati e parametri del profilo (es. HR + ACC 25 Hz)
-    state.updateDeviceDataTypes(id, profile.dataTypes)
-    state.updateDeviceSensorSettings(id, profile.sensorSettings)
+    // 4. Dati e parametri del profilo (es. HR + ACC 25 Hz); solo HR se si e' ripiegato sul GATT
+    val effettivo = profileForce ?: profile
+    state.updateDeviceDataTypes(id, effettivo.dataTypes)
+    state.updateDeviceSensorSettings(id, effettivo.sensorSettings)
 
     // 5. selectedDevices e connectedDevices si aggiornano solo se qualcuno li "ascolta":
     //    attendiamo che riflettano la fascia prima di avviare la registrazione
@@ -91,7 +112,7 @@ class NightStarter(private val app: PolarRecorderApplication) {
     // 6. Inizializza i salvataggi attivi, come la schermata "Initializing Data Savers"
     val name = "notte_" + LocalDateTime.now().format(NAME_FORMAT)
     val dataTypeNames =
-        profile.dataTypes.map { it.name }.toMutableSet().apply {
+        effettivo.dataTypes.map { it.name }.toMutableSet().apply {
           add("LOG")
           add(RecordingOrchestrator.EVENT_LOG_DATA_TYPE)
         }

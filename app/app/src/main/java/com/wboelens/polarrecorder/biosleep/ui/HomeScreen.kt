@@ -48,6 +48,10 @@ import com.wboelens.polarrecorder.PolarRecorderApplication
 import com.wboelens.polarrecorder.biosleep.auto.NightProfile
 import com.wboelens.polarrecorder.biosleep.auto.NightProfileStore
 import com.wboelens.polarrecorder.biosleep.setup.BioSleepSetup
+import com.wboelens.polarrecorder.biosleep.hal.DriverRegistry
+import com.wboelens.polarrecorder.biosleep.hal.Fasce
+import com.wboelens.polarrecorder.biosleep.hal.FasceGatt
+import com.wboelens.polarrecorder.biosleep.hal.InfoFascia
 import com.wboelens.polarrecorder.managers.PolarManager
 import com.wboelens.polarrecorder.services.AvvioNotte
 import com.wboelens.polarrecorder.services.RecordingService
@@ -215,12 +219,16 @@ private fun SetupStrap(
       "1. Bagna gli elettrodi e indossa la fascia: si accende da sola.\n" +
           "2. Quando compare qui sotto, premi Connetti.\n" +
           "BioSleep imposta tutto da solo: battito e intervalli RR, e con la Polar H10 anche " +
-          "movimento e respiro.",
+          "movimento e respiro. Funzionano anche le fasce cardio di altre marche (Garmin, " +
+          "Wahoo, Coospo…): con queste niente accelerometro, e gli RR vengono verificati nei " +
+          "primi minuti di registrazione.",
       style = MaterialTheme.typography.bodyMedium,
   )
   error?.let { Text(it, color = MaterialTheme.colorScheme.error) }
 
-  val polar = devices.filter { it.info.name.startsWith("Polar") }
+  val ultimoRapporto = remember { Fasce.rapportoUltimaSessione(context) }
+  // Polar (driver Polar) e fasce di altre marche con il servizio cardio standard (driver GATT)
+  val polar = devices.filter { it.info.name.startsWith("Polar") || FasceGatt.isGatt(context, it.info.deviceId) }
   if (polar.isEmpty()) {
     Row(verticalAlignment = Alignment.CenterVertically) {
       CircularProgressIndicator(Modifier.size(20.dp))
@@ -233,9 +241,13 @@ private fun SetupStrap(
       Row(Modifier.padding(16.dp), verticalAlignment = Alignment.CenterVertically) {
         Column(Modifier.weight(1f)) {
           Text(d.info.name, style = MaterialTheme.typography.titleMedium)
-          if (!d.info.name.startsWith("Polar H10")) {
+          // Badge "HRV" / "Movimento": dal nome, o dal rapporto dell'ultima notte con questa fascia
+          val previsione = InfoFascia.prevedi(d.info.name, DriverRegistry.tipo(d.info.name), ultimoRapporto)
+          BadgeFascia(previsione)
+          val descrizione = descrizioneFascia(previsione)
+          if (descrizione != null) {
             Text(
-                "Senza accelerometro: solo battito e HRV",
+                descrizione,
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
@@ -294,6 +306,11 @@ private fun ReadyCard(
       )
       // Tag della sera per il coach (alcol, cena tardiva, caffeina, stress): valgono per domattina
       TagSera()
+      // Punto 10: com'era la fascia l'ultima volta (per i tester del closed testing)
+      val rapporto = remember { Fasce.rapportoUltimaSessione(context) }
+      val nomeFascia = profile.deviceName.ifBlank { profile.deviceId }
+      if (InfoFascia.prevedi(nomeFascia, DriverRegistry.tipo(nomeFascia), rapporto).hrv == false) AvvisoSenzaHrv()
+      if (rapporto != null) TextButton(onClick = { Fasce.condividi(context) }) { Text("Invia rapporto fascia") }
       // Ultima lettura: la fascia ora e' scollegata, il valore vero arriva all'avvio della notte
       RigaBatteria(ultimaBatteria?.first, ultimaBatteria?.second?.let { "letta il ${quandoLetta(it)}" })
       (avvio as? AvvioNotte.Fallito)?.let {
@@ -361,6 +378,8 @@ private fun NightInProgress(
   Card(Modifier.fillMaxWidth()) {
     Column(Modifier.padding(20.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
       Text("Notte in corso", style = MaterialTheme.typography.headlineSmall)
+      // dopo i primi minuti il driver sa se gli RR servono: avviso subito, non al mattino
+      AvvisoFasciaInCorso()
       Text(
           "Da ${hm(((now - startMs) / 60_000).toInt())} · iniziata alle ${hourLabel(startMs)}",
           style = MaterialTheme.typography.titleMedium,

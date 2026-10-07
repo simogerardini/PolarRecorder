@@ -16,6 +16,7 @@ import com.wboelens.polarrecorder.managers.PolarManager
 import com.wboelens.polarrecorder.managers.PreferencesManager
 import com.wboelens.polarrecorder.managers.getDataFragment
 import com.wboelens.polarrecorder.services.RecordingState
+import com.wboelens.polarrecorder.state.ConnectionState
 import com.wboelens.polarrecorder.state.Device
 import com.wboelens.polarrecorder.state.DeviceState
 import com.wboelens.polarrecorder.state.LogEntry
@@ -42,6 +43,7 @@ class RecordingOrchestrator(
 ) {
   companion object {
     private const val RETRY_COUNT = 3L
+    private const val MAX_AVVISI_DA_SCARTARE = 100
     const val EVENT_LOG_DATA_TYPE = "EVENT_LOG"
   }
 
@@ -175,6 +177,13 @@ class RecordingOrchestrator(
     // BioSleep: chiude la sessione e avvia subito l'analisi della notte
     dataSavers.bioSleep.finishRecording()
 
+    // Avvisi rimasti in coda dalla notte (mostrati solo quando si apre l'app): la notte e' chiusa
+    // e salvata, quindi non hanno piu' senso. Restano nel registro.
+    // Si usa solo popSnackbarMessage (fino alla coda vuota, al massimo 100): leggere la coda
+    // direttamente non funziona con i LogState finti dei test.
+    var scartati = 0
+    while (scartati < MAX_AVVISI_DA_SCARTARE && logState.popSnackbarMessage() != null) scartati++
+
     // Retain the recording name so post-stop event edits can still be saved
     completedRecordingName = _recordingState.value.currentRecordingName
 
@@ -301,11 +310,11 @@ class RecordingOrchestrator(
         .retry(RETRY_COUNT)
         .doOnSubscribe { logState.addLogMessage("Starting $dataType stream for $deviceId") }
         .doOnError { error ->
-          // Capita quando la fascia si scollega: la riconnessione e' automatica, niente avviso
-          logState.addLogError("Errore nel flusso $dataType della fascia: ${error.message}", false)
+          // Solo registro: l'eventuale avviso lo decide il gestore dell'errore qui sotto
+          logState.addLogError("Errore nel flusso ${nomeFlusso(dataType)}: ${descrivi(error)}", false)
         }
         .doOnComplete {
-          logState.addLogError("Flusso $dataType della fascia interrotto", false)
+          logState.addLogMessage("Flusso ${nomeFlusso(dataType)} della fascia chiuso")
         }
         .subscribe(
             { data ->
@@ -350,12 +359,36 @@ class RecordingOrchestrator(
                   }
             },
             { error ->
-              logState.addLogError(
-                  "Registrazione ${dataType.name} della fascia non riuscita: ${error.message}",
-              )
+              // Fascia tolta, spenta o fuori portata: il Polar SDK chiude i flussi con un errore
+              // senza messaggio. Non e' un errore di registrazione (la riconnessione e lo stop del
+              // mattino sono automatici) e non va mostrato. Avviso a schermo solo per un errore
+              // vero, a fascia collegata e notte in corso, con un testo leggibile (mai "null").
+              val atteso =
+                  !_recordingState.value.isRecording ||
+                      deviceState.getConnectionState(deviceId) != ConnectionState.CONNECTED ||
+                      error.message.isNullOrBlank() ||
+                      error.javaClass.simpleName.contains("Disconnect", ignoreCase = true)
+              if (atteso) {
+                logState.addLogMessage(
+                    "Flusso ${nomeFlusso(dataType)} chiuso dalla disconnessione della fascia (${descrivi(error)})")
+              } else {
+                logState.addLogError("Flusso ${nomeFlusso(dataType)} interrotto: ${descrivi(error)}")
+              }
             },
         )
   }
+
+  /** Nome del flusso per l'utente: HR porta gli intervalli RR. */
+  private fun nomeFlusso(dataType: PolarDeviceDataType): String =
+      when (dataType) {
+        PolarDeviceDataType.HR -> "RR"
+        PolarDeviceDataType.ACC -> "movimento (ACC)"
+        else -> dataType.name
+      }
+
+  /** Mai "null": se l'errore non ha messaggio si usa il suo tipo. */
+  private fun descrivi(error: Throwable): String =
+      error.message?.takeIf { it.isNotBlank() } ?: error.javaClass.simpleName
 
   private fun logDeviceAndAppInfo() {
     appInfoProvider?.let { provider ->

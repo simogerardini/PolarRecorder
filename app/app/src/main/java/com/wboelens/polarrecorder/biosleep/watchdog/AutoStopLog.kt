@@ -23,7 +23,20 @@ object AutoStopLog {
    * 15 minuti, la fascia del mattino non conta e la notte di prova NON viene inviata a
    * Intervals.icu (non deve sovrascrivere la notte vera ne' avviare il coach).
    */
-  fun testMode(context: Context): Boolean = File(context.applicationContext.filesDir, TEST_FLAG).exists()
+  fun testMode(context: Context): Boolean {
+    val flag = File(context.applicationContext.filesDir, TEST_FLAG)
+    if (!flag.exists()) return false
+    // Una prova dura meno di un'ora: un segnale piu' vecchio di 3 ore e' rimasto per errore
+    // (script interrotto) e farebbe saltare l'invio delle notti vere. Si cancella da solo.
+    if (System.currentTimeMillis() - flag.lastModified() > TEST_MAX_AGE_MS) {
+      flag.delete()
+      write(context, "Modalita' prova scaduta: segnale rimosso, la notte viene trattata come vera")
+      return false
+    }
+    return true
+  }
+
+  private const val TEST_MAX_AGE_MS = 3 * 3_600_000L
 
   private const val TEST_FLAG = "autostop_test"
 

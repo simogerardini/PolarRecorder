@@ -1,8 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Backup automatico (Android 11 e precedenti): esclude la API key di Intervals.icu, il token
-     GitHub del coach (cifrato con una chiave che non lascia il telefono) e la cache -->
+<!--
+  Android 11 e precedenti (con allowBackup="false" non viene usato: resta come seconda difesa).
+  Dati sanitari: nulla nel backup automatico di Google. Il backup e' quello cifrato dell'app.
+-->
 <full-backup-content>
-    <exclude domain="sharedpref" path="biosleep_intervals.xml" />
-    <exclude domain="sharedpref" path="biosleep_coach.xml" />
-    <exclude domain="database" path="biosleep_cache.db" />
+    <exclude domain="root" path="." />
+    <exclude domain="file" path="." />
+    <exclude domain="database" path="." />
+    <exclude domain="sharedpref" path="." />
+    <exclude domain="external" path="." />
 </full-backup-content>

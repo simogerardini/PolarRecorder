@@ -5,21 +5,39 @@ import android.database.SQLException
 import android.util.Log
 import com.polar.sdk.api.model.PolarAccelerometerData
 import com.polar.sdk.api.model.PolarHrData
+import android.os.Build
+import com.wboelens.polarrecorder.biosleep.hal.Capacita
+import com.wboelens.polarrecorder.biosleep.hal.Contatto
+import com.wboelens.polarrecorder.biosleep.hal.DriverRegistry
+import com.wboelens.polarrecorder.biosleep.hal.Fasce
+import com.wboelens.polarrecorder.biosleep.hal.FasceGatt
+import com.wboelens.polarrecorder.biosleep.hal.HrPacket
+import com.wboelens.polarrecorder.biosleep.hal.RapportoFascia
+import com.wboelens.polarrecorder.biosleep.hal.SintesiBattiti
+import com.wboelens.polarrecorder.biosleep.hal.StatoRr
+import com.wboelens.polarrecorder.biosleep.hal.TipoDriver
+import com.wboelens.polarrecorder.biosleep.hal.ValutatoreSessione
 import com.wboelens.polarrecorder.biosleep.finalize.NightFinalizeWorker
 import com.wboelens.polarrecorder.biosleep.watchdog.AutoStopLog
 import com.wboelens.polarrecorder.biosleep.watchdog.BeatLiveness
 import com.polar.sdk.api.model.PolarPpiData
 import com.wboelens.polarrecorder.biosleep.auto.NightNotifier
-import com.wboelens.polarrecorder.biosleep.intervals.IntervalsResult
 import com.wboelens.polarrecorder.biosleep.intervals.IntervalsSettings
-import com.wboelens.polarrecorder.biosleep.intervals.IntervalsSync
+import com.wboelens.polarrecorder.biosleep.intervals.InvioNotteWorker
+import com.wboelens.polarrecorder.biosleep.sopravvivenza.EventiNotte
+import com.wboelens.polarrecorder.biosleep.sopravvivenza.RilevaInterruzioni
+import com.wboelens.polarrecorder.biosleep.sopravvivenza.TipoEvento
+import com.wboelens.polarrecorder.biosleep.watchdog.Watchdog
 import com.wboelens.polarrecorder.biosleep.live.CampioneAcc
 import com.wboelens.polarrecorder.dataSavers.DataSaver
 import com.wboelens.polarrecorder.dataSavers.InitializationState
 import com.wboelens.polarrecorder.managers.DeviceInfoForDataSaver
 import com.wboelens.polarrecorder.managers.PreferencesManager
 import com.wboelens.polarrecorder.state.LogState
+import java.time.Instant
+import java.time.ZoneId
 import java.util.Locale
+import org.json.JSONObject
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.Executors
 import kotlinx.coroutines.channels.BufferOverflow
@@ -39,6 +57,9 @@ class BioSleepDataSaver(
 ) : DataSaver(logState, preferencesManager) {
 
   companion object {
+    private const val MAX_IN_ATTESA_FC = 600 // 10 minuti di pacchetti senza RR
+    /** Letto dalla card "Registrazione interrotta" della Parte 3 (Protezione.ultimaInterruzione). */
+    const val PREFS_INTERRUZIONI = "biosleep_interruzioni"
     private const val FLUSH_EVERY_ROWS = 300
     private const val FLUSH_EVERY_MS = 30_000L
     private const val TAG = "BioSleep"
@@ -101,6 +122,12 @@ class BioSleepDataSaver(
     private set
 
   private val liveness = BeatLiveness()
+
+  // Punto 10: fascia della sessione (capacita', qualita' degli RR) e battiti dalla sola FC
+  private val valutatori = mutableMapOf<String, ValutatoreSessione>()
+  private val sintesi = mutableMapOf<String, SintesiBattiti>()
+  private val inAttesaFc = mutableMapOf<String, MutableList<Pair<Long, Int>>>()
+  private val inizioSessione = mutableMapOf<String, Long>()
   private val finalizeLock = Any()
 
   // Un solo thread per l'analisi: non blocca mai la registrazione
@@ -131,6 +158,8 @@ class BioSleepDataSaver(
     // Nessuna notte deve restare aperta: all'avvio del processo (riavvio del servizio, apertura
     // dell'app) le notti rimaste aperte o senza analisi vengono chiuse da NightFinalizeWorker
     analysisExecutor.execute { finalizeIfPending("avvio dell'app") }
+    // Notti analizzate ma mai inviate (es. invio fallito senza rete): tornano in coda da sole
+    analysisExecutor.execute { accodaInviiInSospeso() }
     // Fase 7: calcola le fasi del sonno anche per le notti registrate prima dell'aggiornamento
     analysisExecutor.execute { stageOldNights() }
   }
@@ -138,7 +167,7 @@ class BioSleepDataSaver(
   @Suppress("TooGenericExceptionCaught")
   private fun finalizeIfPending(reason: String) {
     try {
-      val current = sessions.values.toSet()
+      val current = sessions.values.toSet() + listOfNotNull(Watchdog.sessioneDaRiprendere(appContext))
       val pending =
           db.openSessions().filter { it !in current } +
               db.sessionsToAnalyze().filter { it !in current }
@@ -155,7 +184,12 @@ class BioSleepDataSaver(
    */
   fun finalizePendingNights(): Int =
       synchronized(finalizeLock) {
-        val current = sessions.values.toSet()
+        // Esclusa anche una notte interrotta ma non finita: la riprende il watchdog
+        val ripresa = Watchdog.sessioneDaRiprendere(appContext)
+        if (ripresa != null && ripresa !in sessions.values) {
+          AutoStopLog.write(appContext, "Recupero: la notte $ripresa e' interrotta ma non finita, resta aperta per la ripresa")
+        }
+        val current = sessions.values.toSet() + listOfNotNull(ripresa)
         for (id in db.openSessions()) {
           if (id in current) continue
           val end = db.lastBeatMs(id) ?: System.currentTimeMillis()
@@ -187,6 +221,8 @@ class BioSleepDataSaver(
     try {
       analyzeLeftovers()
       val now = System.currentTimeMillis()
+      // Notte interrotta (servizio chiuso dal sistema) che riparte: si continua la stessa sessione
+      val ripresa = Watchdog.sessioneDaRiprendere(appContext, now)
       sessions.clear()
       sources.clear()
       for ((deviceId, info) in deviceIdsWithInfo) {
@@ -194,8 +230,27 @@ class BioSleepDataSaver(
         // altrimenti gli RR dello stream HR (fascia toracica). Mai entrambi: sarebbero doppi.
         val source = if (info.dataTypes.contains("PPI")) "PPI" else "RR"
         sources[deviceId] = source
-        sessions[deviceId] = db.createSession(recordingName, deviceId, now, source)
+        sessions[deviceId] = ripresa ?: db.createSession(recordingName, deviceId, now, source)
+        if (ripresa != null) {
+          AutoStopLog.write(appContext, "Ripresa della notte $ripresa dopo un'interruzione")
+          EventiNotte.registra(appContext, TipoEvento.RIPRESA, "sessione $ripresa")
+        }
         logState.addLogMessage("BioSleep: dispositivo $deviceId, battiti da $source")
+        val gatt = FasceGatt.isGatt(appContext, deviceId)
+        val capacita =
+            Capacita(
+                driver = if (gatt) TipoDriver.GATT_180D else TipoDriver.POLAR,
+                hr = true,
+                rr = null,
+                acc = !gatt && info.dataTypes.contains("ACC"),
+                tipo = DriverRegistry.tipo(info.deviceName))
+        synchronized(lock) {
+          valutatori[deviceId] = ValutatoreSessione(sessions.getValue(deviceId), info.deviceName, capacita)
+          sintesi[deviceId] = SintesiBattiti()
+          inAttesaFc.remove(deviceId)
+          inizioSessione[deviceId] = now
+        }
+        Fasce.aggiorna(valutatori[deviceId]?.stato())
       }
       synchronized(lock) {
         buffer.clear()
@@ -236,15 +291,16 @@ class BioSleepDataSaver(
       for (s in samples) {
         when (s) {
           is PolarHrData.PolarHrSample -> {
-            lastPacketMs = phoneTimestamp
-            if (s.contactStatusSupported && !s.contactStatus) continue // fascia staccata
-            for (rr in s.rrsMs) {
-              buffer.add(RrRow(sessionId, phoneTimestamp, rr))
-              battiti.tryEmit(rr)
-              liveness.add(rr, phoneTimestamp)
-            }
-            lastValidBeatMs = liveness.lastSustainedMs
+            val contatto =
+                when {
+                  !s.contactStatusSupported -> Contatto.NON_SUPPORTATO
+                  s.contactStatus -> Contatto.PRESENTE
+                  else -> Contatto.ASSENTE // fascia staccata
+                }
+            gestisciPacchetto(sessionId, deviceId, phoneTimestamp, HrPacket(s.hr, contatto, null, s.rrsMs, null))
           }
+          // Punto 10: fasce di altre marche lette con il driver GATT 0x180D
+          is HrPacket -> gestisciPacchetto(sessionId, deviceId, phoneTimestamp, s)
           is PolarPpiData.PolarPpiSample -> {
             if (s.ppi <= 0) continue
             val invalid =
@@ -362,7 +418,106 @@ class BioSleepDataSaver(
    * Chiude la registrazione e avvia subito l'analisi. Chiamata dall'orchestrator appena premi stop.
    * Si puo' chiamare piu' volte: dalla seconda in poi non fa nulla.
    */
+  /**
+   * Un pacchetto di battito, da qualsiasi driver (chiamata dentro lock). Gli RR si salvano come
+   * sempre; senza RR, se la fascia e' "solo FC", si salvano battiti ricostruiti dalla FC (i primi
+   * 5 minuti restano in attesa finche' non si sa se gli RR arriveranno).
+   */
+  private fun gestisciPacchetto(sessionId: Long, deviceId: String, t: Long, p: HrPacket) {
+    lastPacketMs = t
+    if (p.daScartare) return
+    val v = valutatori[deviceId]
+    if (v != null && v.aggiungi(t, p)) valutazioneCambiata(deviceId, v)
+    if (p.rrMs.isNotEmpty()) {
+      inAttesaFc.remove(deviceId)
+      for (rr in p.rrMs) {
+        buffer.add(RrRow(sessionId, t, rr))
+        battiti.tryEmit(rr)
+        liveness.add(rr, t)
+      }
+      lastValidBeatMs = liveness.lastSustainedMs
+      return
+    }
+    if (p.hr <= 0) return
+    when (v?.valutazione?.stato) {
+      StatoRr.SOLO_FC -> salvaDallaFc(sessionId, deviceId, t, p.hr)
+      StatoRr.IN_VALUTAZIONE, null -> {
+        val attesa = inAttesaFc.getOrPut(deviceId) { mutableListOf() }
+        if (attesa.size < MAX_IN_ATTESA_FC) attesa += t to p.hr
+      }
+      else -> Unit // RR attesi ma assenti in questo pacchetto: normale sotto i 60 bpm
+    }
+  }
+
+  private fun salvaDallaFc(sessionId: Long, deviceId: String, t: Long, hr: Int) {
+    for (rr in sintesi.getOrPut(deviceId) { SintesiBattiti() }.da(t, hr)) {
+      buffer.add(RrRow(sessionId, t, rr))
+      liveness.add(rr, t)
+    }
+    lastValidBeatMs = liveness.lastSustainedMs
+  }
+
+  private fun valutazioneCambiata(deviceId: String, v: ValutatoreSessione) {
+    FasceGatt.capacita(deviceId)?.let { c -> v.capacita = c.copy(rr = v.capacita.rr) } // modello, firmware
+    val stato = v.stato()
+    Fasce.aggiorna(stato)
+    AutoStopLog.write(appContext, "Fascia ${v.nome}: RR ${stato.valutazione.stato} (${stato.valutazione.motivo})")
+    if (stato.valutazione.stato == StatoRr.SOLO_FC) {
+      // i primi minuti senza RR diventano battiti dalla FC
+      inAttesaFc.remove(deviceId)?.forEach { (t, hr) -> salvaDallaFc(v.sessionId, deviceId, t, hr) }
+    }
+    val rapporto = rapportoFascia(deviceId, v)
+    analysisExecutor.execute { salvaFascia(v.sessionId, stato.valutazione.stato.name, rapporto) }
+  }
+
+  private fun rapportoFascia(deviceId: String, v: ValutatoreSessione): String {
+    val inizio = inizioSessione[deviceId] ?: System.currentTimeMillis()
+    val driver = FasceGatt.driver(deviceId)
+    val disconnessioni =
+        driver?.disconnessioni
+            ?: try {
+              EventiNotte.get(appContext).eventiTra(inizio, System.currentTimeMillis()).count { it.tipo == TipoEvento.FASCIA_SCOLLEGATA }
+            } catch (e: SQLException) {
+              0
+            }
+    return RapportoFascia(
+            nome = v.nome,
+            capacita = v.capacita,
+            statoRr = v.valutazione.stato,
+            motivoRr = v.valutazione.motivo,
+            percentualeRrValidi = v.valutazione.percentualeValidi,
+            pacchettiScartatiSenzaContatto = driver?.scartatiSenzaContatto ?: 0,
+            pacchettiMalformati = driver?.malformati ?: 0,
+            disconnessioni = disconnessioni,
+            durataMinuti = ((System.currentTimeMillis() - inizio) / 60_000).toInt(),
+            versioneApp = Fasce.versioneApp(),
+            telefono = Fasce.telefono(),
+            android = Build.VERSION.SDK_INT)
+        .json()
+  }
+
+  private fun salvaFascia(sessionId: Long, stato: String, rapporto: String) {
+    try {
+      EventiNotte.get(appContext).salvaFascia(sessionId, stato, rapporto)
+    } catch (e: SQLException) {
+      Log.w(TAG, "Fascia della sessione $sessionId non salvata: ${e.message}")
+    }
+  }
+
   fun finishRecording() {
+    // Punto 10: valutazione finale della fascia e rapporto per ogni sessione che si chiude
+    synchronized(lock) {
+      for ((deviceId, v) in valutatori) {
+        if (v.forza(System.currentTimeMillis()) && v.valutazione.stato == StatoRr.SOLO_FC) {
+          inAttesaFc.remove(deviceId)?.forEach { (t, hr) -> salvaDallaFc(v.sessionId, deviceId, t, hr) }
+        }
+        FasceGatt.capacita(deviceId)?.let { c -> v.capacita = c.copy(rr = v.capacita.rr) }
+        salvaFascia(v.sessionId, v.valutazione.stato.name, rapportoFascia(deviceId, v))
+      }
+      valutatori.clear()
+      inAttesaFc.clear()
+    }
+    Fasce.aggiorna(null)
     val now = System.currentTimeMillis()
     synchronized(lock) {
       closeAccSecondLocked()
@@ -420,7 +575,7 @@ class BioSleepDataSaver(
   private fun analyze(sessionId: Long, isNewNight: Boolean = true) {
     try {
       val (phoneMs, rrMs) = db.loadRr(sessionId)
-      val result = NightAnalyzer.analyze(sessionId, phoneMs, rrMs)
+      var result = NightAnalyzer.analyze(sessionId, phoneMs, rrMs)
       if (result == null) {
         if (isNewNight) {
           db.deleteSession(sessionId)
@@ -428,8 +583,19 @@ class BioSleepDataSaver(
         }
         return
       }
-      // Fase 7: fasi del sonno (HRV, piu' accelerometro se registrato)
-      val stages = stageSafely(result, db.loadAcc(sessionId))
+      // Punto 10: fascia "solo FC" o con RR non affidabili -> niente HRV (non salvata, non inviata:
+      // BioSleepRMSSD assente su Intervals.icu e il coach esclude la notte dalla baseline HRV)
+      val statoRr = try { EventiNotte.get(appContext).statoRr(sessionId) } catch (e: SQLException) { null }
+      val senzaHrv = statoRr == StatoRr.SOLO_FC.name || statoRr == StatoRr.NON_AFFIDABILI.name
+      if (senzaHrv) {
+        result =
+            result.copy(
+                summary = result.summary.copy(rmssd = null, sdnn = null, pnn50 = null),
+                windows = result.windows.map { it.copy(rmssd = null, sdnn = null, pnn50 = null) })
+        if (isNewNight) AutoStopLog.write(appContext, "Notte $sessionId: fascia $statoRr, HRV non calcolata")
+      }
+      // Fase 7: fasi del sonno (HRV, piu' accelerometro se registrato; solo FC se mancano gli RR)
+      val stages = stageSafely(result, db.loadAcc(sessionId), soloFc = senzaHrv)
       db.saveNight(result, stages, System.currentTimeMillis())
       if (isNewNight) newNightReady.value = sessionId
       if (!isNewNight) {
@@ -446,25 +612,23 @@ class BioSleepDataSaver(
       db.compact()
       Log.i(TAG, "Sessione $sessionId archiviata: ${archiveBytes / 1024} KB")
 
-      // Fase 6: invio automatico a Intervals.icu (se configurato)
+      // Punto 9: buchi della notte (minuti persi e causa probabile)
+      val buchi = interruzioni(sessionId, phoneMs, result.summary.startMs, result.summary.endMs)
+
+      // Invio a Intervals.icu: in un lavoro separato con vincolo di rete e nuovi tentativi
+      // (InvioNotteWorker). Dopo l'invio riuscito della notte di oggi parte il coach.
       val settings = IntervalsSettings(appContext)
       var intervalsLine: String? = null
       if (AutoStopLog.testMode(appContext)) {
         AutoStopLog.write(appContext, "Notte $sessionId analizzata [PROVA]: invio a Intervals.icu e coach saltati")
       } else if (settings.isConfigured && settings.autoUpload) {
-        val sync = IntervalsSync.syncNight(appContext, sessionId)
-        Log.i(TAG, "Intervals.icu: ${sync.message}")
-        // IntervalsSync, se l'invio della notte di oggi riesce, avvia il coach (coach-<data>)
-        AutoStopLog.write(appContext, "Notte $sessionId: ${sync.message}" +
-            if (sync is IntervalsResult.Ok) " -> IntervalsSync avvia coach-<data> se è la notte di oggi" else "")
-        if (sync is IntervalsResult.Ok) {
-          logState.addLogSuccess("BioSleep: ${sync.message}")
-          intervalsLine = "✓ Inviata a Intervals.icu"
-        } else {
-          logState.addLogError("BioSleep: invio a Intervals.icu non riuscito: ${sync.message}")
-          intervalsLine = "Intervals.icu: invio non riuscito, riprova dall'app"
-        }
+        InvioNotteWorker.accoda(appContext, sessionId, "notte appena analizzata")
+        intervalsLine = "Invio a Intervals.icu in corso (parte appena c'è rete)"
+      } else {
+        AutoStopLog.write(appContext, "Notte $sessionId: invio non fatto " +
+            "(collegato=${settings.isConfigured}, invio automatico=${settings.autoUpload})")
       }
+      buchi?.let { intervalsLine = "Interruzioni: $it" + (intervalsLine?.let { l -> "\n$l" } ?: "") }
 
       // Riepilogo nella notifica: al mattino non serve aprire l'app
       NightNotifier.notifySummary(appContext, result.summary, stages, intervalsLine)
@@ -476,10 +640,61 @@ class BioSleepDataSaver(
     }
   }
 
+  /** Calcola e salva i buchi della notte; ritorna il testo per la notifica (null se nessuno). */
   @Suppress("TooGenericExceptionCaught")
-  private fun stageSafely(result: NightResult, acc: AccSeconds?): SleepStages? =
+  private fun interruzioni(sessionId: Long, phoneMs: LongArray, startMs: Long, endMs: Long): String? =
       try {
-        SleepStager.stage(result.beats, acc)
+        val eventi = EventiNotte.get(appContext).eventiTra(startMs - 60_000, endMs + 60_000)
+        val r = RilevaInterruzioni.trova(phoneMs, eventi)
+        EventiNotte.get(appContext).salvaInterruzioni(sessionId, r, endMs)
+        r.causaBreve()?.let { causa -> segnalaInterruzione(endMs, r.minutiPersi, causa) }
+        r.testo()?.also { AutoStopLog.write(appContext, "Notte $sessionId: $it") }
+      } catch (e: Exception) {
+        Log.e(TAG, "Calcolo interruzioni fallito", e)
+        null
+      }
+
+  /**
+   * Contratto con la Parte 3 (card in Oggi): SharedPreferences "biosleep_interruzioni", chiave
+   * "ultima", JSON {"data": mattina del risveglio, "minuti": minuti persi, "causa": testo breve}.
+   * Una sola voce, sovrascritta a ogni notte interrotta; notti senza interruzioni: nulla.
+   * Le notti di prova (modalita' prova degli script) non la scrivono.
+   */
+  private fun segnalaInterruzione(fineNotteMs: Long, minuti: Int, causa: String) {
+    if (minuti <= 0) return
+    if (AutoStopLog.testMode(appContext)) {
+      AutoStopLog.write(appContext, "Interruzione di prova non segnalata alla card ($minuti min, $causa)")
+      return
+    }
+    val data = Instant.ofEpochMilli(fineNotteMs).atZone(ZoneId.systemDefault()).toLocalDate().toString()
+    val json = JSONObject().put("data", data).put("minuti", minuti).put("causa", causa).toString()
+    appContext.getSharedPreferences(PREFS_INTERRUZIONI, Context.MODE_PRIVATE).edit().putString("ultima", json).apply()
+  }
+
+  /** Notti degli ultimi 7 giorni mai inviate o fallite per la rete: di nuovo in coda. */
+  @Suppress("TooGenericExceptionCaught")
+  private fun accodaInviiInSospeso() {
+    try {
+      if (AutoStopLog.testMode(appContext)) return
+      val settings = IntervalsSettings(appContext)
+      if (!settings.isConfigured || !settings.autoUpload) return
+      val limite = System.currentTimeMillis() - 7 * 86_400_000L
+      db.listNights()
+          .filter { it.summary.endMs >= limite && it.syncedAt == null }
+          .filter { n ->
+            val esito = n.syncStatus
+            esito == null || esito.startsWith("Connessione") || esito.contains("HTTP 5")
+          }
+          .forEach { InvioNotteWorker.accoda(appContext, it.sessionId, "notte non ancora inviata") }
+    } catch (e: Exception) {
+      Log.e(TAG, "Controllo invii in sospeso fallito", e)
+    }
+  }
+
+  @Suppress("TooGenericExceptionCaught")
+  private fun stageSafely(result: NightResult, acc: AccSeconds?, soloFc: Boolean = false): SleepStages? =
+      try {
+        SleepStager.stage(result.beats, acc, soloFc)
       } catch (e: Exception) {
         Log.e(TAG, "Stima delle fasi del sonno fallita", e)
         null

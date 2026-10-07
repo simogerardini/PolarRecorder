@@ -31,12 +31,16 @@ import com.wboelens.polarrecorder.biosleep.auto.NightNotifier
 import com.wboelens.polarrecorder.biosleep.auto.NightProfileStore
 import com.wboelens.polarrecorder.biosleep.cache.CacheSync
 import com.wboelens.polarrecorder.biosleep.cervello.CoachWorker
+import com.wboelens.polarrecorder.biosleep.protezione.Protezione
 import com.wboelens.polarrecorder.biosleep.intervals.OAuthIntervals
 import com.wboelens.polarrecorder.biosleep.riepilogo.RiepilogoLink
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.withTimeoutOrNull
+import com.wboelens.polarrecorder.biosleep.ui.BackupScreen
+import com.wboelens.polarrecorder.biosleep.ui.ProtezioneScreen
+import com.wboelens.polarrecorder.biosleep.ui.FasciaScreen
 import com.wboelens.polarrecorder.biosleep.ui.GareScreen
 import com.wboelens.polarrecorder.biosleep.ui.LicenzeScreen
 import com.wboelens.polarrecorder.biosleep.ui.ProfiloScreen
@@ -224,6 +228,11 @@ class MainActivity : ComponentActivity() {
         // BioSleep: tocco sulla notifica del riepilogo del coach -> schermata Riepilogo
         GestisciLinkRiepilogo(navController)
 
+        // Primo avvio: guida "Protezione notturna" una volta (poi resta in Impostazioni)
+        LaunchedEffect(Unit) {
+          if (!Protezione.guidaVista(applicationContext)) navController.navigate("protezione")
+        }
+
         // BioSleep: notte chiusa all'apertura -> elenco notti, poi il dettaglio quando e' pronta
         val morningStop by morningStopRequest.collectAsState()
         LaunchedEffect(morningStop) {
@@ -258,6 +267,7 @@ class MainActivity : ComponentActivity() {
                   onApriRiepilogo = { data -> navController.navigate("riepilogo/$data") },
                   onApriImpostazioni = { navController.navigate("intervalsSettings") },
                   onApriTag = { data -> navController.navigate("tag/$data") },
+                  onApriProtezione = { navController.navigate("protezione") },
               )
             }
             composable(
@@ -290,6 +300,9 @@ class MainActivity : ComponentActivity() {
             }
             composable("gare") { GareScreen(onBack = { navController.navigateUp() }) }
             composable("licenze") { LicenzeScreen(onBack = { navController.navigateUp() }) }
+            composable("backup") { BackupScreen(onBack = { navController.navigateUp() }) }
+            composable("protezione") { ProtezioneScreen(onBack = { navController.navigateUp() }) }
+            composable("fascia") { FasciaScreen(onBack = { navController.navigateUp() }) }
             composable("tag/{data}") { entry ->
               TagScreen(
                   dataIniziale = entry.arguments?.getString("data") ?: java.time.LocalDate.now().toString(),
@@ -340,6 +353,9 @@ class MainActivity : ComponentActivity() {
                   onApriProfilo = { navController.navigate("profilo") },
                   onApriGare = { navController.navigate("gare") },
                   onApriLicenze = { navController.navigate("licenze") },
+                  onApriBackup = { navController.navigate("backup") },
+                  onApriProtezione = { navController.navigate("protezione") },
+                  onApriFascia = { navController.navigate("fascia") },
               )
             }
             composable(

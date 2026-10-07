@@ -173,6 +173,16 @@ private fun NightContent(
     MetricRow(Metric("FC minima", fmt(s.hrMin), "bpm"), Metric("FC a riposo", fmt(s.restingHr), "bpm"))
     MetricRow(Metric("FC media", fmt(s.hrAvg), "bpm"), Metric("rMSSD", fmt(s.rmssd, 1), "ms"))
     MetricRow(Metric("SDNN", fmt(s.sdnn, 1), "ms"), Metric("pNN50", fmt(s.pnn50, 1), "%"))
+    // Punto 10: fascia senza RR affidabili (solo FC o sensore ottico)
+    if (detail.night.stages?.mode?.startsWith("FC") == true) {
+      // dopo la notte: stesso avviso di prima della notte, piu' cosa non arriva a Intervals.icu
+      AvvisoSenzaHrv()
+      Text(
+          "L'HRV di questa notte non è calcolata e non viene inviata a Intervals.icu.",
+          style = MaterialTheme.typography.bodySmall,
+          color = MaterialTheme.colorScheme.onSurfaceVariant,
+      )
+    }
 
     // Fase 7: fasi del sonno
     SleepStagesSection(detail.night)
@@ -269,12 +279,15 @@ private fun SleepStagesSection(night: NightListItem) {
       Metric("Veglia notturna", hm(st.wakeMin), ""),
   )
   Text(
-      if (st.mode == "HRV+ACC+RESP")
+      if (st.mode.startsWith("FC"))
+          "Stima dalla sola frequenza cardiaca" + (if (st.mode.contains("ACC")) " e dal movimento" else ", senza dati di movimento") +
+              ": la fascia non fornisce RR affidabili. È indicativa: non sostituisce una polisonnografia."
+      else if (st.mode == "HRV+ACC+RESP")
           "Stima da frequenza cardiaca, HRV, movimento e respiro (accelerometro H10). " +
               "È indicativa: non sostituisce una polisonnografia."
       else if (st.mode == "HRV+ACC") "Stima da frequenza cardiaca, HRV e movimento (accelerometro H10). " +
           "È indicativa: non sostituisce una polisonnografia."
-      else "Stima dalla sola frequenza cardiaca e HRV (questa notte senza accelerometro). " +
+      else "Fasi stimate senza dati di movimento: frequenza cardiaca e HRV (fascia senza accelerometro). " +
           "È indicativa: non sostituisce una polisonnografia.",
       style = MaterialTheme.typography.bodySmall,
       color = MaterialTheme.colorScheme.onSurfaceVariant,

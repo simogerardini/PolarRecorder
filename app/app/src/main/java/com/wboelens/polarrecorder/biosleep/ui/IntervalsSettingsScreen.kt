@@ -63,6 +63,9 @@ fun IntervalsSettingsScreen(
     onApriProfilo: () -> Unit = {},
     onApriGare: () -> Unit = {},
     onApriLicenze: () -> Unit = {},
+    onApriBackup: () -> Unit = {},
+    onApriProtezione: () -> Unit = {},
+    onApriFascia: () -> Unit = {},
 ) {
   val context = LocalContext.current
   val settings = remember { IntervalsSettings(context) }
@@ -220,6 +223,18 @@ fun IntervalsSettingsScreen(
       HorizontalDivider()
       // Il coach nell'app (cervello Python): id atleta per la API key, ultimo run, profilo, misura
       SezioneCoach(onApriProfilo, onApriGare)
+
+      HorizontalDivider()
+      // Registrazione notturna: batteria, notifiche, Bluetooth, istruzioni per la marca
+      TextButton(onClick = onApriProtezione) { Text("Protezione notturna") }
+      TextButton(onClick = onApriFascia) { Text("Fascia") }
+
+      HorizontalDivider()
+      // Dati: backup cifrato, ripristino, esportazione CSV
+      Text("Dati", style = MaterialTheme.typography.titleSmall)
+      PromemoriaBackup(onApriBackup)
+      TextButton(onClick = onApriBackup) { Text("Backup e ripristino") }
+      TextButton(onClick = onApriBackup) { Text("Esporta notti") }
 
       HorizontalDivider()
       SezioneInformazioni(onApriLicenze)

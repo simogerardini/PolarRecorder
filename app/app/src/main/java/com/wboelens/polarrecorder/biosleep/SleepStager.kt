@@ -95,7 +95,11 @@ object SleepStager {
   // Griglia di frequenze per Lomb-Scargle (Hz): bande LF 0,04-0,15 e HF 0,15-0,40
   private val FREQS = DoubleArray(73) { 0.04 + it * 0.005 }
 
-  fun stage(beats: CleanBeats, acc: AccSeconds?): SleepStages? {
+  /**
+   * [soloFc] (punto 10): fascia senza RR affidabili (solo FC o sensore ottico). L'HRV non e'
+   * reale: si usano solo FC, instabilita' della FC, micro-risvegli e, se c'e', l'accelerometro.
+   */
+  fun stage(beats: CleanBeats, acc: AccSeconds?, soloFc: Boolean = false): SleepStages? {
     val t = beats.t
     val nn = beats.nn
     if (t.size < MIN_WINDOW_BEATS) return null
@@ -195,12 +199,17 @@ object SleepStager {
     val features = arrayOf(zHr, zHf, zA1, zLfhf, zSd, zAr, zAct, zRespReg, zRespSd)
     val weights =
         doubleArrayOf(
-            1.0, 0.6, 0.6, 0.5, 0.6, 0.5,
+            1.0,
+            if (soloFc) 0.0 else 0.6, // HF normalizzata
+            if (soloFc) 0.0 else 0.6, // DFA alfa1
+            if (soloFc) 0.0 else 0.5, // LF/HF
+            0.6, 0.5,
             if (hasAcc) 0.8 else 0.0,
             if (hasResp) 0.6 else 0.0,
             if (hasResp) 0.5 else 0.0,
         )
-    val mode = if (hasResp) "HRV+ACC+RESP" else if (hasAcc) "HRV+ACC" else "HRV"
+    val base = if (soloFc) "FC" else "HRV"
+    val mode = if (hasResp) "$base+ACC+RESP" else if (hasAcc) "$base+ACC" else base
     val scores = Array(nEpochs) { DoubleArray(4) } // W, L, D, R
     for (k in 0 until nEpochs) {
       val minutes = k * 0.5

@@ -58,6 +58,8 @@ import com.wboelens.polarrecorder.biosleep.training.GiornoCal
 import com.wboelens.polarrecorder.biosleep.training.Metrica
 import com.wboelens.polarrecorder.biosleep.training.SedutaPianificata
 import com.wboelens.polarrecorder.biosleep.ui.RigaTagOggi
+import com.wboelens.polarrecorder.biosleep.ui.CardInterruzione
+import com.wboelens.polarrecorder.biosleep.ui.CardProtezione
 import com.wboelens.polarrecorder.biosleep.ui.MessaggioCss
 import com.wboelens.polarrecorder.biosleep.ui.SoglieOggi
 import com.wboelens.polarrecorder.biosleep.ui.TestOggi
@@ -119,6 +121,7 @@ fun OggiScreen(
     onApriRiepilogo: (String) -> Unit,
     onApriImpostazioni: () -> Unit = {},
     onApriTag: (String) -> Unit = {},
+    onApriProtezione: () -> Unit = {},
 ) {
   val dati = rememberDallaCache { repo, oggi -> DatiOggi.carica(repo, oggi) }
   Scaffold(
@@ -139,6 +142,9 @@ fun OggiScreen(
         verticalArrangement = Arrangement.spacedBy(16.dp),
     ) {
       StatoAggiornamento()
+      // registrazione notturna: notte interrotta stamattina, protezione incompleta
+      CardInterruzione(onApriProtezione)
+      CardProtezione(onApriProtezione)
       RiquadroRiepilogo(LocalDate.now(), onApriRiepilogo)
       // soglie mancanti su Intervals.icu: card solo se servono
       SoglieOggi()

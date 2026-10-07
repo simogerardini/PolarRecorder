@@ -1,16 +1,17 @@
 package com.wboelens.polarrecorder.services
 
-import android.app.AlarmManager
 import android.app.Notification
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
 import android.app.Service
 import android.content.Context
+import android.bluetooth.BluetoothAdapter
+import android.content.BroadcastReceiver
 import android.content.Intent
+import android.content.IntentFilter
 import android.content.pm.ServiceInfo
 import android.os.Binder
-import android.os.Build
 import android.os.Handler
 import android.os.IBinder
 import android.os.Looper
@@ -32,9 +33,12 @@ import com.wboelens.polarrecorder.biosleep.BioSleepDataSaver
 import com.wboelens.polarrecorder.biosleep.SleepDb
 import com.wboelens.polarrecorder.biosleep.auto.Habits
 import com.wboelens.polarrecorder.biosleep.finalize.NightFinalizeWorker
-import com.wboelens.polarrecorder.biosleep.watchdog.AutoStopAlarmReceiver
 import com.wboelens.polarrecorder.biosleep.watchdog.AutoStopLog
 import com.wboelens.polarrecorder.biosleep.watchdog.AutoStopRule
+import com.wboelens.polarrecorder.biosleep.watchdog.Watchdog
+import com.wboelens.polarrecorder.biosleep.sopravvivenza.EventiNotte
+import com.wboelens.polarrecorder.biosleep.sopravvivenza.TipoEvento
+import com.wboelens.polarrecorder.state.ConnectionState
 import com.wboelens.polarrecorder.biosleep.auto.HabitLearner
 import com.wboelens.polarrecorder.biosleep.auto.NightNotifier
 import com.wboelens.polarrecorder.biosleep.auto.NightProfile
@@ -76,10 +80,12 @@ class RecordingService : Service() {
     // BioSleep: controllo dello stop automatico chiesto dall'allarme di riserva
     const val ACTION_CHECK_AUTOSTOP = "com.wboelens.polarrecorder.CHECK_AUTOSTOP"
     private const val AUTO_STOP_CHECK_S = 60L // timer del controllo, indipendente dai dati
-    private const val SAFETY_ALARM_MS = 10 * 60_000L // allarme di riserva (anche in Doze)
+    // BioSleep, punto 9: riprende una notte interrotta (servizio chiuso dal sistema)
+    const val ACTION_RESUME_NIGHT = "com.wboelens.polarrecorder.RESUME_NIGHT"
+    private const val RICONNESSIONE_DOPO_MS = 3 * 60_000L // senza battiti da 3 min: riconnetti
+    private const val RICONNESSIONE_OGNI_MS = 5 * 60_000L
     private const val WAKELOCK_TIMEOUT_MS = 14 * 3_600_000L
     private const val FINALIZE_WAIT_MS = 5 * 60_000L
-    private const val ALARM_REQUEST = 3_101
     private const val NOTIFICATION_ID = 1
     private const val CHANNEL_ID = "RecordingServiceChannel"
 
@@ -155,6 +161,42 @@ class RecordingService : Service() {
     startObservingDeviceChanges()
     startObservingLogMessages()
     keepSelectedDevicesUpdated()
+    // Se avviene dentro un buco della notte, il processo era stato chiuso dal sistema
+    EventiNotte.registra(this, TipoEvento.SERVIZIO_AVVIATO)
+    ContextCompat.registerReceiver(
+        this, bluetoothReceiver, IntentFilter(BluetoothAdapter.ACTION_STATE_CHANGED),
+        ContextCompat.RECEIVER_NOT_EXPORTED)
+  }
+
+  /** Bluetooth spento e riacceso: si annota (causa dei buchi) e si ricollega subito la fascia. */
+  private val bluetoothReceiver =
+      object : BroadcastReceiver() {
+        override fun onReceive(context: Context, intent: Intent) {
+          when (intent.getIntExtra(BluetoothAdapter.EXTRA_STATE, -1)) {
+            BluetoothAdapter.STATE_OFF -> {
+              EventiNotte.registra(context, TipoEvento.BT_SPENTO)
+              AutoStopLog.write(context, "Bluetooth spento")
+            }
+            BluetoothAdapter.STATE_ON -> {
+              EventiNotte.registra(context, TipoEvento.BT_ACCESO)
+              AutoStopLog.write(context, "Bluetooth riacceso")
+              if (orchestrator.recordingState.value.isRecording) ricollegaFascia("Bluetooth riacceso", forza = true)
+            }
+          }
+        }
+      }
+
+  private var ultimaRiconnessioneMs = 0L
+
+  /** Prova a ricollegare la fascia della notte (al massimo ogni 5 minuti, salvo [forza]). */
+  private fun ricollegaFascia(motivo: String, forza: Boolean = false) {
+    val now = System.currentTimeMillis()
+    if (!forza && now - ultimaRiconnessioneMs < RICONNESSIONE_OGNI_MS) return
+    val device = app.deviceState.allDevices.value.firstOrNull { it.isSelected } ?: return
+    if (device.connectionState == ConnectionState.CONNECTED || device.connectionState == ConnectionState.CONNECTING) return
+    ultimaRiconnessioneMs = now
+    AutoStopLog.write(this, "Riconnessione della fascia ($motivo)")
+    Handler(Looper.getMainLooper()).post { app.polarManager?.connectToDevice(device.info.deviceId) }
   }
 
   /**
@@ -174,7 +216,15 @@ class RecordingService : Service() {
   private fun startObservingDeviceChanges() {
     connectedDevicesJob =
         scope.launch {
+          var fasciaCollegata: Boolean? = null
           app.deviceState.connectedDevices.collect { devices ->
+            // Eventi per la causa dei buchi: fascia scollegata / ricollegata durante la notte
+            val collegata = devices.isNotEmpty()
+            if (orchestrator.recordingState.value.isRecording && fasciaCollegata != null && collegata != fasciaCollegata) {
+              EventiNotte.registra(this@RecordingService, if (collegata) TipoEvento.FASCIA_COLLEGATA else TipoEvento.FASCIA_SCOLLEGATA)
+              AutoStopLog.write(this@RecordingService, if (collegata) "Fascia ricollegata" else "Fascia scollegata")
+            }
+            fasciaCollegata = collegata
             val recordingStopped = orchestrator.handleDevicesChanged(devices)
             if (recordingStopped) {
               stopServiceAfterRecordingEnded()
@@ -202,9 +252,17 @@ class RecordingService : Service() {
       }
       ACTION_STOP_RECORDING -> doStopRecording()
       ACTION_START_NIGHT -> startNight()
+      ACTION_RESUME_NIGHT -> {
+        AutoStopLog.write(this, "Ripresa della notte richiesta dal watchdog")
+        startNight()
+      }
       ACTION_CHECK_AUTOSTOP -> {
         if (orchestrator.recordingState.value.isRecording || nightStartJob?.isActive == true) {
           executor.execute { runAutoStopCheck("allarme") }
+        } else if (Watchdog.sessioneDaRiprendere(this) != null) {
+          AutoStopLog.write(this, "Allarme: notte interrotta ma non finita -> ripresa")
+          EventiNotte.registra(this, TipoEvento.RIPRESA, "allarme")
+          startNight()
         } else {
           // Allarme arrivato a un servizio ripartito senza registrazione: chiude le notti aperte
           AutoStopLog.write(this, "Allarme senza registrazione attiva -> chiusura notti aperte")
@@ -213,7 +271,7 @@ class RecordingService : Service() {
         }
       }
       else -> {
-        // Service started without action - show notification if recording
+        // Senza azione: riavvio di Android dopo la chiusura del processo (START_STICKY)
         if (orchestrator.recordingState.value.isRecording) {
           val notification = createNotification()
           ServiceCompat.startForeground(
@@ -222,6 +280,12 @@ class RecordingService : Service() {
               notification,
               ServiceInfo.FOREGROUND_SERVICE_TYPE_CONNECTED_DEVICE,
           )
+        } else if (nightStartJob?.isActive != true && Watchdog.sessioneDaRiprendere(this) != null) {
+          AutoStopLog.write(this, "Servizio riavviato da Android con una notte in corso -> ripresa")
+          EventiNotte.registra(this, TipoEvento.RIPRESA, "riavvio di Android")
+          startNight()
+        } else if (nightStartJob?.isActive != true) {
+          stopSelf()
         }
       }
     }
@@ -269,13 +333,23 @@ class RecordingService : Service() {
     // Una notte non si ferma per una disconnessione momentanea: la fascia si ricollega da sola,
     // e la fine la decide lo stop automatico (ereditato da Polar Recorder, qui sempre spento)
     app.preferencesManager.recordingStopOnDisconnect = false
-    // Entro 5 secondi dall'avvio un servizio in primo piano deve mostrare la sua notifica
-    ServiceCompat.startForeground(
-        this,
-        NOTIFICATION_ID,
-        createStartingNotification(),
-        ServiceInfo.FOREGROUND_SERVICE_TYPE_CONNECTED_DEVICE,
-    )
+    // Entro 5 secondi dall'avvio un servizio in primo piano deve mostrare la sua notifica.
+    // Da sfondo (riavvio dopo una chiusura) Android puo' negarlo: si riprova al prossimo allarme.
+    @Suppress("TooGenericExceptionCaught")
+    try {
+      ServiceCompat.startForeground(
+          this,
+          NOTIFICATION_ID,
+          createStartingNotification(),
+          ServiceInfo.FOREGROUND_SERVICE_TYPE_CONNECTED_DEVICE,
+      )
+    } catch (e: Exception) {
+      AutoStopLog.write(this, "Avvio in primo piano negato (${e.javaClass.simpleName}): riprovo con il watchdog")
+      Watchdog.programma(this)
+      _avvioNotte.value = AvvioNotte.Fermo
+      stopSelf()
+      return
+    }
     nightStartJob =
         scope.launch {
           val profile = withContext(Dispatchers.IO) { NightProfileStore(this@RecordingService).load() }
@@ -331,7 +405,7 @@ class RecordingService : Service() {
     autoStopFuture =
         executor.scheduleWithFixedDelay(
             { runAutoStopCheck("timer") }, AUTO_STOP_CHECK_S, AUTO_STOP_CHECK_S, TimeUnit.SECONDS)
-    scheduleSafetyAlarm()
+    Watchdog.programma(this)
   }
 
   @Suppress("TooGenericExceptionCaught")
@@ -347,28 +421,18 @@ class RecordingService : Service() {
               now, state.recordingStartTime, bioSleep.lastValidBeatMs, bioSleep.lastPacketMs,
               HabitLearner.isMorning(now, h), AutoStopLog.testMode(this))
       AutoStopLog.write(this, "Controllo ($source): ${decision.reason}")
-      if (source == "allarme") scheduleSafetyAlarm()
+      if (source == "allarme") Watchdog.programma(this)
       if (decision.stop) {
         logState.addLogMessage("BioSleep: fascia tolta, registrazione fermata in automatico")
         doStopRecording()
+      } else if (!HabitLearner.isMorning(now, h) && now - maxOf(bioSleep.lastPacketMs, state.recordingStartTime) >= RICONNESSIONE_DOPO_MS) {
+        // Di notte, fascia muta da 3 minuti (fuori portata, Bluetooth caduto): si ricollega
+        ricollegaFascia("nessun dato da ${(now - bioSleep.lastPacketMs) / 60_000} min")
       }
     } catch (e: Exception) {
       // un errore non deve mai spegnere il controllo: si riprova al giro successivo
       AutoStopLog.write(this, "Controllo ($source) fallito: ${e.javaClass.simpleName} ${e.message}")
     }
-  }
-
-  private fun safetyAlarmIntent(): PendingIntent =
-      PendingIntent.getBroadcast(
-          this, ALARM_REQUEST, Intent(this, AutoStopAlarmReceiver::class.java),
-          PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT)
-
-  private fun scheduleSafetyAlarm() {
-    val am = getSystemService(AlarmManager::class.java) ?: return
-    val at = System.currentTimeMillis() + SAFETY_ALARM_MS
-    val exact = Build.VERSION.SDK_INT < Build.VERSION_CODES.S || am.canScheduleExactAlarms()
-    if (exact) am.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, at, safetyAlarmIntent())
-    else am.setAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, at, safetyAlarmIntent())
   }
 
   private fun acquireWakeLock() {
@@ -379,10 +443,11 @@ class RecordingService : Service() {
             .apply { acquire(WAKELOCK_TIMEOUT_MS) }
   }
 
-  private fun stopAutoStopMonitor() {
+  /** [annullaWatchdog] = false quando il servizio muore a notte in corso: l'allarme lo riavviera'. */
+  private fun stopAutoStopMonitor(annullaWatchdog: Boolean = true) {
     autoStopFuture?.cancel(false)
     autoStopFuture = null
-    getSystemService(AlarmManager::class.java)?.cancel(safetyAlarmIntent())
+    if (annullaWatchdog) Watchdog.annulla(this)
     if (wakeLock?.isHeld == true) wakeLock?.release()
     wakeLock = null
   }
@@ -484,8 +549,16 @@ class RecordingService : Service() {
     selectedDevicesJob?.cancel()
     nightStartJob?.cancel()
     finalizeWaitJob?.cancel()
-    stopAutoStopMonitor()
-    AutoStopLog.write(this, "Servizio chiuso (registrazione attiva: ${orchestrator.recordingState.value.isRecording})")
+    val inRegistrazione = orchestrator.recordingState.value.isRecording
+    // A notte in corso il watchdog resta programmato: riavviera' il servizio e la notte
+    stopAutoStopMonitor(annullaWatchdog = !inRegistrazione)
+    AutoStopLog.write(this, "Servizio chiuso (registrazione attiva: $inRegistrazione)")
+    if (!inRegistrazione) EventiNotte.registra(this, TipoEvento.SERVIZIO_CHIUSO)
+    try {
+      unregisterReceiver(bluetoothReceiver)
+    } catch (e: IllegalArgumentException) {
+      // non registrato
+    }
     // Servizio chiuso a meta' avvio (es. dal sistema): il pulsante non deve restare bloccato
     if (_avvioNotte.value == AvvioNotte.InCorso) _avvioNotte.value = AvvioNotte.Fermo
 

@@ -115,6 +115,23 @@ fun BioAgeScreen(onBack: () -> Unit) {
         }
         return@Column
       }
+      // Errore di lettura da Intervals.icu: diverso da "nessun dato", con Riprova
+      data?.erroreIntervals?.let { e ->
+        OutlinedCard(Modifier.fillMaxWidth()) {
+          Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
+            Text(
+                "Impossibile leggere le attività da Intervals.icu ($e)",
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.error)
+            Text(
+                "Fitness e allenamento non sono calcolati finché la lettura non riesce. Se l'errore è 401 o 403, " +
+                    "ricollega Intervals.icu dalle Impostazioni.",
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant)
+            TextButton(onClick = { reload++ }) { Text("Riprova") }
+          }
+        }
+      }
       when (val d = data) {
         null ->
             Box(Modifier.fillMaxWidth().padding(48.dp), contentAlignment = Alignment.Center) {

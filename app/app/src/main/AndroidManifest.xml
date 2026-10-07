@@ -38,7 +38,7 @@
      richiesta verrebbe rifiutata senza mostrare nulla. La posizione precisa resta limitata ad API 30. -->
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
 
-    <!-- Internet: invio delle notti a Intervals.icu e coach -->
+    <!-- Allow MQTTDataSaver to publish data to MQTT broker -->
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
@@ -48,6 +48,14 @@
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_CONNECTED_DEVICE" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_DATA_SYNC" />
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+
+    <!-- BioSleep, notte protetta: CPU sveglia durante la registrazione e watchdog con allarme
+         esatto ogni 10 minuti (anche in Doze), che puo' riavviare il servizio se il sistema lo chiude. -->
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+    <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" />
+    <!-- Protezione notturna (Parte 3): la registrazione dura 8 ore a schermo spento
+         (dispositivo connesso). Uso dichiarato nella Play Console. -->
+    <uses-permission android:name="android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS" />
 
     <!-- BioSleep, avvio automatico: Android avvisa l'app quando la fascia associata compare
          e le permette di avviare la registrazione anche se l'app non e' aperta. -->
@@ -60,7 +68,7 @@
 
     <application
         android:name=".PolarRecorderApplication"
-        android:allowBackup="true"
+        android:allowBackup="false"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
         android:icon="@mipmap/ic_launcher"
@@ -118,6 +126,11 @@
             tools:node="merge" />
 
         <!-- BioSleep: ricontrollo periodico delle condizioni di avvio automatico -->
+        <!-- BioSleep: watchdog della notte (controllo, riavvio del servizio, chiusura) -->
+        <receiver
+            android:name=".biosleep.watchdog.AutoStopAlarmReceiver"
+            android:exported="false" />
+
         <receiver
             android:name=".biosleep.auto.AutoStartAlarmReceiver"
             android:exported="false" />
