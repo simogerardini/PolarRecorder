@@ -54,7 +54,7 @@ object OAuthIntervals {
             .appendQueryParameter("scope", SCOPE)
             .appendQueryParameter("state", nonce)
             .build()
-    _stato.value = StatoAccount(messaggio = "Autorizza BioSleep su Intervals.icu…")
+    _stato.value = StatoAccount(messaggio = "Autorizza ${BuildConfig.APP_NAME} su Intervals.icu…")
     CustomTabsIntent.Builder().build().launchUrl(context, url)
   }
 
@@ -92,7 +92,7 @@ object OAuthIntervals {
   /** cervello.prepara_account con le credenziali attuali; aggiorna lo stato per la schermata. */
   fun prepara(context: Context): EsitoPrepara? {
     val c = IntervalsSettings(context).credenziali ?: return null
-    _stato.value = _stato.value.copy(inCorso = true, messaggio = "Preparo i campi BioSleep su Intervals.icu…")
+    _stato.value = _stato.value.copy(inCorso = true, messaggio = "Preparo i campi ${BuildConfig.APP_NAME} su Intervals.icu…")
     val e = Cervello.preparaAccount(context, c)
     if (e.esito == EsitoPrepara.OK) ultimaVersionePreparata(context, BuildConfig.VERSION_CODE)
     _stato.value = StatoAccount(inCorso = false, esito = e)
@@ -118,12 +118,12 @@ object OAuthIntervals {
                     conn.setRequestProperty("Authorization", "Bearer $token")
                     val code = conn.responseCode
                     if (code in 200..299 || code == 401) "Scollegato da Intervals.icu"
-                    else "Token cancellato dal telefono; Intervals.icu ha risposto HTTP $code: rimuovi BioSleep anche dalle app collegate del tuo account"
+                    else "Token cancellato dal telefono; Intervals.icu ha risposto HTTP $code: rimuovi ${BuildConfig.APP_NAME} anche dalle app collegate del tuo account"
                   } finally {
                     conn.disconnect()
                   }
                 } catch (e: IOException) {
-                  "Token cancellato dal telefono, ma Intervals.icu non era raggiungibile: rimuovi BioSleep dalle app collegate del tuo account"
+                  "Token cancellato dal telefono, ma Intervals.icu non era raggiungibile: rimuovi ${BuildConfig.APP_NAME} dalle app collegate del tuo account"
                 }
         s.scollegaLocale()
         _stato.value = StatoAccount(messaggio = esito)

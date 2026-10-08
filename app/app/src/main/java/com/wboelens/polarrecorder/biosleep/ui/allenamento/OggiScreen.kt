@@ -1,5 +1,6 @@
 package com.wboelens.polarrecorder.biosleep.ui.allenamento
 
+import com.wboelens.polarrecorder.BuildConfig
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -197,7 +198,7 @@ private fun Recupero(d: DatiOggi) {
       LinearProgressIndicator(
           progress = { (p.notti.toFloat() / p.servono).coerceIn(0f, 1f) }, modifier = Modifier.fillMaxWidth())
       Text(
-          "Il range personale si costruisce sulle tue notti BioSleep: fino ad allora l'app non da' un colore.",
+          "Il range personale si costruisce sulle tue notti ${BuildConfig.APP_NAME}: fino ad allora l'app non da' un colore.",
           style = stileNota,
           color = grigio)
     }

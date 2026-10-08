@@ -375,7 +375,7 @@ class RecordingService : Service() {
 
   private fun failNightStart(reason: String) {
     _avvioNotte.value = AvvioNotte.Fallito(reason)
-    logState.addLogError("BioSleep: avvio della notte non riuscito: $reason")
+    logState.addLogError("avvio della notte non riuscito: $reason")
     NightNotifier.notifyAlert(this, "Avvio della notte non riuscito", reason)
     stopServiceAfterRecordingEnded()
   }
@@ -423,7 +423,7 @@ class RecordingService : Service() {
       AutoStopLog.write(this, "Controllo ($source): ${decision.reason}")
       if (source == "allarme") Watchdog.programma(this)
       if (decision.stop) {
-        logState.addLogMessage("BioSleep: fascia tolta, registrazione fermata in automatico")
+        logState.addLogMessage("fascia tolta, registrazione fermata in automatico")
         doStopRecording()
       } else if (!HabitLearner.isMorning(now, h) && now - maxOf(bioSleep.lastPacketMs, state.recordingStartTime) >= RICONNESSIONE_DOPO_MS) {
         // Di notte, fascia muta da 3 minuti (fuori portata, Bluetooth caduto): si ricollega

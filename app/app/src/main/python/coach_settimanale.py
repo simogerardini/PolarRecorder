@@ -44,6 +44,7 @@ USO
     python3 coach_settimanale.py --giornaliero    # rimodula SOLO la seduta di oggi
     python3 coach_settimanale.py --force          # ignora il lock settimanale
 """
+from marchio import NOME_APP
 import warnings
 warnings.filterwarnings("ignore")
 
@@ -439,7 +440,7 @@ def storia_biometrica(wellness, tag_giorni=None):
     tag_l = [{"data": d, "tags": list(v)} for d, v in (tag_giorni or {}).items() if v]
     bs = biometria.biosleep_history_da_wellness(wellness, tag_l)
     if len(bs) >= BIOSLEEP_NOTTI_MIN:
-        return bs, f"BioSleep, {len(bs)} notti"
+        return bs, f"{NOME_APP}, {len(bs)} notti"
     out = []
     for w in wellness or []:
         d = str(w.get("id") or w.get("date") or "")[:10]

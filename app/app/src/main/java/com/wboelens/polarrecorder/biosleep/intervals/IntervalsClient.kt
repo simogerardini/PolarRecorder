@@ -1,5 +1,6 @@
 package com.wboelens.polarrecorder.biosleep.intervals
 
+import com.wboelens.polarrecorder.BuildConfig
 import com.wboelens.polarrecorder.biosleep.NightSummary
 import com.wboelens.polarrecorder.biosleep.SleepStages
 import java.io.IOException
@@ -111,7 +112,7 @@ object IntervalsClient {
     } else {
       IntervalsResult.Failed(
           "Intervals non ha salvato: ${missing.joinToString()}. " +
-              "Mancano i campi BioSleep: in Impostazioni premi \"Prepara i campi\" e reinvia la notte.")
+              "Mancano i campi ${BuildConfig.APP_NAME}: in Impostazioni premi \"Prepara i campi\" e reinvia la notte.")
     }
   }
 

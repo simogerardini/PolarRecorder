@@ -1,5 +1,6 @@
 package com.wboelens.polarrecorder.biosleep.protezione
 
+import com.wboelens.polarrecorder.BuildConfig
 import android.Manifest
 import android.annotation.SuppressLint
 import android.app.AlarmManager
@@ -24,18 +25,18 @@ data class VoceProtezione(val id: String, val titolo: String, val spiegazione: S
 enum class Marca(val nome: String, val pagina: String, val istruzioni: List<String>) {
   XIAOMI(
       "Xiaomi, Redmi, POCO", "xiaomi",
-      listOf("Attiva l'Avvio automatico per BioSleep.", "In Risparmio batteria scegli \"Nessuna restrizione\".")),
+      listOf("Attiva l'Avvio automatico per ${BuildConfig.APP_NAME}.", "In Risparmio batteria scegli \"Nessuna restrizione\".")),
   SAMSUNG(
       "Samsung", "samsung",
-      listOf("Togli BioSleep da \"App in sospensione profonda\" e da \"App in sospensione\".", "Aggiungi BioSleep ad \"App mai in sospensione\".")),
+      listOf("Togli ${BuildConfig.APP_NAME} da \"App in sospensione profonda\" e da \"App in sospensione\".", "Aggiungi ${BuildConfig.APP_NAME} ad \"App mai in sospensione\".")),
   HUAWEI(
       "Huawei, Honor", "huawei",
-      listOf("In Gestione avvio porta BioSleep su gestione manuale.", "Attiva tutte e tre le voci: avvio automatico, avvio secondario, esecuzione in background.")),
+      listOf("In Gestione avvio porta ${BuildConfig.APP_NAME} su gestione manuale.", "Attiva tutte e tre le voci: avvio automatico, avvio secondario, esecuzione in background.")),
   OPPO(
       "OnePlus, Oppo, Realme", "oneplus",
-      listOf("In Ottimizzazione batteria scegli \"Non ottimizzare\" per BioSleep.", "Attiva l'Avvio automatico.")),
+      listOf("In Ottimizzazione batteria scegli \"Non ottimizzare\" per ${BuildConfig.APP_NAME}.", "Attiva l'Avvio automatico.")),
   PIXEL("Google Pixel", "google", listOf("Basta l'ottimizzazione della batteria \"Senza restrizioni\".")),
-  ALTRA("il tuo telefono", "", listOf("Imposta la batteria di BioSleep su \"Senza restrizioni\"."));
+  ALTRA("il tuo telefono", "", listOf("Imposta la batteria di ${BuildConfig.APP_NAME} su \"Senza restrizioni\"."));
 
   val dontKillMyApp: String get() = "https://dontkillmyapp.com/" + pagina
 
@@ -132,7 +133,7 @@ object Protezione {
               listOf(
                   c("com.miui.securitycenter", "com.miui.permcenter.autostart.AutoStartManagementActivity"),
                   c("com.miui.powerkeeper", "com.miui.powerkeeper.ui.HiddenAppsConfigActivity")
-                      .putExtra("package_name", context.packageName).putExtra("package_label", "BioSleep"))
+                      .putExtra("package_name", context.packageName).putExtra("package_label", BuildConfig.APP_NAME))
           Marca.SAMSUNG ->
               listOf(
                   c("com.samsung.android.lool", "com.samsung.android.sm.battery.ui.BatteryActivity"),

@@ -1,5 +1,6 @@
 package com.wboelens.polarrecorder.biosleep.hal
 
+import com.wboelens.polarrecorder.BuildConfig
 import org.json.JSONObject
 
 /**
@@ -21,7 +22,7 @@ data class RapportoFascia(
     val android: Int,
 ) {
   fun testo(): String = buildString {
-    appendLine("RAPPORTO FASCIA BioSleep (nessun dato sanitario)")
+    appendLine("RAPPORTO FASCIA ${BuildConfig.APP_NAME} (nessun dato sanitario)")
     appendLine("Fascia: $nome")
     appendLine("Produttore: ${capacita.produttore.ifBlank { "non dichiarato" }}")
     appendLine("Modello: ${capacita.modello.ifBlank { "non dichiarato" }}")

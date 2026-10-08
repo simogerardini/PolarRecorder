@@ -1,5 +1,6 @@
 package com.wboelens.polarrecorder.biosleep.ui
 
+import com.wboelens.polarrecorder.BuildConfig
 import android.database.SQLException
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -85,7 +86,7 @@ fun NightsScreen(
             },
             actions = {
               IconButton(onClick = onOpenBioAge) {
-                Icon(Icons.Filled.HourglassTop, contentDescription = "Età BioSleep")
+                Icon(Icons.Filled.HourglassTop, contentDescription = "Età ${BuildConfig.APP_NAME}")
               }
               IconButton(onClick = onOpenSettings) {
                 Icon(Icons.Filled.Settings, contentDescription = "Impostazioni Intervals.icu")

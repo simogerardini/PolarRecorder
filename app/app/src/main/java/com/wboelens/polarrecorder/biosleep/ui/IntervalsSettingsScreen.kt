@@ -1,5 +1,6 @@
 package com.wboelens.polarrecorder.biosleep.ui
 
+import com.wboelens.polarrecorder.BuildConfig
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -117,8 +118,8 @@ fun IntervalsSettingsScreen(
             }
       } else {
         Text(
-            "Collega il tuo account: BioSleep potrà inviare le notti, leggere sedute e calendario e " +
-                "creare da solo i campi BioSleep. Prima di collegarti leggi quali dati vanno a Intervals.icu.",
+            "Collega il tuo account: ${BuildConfig.APP_NAME} potrà inviare le notti, leggere sedute e calendario e " +
+                "creare da solo i campi ${BuildConfig.APP_NAME}. Prima di collegarti leggi quali dati vanno a Intervals.icu.",
             style = MaterialTheme.typography.bodySmall,
             color = MaterialTheme.colorScheme.onSurfaceVariant)
         RigaInformativa()
@@ -132,7 +133,7 @@ fun IntervalsSettingsScreen(
         when (e.esito) {
           EsitoPrepara.OK ->
               Text(
-                  "Campi BioSleep pronti: ${e.creati.size + e.esistenti.size}" +
+                  "Campi ${BuildConfig.APP_NAME} pronti: ${e.creati.size + e.esistenti.size}" +
                       (if (e.creati.isNotEmpty()) " (${e.creati.size} creati ora)" else ""),
                   style = MaterialTheme.typography.bodySmall,
                   color = MaterialTheme.colorScheme.primary)
@@ -144,13 +145,13 @@ fun IntervalsSettingsScreen(
             Button(onClick = { OAuthIntervals.avvia(context) }) { Text("Ricollega") }
           }
           else -> {
-            Text("Campi BioSleep non preparati: ${e.errore ?: "errore"}", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.error)
+            Text("Campi ${BuildConfig.APP_NAME} non preparati: ${e.errore ?: "errore"}", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.error)
             OutlinedButton(onClick = { prepara() }, enabled = !stato.inCorso) { Text("Riprova") }
           }
         }
       }
       if (settings.isConfigured && stato.esito == null && !stato.inCorso) {
-        TextButton(onClick = { prepara() }) { Text("Prepara i campi BioSleep") }
+        TextButton(onClick = { prepara() }) { Text("Prepara i campi ${BuildConfig.APP_NAME}") }
       }
 
       Row(verticalAlignment = Alignment.CenterVertically) {

@@ -180,7 +180,7 @@ object BackupRepo {
           SQLiteDatabase.openDatabase(File(lavoro, DB).path, null, SQLiteDatabase.OPEN_READONLY).use { db ->
             if (db.version > versioneApp) {
               lavoro.deleteRecursively()
-              return null to "Il database viene da una versione più recente di BioSleep: aggiorna l'app"
+              return null to "Il database viene da una versione più recente di ${BuildConfig.APP_NAME}: aggiorna l'app"
             }
             db.rawQuery("SELECT COUNT(*) FROM nights", null).use { c -> if (c.moveToFirst()) c.getInt(0) else 0 }
           }
@@ -191,7 +191,7 @@ object BackupRepo {
       return null to "Password errata o file danneggiato"
     } catch (e: CifraturaBackup.NonUnBackup) {
       lavoro.deleteRecursively()
-      return null to "Questo file non è un backup di BioSleep"
+      return null to "Questo file non è un backup di ${BuildConfig.APP_NAME}"
     } catch (e: Exception) {
       // IOException, SQLiteException, JSON non valido: il backup non si usa
       Log.w(TAG, "Backup non valido", e)

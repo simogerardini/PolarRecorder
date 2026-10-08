@@ -1,5 +1,6 @@
 package com.wboelens.polarrecorder.biosleep.ui
 
+import com.wboelens.polarrecorder.BuildConfig
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -116,11 +117,11 @@ fun HomeScreen(
       bottomBar = bottomBar,
       topBar = {
         TopAppBar(
-            title = { Text("BioSleep") },
+            title = { Text(BuildConfig.APP_NAME) },
             actions = {
               if (profile != null) {
                 IconButton(onClick = onOpenNights) { Icon(Icons.Filled.Bedtime, "Le mie notti") }
-                IconButton(onClick = onOpenBioAge) { Icon(Icons.Filled.HourglassTop, "Età BioSleep") }
+                IconButton(onClick = onOpenBioAge) { Icon(Icons.Filled.HourglassTop, "Età ${BuildConfig.APP_NAME}") }
               }
             },
         )
@@ -218,7 +219,7 @@ private fun SetupStrap(
   Text(
       "1. Bagna gli elettrodi e indossa la fascia: si accende da sola.\n" +
           "2. Quando compare qui sotto, premi Connetti.\n" +
-          "BioSleep imposta tutto da solo: battito e intervalli RR, e con la Polar H10 anche " +
+          "${BuildConfig.APP_NAME} imposta tutto da solo: battito e intervalli RR, e con la Polar H10 anche " +
           "movimento e respiro. Funzionano anche le fasce cardio di altre marche (Garmin, " +
           "Wahoo, Coospo…): con queste niente accelerometro, e gli RR vengono verificati nei " +
           "primi minuti di registrazione.",

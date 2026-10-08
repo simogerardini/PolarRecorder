@@ -1,5 +1,7 @@
 package com.wboelens.polarrecorder.biosleep.info
 
+import com.wboelens.polarrecorder.BuildConfig
+
 /** Un componente di terze parti usato da BioSleep, con la sua licenza (testo in assets/licenze). */
 data class Componente(val nome: String, val descrizione: String, val licenza: String, val url: String, val file: String)
 
@@ -13,7 +15,7 @@ object Licenze {
 
   val ORIGINE =
       Componente(
-          "Polar Recorder", "BioSleep nasce da un fork di Polar Recorder, di Wigger Boelens.", "MIT",
+          "Polar Recorder", "${BuildConfig.APP_NAME} nasce da un fork di Polar Recorder, di Wigger Boelens.", "MIT",
           "https://github.com/boelensman1/PolarRecorder", "polar_recorder.txt")
 
   val COMPONENTI =

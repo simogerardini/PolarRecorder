@@ -46,7 +46,7 @@ object Fasce {
     val invio =
         Intent(Intent.ACTION_SEND)
             .setType("text/plain")
-            .putExtra(Intent.EXTRA_SUBJECT, "Rapporto fascia BioSleep")
+            .putExtra(Intent.EXTRA_SUBJECT, "Rapporto fascia ${BuildConfig.APP_NAME}")
             .putExtra(Intent.EXTRA_TEXT, r.testo() + "\n\n" + r.json())
     context.startActivity(Intent.createChooser(invio, "Invia il rapporto fascia").addFlags(Intent.FLAG_ACTIVITY_NEW_TASK))
     return true

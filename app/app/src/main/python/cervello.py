@@ -43,6 +43,7 @@ Nessuna chiamata a GitHub o Telegram: solo Intervals.icu (Oura rimossa il 04/10/
 ricaricati a ogni avvio perche' l'interprete resta vivo nel processo dell'app e le
 variabili globali di un run non devono passare al successivo.
 """
+from marchio import NOME_APP
 import contextlib, importlib, io, json, os, re, sys, traceback
 
 _VARIABILI_ESTERNE = ("GH_TOKEN", "GITHUB_REPOSITORY", "TELEGRAM_TOKEN", "TELEGRAM_CHAT_ID")
@@ -335,7 +336,7 @@ def salva_gara(config_json):
         descr += "\ncaldo: si"
     ev = {"category": f"RACE_{cfg['priorita']}", "start_date_local": f"{giorno}T00:00:00",
           "name": f"{nome} — {titolo}" if titolo.lower() not in nome.lower() else nome,
-          "description": f"{descr}\nGara {cfg['priorita']} creata da BioSleep.",
+          "description": f"{descr}\nGara {cfg['priorita']} creata da {NOME_APP}.",
           "external_id": f"app:gara:{cfg.get('id') or giorno}"}
     try:
         http, h, base = _http_icu(cfg)
@@ -474,7 +475,7 @@ def importa_stato(config_json):
         out["errore"] = f"file non leggibile: {type(e).__name__}"
         return json.dumps(out)
     if not isinstance(pacco, dict) or pacco.get("formato") != BACKUP_FORMATO:
-        out["errore"] = "non e' un backup del cervello BioSleep"
+        out["errore"] = f"non e' un backup del cervello {NOME_APP}"
         return json.dumps(out)
     if not isinstance(pacco.get("versione"), int) or pacco["versione"] > BACKUP_VERSIONE:
         out["errore"] = "backup di una versione piu' recente dell'app: aggiorna l'app"

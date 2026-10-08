@@ -1,5 +1,6 @@
 package com.wboelens.polarrecorder.biosleep.ui
 
+import com.wboelens.polarrecorder.BuildConfig
 import android.os.Build
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -134,7 +135,7 @@ fun ProtezioneScreen(onBack: () -> Unit) {
         verticalArrangement = Arrangement.spacedBy(12.dp),
     ) {
       Text(
-          "BioSleep registra per 8 ore con lo schermo spento. Android tende a chiudere le app che lavorano a lungo " +
+          "${BuildConfig.APP_NAME} registra per 8 ore con lo schermo spento. Android tende a chiudere le app che lavorano a lungo " +
               "in background: queste impostazioni lo impediscono.",
           style = MaterialTheme.typography.bodyMedium)
       for (v in stato) VoceChecklist(v) { Protezione.apri(context, v.id) }

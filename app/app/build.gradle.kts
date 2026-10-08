@@ -30,6 +30,11 @@ android {
     versionCode = 26
     versionName = "2.1.1"
 
+    // Nome dell'app: UNICA fonte. Genera @string/app_name e BuildConfig.APP_NAME.
+    val nomeApp = "NoctaliX"
+    resValue("string", "app_name", nomeApp)
+    buildConfigField("String", "APP_NAME", "\"$nomeApp\"")
+
     testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
     // Collegamento OAuth a Intervals.icu: client_id e indirizzi non sono segreti (il client_secret
@@ -60,6 +65,7 @@ android {
   buildFeatures {
     compose = true
     buildConfig = true // BuildConfig.INTERVALS_CLIENT_ID e indirizzi OAuth
+    resValues = true // @string/app_name generato da nomeApp (nome unico dell'app)
   }
 
   testOptions { unitTests.all { it.useJUnitPlatform() } }

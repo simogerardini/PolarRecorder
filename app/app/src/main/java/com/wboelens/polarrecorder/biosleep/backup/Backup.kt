@@ -1,5 +1,6 @@
 package com.wboelens.polarrecorder.biosleep.backup
 
+import com.wboelens.polarrecorder.BuildConfig
 import java.io.DataInputStream
 import java.io.IOException
 import java.io.InputStream
@@ -32,7 +33,7 @@ object CifraturaBackup {
 
   class PasswordErrata : Exception("password errata o file danneggiato")
 
-  class NonUnBackup : Exception("non è un backup di BioSleep")
+  class NonUnBackup : Exception("non è un backup di ${BuildConfig.APP_NAME}")
 
   private fun chiave(password: CharArray, salt: ByteArray, iterazioni: Int): SecretKeySpec {
     val spec = PBEKeySpec(password, salt, iterazioni, 256)
@@ -103,7 +104,7 @@ data class ManifestBackup(val formato: String, val versione: Int, val appVersion
   fun problema(): String? =
       when {
         formato != FORMATO -> "non è un backup di BioSleep"
-        versione > VERSIONE -> "backup creato da una versione più recente dell'app: aggiorna BioSleep"
+        versione > VERSIONE -> "backup creato da una versione più recente dell'app: aggiorna ${BuildConfig.APP_NAME}"
         versione < 1 -> "versione del backup non valida"
         else -> null
       }

@@ -1,5 +1,6 @@
 package com.wboelens.polarrecorder.biosleep.ui
 
+import com.wboelens.polarrecorder.BuildConfig
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Arrangement
@@ -167,7 +168,7 @@ fun BackupScreen(onBack: () -> Unit) {
         Text("Aggiungi gli intervalli RR di ogni notte (file zip, più grande)")
       }
       OutlinedButton(
-          onClick = { esportaCsv.launch(if (conRr) "biosleep_notti_${LocalDate.now()}.zip" else "biosleep_notti_${LocalDate.now()}.csv") },
+          onClick = { esportaCsv.launch(if (conRr) "noctalix_notti_${LocalDate.now()}.zip" else "noctalix_notti_${LocalDate.now()}.csv") },
           enabled = !inCorso) {
             Text("Esporta")
           }
@@ -228,7 +229,7 @@ fun BackupScreen(onBack: () -> Unit) {
         title = { Text("Ripristinare questo backup?") },
         text = {
           Text(
-              "Backup del ${p.manifest.creato.replace('T', ' ')} (BioSleep ${p.manifest.appVersion}), con ${p.notti} notti.\n\n" +
+              "Backup del ${p.manifest.creato.replace('T', ' ')} (${BuildConfig.APP_NAME} ${p.manifest.appVersion}), con ${p.notti} notti.\n\n" +
                   "Le notti di questo telefono verranno sostituite da quelle del backup, insieme allo stato del coach, al profilo e ai tag.")
         },
         confirmButton = {

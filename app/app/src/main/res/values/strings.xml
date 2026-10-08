@@ -1,4 +1,3 @@
 <resources>
-    <string name="app_name">BioSleep</string>
     <string name="recording_service_description">Records and processes data from Polar devices</string>
 </resources>

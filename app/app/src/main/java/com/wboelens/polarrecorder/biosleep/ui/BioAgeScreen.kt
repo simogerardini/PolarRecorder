@@ -1,5 +1,6 @@
 package com.wboelens.polarrecorder.biosleep.ui
 
+import com.wboelens.polarrecorder.BuildConfig
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.spring
@@ -91,7 +92,7 @@ fun BioAgeScreen(onBack: () -> Unit) {
   Scaffold(
       topBar = {
         TopAppBar(
-            title = { Text("Età BioSleep") },
+            title = { Text("Età ${BuildConfig.APP_NAME}") },
             navigationIcon = {
               IconButton(onClick = onBack) {
                 Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Indietro")

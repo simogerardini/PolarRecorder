@@ -1,5 +1,6 @@
 package com.wboelens.polarrecorder.biosleep.ui
 
+import com.wboelens.polarrecorder.BuildConfig
 import android.Manifest
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -191,10 +192,10 @@ fun ProfiloScreen(onBack: () -> Unit, onApriGare: () -> Unit = {}) {
       val sr = suggerimenti
       when {
         sr?.fcRiposo != null ->
-            Proposta("Mediana delle ultime ${sr.nottiFcRiposo} notti BioSleep: ${sr.fcRiposo} bpm. Se lasci vuoto, il coach usa questa.") {
+            Proposta("Mediana delle ultime ${sr.nottiFcRiposo} notti ${BuildConfig.APP_NAME}: ${sr.fcRiposo} bpm. Se lasci vuoto, il coach usa questa.") {
               fcRiposo = sr.fcRiposo.toString()
             }
-        sr != null -> Nota("Con almeno 5 notti BioSleep l'app propone la FC a riposo misurata (ora ${sr.nottiFcRiposo}).")
+        sr != null -> Nota("Con almeno 5 notti ${BuildConfig.APP_NAME} l'app propone la FC a riposo misurata (ora ${sr.nottiFcRiposo}).")
       }
 
       Text("Volume", style = MaterialTheme.typography.titleSmall)
@@ -289,7 +290,7 @@ fun ProfiloScreen(onBack: () -> Unit, onApriGare: () -> Unit = {}) {
           Text("Consenti la posizione approssimativa")
         }
         if (posizioneNegata) {
-          Nota("Se Android non la chiede più: Impostazioni di Android → App → BioSleep → Autorizzazioni → Posizione.")
+          Nota("Se Android non la chiede più: Impostazioni di Android → App → ${BuildConfig.APP_NAME} → Autorizzazioni → Posizione.")
         }
       }
 

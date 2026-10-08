@@ -1,5 +1,6 @@
 package com.wboelens.polarrecorder.biosleep
 
+import com.wboelens.polarrecorder.BuildConfig
 import android.content.Context
 import android.database.SQLException
 import android.util.Log
@@ -153,7 +154,7 @@ class BioSleepDataSaver(
     try {
       db.writableDatabase
     } catch (e: SQLException) {
-      logState.addLogError("BioSleep: impossibile aprire il database: ${e.message}")
+      logState.addLogError("impossibile aprire il database: ${e.message}")
     }
     // Nessuna notte deve restare aperta: all'avvio del processo (riavvio del servizio, apertura
     // dell'app) le notti rimaste aperte o senza analisi vengono chiuse da NightFinalizeWorker
@@ -235,7 +236,7 @@ class BioSleepDataSaver(
           AutoStopLog.write(appContext, "Ripresa della notte $ripresa dopo un'interruzione")
           EventiNotte.registra(appContext, TipoEvento.RIPRESA, "sessione $ripresa")
         }
-        logState.addLogMessage("BioSleep: dispositivo $deviceId, battiti da $source")
+        logState.addLogMessage("dispositivo $deviceId, battiti da $source")
         val gatt = FasceGatt.isGatt(appContext, deviceId)
         val capacita =
             Capacita(
@@ -266,7 +267,7 @@ class BioSleepDataSaver(
       }
       _isInitialized.value = InitializationState.SUCCESS
     } catch (e: SQLException) {
-      logState.addLogError("BioSleep: impossibile preparare il database: ${e.message}")
+      logState.addLogError("impossibile preparare il database: ${e.message}")
       _isInitialized.value = InitializationState.FAILED
     }
   }
@@ -393,7 +394,7 @@ class BioSleepDataSaver(
         db.insertAcc(accBuffer)
         accBuffer.clear()
       } catch (e: SQLException) {
-        logState.addLogError("BioSleep: errore di scrittura accelerometro: ${e.message}")
+        logState.addLogError("errore di scrittura accelerometro: ${e.message}")
       }
     }
     if (buffer.isEmpty()) {
@@ -403,13 +404,13 @@ class BioSleepDataSaver(
     try {
       db.insertRr(buffer)
       if (!firstBeatLogged) {
-        logState.addLogMessage("BioSleep: primi ${buffer.size} battiti salvati nel database.")
+        logState.addLogMessage("primi ${buffer.size} battiti salvati nel database.")
         firstBeatLogged = true
       }
       buffer.clear()
     } catch (e: SQLException) {
       // Il buffer non viene svuotato: si riprova al prossimo giro
-      logState.addLogError("BioSleep: errore di scrittura sul database: ${e.message}")
+      logState.addLogError("errore di scrittura sul database: ${e.message}")
     }
     lastFlushMs = nowMs
   }
@@ -532,7 +533,7 @@ class BioSleepDataSaver(
       try {
         db.closeSession(id, now)
       } catch (e: SQLException) {
-        logState.addLogError("BioSleep: impossibile chiudere la sessione $id: ${e.message}")
+        logState.addLogError("impossibile chiudere la sessione $id: ${e.message}")
       }
     }
     // Analisi, invio a Intervals.icu e coach: in un lavoro protetto, non su un thread qualunque
@@ -579,7 +580,7 @@ class BioSleepDataSaver(
       if (result == null) {
         if (isNewNight) {
           db.deleteSession(sessionId)
-          logState.addLogMessage("BioSleep: sessione $sessionId troppo corta, eliminata.")
+          logState.addLogMessage("sessione $sessionId troppo corta, eliminata.")
         }
         return
       }
@@ -634,7 +635,7 @@ class BioSleepDataSaver(
       NightNotifier.notifySummary(appContext, result.summary, stages, intervalsLine)
     } catch (e: Exception) {
       Log.e(TAG, "Analisi sessione $sessionId fallita", e)
-      logState.addLogError("BioSleep: analisi della sessione $sessionId fallita: ${e.message}")
+      logState.addLogError("analisi della sessione $sessionId fallita: ${e.message}")
     } finally {
       if (isNewNight) analyzing.value = false
     }
@@ -719,7 +720,7 @@ class BioSleepDataSaver(
   private fun formatSummary(s: NightSummary): String {
     fun f(v: Double?, d: Int = 1) = if (v == null) "n/d" else String.format(Locale.ITALY, "%.${d}f", v)
     val hours = (s.endMs - s.startMs) / 3_600_000.0
-    return "BioSleep notte ${s.sessionId}: ${f(hours)} h, ${s.beats} battiti, " +
+    return "${BuildConfig.APP_NAME} notte ${s.sessionId}: ${f(hours)} h, ${s.beats} battiti, " +
         "interruzioni ${s.gaps}, buoni ${f(s.pctGood)} %, corretti ${f(s.pctCorrected)} %, " +
         "scartati ${f(s.pctDropped)} % | FC min ${f(s.hrMin, 0)}, riposo ${f(s.restingHr, 0)}, " +
         "media ${f(s.hrAvg, 0)} bpm | rMSSD ${f(s.rmssd)} ms, SDNN ${f(s.sdnn)} ms, " +
