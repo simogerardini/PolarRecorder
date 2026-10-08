@@ -128,7 +128,7 @@ class SleepDb private constructor(context: Context) :
     if (oldVersion < 5) addStagingSchema(db)
     // v6: caratteristiche per epoca, per la taratura delle fasi
     if (oldVersion < 6) addFeaturesTable(db)
-    // v7: indice di affidabilita' della notte (BioSleepQuality)
+    // v7: indice di affidabilita' della notte (NoctalixQuality)
     if (oldVersion < 7) addQualityColumn(db)
   }
 

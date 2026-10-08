@@ -32,36 +32,22 @@ object IntervalsClient {
   private const val CONNECT_TIMEOUT_MS = 15_000
   private const val READ_TIMEOUT_MS = 20_000
 
-  // Campi personalizzati di benessere: li crea cervello.prepara_account al collegamento
-  const val F_RMSSD = "BioSleepRMSSD"
-  const val F_SDNN = "BioSleepSDNN"
-  const val F_RHR = "BioSleepRHR"
-  const val F_MIN_HR = "BioSleepMinHR"
-  const val F_AVG_HR = "BioSleepAvgHR"
-  const val F_HOURS = "BioSleepHours"
-  const val F_QUALITY = "BioSleepQuality"
-  // Fase 7: fasi del sonno
-  const val F_SLEEP_HOURS = "BioSleepSleepHours"
-  const val F_DEEP = "BioSleepDeepMin"
-  const val F_REM = "BioSleepREMMin"
-  const val F_LIGHT = "BioSleepLightMin"
-  const val F_AWAKE = "BioSleepAwakeMin"
 
   /** Codice campo -> descrizione, per la schermata delle impostazioni. */
   val CUSTOM_FIELDS =
       listOf(
-          F_RMSSD to "rMSSD notte (ms)",
-          F_SDNN to "SDNN notte (ms)",
-          F_RHR to "FC a riposo (bpm)",
-          F_MIN_HR to "FC minima (bpm)",
-          F_AVG_HR to "FC media notte (bpm)",
-          F_HOURS to "Durata registrazione (ore)",
-          F_QUALITY to "Affidabilità: % della notte coperta da battiti validi",
-          F_SLEEP_HOURS to "Sonno effettivo stimato (ore)",
-          F_DEEP to "Sonno profondo stimato (min)",
-          F_REM to "Sonno REM stimato (min)",
-          F_LIGHT to "Sonno leggero stimato (min)",
-          F_AWAKE to "Veglia dopo l'addormentamento (min)",
+          CampiWellness.F_RMSSD to "rMSSD notte (ms)",
+          CampiWellness.F_SDNN to "SDNN notte (ms)",
+          CampiWellness.F_RHR to "FC a riposo (bpm)",
+          CampiWellness.F_MIN_HR to "FC minima (bpm)",
+          CampiWellness.F_AVG_HR to "FC media notte (bpm)",
+          CampiWellness.F_HOURS to "Durata registrazione (ore)",
+          CampiWellness.F_QUALITY to "Affidabilità: % della notte coperta da battiti validi",
+          CampiWellness.F_SLEEP_HOURS to "Sonno effettivo stimato (ore)",
+          CampiWellness.F_DEEP_MIN to "Sonno profondo stimato (min)",
+          CampiWellness.F_REM_MIN to "Sonno REM stimato (min)",
+          CampiWellness.F_LIGHT_MIN to "Sonno leggero stimato (min)",
+          CampiWellness.F_AWAKE_MIN to "Veglia dopo l'addormentamento (min)",
       )
 
   /** La notte appartiene al giorno del risveglio, come per Oura e Garmin. */
@@ -71,19 +57,19 @@ object IntervalsClient {
   fun buildWellness(s: NightSummary, stages: SleepStages?): JSONObject =
       JSONObject().apply {
         if (stages != null && stages.tstMin > 0) {
-          put(F_SLEEP_HOURS, round(stages.tstMin / 60.0, 2))
-          put(F_DEEP, stages.deepMin)
-          put(F_REM, stages.remMin)
-          put(F_LIGHT, stages.lightMin)
-          put(F_AWAKE, stages.wakeMin)
+          put(CampiWellness.F_SLEEP_HOURS, round(stages.tstMin / 60.0, 2))
+          put(CampiWellness.F_DEEP_MIN, stages.deepMin)
+          put(CampiWellness.F_REM_MIN, stages.remMin)
+          put(CampiWellness.F_LIGHT_MIN, stages.lightMin)
+          put(CampiWellness.F_AWAKE_MIN, stages.wakeMin)
         }
-        put(F_RHR, s.restingHr.roundToInt())
-        put(F_MIN_HR, s.hrMin.roundToInt())
-        put(F_AVG_HR, round(s.hrAvg, 1))
-        put(F_HOURS, round((s.endMs - s.startMs) / 3_600_000.0, 2))
-        s.qualityPct?.let { put(F_QUALITY, round(it, 1)) }
-        s.rmssd?.let { put(F_RMSSD, round(it, 1)) }
-        s.sdnn?.let { put(F_SDNN, round(it, 1)) }
+        put(CampiWellness.F_RHR, s.restingHr.roundToInt())
+        put(CampiWellness.F_MIN_HR, s.hrMin.roundToInt())
+        put(CampiWellness.F_AVG_HR, round(s.hrAvg, 1))
+        put(CampiWellness.F_HOURS, round((s.endMs - s.startMs) / 3_600_000.0, 2))
+        s.qualityPct?.let { put(CampiWellness.F_QUALITY, round(it, 1)) }
+        s.rmssd?.let { put(CampiWellness.F_RMSSD, round(it, 1)) }
+        s.sdnn?.let { put(CampiWellness.F_SDNN, round(it, 1)) }
       }
 
   /** Invia il riepilogo di una notte nei campi personalizzati del giorno del risveglio. */

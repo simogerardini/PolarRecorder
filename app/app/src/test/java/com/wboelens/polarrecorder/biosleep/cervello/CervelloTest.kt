@@ -32,7 +32,7 @@ class CervelloTest {
 
   @Test
   fun esitoPrepara() {
-    val e = EsitoPrepara.da("""{"esito":"ok","creati":["BioSleepRMSSD"],"esistenti":["BioSleepSDNN","BioSleepRHR"]}""")
+    val e = EsitoPrepara.da("""{"esito":"ok","creati":["NoctalixRMSSD"],"esistenti":["NoctalixSDNN","NoctalixRHR"]}""")
     assertEquals(EsitoPrepara.OK, e.esito)
     assertEquals(1, e.creati.size)
     assertEquals(EsitoPrepara.PERMESSO_MANCANTE, EsitoPrepara.da("""{"esito":"permesso_mancante","creati":[],"esistenti":[]}""").esito)

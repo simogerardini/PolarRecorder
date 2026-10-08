@@ -1,5 +1,6 @@
 package com.wboelens.polarrecorder.biosleep.ui.allenamento
 
+import com.wboelens.polarrecorder.biosleep.intervals.CampiWellness
 import com.wboelens.polarrecorder.BuildConfig
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -95,9 +96,9 @@ data class DatiOggi(
             val d = PyJson.str(o.get("id"))?.let { runCatching { LocalDate.parse(it) }.getOrNull() } ?: return@mapNotNull null
             NotteBio(
                 d,
-                PyJson.num(o.get("BioSleepRMSSD"))?.v,
-                PyJson.num(o.get("BioSleepAvgHR"))?.v,
-                PyJson.num(o.get("BioSleepSleepHours"))?.v)
+                PyJson.num(o.get(CampiWellness.F_RMSSD))?.v,
+                PyJson.num(o.get(CampiWellness.F_AVG_HR))?.v,
+                PyJson.num(o.get(CampiWellness.F_SLEEP_HOURS))?.v)
           }
       val prontezza = repo.prontezza(oggi)
       return DatiOggi(

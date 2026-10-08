@@ -1,5 +1,6 @@
 package com.wboelens.polarrecorder.biosleep.ui.allenamento
 
+import com.wboelens.polarrecorder.biosleep.intervals.CampiWellness
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -63,7 +64,7 @@ data class DatiGrafici(
       val forma: Map<String, RigaFormaDati> = home.serie.associateBy { it.giorno }
       val wellness = repo.wellness(da, oggi).associateBy { PyJson.str(it.get("id")) ?: "" }
       fun campo(nome: String) = giorni.map { d -> wellness[d.toString()]?.let { PyJson.num(it.get(nome))?.v } }
-      val rmssd = campo("BioSleepRMSSD")
+      val rmssd = campo(CampiWellness.F_RMSSD)
       // Media 7 giorni come il coach: media geometrica (exp della media dei logaritmi), almeno 3 notti
       val rmssd7 =
           giorni.indices.map { i ->
@@ -78,8 +79,8 @@ data class DatiGrafici(
           tsb = giorni.map { d -> forma[d.toString()]?.let { r -> if (r.ctl != null && r.atl != null) r.ctl - r.atl else null } },
           rmssd = rmssd,
           rmssd7 = rmssd7,
-          fc = campo("BioSleepAvgHR"),
-          sonno = campo("BioSleepSleepHours"),
+          fc = campo(CampiWellness.F_AVG_HR),
+          sonno = campo(CampiWellness.F_SLEEP_HOURS),
           rangeHrv = range,
           formaOggi = home.oggi,
       )

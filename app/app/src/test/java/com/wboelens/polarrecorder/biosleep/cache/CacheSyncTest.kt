@@ -39,8 +39,8 @@ class CacheSyncTest {
 
   private val wellness =
       """[{"id":"2026-09-30","ctl":$ctl0,"atl":$atl0},
-          {"id":"2026-10-01","ctl":$ctl1,"atl":$atl1,"BioSleepRMSSD":56,"BioSleepAvgHR":46.4,"BioSleepQuality":99.6},
-          {"id":"2026-10-02","ctl":$ctl2,"atl":$atl2,"BioSleepRMSSD":55.8,"BioSleepAvgHR":48.9}]"""
+          {"id":"2026-10-01","ctl":$ctl1,"atl":$atl1,"NoctalixRMSSD":56,"NoctalixAvgHR":46.4,"NoctalixQuality":99.6},
+          {"id":"2026-10-02","ctl":$ctl2,"atl":$atl2,"NoctalixRMSSD":55.8,"NoctalixAvgHR":48.9}]"""
   private val eventi =
       """[{"id":101,"start_date_local":"2026-10-02T00:00:00","name":"Soglia","icu_training_load":40},
           {"id":102,"start_date_local":"2026-10-05T00:00:00","name":"Lungo","icu_training_load":90},
@@ -81,8 +81,8 @@ class CacheSyncTest {
   fun interiEDecimaliSopravvivonoAllaCache() {
     CacheSync.aggiorna(db, lettore(tutto), oggi, adesso)
     val righe = db.leggi(Tabella.WELLNESS, "2026-10-01", "2026-10-02").map { JsonParser.parseString(it).asJsonObject }
-    assertEquals(true, PyJson.num(righe[0].get("BioSleepRMSSD"))!!.isInt) // 56
-    assertEquals(false, PyJson.num(righe[1].get("BioSleepRMSSD"))!!.isInt) // 55.8
+    assertEquals(true, PyJson.num(righe[0].get("NoctalixRMSSD"))!!.isInt) // 56
+    assertEquals(false, PyJson.num(righe[1].get("NoctalixRMSSD"))!!.isInt) // 55.8
   }
 
   @Test

@@ -1,5 +1,6 @@
 package com.wboelens.polarrecorder.biosleep.readiness
 
+import com.wboelens.polarrecorder.biosleep.intervals.CampiWellness
 import com.google.gson.JsonArray
 import com.google.gson.JsonElement
 import com.google.gson.JsonObject
@@ -16,8 +17,8 @@ data class WellnessBio(
 
 /**
  * Copia di biosleep_history_da_wellness (intervals_coach.py): stessa serie che il coach
- * passa alla baseline. FC a riposo = BioSleepAvgHR (media notturna, come Oura dal 25/09),
- * notti con BioSleepQuality sotto soglia escluse, notti senza il campo incluse.
+ * passa alla baseline. FC a riposo = NoctalixAvgHR (media notturna, come Oura dal 25/09),
+ * notti con NoctalixQuality sotto soglia escluse, notti senza il campo incluse.
  */
 object BioSleepSeries {
   const val QUALITA_MIN = 80.0 // BIOSLEEP_QUALITA_MIN
@@ -61,8 +62,8 @@ object PyJson {
   fun wellnessBio(o: JsonObject) =
       WellnessBio(
           id = str(o.get("id")), date = str(o.get("date")),
-          rmssd = num(o.get("BioSleepRMSSD")), avgHr = num(o.get("BioSleepAvgHR")),
-          quality = num(o.get("BioSleepQuality")), sleepHours = num(o.get("BioSleepSleepHours")))
+          rmssd = num(o.get(CampiWellness.F_RMSSD)), avgHr = num(o.get(CampiWellness.F_AVG_HR)),
+          quality = num(o.get(CampiWellness.F_QUALITY)), sleepHours = num(o.get(CampiWellness.F_SLEEP_HOURS)))
 
   fun wellnessBio(a: JsonArray): List<WellnessBio> = a.filter { it.isJsonObject }.map { wellnessBio(it.asJsonObject) }
 

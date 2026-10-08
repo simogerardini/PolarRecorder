@@ -585,7 +585,7 @@ class BioSleepDataSaver(
         return
       }
       // Punto 10: fascia "solo FC" o con RR non affidabili -> niente HRV (non salvata, non inviata:
-      // BioSleepRMSSD assente su Intervals.icu e il coach esclude la notte dalla baseline HRV)
+      // NoctalixRMSSD assente su Intervals.icu e il coach esclude la notte dalla baseline HRV)
       val statoRr = try { EventiNotte.get(appContext).statoRr(sessionId) } catch (e: SQLException) { null }
       val senzaHrv = statoRr == StatoRr.SOLO_FC.name || statoRr == StatoRr.NON_AFFIDABILI.name
       if (senzaHrv) {

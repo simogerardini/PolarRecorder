@@ -35,7 +35,7 @@ data class NightSummary(
     /**
      * Affidabilita' della notte (0-100): percentuale della durata della registrazione coperta
      * da battiti validi. Scende sia con gli artefatti sia con le disconnessioni (un'ora senza
-     * dati su 8 = circa 87%). Inviata a Intervals.icu come BioSleepQuality.
+     * dati su 8 = circa 87%). Inviata a Intervals.icu come NoctalixQuality.
      */
     val qualityPct: Double? = null,
 )
