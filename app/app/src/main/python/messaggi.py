@@ -37,6 +37,7 @@ CATALOGO = [
     ("dato_biometrico_vecchio", r"ultimo dato biometrico di (?P<giorni>\d+) giorni fa"),
     # ── settimana e forza ─────────────────────────────────────────────────────────
     ("settimana_senza_spazio", r"(?P<seduta>.+): non c'e' spazio nella settimana tipo"),
+    ("ripianificata_per_assenza", rf"settimana ripianificata da oggi: assenza a calendario dal {_D}"),
     ("forza_tolta_tempo", _D.join([r"forza del ", r" tolta: meno di 30' disponibili: nessuna scheda di forza fino a 20'"])),
     ("forza_tolta_profilo", _D.join([r"forza del ", r" tolta: nessuna scheda compatibile con attrezzatura e livello del profilo"])),
     ("companion_prevenzione", r"companion sostituita con (?P<scheda>.+) \(prevenzione (?P<zona>\w+)\)"),

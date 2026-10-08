@@ -2049,12 +2049,13 @@ AEROBICHE_PERPETUO = {
 }
 
 
-def settimana_perpetua(pos, cfg=None, disponibili=None):
+def settimana_perpetua(pos, cfg=None, disponibili=None, escludi=None):
     w = pos.get("idx_fase", 0)
     cfg = cfg or SETTIMANA_TIPO
     if disponibili is None:
         riposo = _GG.index(cfg["riposo"]) if cfg.get("riposo") else None
         disponibili = {g for g in range(7) if g != riposo and DISPONIBILITA.get(g, 1) != 0}
+    disponibili = set(disponibili) - set(escludi or ())
     lc = _GG.index(cfg["lungo_corsa"])
     out = []
     test_da_fare = TEST_PROSSIMO if w == 0 else None   # 06/10/2026: test solo in W1
@@ -3220,7 +3221,9 @@ def costruisci_settimana(lunedi, races, oura_hist, wellness, activities,
     if pos["fase"] == "senza_gara":
         # 04/10/2026: ciclo continuo con settimana tipo e durate proprie (PERPETUO).
         # Niente Word ne' dimensionamento per quote: solo i freni biometrici sul volume.
-        sedute = settimana_perpetua(pos)
+        # 08/10/2026 (Parte 5): i giorni di assenza a calendario escono gia' dalla settimana
+        # tipo, cosi' le sedute chiave si ricollocano nei giorni rimasti (prima si toglievano).
+        sedute = settimana_perpetua(pos, escludi=indisp)
         for m in _MOTIVI_SETTIMANA:
             if m not in mod["motivi"]:
                 mod["motivi"].append(m)
@@ -3648,6 +3651,25 @@ def blocchi_riepilogo(oggi_str, pos, baseline, mod, wellness, activities, eventi
     }
 
 
+
+def assenze_nuove(lunedi, oggi):
+    """08/10/2026 (Parte 5). Primo giorno (YYYY-MM-DD) da oggi in poi coperto da
+    un'assenza a calendario (HOLIDAY/SICK/INJURED) in cui c'e' ancora una seduta del
+    coach (sw: o coach:), oppure None. Una GET degli eventi della settimana."""
+    giorni = [(_dt(lunedi) + timedelta(days=i)).strftime("%Y-%m-%d") for i in range(7)]
+    eventi = get_events(giorni[0], giorni[-1])
+    assenti = [g for g in giorni_non_disponibili(
+        [e for e in eventi if (e.get("category") or "") in CATEGORIE_INDISPONIBILE], giorni)
+        if giorni[g] >= oggi]
+    if not assenti:
+        return None
+    nostri = {(e.get("start_date_local") or "")[:10] for e in eventi
+              if (e.get("external_id") or "").startswith(("sw:", "coach:"))
+              and e.get("category") == "WORKOUT"}
+    toccati = sorted(giorni[g] for g in assenti if giorni[g] in nostri)
+    return toccati[0] if toccati else None
+
+
 def esegui_auto(modo="auto", dry=False, force=False, lunedi=None, senza_attesa=False):
     """Un avvio del coach. Ritorna (esito, piano): esito in "pianificata" | "fatto" |
     "attesa" | "gia_fatto"; piano = la settimana costruita (solo per "pianificata").
@@ -3680,10 +3702,20 @@ def esegui_auto(modo="auto", dry=False, force=False, lunedi=None, senza_attesa=F
     _MOTIVI_CALDO.clear()
     _MOTIVI_DETP.clear()
     try:
-        if modo == "giornaliero":
+        assenza = assenze_nuove(lunedi, oggi) if modo == "giornaliero" else None
+        if modo == "giornaliero" and not assenza:
             esito = esegui_giornaliero(dry, force, pre_lock=prendi_lock)
             return esito, None
+        if assenza:
+            # 08/10/2026 (Parte 5): un'assenza nuova copre sedute gia' scritte da oggi in
+            # poi -> la corsa del mattino ripianifica la settimana da oggi (il passato non si
+            # riscrive) invece di rimodulare solo la seduta del giorno.
+            print(f"  Assenza a calendario dal {assenza}: ripianifico la settimana da oggi")
         piano = esegui(lunedi, dry, pre_lock=prendi_lock, senza_attesa=senza_attesa)
+        if assenza and isinstance(piano, dict):
+            m = f"settimana ripianificata da oggi: assenza a calendario dal {assenza}"
+            if m not in piano["mod"]["motivi"]:
+                piano["mod"]["motivi"].append(m)
     except Exception:
         # Se non e' finito niente a calendario, il lock si toglie e il prossimo avvio
         # riprova. Se invece qualcosa e' gia' stato scritto il lock resta.
