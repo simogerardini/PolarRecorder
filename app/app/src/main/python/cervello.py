@@ -59,18 +59,18 @@ cs = None
 # rilanciare senza effetti). Definizione presa dal suo account (custom-item reali):
 # INPUT_FIELD numerico privato; qui in piu' unita' e descrizione, utili a chi li legge.
 CAMPI_BIOSLEEP = [
-    {"code": "BioSleepRMSSD",      "units": "ms",  "desc": "rMSSD media delle finestre di 5' valide nel sonno"},
-    {"code": "BioSleepSDNN",       "units": "ms",  "desc": "SDNN della notte"},
-    {"code": "BioSleepRHR",        "units": "bpm", "desc": "FC a riposo: media dei 5' piu' bassi"},
-    {"code": "BioSleepMinHR",      "units": "bpm", "desc": "FC minima (1o percentile)"},
-    {"code": "BioSleepAvgHR",      "units": "bpm", "desc": "FC media notturna"},
-    {"code": "BioSleepHours",      "units": "h",   "desc": "durata della registrazione"},
-    {"code": "BioSleepSleepHours", "units": "h",   "desc": "sonno totale"},
-    {"code": "BioSleepDeepMin",    "units": "min", "desc": "sonno profondo"},
-    {"code": "BioSleepREMMin",     "units": "min", "desc": "sonno REM"},
-    {"code": "BioSleepLightMin",   "units": "min", "desc": "sonno leggero"},
-    {"code": "BioSleepAwakeMin",   "units": "min", "desc": "veglia durante la notte"},
-    {"code": "BioSleepQuality",    "units": "%",   "desc": "copertura della registrazione con battiti validi"},
+    {"code": "BioSleepRMSSD",      "nome": "rMSSD",      "units": "ms",  "desc": "rMSSD media delle finestre di 5' valide nel sonno"},
+    {"code": "BioSleepSDNN",       "nome": "SDNN",       "units": "ms",  "desc": "SDNN della notte"},
+    {"code": "BioSleepRHR",        "nome": "RHR",        "units": "bpm", "desc": "FC a riposo: media dei 5' piu' bassi"},
+    {"code": "BioSleepMinHR",      "nome": "Min HR",      "units": "bpm", "desc": "FC minima (1o percentile)"},
+    {"code": "BioSleepAvgHR",      "nome": "Avg HR",      "units": "bpm", "desc": "FC media notturna"},
+    {"code": "BioSleepHours",      "nome": "Recording h",      "units": "h",   "desc": "durata della registrazione"},
+    {"code": "BioSleepSleepHours", "nome": "Sleep h", "units": "h",   "desc": "sonno totale"},
+    {"code": "BioSleepDeepMin",    "nome": "Deep min",    "units": "min", "desc": "sonno profondo"},
+    {"code": "BioSleepREMMin",     "nome": "REM min",     "units": "min", "desc": "sonno REM"},
+    {"code": "BioSleepLightMin",   "nome": "Light min",   "units": "min", "desc": "sonno leggero"},
+    {"code": "BioSleepAwakeMin",   "nome": "Awake min",   "units": "min", "desc": "veglia durante la notte"},
+    {"code": "BioSleepQuality",    "nome": "Quality",    "units": "%",   "desc": "copertura della registrazione con battiti validi"},
 ]
 
 
@@ -84,7 +84,7 @@ def _intestazioni(cfg):
 
 
 def prepara_account(config_json):
-    """Crea su Intervals.icu i campi wellness BioSleep mancanti. Da chiamare dopo il
+    """Crea su Intervals.icu i campi wellness dell'app mancanti. Da chiamare dopo il
     collegamento (e a ogni aggiornamento dell'app: non tocca i campi gia' presenti).
     Risultato JSON: {"esito": "ok"|"permesso_mancante"|"errore", "creati": [codici],
     "esistenti": [codici], "errore": "..."}. "permesso_mancante" = il token non ha lo
@@ -111,9 +111,12 @@ def prepara_account(config_json):
             if campo["code"] in presenti:
                 out["esistenti"].append(campo["code"])
                 continue
-            corpo = {"type": "INPUT_FIELD", "visibility": "PRIVATE", "name": campo["code"],
-                     "description": campo["desc"],
-                     "content": {"code": campo["code"], "name": campo["code"], "type": "numeric",
+            # 08/10/2026 (rinomina NoctaliX): nome visibile "NoctaliX <etichetta>" dalla costante
+            # unica del marchio; il codice resta l'identificatore tecnico del dato.
+            visibile = f"{NOME_APP} {campo['nome']}"
+            corpo = {"type": "INPUT_FIELD", "visibility": "PRIVATE", "name": visibile,
+                     "description": f"{NOME_APP}: {campo['desc']}",
+                     "content": {"code": campo["code"], "name": visibile, "type": "numeric",
                                  "units": campo["units"], "number_format": ".1f", "gauge": True,
                                  "color": "#333333", "text_align": "center", "text_wrap": "no",
                                  "options": [], "min": None, "max": None}}
