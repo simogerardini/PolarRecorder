@@ -65,7 +65,7 @@ import com.wboelens.polarrecorder.managers.PreferencesManager
 import com.wboelens.polarrecorder.services.RecordingServiceConnection
 import com.wboelens.polarrecorder.ui.components.LogMessageSnackbarHost
 import com.wboelens.polarrecorder.ui.components.SnackbarMessageDisplayer
-import com.wboelens.polarrecorder.ui.theme.AppTheme
+import com.wboelens.polarrecorder.ui.theme.NoctalixTheme
 import com.wboelens.polarrecorder.viewModels.LogViewModel
 import com.wboelens.polarrecorder.viewModels.ViewModelFactory
 
@@ -198,7 +198,7 @@ class MainActivity : ComponentActivity() {
     permissionManager = PermissionManager(this)
 
     setContent {
-      AppTheme {
+      NoctalixTheme {
         val navController = rememberNavController()
 
         // Get the snackbarHostState from the ErrorHandler

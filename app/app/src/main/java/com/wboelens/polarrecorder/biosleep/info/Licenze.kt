@@ -21,6 +21,8 @@ object Licenze {
   val COMPONENTI =
       listOf(
           Componente("Polar BLE SDK", "Collegamento alla fascia Polar H10.", "Polar SDK License", "https://github.com/polarofficial/polar-ble-sdk", "polar_ble_sdk.txt"),
+          Componente("Inter", "Carattere del testo.", "SIL OFL 1.1", "https://github.com/rsms/inter", "inter_ofl.txt"),
+          Componente("Space Grotesk", "Carattere dei titoli.", "SIL OFL 1.1", "https://github.com/floriankarsten/space-grotesk", "space_grotesk_ofl.txt"),
           Componente("Chaquopy", "Python dentro l'app, per il coach.", "MIT", "https://github.com/chaquo/chaquopy", "chaquopy.txt"),
           Componente("Python", "Interprete del coach.", "PSF License", "https://www.python.org", "python.txt"),
           Componente("requests", "Chiamate a Intervals.icu e Open-Meteo dal coach.", "Apache 2.0", "https://github.com/psf/requests", "apache-2.0.txt"),

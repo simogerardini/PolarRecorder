@@ -69,8 +69,8 @@ object ColoriBio {
   val verde = Color(0xFF2E7D32)
   val giallo = Color(0xFFF9A825)
   val arancio = Color(0xFFEF6C00)
-  val rosso = Color(0xFFC62828)
-  val blu = Color(0xFF1565C0)
+  val rosso = Color(0xFFEF485B) // coral del sito
+  val blu = Color(0xFF39A5C8) // azure del sito
   val grigio = Color(0xFF757575)
 
   val ctl = Color(0xFF1E88E5)
