@@ -433,7 +433,7 @@ NOCTALIX_NOTTI_MIN = 14   # sotto queste notti la baseline NoctaliX non e' affid
 
 def storia_biometrica(wellness, tag_giorni=None):
     """(serie, fonte) per la banda, dalla wellness di Intervals.icu. NoctaliX (campi
-    BioSleep*) decide solo con >= NOCTALIX_NOTTI_MIN notti valide; prima valgono i campi
+    Noctalix*) decide solo con >= NOCTALIX_NOTTI_MIN notti valide; prima valgono i campi
     standard (hrv/restingHR, sincronizzati da Oura o Garmin). Mai le due serie insieme:
     fascia e anello/orologio hanno livelli assoluti diversi."""
     # 05/10/2026: tag di giorno dell'app sulla serie (esclusione dei confondenti)

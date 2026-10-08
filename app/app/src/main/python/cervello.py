@@ -44,9 +44,10 @@ ricaricati a ogni avvio perche' l'interprete resta vivo nel processo dell'app e 
 variabili globali di un run non devono passare al successivo.
 """
 from marchio import NOME_APP
+import campi
 import messaggi   # 07/10/2026 (punto 13a): codici dei messaggi per l'app
 
-VERSIONE = "2026.10.07-13a"   # anche nel LEGGIMI del pacchetto
+VERSIONE = "2026.10.08-noctalix"   # anche nel LEGGIMI del pacchetto
 import contextlib, importlib, io, json, os, re, sys, traceback
 
 _VARIABILI_ESTERNE = ("GH_TOKEN", "GITHUB_REPOSITORY", "TELEGRAM_TOKEN", "TELEGRAM_CHAT_ID")
@@ -58,20 +59,7 @@ cs = None
 # mano; per chi installa l'app li crea prepara_account(), solo quelli mancanti (si puo'
 # rilanciare senza effetti). Definizione presa dal suo account (custom-item reali):
 # INPUT_FIELD numerico privato; qui in piu' unita' e descrizione, utili a chi li legge.
-CAMPI_WELLNESS = [
-    {"code": "BioSleepRMSSD",      "nome": "rMSSD",      "units": "ms",  "desc": "rMSSD media delle finestre di 5' valide nel sonno"},
-    {"code": "BioSleepSDNN",       "nome": "SDNN",       "units": "ms",  "desc": "SDNN della notte"},
-    {"code": "BioSleepRHR",        "nome": "RHR",        "units": "bpm", "desc": "FC a riposo: media dei 5' piu' bassi"},
-    {"code": "BioSleepMinHR",      "nome": "Min HR",      "units": "bpm", "desc": "FC minima (1o percentile)"},
-    {"code": "BioSleepAvgHR",      "nome": "Avg HR",      "units": "bpm", "desc": "FC media notturna"},
-    {"code": "BioSleepHours",      "nome": "Recording h",      "units": "h",   "desc": "durata della registrazione"},
-    {"code": "BioSleepSleepHours", "nome": "Sleep h", "units": "h",   "desc": "sonno totale"},
-    {"code": "BioSleepDeepMin",    "nome": "Deep min",    "units": "min", "desc": "sonno profondo"},
-    {"code": "BioSleepREMMin",     "nome": "REM min",     "units": "min", "desc": "sonno REM"},
-    {"code": "BioSleepLightMin",   "nome": "Light min",   "units": "min", "desc": "sonno leggero"},
-    {"code": "BioSleepAwakeMin",   "nome": "Awake min",   "units": "min", "desc": "veglia durante la notte"},
-    {"code": "BioSleepQuality",    "nome": "Quality",    "units": "%",   "desc": "copertura della registrazione con battiti validi"},
-]
+CAMPI_WELLNESS = campi.CAMPI   # 08/10/2026: elenco unico in campi.py (codici Noctalix*)
 
 
 def _intestazioni(cfg):

@@ -4,9 +4,10 @@ BIOMETRIA — banda biometrica HRV/FC a riposo e stato di forma (cervello Noctal
 
 Estratto MECCANICAMENTE da intervals_coach.py (03/10/2026): calc_baseline_biometrici (la
 formula affinata nel tempo, scelta da Simone come unica banda), stato_forma e l'adattatore
-della serie NoctaliX (campi wellness BioSleep* su Intervals.icu). Stessa formula della
+della serie NoctaliX (campi wellness Noctalix* su Intervals.icu, campi.py). Stessa formula della
 prontezza mostrata nell'app. Codice copiato senza modifiche; test in test_biometria.py.
 """
+import campi     # 08/10/2026: codici dei campi wellness (elenco unico)
 import math, os
 from collections import defaultdict
 from datetime import datetime, timedelta
@@ -15,7 +16,7 @@ from sedute import now_local
 
 
 
-# MODIFICA (02/10/2026): BioSleepQuality = % della registrazione coperta da battiti validi.
+# MODIFICA (02/10/2026): il campo qualita' (oggi NoctalixQuality) = % della registrazione coperta da battiti validi.
 # Sotto soglia la notte resta fuori dalla serie: un rMSSD da artefatti/disconnessioni
 # sarebbe letto come affaticamento. Notti senza il campo (registrate prima che esistesse)
 # restano nella serie, altrimenti si perde lo storico.
@@ -23,7 +24,7 @@ NOCTALIX_QUALITA_MIN   = 80
 
 def noctalix_history_da_wellness(wellness, oura_history=None):
     """Serie NoctaliX nello stesso formato di get_oura_history, per calc_baseline_biometrici.
-    Giorno senza BioSleepRMSSD valido = saltato (mai zero). Tag confondenti presi da Oura."""
+    Giorno senza rMSSD valido (campi.CODICE['rmssd']) = saltato (mai zero). Tag confondenti presi da Oura."""
     tags = {g.get("data"): g.get("tags") for g in (oura_history or [])
             if isinstance(g, dict) and g.get("data") and g.get("tags")}
     num = lambda v: v if isinstance(v, (int, float)) and v > 0 else None
@@ -32,14 +33,14 @@ def noctalix_history_da_wellness(wellness, oura_history=None):
         if not isinstance(w, dict):
             continue
         d = str(w.get("id") or w.get("date") or "")[:10]
-        hrv = num(w.get("BioSleepRMSSD"))
+        hrv = num(w.get(campi.CODICE["rmssd"]))
         if not d or hrv is None:
             continue
-        q = w.get("BioSleepQuality")
+        q = w.get(campi.CODICE["quality"])
         if isinstance(q, (int, float)) and q < NOCTALIX_QUALITA_MIN:
             continue
-        sonno = num(w.get("BioSleepSleepHours"))
-        g = {"data": d, "hrv_ms": hrv, "resting_hr": num(w.get("BioSleepAvgHR")),
+        sonno = num(w.get(campi.CODICE["sleep_hours"]))
+        g = {"data": d, "hrv_ms": hrv, "resting_hr": num(w.get(campi.CODICE["avg_hr"])),
              "sleep_h": round(sonno, 1) if sonno else None}
         if tags.get(d):
             g["tags"] = list(tags[d])
