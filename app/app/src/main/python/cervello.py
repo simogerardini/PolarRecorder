@@ -44,6 +44,9 @@ ricaricati a ogni avvio perche' l'interprete resta vivo nel processo dell'app e 
 variabili globali di un run non devono passare al successivo.
 """
 from marchio import NOME_APP
+import messaggi   # 07/10/2026 (punto 13a): codici dei messaggi per l'app
+
+VERSIONE = "2026.10.07-13a"   # anche nel LEGGIMI del pacchetto
 import contextlib, importlib, io, json, os, re, sys, traceback
 
 _VARIABILI_ESTERNE = ("GH_TOKEN", "GITHUB_REPOSITORY", "TELEGRAM_TOKEN", "TELEGRAM_CHAT_ID")
@@ -843,6 +846,8 @@ def esegui_app(config_json):
                     if tag_scartati:
                         righe.append("tag sconosciuti ignorati: " + ", ".join(sorted(set(tag_scartati))))
                     rie["avvisi"] = "\n".join(x for x in [rie.get("avvisi") or ""] + righe if x)
+                # 07/10/2026 (punto 13a): messaggi con codice e valori, per la traduzione
+                rie["messaggi"] = messaggi.messaggi_riepilogo(rie, out["notifiche"])
                 with open(percorso + ".tmp", "w", encoding="utf-8") as f:
                     f.write(json.dumps(rie, ensure_ascii=False))
                 os.replace(percorso + ".tmp", percorso)
@@ -862,6 +867,8 @@ def esegui_app(config_json):
                 os.remove(os.path.join(cartella, "log", n))
         except OSError:
             pass
+    out["messaggi"] = [messaggi.codifica(n, "notifica") for n in out["notifiche"]]   # punto 13a
+    out["versione"] = VERSIONE
     return json.dumps(out, ensure_ascii=False)
 
 
