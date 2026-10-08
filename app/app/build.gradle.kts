@@ -24,7 +24,7 @@ android {
   compileSdk = 36
 
   defaultConfig {
-    applicationId = "it.biosleep.recorder"
+    applicationId = "com.noctalix.app"
     minSdk = 26
     targetSdk = 36
     versionCode = 26
