@@ -15,6 +15,8 @@ config (JSON):
                   ("Ripianifica questa settimana"); le sedute passate non si toccano
   tag             facoltativo: {"giorni": {"YYYY-MM-DD": [chiavi]}, "sedute": {"<id attivita'>": [chiavi]}}
                   vocabolario in coach_settimanale.TAG_GIORNO / TAG_SEDUTA
+  disponibilita_date  facoltativo: {"YYYY-MM-DD": minuti} dal "+" del calendario
+                  (0 = giorno non disponibile; vince sulla settimana tipo)
   posizione       facoltativo: {"lat", "lon"} dal telefono (meteo per i giorni caldi;
                   arrotondata a 2 decimali prima di chiedere le previsioni)
   profilo         facoltativo: {"fc_max", "fc_riposo", "tetto_ore",
@@ -47,7 +49,7 @@ from marchio import NOME_APP
 import campi
 import messaggi   # 07/10/2026 (punto 13a): codici dei messaggi per l'app
 
-VERSIONE = "2026.10.08-noctalix"   # anche nel LEGGIMI del pacchetto
+VERSIONE = "2026.10.08-calendario"   # anche nel LEGGIMI del pacchetto
 import contextlib, importlib, io, json, os, re, sys, traceback
 
 _VARIABILI_ESTERNE = ("GH_TOKEN", "GITHUB_REPOSITORY", "TELEGRAM_TOKEN", "TELEGRAM_CHAT_ID")
@@ -347,6 +349,135 @@ def salva_gara(config_json):
     except Exception as e:
         out["errore"] = f"{type(e).__name__}: {e}"
     return json.dumps(out)
+
+
+# ── PAUSE DAL CALENDARIO (08/10/2026 — "+" sui giorni dell'app) ───────────────────────
+# Ferie, malattia, infortunio: un evento di Intervals.icu di piu' giorni (fine esclusa, come
+# le ferie inserite a mano), che il coach rispetta gia' (giorni senza sedute, ripartenza del
+# ciclo dopo >= 5 giorni, ripianificazione al mattino se copre sedute gia' scritte).
+TIPI_PAUSA = {"ferie": ("HOLIDAY", "Ferie"), "malattia": ("SICK", "Malattia"),
+              "infortunio": ("INJURED", "Infortunio")}
+CATEGORIE_PAUSA = {v[0]: k for k, v in TIPI_PAUSA.items()}
+PAUSA_GIORNI_MAX = 60
+
+
+def salva_pausa(config_json):
+    """Crea (o modifica, con "id") una pausa: {"dal", "al" (YYYY-MM-DD, compresi),
+    "tipo": "ferie"|"malattia"|"infortunio", "nota"}. Risultato: {"esito": "ok"|
+    "valori_non_validi"|"permesso_mancante"|"errore", "id", "ripianifica": true}."""
+    from datetime import datetime, timedelta
+    cfg = json.loads(config_json)
+    out = {"esito": "errore"}
+    try:
+        dal = datetime.strptime(cfg.get("dal") or "", "%Y-%m-%d")
+        al = datetime.strptime(cfg.get("al") or "", "%Y-%m-%d")
+    except ValueError:
+        dal = al = None
+    oggi = _adesso(cfg).replace(hour=0, minute=0, second=0, microsecond=0)
+    errori = []
+    if not dal or not al:
+        errori.append("date nel formato YYYY-MM-DD")
+    elif al < dal:
+        errori.append("la fine viene prima dell'inizio")
+    elif al < oggi:
+        errori.append("la pausa e' gia' finita")
+    elif (al - dal).days + 1 > PAUSA_GIORNI_MAX:
+        errori.append(f"al massimo {PAUSA_GIORNI_MAX} giorni")
+    if cfg.get("tipo") not in TIPI_PAUSA:
+        errori.append("tipo: ferie, malattia o infortunio")
+    if errori:
+        out.update(esito="valori_non_validi", errore="; ".join(errori))
+        return json.dumps(out)
+    cat, etichetta = TIPI_PAUSA[cfg["tipo"]]
+    nota = (cfg.get("nota") or "").strip()[:80]
+    ev = {"category": cat, "start_date_local": dal.strftime("%Y-%m-%dT00:00:00"),
+          "end_date_local": (al + timedelta(days=1)).strftime("%Y-%m-%dT00:00:00"),
+          "name": f"{etichetta} — {nota}" if nota else etichetta,
+          "description": (nota + "\n" if nota else "") + f"Inserita da {NOME_APP}.",
+          "external_id": f"app:pausa:{dal.strftime('%Y-%m-%d')}"}
+    try:
+        http, h, base = _http_icu(cfg)
+        if cfg.get("id"):
+            r = http.put(f"{base}/events/{cfg['id']}", headers=h, json=ev, timeout=30)
+        else:
+            r = http.post(f"{base}/events", headers=h, json=ev, timeout=30)
+        if r.status_code in (401, 403):
+            out["esito"] = "permesso_mancante"
+        elif r.status_code in (200, 201):
+            out.update(esito="ok", id=(r.json() or {}).get("id") or cfg.get("id"), ripianifica=True)
+        else:
+            out["errore"] = f"HTTP {r.status_code} {r.text[:120]}"
+    except Exception as e:
+        out["errore"] = f"{type(e).__name__}: {e}"
+    return json.dumps(out)
+
+
+def _eventi_finestra(cfg, giorni_prima=60, giorni_dopo=GARA_MESI_MAX * 31):
+    from datetime import timedelta
+    http, h, base = _http_icu(cfg)
+    oggi = _adesso(cfg)
+    r = http.get(f"{base}/events", headers=h, timeout=30,
+                 params={"oldest": (oggi - timedelta(days=giorni_prima)).strftime("%Y-%m-%d"),
+                         "newest": (oggi + timedelta(days=giorni_dopo)).strftime("%Y-%m-%d")})
+    return r, http, h, base
+
+
+def elimina_pausa(config_json):
+    """Elimina la pausa {"id"} solo se l'evento e' davvero una pausa (HOLIDAY/SICK/INJURED)."""
+    cfg = json.loads(config_json)
+    out = {"esito": "errore"}
+    try:
+        r, http, h, base = _eventi_finestra(cfg)
+        if r.status_code in (401, 403):
+            out["esito"] = "permesso_mancante"
+            return json.dumps(out)
+        ev = next((e for e in (r.json() or []) if str(e.get("id")) == str(cfg.get("id"))), None)
+        if not ev or (ev.get("category") or "") not in CATEGORIE_PAUSA:
+            out["esito"] = "non_trovata"
+            return json.dumps(out)
+        rd = http.delete(f"{base}/events/{cfg['id']}", headers=h, timeout=30)
+        if rd.status_code in (200, 204):
+            out.update(esito="ok", ripianifica=True)
+        else:
+            out["errore"] = f"HTTP {rd.status_code}"
+    except Exception as e:
+        out["errore"] = f"{type(e).__name__}: {e}"
+    return json.dumps(out)
+
+
+def pause(config_json):
+    """Pause in corso e future per il calendario dell'app: id, dal, al (compresi), tipo,
+    nota, dall_app (creata dal "+" o inserita a mano su Intervals.icu)."""
+    from datetime import datetime, timedelta
+    cfg = json.loads(config_json)
+    out = {"esito": "errore", "pause": []}
+    try:
+        r, _, _, _ = _eventi_finestra(cfg)
+        if r.status_code in (401, 403):
+            out["esito"] = "permesso_mancante"
+            return json.dumps(out)
+        oggi = _adesso(cfg).strftime("%Y-%m-%d")
+        for e in r.json() or []:
+            tipo = CATEGORIE_PAUSA.get(e.get("category") or "")
+            if not tipo:
+                continue
+            dal = (e.get("start_date_local") or "")[:10]
+            fine_raw = e.get("end_date_local") or ""
+            fine = datetime.strptime(fine_raw[:10], "%Y-%m-%d") if fine_raw else datetime.strptime(dal, "%Y-%m-%d")
+            if fine_raw and fine_raw[11:19] in ("", "00:00:00") and fine_raw[:10] > dal:
+                fine -= timedelta(days=1)
+            al = fine.strftime("%Y-%m-%d")
+            if al < oggi:
+                continue
+            descr = (e.get("description") or "").split("\nInserita da")[0].strip()
+            out["pause"].append({"id": e.get("id"), "dal": dal, "al": al, "tipo": tipo,
+                                 "nota": "" if descr.startswith("Inserita da") else descr,
+                                 "dall_app": (e.get("external_id") or "").startswith("app:pausa:")})
+        out["pause"].sort(key=lambda x: x["dal"])
+        out["esito"] = "ok"
+    except Exception as e:
+        out["errore"] = f"{type(e).__name__}: {e}"
+    return json.dumps(out, ensure_ascii=False)
 
 
 def elimina_gara(config_json):
@@ -718,7 +849,7 @@ def esegui_app(config_json):
     # mano che raccoglie dati) valgono piu' di quelle su Intervals.icu; disponibilita' per
     # giorno in minuti (0 = non disponibile); tetto ore cardio settimanale.
     for k in ("FCMAX", "FCREST", "FC_DA_APP", "MAX_ORE_CARDIO_SETT", "DISPONIBILITA", "SETTIMANA_TIPO",
-              "PALESTRA", "CALDO", "DETP"):
+              "PALESTRA", "CALDO", "DETP", "DISPONIBILITA_DATE"):
         os.environ.pop(k, None)
     prof = cfg.get("profilo") or {}
     if prof.get("fc_max") and prof.get("fc_riposo"):
@@ -728,6 +859,8 @@ def esegui_app(config_json):
         os.environ["MAX_ORE_CARDIO_SETT"] = str(float(prof["tetto_ore"]))
     if prof.get("disponibilita"):
         os.environ["DISPONIBILITA"] = json.dumps(prof["disponibilita"])
+    if cfg.get("disponibilita_date"):   # 08/10/2026: minuti per data dal "+" del calendario
+        os.environ["DISPONIBILITA_DATE"] = json.dumps(cfg["disponibilita_date"])
     if prof.get("detp"):          # 07/10/2026: CORE 2 e protocollo DETP (punto 11)
         os.environ["DETP"] = json.dumps(prof["detp"])
     if prof.get("caldo"):         # 06/10/2026: preferenze per i giorni caldi (punto 7)

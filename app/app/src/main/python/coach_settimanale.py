@@ -139,6 +139,11 @@ FCREST         = int(os.getenv("FCREST", 42))
 FC_DA_APP      = os.getenv("FC_DA_APP", "0") == "1"
 # Disponibilita' per giorno dal profilo dell'app: minuti massimi, 0 = non disponibile.
 _GIORNI_ABBR   = ("lun", "mar", "mer", "gio", "ven", "sab", "dom")
+# 08/10/2026 ("+" sul calendario): minuti disponibili per una DATA precisa
+# {"YYYY-MM-DD": minuti}, 0 = non disponibile. Ha la precedenza sulla settimana tipo.
+DISPONIBILITA_DATE = {str(k): int(v) for k, v in
+                      json.loads(os.getenv("DISPONIBILITA_DATE", "{}") or "{}").items()
+                      if isinstance(v, (int, float)) and v >= 0}
 DISPONIBILITA  = {_GIORNI_ABBR.index(k): int(v) for k, v in
                   json.loads(os.getenv("DISPONIBILITA", "{}") or "{}").items()
                   if k in _GIORNI_ABBR and isinstance(v, (int, float))}
@@ -2049,12 +2054,14 @@ AEROBICHE_PERPETUO = {
 }
 
 
-def settimana_perpetua(pos, cfg=None, disponibili=None):
+def settimana_perpetua(pos, cfg=None, disponibili=None, escludi=None, disp=None):
     w = pos.get("idx_fase", 0)
     cfg = cfg or SETTIMANA_TIPO
     if disponibili is None:
         riposo = _GG.index(cfg["riposo"]) if cfg.get("riposo") else None
-        disponibili = {g for g in range(7) if g != riposo and DISPONIBILITA.get(g, 1) != 0}
+        d = DISPONIBILITA if disp is None else disp     # 08/10/2026: con le date del "+"
+        disponibili = {g for g in range(7) if g != riposo and d.get(g, 1) != 0}
+    disponibili = set(disponibili) - set(escludi or ())
     lc = _GG.index(cfg["lungo_corsa"])
     out = []
     test_da_fare = TEST_PROSSIMO if w == 0 else None   # 06/10/2026: test solo in W1
@@ -2172,6 +2179,16 @@ def applica_disponibilita(sedute_sett, disp):
                     s["note"].append(f"accorciata alla disponibilita' del giorno ({maxm}')")
         for s in sorted(del_g, key=lambda x: x["prio"], reverse=True):
             if ecc <= 0:
+                break
+            # 08/10/2026 ("+" sul calendario): l'ultima seduta cardio del giorno non si toglie
+            # se nei minuti rimasti ci sta una versione aerobica di almeno 20': si declassa.
+            altre_cardio = [x for x in del_g if x is not s and x["durata"] > 0 and x["famiglia"] != "forza"]
+            spazio = s["durata"] - ecc
+            if s["famiglia"] != "forza" and not altre_cardio and spazio >= 20:
+                s.update(durata=spazio, qualita=False, declassata=True)
+                s["min"] = min(s["min"], spazio)
+                s["note"].append(f"aerobica di {spazio}': non c'era tempo per la seduta piena ({maxm}')")
+                ecc = 0
                 break
             ecc -= s["durata"]
             s["durata"] = 0
@@ -2635,6 +2652,41 @@ def applica_detp(sedute_sett, giorni, pos, mod, races, indisp):
                 _MOTIVI_DETP.append(f"DETP: heat block il {giorni[g]}")
             break
     return sedute_sett
+
+
+
+# ═════════════════════════════════════════════════════════════════════════════
+# 4h. DISPONIBILITA' PER DATA (08/10/2026 — "+" sul calendario dell'app)
+# ═════════════════════════════════════════════════════════════════════════════
+def disponibilita_settimana(giorni):
+    """{indice del giorno: minuti} della settimana: settimana tipo del profilo, con le date
+    del "+" che la sostituiscono (anche per riaprire un giorno che il profilo chiude)."""
+    out = dict(DISPONIBILITA)
+    for g, d in enumerate(giorni):
+        if d in DISPONIBILITA_DATE:
+            out[g] = DISPONIBILITA_DATE[d]
+    return out
+
+
+def rimodula_per_disponibilita(eventi_oggi, minuti):
+    """Corsa del mattino con minuti propri per oggi: [(azione, evento, minuti|None)].
+    0 -> togli tutto. Altrimenti le sedute si tengono in ordine finche' stanno nei minuti;
+    quella che sfora si accorcia ai minuti rimasti (se ne restano almeno 15), le altre si
+    tolgono. Nessuna azione se i minuti bastano."""
+    out, resto = [], minuti
+    for ev in eventi_oggi:
+        dur = round((ev.get("moving_time") or 0) / 60)
+        if minuti == 0 or resto <= 0:
+            out.append(("togli", ev, None))
+        elif dur <= resto:
+            resto -= dur
+        elif resto >= 15:
+            out.append(("accorcia", ev, resto))
+            resto = 0
+        else:
+            out.append(("togli", ev, None))
+            resto = 0
+    return out
 
 
 def scelta_seduta(s):
@@ -3211,7 +3263,14 @@ def costruisci_settimana(lunedi, races, oura_hist, wellness, activities,
 
     indisp = giorni_non_disponibili(eventi_settimana or [], giorni)
     # 04/10/2026: giorni a 0 minuti nella disponibilita' del profilo = non disponibili
-    indisp |= {g for g, m in DISPONIBILITA.items() if m == 0}
+    # 08/10/2026 ("+" sul calendario): le date con minuti propri vincono sulla settimana tipo
+    disp_sett = disponibilita_settimana(giorni)
+    indisp |= {g for g, m in disp_sett.items() if m == 0}
+    motivi_date = []
+    for g, d in enumerate(giorni):
+        if d in DISPONIBILITA_DATE:
+            m = DISPONIBILITA_DATE[d]
+            motivi_date.append(f"{d}: non disponibile" if m == 0 else f"{d}: solo {m}' disponibili")
 
     ctx = {"zone": zone or zone_karvonen(),
            "pace100": pace100 or swim_pace_sec_100m(activities),
@@ -3220,7 +3279,9 @@ def costruisci_settimana(lunedi, races, oura_hist, wellness, activities,
     if pos["fase"] == "senza_gara":
         # 04/10/2026: ciclo continuo con settimana tipo e durate proprie (PERPETUO).
         # Niente Word ne' dimensionamento per quote: solo i freni biometrici sul volume.
-        sedute = settimana_perpetua(pos)
+        # 08/10/2026 (Parte 5): i giorni di assenza a calendario escono gia' dalla settimana
+        # tipo, cosi' le sedute chiave si ricollocano nei giorni rimasti (prima si toglievano).
+        sedute = settimana_perpetua(pos, escludi=indisp, disp=disp_sett)
         for m in _MOTIVI_SETTIMANA:
             if m not in mod["motivi"]:
                 mod["motivi"].append(m)
@@ -3257,7 +3318,10 @@ def costruisci_settimana(lunedi, races, oura_hist, wellness, activities,
     for m in _MOTIVI_SETTIMANA:
         if m.startswith("forza del ") and m not in mod["motivi"]:
             mod["motivi"].append(m)
-    sedute = applica_disponibilita(sedute, DISPONIBILITA)
+    sedute = applica_disponibilita(sedute, disp_sett)
+    for m in motivi_date:
+        if m not in mod["motivi"]:
+            mod["motivi"].append(m)
     sedute = applica_tetto_ore(sedute, MAX_ORE_CARDIO)
     info_carico = limita_tss(sedute, activities, lunedi, forma, pos)
     if pos["fase"] == "senza_gara":
@@ -3436,7 +3500,29 @@ def esegui_giornaliero(dry=False, force=False, pre_lock=None):
             azioni.append("brick alleggerito: corsa di qualita' di ieri oltre il 125% del TSS pianificato")
     eff_tag = effetti_tag(oggi, oggi, TAG_GIORNI, TAG_SEDUTE, activities)
     meteo_oggi = giorno_caldo(oggi)
+    # 08/10/2026 ("+" sul calendario): minuti propri per oggi -> si applicano per primi
+    azioni_disp = {}
+    if oggi in DISPONIBILITA_DATE:
+        minuti_oggi = DISPONIBILITA_DATE[oggi]
+        for azione, ev_d, minuti in rimodula_per_disponibilita(coach, minuti_oggi):
+            azioni_disp[id(ev_d)] = (azione, minuti)
+        m = f"{oggi}: non disponibile" if minuti_oggi == 0 else f"{oggi}: solo {minuti_oggi}' disponibili"
+        if azioni_disp and m not in _MOTIVI_TAG:
+            _MOTIVI_TAG.append(m)
     for ev in coach:
+        if id(ev) in azioni_disp:
+            azione, minuti = azioni_disp[id(ev)]
+            nome = ev.get("name") or "seduta"
+            if azione == "togli":
+                cancella_evento(ev, dry)
+                azioni.append(f"{nome} rimossa — disponibilita' del giorno")
+            else:
+                nuovo = {k: ev[k] for k in ("category", "start_date_local", "type", "name",
+                                            "description", "external_id") if k in ev}
+                nuovo["moving_time"] = minuti * 60
+                scrivi_evento(nuovo, ev, dry)
+                azioni.append(f"{nome} accorciata a {minuti}' — disponibilita' del giorno")
+            continue
         sch = palestra.scheda_da_nome(ev.get("name"))
         if (sch and eff_tag["prevenzione"] and not eff_tag["riposo"]
                 and palestra.e_companion(sch)):
@@ -3648,6 +3734,25 @@ def blocchi_riepilogo(oggi_str, pos, baseline, mod, wellness, activities, eventi
     }
 
 
+
+def assenze_nuove(lunedi, oggi):
+    """08/10/2026 (Parte 5). Primo giorno (YYYY-MM-DD) da oggi in poi coperto da
+    un'assenza a calendario (HOLIDAY/SICK/INJURED) in cui c'e' ancora una seduta del
+    coach (sw: o coach:), oppure None. Una GET degli eventi della settimana."""
+    giorni = [(_dt(lunedi) + timedelta(days=i)).strftime("%Y-%m-%d") for i in range(7)]
+    eventi = get_events(giorni[0], giorni[-1])
+    assenti = [g for g in giorni_non_disponibili(
+        [e for e in eventi if (e.get("category") or "") in CATEGORIE_INDISPONIBILE], giorni)
+        if giorni[g] >= oggi]
+    if not assenti:
+        return None
+    nostri = {(e.get("start_date_local") or "")[:10] for e in eventi
+              if (e.get("external_id") or "").startswith(("sw:", "coach:"))
+              and e.get("category") == "WORKOUT"}
+    toccati = sorted(giorni[g] for g in assenti if giorni[g] in nostri)
+    return toccati[0] if toccati else None
+
+
 def esegui_auto(modo="auto", dry=False, force=False, lunedi=None, senza_attesa=False):
     """Un avvio del coach. Ritorna (esito, piano): esito in "pianificata" | "fatto" |
     "attesa" | "gia_fatto"; piano = la settimana costruita (solo per "pianificata").
@@ -3680,10 +3785,20 @@ def esegui_auto(modo="auto", dry=False, force=False, lunedi=None, senza_attesa=F
     _MOTIVI_CALDO.clear()
     _MOTIVI_DETP.clear()
     try:
-        if modo == "giornaliero":
+        assenza = assenze_nuove(lunedi, oggi) if modo == "giornaliero" else None
+        if modo == "giornaliero" and not assenza:
             esito = esegui_giornaliero(dry, force, pre_lock=prendi_lock)
             return esito, None
+        if assenza:
+            # 08/10/2026 (Parte 5): un'assenza nuova copre sedute gia' scritte da oggi in
+            # poi -> la corsa del mattino ripianifica la settimana da oggi (il passato non si
+            # riscrive) invece di rimodulare solo la seduta del giorno.
+            print(f"  Assenza a calendario dal {assenza}: ripianifico la settimana da oggi")
         piano = esegui(lunedi, dry, pre_lock=prendi_lock, senza_attesa=senza_attesa)
+        if assenza and isinstance(piano, dict):
+            m = f"settimana ripianificata da oggi: assenza a calendario dal {assenza}"
+            if m not in piano["mod"]["motivi"]:
+                piano["mod"]["motivi"].append(m)
     except Exception:
         # Se non e' finito niente a calendario, il lock si toglie e il prossimo avvio
         # riprova. Se invece qualcosa e' gia' stato scritto il lock resta.

@@ -37,6 +37,7 @@ CATALOGO = [
     ("dato_biometrico_vecchio", r"ultimo dato biometrico di (?P<giorni>\d+) giorni fa"),
     # ── settimana e forza ─────────────────────────────────────────────────────────
     ("settimana_senza_spazio", r"(?P<seduta>.+): non c'e' spazio nella settimana tipo"),
+    ("ripianificata_per_assenza", rf"settimana ripianificata da oggi: assenza a calendario dal {_D}"),
     ("forza_tolta_tempo", _D.join([r"forza del ", r" tolta: meno di 30' disponibili: nessuna scheda di forza fino a 20'"])),
     ("forza_tolta_profilo", _D.join([r"forza del ", r" tolta: nessuna scheda compatibile con attrezzatura e livello del profilo"])),
     ("companion_prevenzione", r"companion sostituita con (?P<scheda>.+) \(prevenzione (?P<zona>\w+)\)"),
@@ -84,8 +85,12 @@ CATALOGO = [
                          rf"(?P<min>{_NUM})/(?P<max>{_NUM})"),
     ("sedute_non_scritte", r"(?P<n>\d+) sedute non scritte a calendario"),
     ("seduta_non_scritta", rf"{_D} — (?P<seduta>.+?): (?P<errore>.*)"),
+    # "+" sul calendario (08/10/2026): minuti per data
+    ("disponibilita_data_zero", rf"{_D}: non disponibile"),
+    ("disponibilita_data_ridotta", rf"{_D}: solo (?P<minuti>\d+)' disponibili"),
     # ── rimodulazione del mattino ─────────────────────────────────────────────────
     ("brick_alleggerito", r"brick alleggerito: corsa di qualita' di ieri oltre il 125% del TSS pianificato"),
+    ("seduta_accorciata_disponibilita", r"(?P<seduta>.+) accorciata a (?P<minuti>\d+)' — disponibilita' del giorno"),
     ("seduta_rimossa", r"(?P<seduta>.+) rimossa — (?P<motivo>.+)"),
     ("seduta_resa_aerobica", r"(?P<seduta>.+) convertita in aerobica — (?P<motivo>.+)"),
 ]
