@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Segnaposto NoctaliX: l'icona definitiva arriva dalla Parte 4 (Marketing). -->
 <adaptive-icon xmlns:android="http://schemas.android.com/apk/res/android">
-    <background android:drawable="@color/noctalix_icona_sfondo" />
-    <foreground android:drawable="@drawable/noctalix_icona_primo_piano" />
-    <monochrome android:drawable="@drawable/noctalix_icona_primo_piano" />
+    <background android:drawable="@color/ic_launcher_background" />
+    <foreground android:drawable="@mipmap/ic_launcher_foreground" />
+    <monochrome android:drawable="@mipmap/ic_launcher_monochrome" />
 </adaptive-icon>
