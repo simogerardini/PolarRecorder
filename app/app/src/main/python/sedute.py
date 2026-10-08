@@ -18,7 +18,7 @@ DIFFERENZE RISPETTO ALL'ORIGINALE (solo il bordo verso la rete)
 - Nessuna scrittura: niente POST/PUT. Le funzioni producono testo e payload, la rete e'
   compito del chiamante.
 """
-import base64, re
+import base64, os, re
 from datetime import datetime, timedelta
 from zoneinfo import ZoneInfo
 
@@ -36,7 +36,9 @@ from zoneinfo import ZoneInfo
 # per restare compatibile con tutte le sottrazioni/confronti datetime.strptime
 # (naive) gia' presenti nel resto del file, che altrimenti darebbero
 # TypeError "can't subtract offset-naive and offset-aware datetimes".
-TZ_LOCALE = ZoneInfo("Europe/Rome")
+# 07/10/2026 (distribuzione): fuso del telefono, passato dal cervello (FUSO_ORARIO,
+# nome IANA); Europe/Rome solo se manca. Prima era sempre Roma.
+TZ_LOCALE = ZoneInfo(os.getenv("FUSO_ORARIO") or "Europe/Rome")
 
 def now_local():
     return datetime.now(TZ_LOCALE).replace(tzinfo=None)

@@ -99,7 +99,9 @@ requests.put, requests.delete = _HTTP.put, _HTTP.delete
 # ── TIMEZONE ─────────────────────────────────────────────────────────────────
 # GitHub Actions / cron girano in UTC: vicino alla mezzanotte locale la data UTC e'
 # ancora quella di ieri e la settimana verrebbe scritta sfasata di un giorno.
-TZ_LOCALE = ZoneInfo("Europe/Rome")
+# 07/10/2026 (distribuzione): fuso del telefono, passato dal cervello (FUSO_ORARIO,
+# nome IANA); Europe/Rome solo se manca. Prima era sempre Roma.
+TZ_LOCALE = ZoneInfo(os.getenv("FUSO_ORARIO") or "Europe/Rome")
 
 
 def now_local():

@@ -312,7 +312,7 @@ def salva_gara(config_json):
         data = datetime.strptime(cfg.get("data") or "", "%Y-%m-%d")
     except ValueError:
         data = None
-    oggi = datetime.now().replace(hour=0, minute=0, second=0, microsecond=0)
+    oggi = _adesso(cfg).replace(hour=0, minute=0, second=0, microsecond=0)
     errori = []
     if not nome:
         errori.append("nome mancante")
@@ -356,12 +356,12 @@ def salva_gara(config_json):
 
 def elimina_gara(config_json):
     """Elimina la gara {"id"} solo se l'evento e' davvero una gara (RACE_*)."""
-    from datetime import datetime, timedelta
+    from datetime import timedelta
     cfg = json.loads(config_json)
     out = {"esito": "errore"}
     try:
         http, h, base = _http_icu(cfg)
-        oggi = datetime.now()
+        oggi = _adesso(cfg)
         r = http.get(f"{base}/events", headers=h, timeout=30,
                      params={"oldest": (oggi - timedelta(days=30)).strftime("%Y-%m-%d"),
                              "newest": (oggi + timedelta(days=GARA_MESI_MAX * 31)).strftime("%Y-%m-%d")})
@@ -385,13 +385,13 @@ def elimina_gara(config_json):
 def gare(config_json):
     """Elenco delle gare future per l'app: id, nome, data, priorita', distanza come la
     riconosce il coach, settimane alla gara, e quale detta la periodizzazione."""
-    from datetime import datetime, timedelta
+    from datetime import timedelta
     import coach_settimanale as voc
     cfg = json.loads(config_json)
     out = {"esito": "errore", "gare": []}
     try:
         http, h, base = _http_icu(cfg)
-        oggi = datetime.now()
+        oggi = _adesso(cfg)
         oggi_s = oggi.strftime("%Y-%m-%d")
         r = http.get(f"{base}/events", headers=h, timeout=30,
                      params={"oldest": oggi_s,
@@ -438,7 +438,6 @@ _BACKUP_NOMI = re.compile(r"^(stato_coach|riepilogo_\d{4}-\d{2}-\d{2})\.json$")
 
 def esporta_stato(config_json):
     """{"cartella", "file": percorso di destinazione} -> {"esito", "file", "voci"}."""
-    from datetime import datetime
     cfg = json.loads(config_json)
     cart = os.path.abspath(cfg["cartella"])
     out = {"esito": "errore"}
@@ -449,7 +448,7 @@ def esporta_stato(config_json):
                 with open(os.path.join(cart, nome), encoding="utf-8") as f:
                     voci[nome] = json.load(f)
         pacco = {"formato": BACKUP_FORMATO, "versione": BACKUP_VERSIONE,
-                 "creato": datetime.now().isoformat(timespec="seconds"), "file": voci}
+                 "creato": _adesso(cfg).isoformat(timespec="seconds"), "file": voci}
         tmp = cfg["file"] + ".tmp"
         with open(tmp, "w", encoding="utf-8") as f:
             f.write(json.dumps(pacco, ensure_ascii=False))
@@ -567,6 +566,32 @@ def valida_tag(tag):
             if buone:
                 validi[gruppo][str(k)] = buone
     return validi, scartati
+
+
+def _imposta_fuso(cfg):
+    """FUSO_ORARIO per i moduli (letto all'import, prima del reload). None se tutto ok,
+    altrimenti il testo dell'avviso (fuso non valido -> Europe/Rome)."""
+    from zoneinfo import ZoneInfo
+    fuso = cfg.get("fuso")
+    os.environ.pop("FUSO_ORARIO", None)
+    if not fuso:
+        return None
+    try:
+        ZoneInfo(fuso)
+        os.environ["FUSO_ORARIO"] = fuso
+        return None
+    except Exception:
+        return f"fuso orario non valido ({fuso}): uso Europe/Rome"
+
+
+def _adesso(cfg):
+    """Ora locale del telefono per le funzioni chiamate senza un run (gare, backup...)."""
+    from datetime import datetime
+    from zoneinfo import ZoneInfo
+    try:
+        return datetime.now(ZoneInfo(cfg.get("fuso") or "Europe/Rome")).replace(tzinfo=None)
+    except Exception:
+        return datetime.now(ZoneInfo("Europe/Rome")).replace(tzinfo=None)
 
 
 def _carica_moduli():
@@ -716,7 +741,11 @@ def esegui_app(config_json):
         os.environ["PALESTRA"] = json.dumps(prof["palestra"])
     if prof.get("settimana"):     # 06/10/2026: settimana tipo configurabile (roadmap punto 2)
         os.environ["SETTIMANA_TIPO"] = json.dumps(prof["settimana"])
+    # 07/10/2026 (distribuzione): "oggi" segue il fuso del telefono (nome IANA)
+    fuso_avviso = _imposta_fuso(cfg)
     out = {"esito": "errore", "notifiche": [], "riepilogo_file": None, "log_file": None}
+    if fuso_avviso:
+        out["notifiche"].append(fuso_avviso)
     buf = io.StringIO()
     try:
         with contextlib.redirect_stdout(buf):
@@ -822,7 +851,7 @@ def esegui_app(config_json):
         buf.write(traceback.format_exc())
     finally:
         try:
-            oggi_log = __import__("datetime").datetime.now().strftime("%Y-%m-%d_%H%M%S_%f")
+            oggi_log = _adesso(cfg).strftime("%Y-%m-%d_%H%M%S_%f")
             log = os.path.join(cartella, "log", f"coach_{oggi_log}.txt")
             with open(log, "w", encoding="utf-8") as f:
                 f.write(buf.getvalue())
