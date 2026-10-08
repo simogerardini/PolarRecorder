@@ -154,7 +154,8 @@ class CoachWorker(context: Context, params: WorkerParameters) : CoroutineWorker(
             credenziali, Cervello.cartella(ctx).absolutePath, "auto", false, senzaAttesa,
             profilo = ProfiloRepo.effettivo(ctx),
             tag = runCatching { TagDb.get(ctx).perCervello() }.getOrNull(),
-            posizione = PosizioneTelefono.ultima(ctx))
+            posizione = PosizioneTelefono.ultima(ctx),
+                          disponibilitaDate = DisponibilitaDate.perCervello(ctx))
     CoachStato(ctx).attesaTagFinoMs = 0L // il coach parte: i tag di adesso in poi valgono dal run dopo
     val t0 = System.currentTimeMillis()
     val r = withContext(Dispatchers.IO) { Cervello.esegui(ctx, config) }

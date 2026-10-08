@@ -1,5 +1,8 @@
 package com.wboelens.polarrecorder.biosleep.ui.allenamento
 
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.detectDragGesturesAfterLongPress
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -8,6 +11,27 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.produceState
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.ui.draw.drawBehind
+import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.platform.LocalContext
+import com.wboelens.polarrecorder.biosleep.cervello.Cervello
+import com.wboelens.polarrecorder.biosleep.cervello.DisponibilitaDate
+import com.wboelens.polarrecorder.biosleep.cervello.Pausa
+import com.wboelens.polarrecorder.biosleep.cervello.Pause
+import com.wboelens.polarrecorder.biosleep.cervello.PianoCalendario
+import com.wboelens.polarrecorder.biosleep.intervals.IntervalsSettings
+import com.wboelens.polarrecorder.biosleep.ui.NuovaGaraDaCalendario
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -89,10 +113,38 @@ fun CalendarioScreen(
     evento: String?,
     bottomBar: @Composable () -> Unit,
     onApriAttivita: (String) -> Unit = {},
+    onApriTag: (String) -> Unit = {},
 ) {
+  val context = LocalContext.current.applicationContext
   val dati = rememberDallaCache { repo, oggi -> DatiCalendario.carica(repo, oggi) }
   var dettaglio by remember { mutableStateOf<Dettaglio?>(null) }
   val lista = rememberLazyListState()
+  // "+" sui giorni: pause, tag, gara, tempo disponibile
+  var modulo by remember { mutableStateOf<ModuloCalendario?>(null) }
+  var chiedi by remember { mutableStateOf(false) }
+  var messaggio by remember { mutableStateOf<String?>(null) }
+  var giroPause by remember { mutableIntStateOf(0) }
+  val pause by
+      produceState(emptyList<Pausa>(), giroPause) {
+        value = withContext(Dispatchers.IO) {
+          IntervalsSettings(context).credenziali?.let { Cervello.pause(context, it).pause }.orEmpty()
+        }
+      }
+  val versioneTempo by DisponibilitaDate.versione.collectAsState()
+  val tempo by produceState(emptyMap<String, Int>(), versioneTempo) { value = withContext(Dispatchers.IO) { DisponibilitaDate.tutte(context) } }
+  // selezione di un intervallo: tieni premuto su un giorno e trascina
+  var selDa by remember { mutableStateOf<LocalDate?>(null) }
+  var selA by remember { mutableStateOf<LocalDate?>(null) }
+  fun giornoA(y: Float): LocalDate? =
+      lista.layoutInfo.visibleItemsInfo.firstOrNull { y >= it.offset && y < it.offset + it.size }?.key?.let {
+        runCatching { LocalDate.parse(it as String) }.getOrNull()
+      }
+
+  /** Dopo un salvataggio: ripianificare subito se tocca la settimana in corso. */
+  fun dopo(dal: LocalDate, al: LocalDate, ripianifica: Boolean = true) {
+    modulo = null
+    if (ripianifica && PianoCalendario.inSettimana(dal, al)) chiedi = true else messaggio = "Varrà dalla prossima pianificazione"
+  }
 
   // All'arrivo dei dati: scorre al giorno richiesto (o a oggi) e apre la seduta richiesta.
   LaunchedEffect(dati != null) {
@@ -116,18 +168,40 @@ fun CalendarioScreen(
       return@Scaffold
     }
     LazyColumn(
-        Modifier.fillMaxSize().padding(padding),
+        Modifier.fillMaxSize().padding(padding).pointerInput(Unit) {
+          detectDragGesturesAfterLongPress(
+              onDragStart = { o -> giornoA(o.y)?.let { selDa = it; selA = it } },
+              onDrag = { c, _ -> giornoA(c.position.y)?.let { selA = it } },
+              onDragEnd = {
+                val a = selDa
+                val b = selA
+                if (a != null && b != null) modulo = ModuloCalendario.Menu(minOf(a, b), maxOf(a, b))
+                selDa = null
+                selA = null
+              },
+              onDragCancel = { selDa = null; selA = null })
+        },
         state = lista,
         verticalArrangement = Arrangement.spacedBy(4.dp),
     ) {
       item {
         Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
           StatoAggiornamento()
+          messaggio?.let { Text(it, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.primary) }
           RigaForma(dati.forma)
         }
       }
       items(dati.giorni, key = { it.data.toString() }) { g ->
-        Giorno(g, dati, onApri = { dettaglio = it })
+        val a = selDa
+        val b = selA
+        val selezionato = a != null && b != null && !g.data.isBefore(minOf(a, b)) && !g.data.isAfter(maxOf(a, b))
+        Giorno(
+            g, dati, onApri = { dettaglio = it },
+            pausa = pause.firstOrNull { it.contiene(g.data) },
+            tempo = tempo[g.data.toString()],
+            selezionato = selezionato,
+            onPiu = { modulo = ModuloCalendario.Menu(g.data, g.data) },
+            onPausa = { modulo = ModuloCalendario.ModificaPausa(it) })
       }
     }
   }
@@ -135,12 +209,60 @@ fun CalendarioScreen(
   dettaglio?.let { det ->
     ModalBottomSheet(onDismissRequest = { dettaglio = null }) { SchedaDettaglio(det, onApriAttivita) }
   }
+
+  when (val m = modulo) {
+    is ModuloCalendario.Menu ->
+        ModalBottomSheet(onDismissRequest = { modulo = null }) {
+          MenuPiu(m.dal, m.al, onScegli = { modulo = it }, onTag = { onApriTag(it.toString()) })
+        }
+    is ModuloCalendario.NuovaPausa ->
+        ModuloPausa(null, m.dal, m.al, onChiudi = { modulo = null }) { r, dal, al ->
+          giroPause++
+          dopo(dal, al, r.ripianifica)
+        }
+    is ModuloCalendario.ModificaPausa ->
+        ModuloPausa(m.p, m.p.dal, m.p.al, onChiudi = { modulo = null }) { r, dal, al ->
+          giroPause++
+          if (r.esito == Pause.NON_TROVATA) {
+            modulo = null
+            messaggio = "La pausa non c'è più su Intervals.icu: calendario aggiornato"
+          } else {
+            // modifica: conta anche il periodo di prima
+            dopo(minOf(dal, m.p.dal), maxOf(al, m.p.al), r.ripianifica)
+          }
+        }
+    is ModuloCalendario.Tempo ->
+        ModuloTempo(m.data, tempo[m.data.toString()], onChiudi = { modulo = null }) { dopo(m.data, m.data) }
+    is ModuloCalendario.Gara ->
+        NuovaGaraDaCalendario(m.data) { r ->
+          if (r == null) modulo = null else dopo(m.data, m.data, r.ripianifica)
+        }
+    null -> Unit
+  }
+  if (chiedi) ChiediRipianifica { chiedi = false; messaggio = it }
 }
 
 @Composable
-private fun Giorno(g: GiornoCal, dati: DatiCalendario, onApri: (Dettaglio) -> Unit) {
+private fun Giorno(
+    g: GiornoCal,
+    dati: DatiCalendario,
+    onApri: (Dettaglio) -> Unit,
+    pausa: Pausa?,
+    tempo: Int?,
+    selezionato: Boolean,
+    onPiu: () -> Unit,
+    onPausa: (Pausa) -> Unit,
+) {
   val oggi = g.data == dati.oggi
-  Column(Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 4.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
+  val fascia = pausa?.let { coloreTipoPausa(it.tipo) }
+  val evidenza = MaterialTheme.colorScheme.primary.copy(alpha = 0.12f)
+  Column(
+      Modifier.fillMaxWidth()
+          .then(if (selezionato) Modifier.background(evidenza) else Modifier)
+          // fascia colorata a sinistra sui giorni di pausa
+          .drawBehind { if (fascia != null) drawRect(fascia, size = Size(4.dp.toPx(), size.height)) }
+          .padding(horizontal = 16.dp, vertical = 4.dp),
+      verticalArrangement = Arrangement.spacedBy(6.dp)) {
     if (g.data.dayOfWeek == DayOfWeek.MONDAY) {
       val (svolto, pianificato) = dati.settimane[g.data] ?: (0.0 to 0.0)
       HorizontalDivider(Modifier.padding(top = 8.dp))
@@ -149,11 +271,35 @@ private fun Giorno(g: GiornoCal, dati: DatiCalendario, onApri: (Dettaglio) -> Un
           style = MaterialTheme.typography.labelMedium,
           color = MaterialTheme.colorScheme.onSurfaceVariant)
     }
-    Text(
-        (if (oggi) "Oggi · " else "") + DateIt.breve(g.data),
-        style = MaterialTheme.typography.titleSmall,
-        fontWeight = if (oggi) FontWeight.Bold else FontWeight.Normal,
-        color = if (oggi) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface)
+    Row(verticalAlignment = Alignment.CenterVertically) {
+      Text(
+          (if (oggi) "Oggi · " else "") + DateIt.breve(g.data),
+          style = MaterialTheme.typography.titleSmall,
+          fontWeight = if (oggi) FontWeight.Bold else FontWeight.Normal,
+          color = if (oggi) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface)
+      // tempo disponibile per questa data: "30'" o "—" (non disponibile)
+      PianoCalendario.badge(tempo)?.let {
+        Text(
+            it,
+            Modifier.padding(start = 8.dp).background(MaterialTheme.colorScheme.surfaceVariant, MaterialTheme.shapes.extraSmall)
+                .padding(horizontal = 6.dp, vertical = 1.dp),
+            style = MaterialTheme.typography.labelMedium,
+            color = MaterialTheme.colorScheme.onSurfaceVariant)
+      }
+      Box(Modifier.weight(1f))
+      // il "+" solo da oggi in poi: il passato non si pianifica
+      if (!g.data.isBefore(dati.oggi)) {
+        IconButton(onClick = onPiu, modifier = Modifier.size(32.dp)) { Icon(Icons.Filled.Add, "Aggiungi", tint = MaterialTheme.colorScheme.primary) }
+      }
+    }
+    if (pausa != null && fascia != null && (g.data == pausa.dal || g.data == dati.oggi)) {
+      Text(
+          Pause.etichetta(pausa.tipo) + (if (pausa.nota.isNotBlank()) " · ${pausa.nota}" else "") +
+              " · fino al ${DateIt.breve(pausa.al)}" + (if (!pausa.dallApp) " (da Intervals.icu)" else ""),
+          Modifier.clickable { onPausa(pausa) },
+          style = MaterialTheme.typography.labelMedium,
+          color = fascia)
+    }
     for (n in g.note) Text(n.nome, style = MaterialTheme.typography.bodySmall)
     for (s in g.pianificate) CardSeduta(s, onClick = { onApri(Dettaglio.Pianificata(s)) })
     for (a in g.nonPianificate) CardAttivita(a, onClick = { onApri(Dettaglio.Libera(a)) })

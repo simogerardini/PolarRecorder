@@ -21,6 +21,8 @@ data class ConfigCervello(
     val forza: Boolean = false,
     /** Posizione approssimativa per le previsioni del caldo; null = campo omesso. */
     val posizione: Posizione? = null,
+    /** Minuti per data dal "+" del calendario (solo da oggi in poi); null = campo omesso. */
+    val disponibilitaDate: Map<String, Int>? = null,
     /** Profilo dell'atleta: le FC dell'app hanno la precedenza su quelle di Intervals.icu. */
     val profilo: ProfiloAtleta? = null,
     /** {"giorni": {data: [chiavi]}, "sedute": {id: [chiavi]}} dal TagDb. */
@@ -43,6 +45,7 @@ data class ConfigCervello(
             addProperty("dry_run", dryRun)
             addProperty("senza_attesa", senzaAttesa)
             if (forza) addProperty("forza", true)
+            disponibilitaDate?.takeIf { it.isNotEmpty() }?.let { add("disponibilita_date", PianoCalendario.json(it)) }
             posizione?.let { p ->
               add("posizione", JsonObject().apply {
                 addProperty("lat", p.lat)
@@ -273,6 +276,25 @@ object Cervello {
           null
         }
       }
+
+  /** cervello.pause: ferie, malattie e infortuni in corso e futuri. */
+  fun pause(context: Context, c: Credenziali): EsitoPause =
+      chiama(context, "pause", c) {}?.let { Pause.elenco(it) } ?: EsitoPause("errore", emptyList(), "Python non disponibile")
+
+  /** cervello.salva_pausa: nuova pausa, o modifica con [id]. */
+  fun salvaPausa(context: Context, c: Credenziali, dal: java.time.LocalDate, al: java.time.LocalDate, tipo: String, nota: String, id: String?): EsitoPausa =
+      chiama(context, "salva_pausa", c) {
+        addProperty("dal", dal.toString())
+        addProperty("al", al.toString())
+        addProperty("tipo", tipo)
+        addProperty("nota", nota)
+        id?.let { addProperty("id", it) }
+      }?.let { Pause.esito(it) } ?: EsitoPausa("errore", null, false, "Python non disponibile")
+
+  /** cervello.elimina_pausa: solo eventi che sono davvero pause. */
+  fun eliminaPausa(context: Context, c: Credenziali, id: String): EsitoPausa =
+      chiama(context, "elimina_pausa", c) { addProperty("id", id) }?.let { Pause.esito(it) }
+          ?: EsitoPausa("errore", null, false, "Python non disponibile")
 
   fun esegui(context: Context, config: ConfigCervello): RisultatoCervello =
       synchronized(lucchetto) {

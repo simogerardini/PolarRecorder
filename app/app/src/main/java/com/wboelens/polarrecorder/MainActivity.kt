@@ -291,6 +291,7 @@ class MainActivity : ComponentActivity() {
                   evento = entry.arguments?.getString("evento"),
                   bottomBar = { BarraBioSleep(navController) },
                   onApriAttivita = { id -> navController.navigate("attivita/$id") },
+                  onApriTag = { d -> navController.navigate("tag/$d") },
               )
             }
             composable("grafici") { GraficiScreen(bottomBar = { BarraBioSleep(navController) }) }

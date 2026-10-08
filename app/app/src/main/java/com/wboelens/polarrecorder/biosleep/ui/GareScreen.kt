@@ -210,12 +210,18 @@ private fun utc(d: LocalDate) = d.atStartOfDay().toInstant(ZoneOffset.UTC).toEpo
 /** Nuova gara o modifica (con Elimina). Gli esiti del cervello restano nel modulo. */
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
 @Composable
-private fun ModuloGara(gara: Gara?, onChiudi: () -> Unit, onSalvata: (EsitoGara) -> Unit, onNonTrovata: () -> Unit) {
+private fun ModuloGara(
+    gara: Gara?,
+    onChiudi: () -> Unit,
+    onSalvata: (EsitoGara) -> Unit,
+    onNonTrovata: () -> Unit,
+    dataIniziale: LocalDate? = null,
+) {
   val context = LocalContext.current.applicationContext
   val scope = rememberCoroutineScope()
   val oggi = remember { LocalDate.now() }
   var nome by remember { mutableStateOf(gara?.let { Gare.nomeBase(it.nome) } ?: "") }
-  var data by remember { mutableStateOf(gara?.data) }
+  var data by remember { mutableStateOf(gara?.data ?: dataIniziale) }
   var priorita by remember { mutableStateOf(gara?.priorita) }
   var distanza by remember { mutableStateOf(gara?.let { Gare.distanzaPerModulo(it) }) }
   var calda by remember { mutableStateOf(gara?.calda ?: false) }
@@ -347,4 +353,10 @@ private fun ModuloGara(gara: Gara?, onChiudi: () -> Unit, onSalvata: (EsitoGara)
         dismissButton = { TextButton(onClick = { confermaElimina = false }) { Text("Annulla") } },
     )
   }
+}
+
+/** Dal "+" del calendario: nuova gara con la data del giorno. null = annullato. */
+@Composable
+fun NuovaGaraDaCalendario(data: LocalDate, onFatto: (EsitoGara?) -> Unit) {
+  ModuloGara(null, onChiudi = { onFatto(null) }, onSalvata = { onFatto(it) }, onNonTrovata = { onFatto(null) }, dataIniziale = data)
 }
