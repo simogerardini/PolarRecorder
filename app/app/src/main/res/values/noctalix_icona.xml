@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Segnaposto NoctaliX: sfondo dell'icona e dello splash -->
+    <color name="noctalix_icona_sfondo">#16222E</color>
+</resources>

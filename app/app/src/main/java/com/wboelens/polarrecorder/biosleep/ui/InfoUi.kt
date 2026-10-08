@@ -1,5 +1,10 @@
 package com.wboelens.polarrecorder.biosleep.ui
 
+import kotlinx.coroutines.withContext
+import kotlinx.coroutines.Dispatchers
+import androidx.compose.runtime.produceState
+import com.wboelens.polarrecorder.biosleep.cervello.Cervello
+import com.wboelens.polarrecorder.BuildConfig
 import android.content.ActivityNotFoundException
 import android.content.Context
 import android.content.Intent
@@ -64,6 +69,12 @@ fun RigaInformativa(testo: String = "Informativa sulla privacy") {
 fun SezioneInformazioni(onApriLicenze: () -> Unit) {
   Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
     Text("Informazioni", style = MaterialTheme.typography.titleSmall)
+    val context = LocalContext.current.applicationContext
+    val versioneCoach by produceState<String?>(null) { value = withContext(Dispatchers.IO) { Cervello.versione(context) } }
+    Text(
+        "${BuildConfig.APP_NAME} ${BuildConfig.VERSION_NAME}" + (versioneCoach?.let { " · coach $it" } ?: ""),
+        style = MaterialTheme.typography.bodySmall,
+        color = MaterialTheme.colorScheme.onSurfaceVariant)
     RigaInformativa()
     TextButton(onClick = onApriLicenze) { Text("Licenze open source") }
   }

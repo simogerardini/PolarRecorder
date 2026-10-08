@@ -151,7 +151,7 @@ fun BackupScreen(onBack: () -> Unit) {
       HorizontalDivider()
       Text("Ripristino", style = MaterialTheme.typography.titleSmall)
       Text(
-          "Da un file .biosleep. Prima del ripristino vedrai quante notti contiene e potrai annullare.",
+          "Da un file .noctalix (o .biosleep, dei backup fatti prima del cambio di nome). Prima del ripristino vedrai quante notti contiene e potrai annullare.",
           style = MaterialTheme.typography.bodySmall,
           color = MaterialTheme.colorScheme.onSurfaceVariant)
       OutlinedButton(onClick = { chiediPassword = Azione.RIPRISTINO }, enabled = !inCorso) { Text("Ripristina da un backup") }
@@ -212,7 +212,7 @@ fun BackupScreen(onBack: () -> Unit) {
           TextButton(
               onClick = {
                 chiediPassword = null
-                if (nuovo) creaFile.launch("biosleep_${LocalDate.now()}.biosleep") else apriFile.launch(arrayOf("*/*"))
+                if (nuovo) creaFile.launch("noctalix_${LocalDate.now()}.noctalix") else apriFile.launch(arrayOf("*/*"))
               },
               enabled = !corta && !diverse) {
                 Text("Continua")

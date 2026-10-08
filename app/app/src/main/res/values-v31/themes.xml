@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="Theme.PolarRecorder" parent="Base.Theme.PolarRecorder">
+        <item name="android:windowSplashScreenBackground">@color/noctalix_icona_sfondo</item>
+        <item name="android:windowSplashScreenBrandingImage">@drawable/noctalix_splash_scritta</item>
+    </style>
+</resources>

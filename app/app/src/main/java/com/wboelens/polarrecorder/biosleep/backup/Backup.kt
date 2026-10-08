@@ -103,7 +103,7 @@ data class ManifestBackup(val formato: String, val versione: Int, val appVersion
   /** null = valido; altrimenti il motivo. */
   fun problema(): String? =
       when {
-        formato != FORMATO -> "non è un backup di BioSleep"
+        formato != FORMATO -> "non è un backup di ${BuildConfig.APP_NAME}"
         versione > VERSIONE -> "backup creato da una versione più recente dell'app: aggiorna ${BuildConfig.APP_NAME}"
         versione < 1 -> "versione del backup non valida"
         else -> null

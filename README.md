@@ -15,6 +15,6 @@ I dati restano sul telefono, tranne quelli che invii al tuo account Intervals.ic
 
 ## Origine e licenza
 
-BioSleep nasce da un fork di [Polar Recorder](https://github.com/boelensman1/PolarRecorder) di Wigger Boelens, distribuito con licenza MIT: il file `LICENSE` conserva la sua nota di copyright, come richiesto dalla licenza. Le licenze delle librerie usate sono nell'app, in Impostazioni → Licenze open source.
+NoctaliX nasce da un fork di [Polar Recorder](https://github.com/boelensman1/PolarRecorder) di Wigger Boelens, distribuito con licenza MIT: il file `LICENSE` conserva la sua nota di copyright, come richiesto dalla licenza. Le licenze delle librerie usate sono nell'app, in Impostazioni → Licenze open source.
 
 NoctaliX è un progetto indipendente, non affiliato né approvato da Polar Electro o da Intervals.icu. "Polar" e i nomi dei dispositivi sono marchi dei rispettivi proprietari. Non è un dispositivo medico: le stime (in particolare le fasi del sonno) sono indicative.

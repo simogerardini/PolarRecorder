@@ -263,6 +263,17 @@ object Cervello {
         }
       }
 
+  /** Versione del cervello (cervello.VERSIONE), senza eseguire il coach. null se Python non parte. */
+  fun versione(context: Context): String? =
+      synchronized(lucchetto) {
+        try {
+          if (!Python.isStarted()) Python.start(AndroidPlatform(context.applicationContext))
+          Python.getInstance().getModule("cervello").get("VERSIONE")?.toString()
+        } catch (e: PyException) {
+          null
+        }
+      }
+
   fun esegui(context: Context, config: ConfigCervello): RisultatoCervello =
       synchronized(lucchetto) {
         if (!Python.isStarted()) Python.start(AndroidPlatform(context.applicationContext))
