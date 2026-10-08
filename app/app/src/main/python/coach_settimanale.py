@@ -428,18 +428,18 @@ def calc_baseline_hrv(oura_history, today_str=None):
     return b
 
 
-BIOSLEEP_NOTTI_MIN = 14   # sotto queste notti la baseline BioSleep non e' affidabile
+NOCTALIX_NOTTI_MIN = 14   # sotto queste notti la baseline NoctaliX non e' affidabile
 
 
 def storia_biometrica(wellness, tag_giorni=None):
-    """(serie, fonte) per la banda, dalla wellness di Intervals.icu. BioSleep (campi
-    BioSleep*) decide solo con >= BIOSLEEP_NOTTI_MIN notti valide; prima valgono i campi
+    """(serie, fonte) per la banda, dalla wellness di Intervals.icu. NoctaliX (campi
+    BioSleep*) decide solo con >= NOCTALIX_NOTTI_MIN notti valide; prima valgono i campi
     standard (hrv/restingHR, sincronizzati da Oura o Garmin). Mai le due serie insieme:
     fascia e anello/orologio hanno livelli assoluti diversi."""
     # 05/10/2026: tag di giorno dell'app sulla serie (esclusione dei confondenti)
     tag_l = [{"data": d, "tags": list(v)} for d, v in (tag_giorni or {}).items() if v]
-    bs = biometria.biosleep_history_da_wellness(wellness, tag_l)
-    if len(bs) >= BIOSLEEP_NOTTI_MIN:
+    bs = biometria.noctalix_history_da_wellness(wellness, tag_l)
+    if len(bs) >= NOCTALIX_NOTTI_MIN:
         return bs, f"{NOME_APP}, {len(bs)} notti"
     out = []
     for w in wellness or []:

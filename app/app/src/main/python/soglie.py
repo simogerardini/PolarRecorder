@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """
 SOGLIE — LTHR e FTP aggiornate dalle attivita' reali, e rotazione dei test periodici
-(cervello BioSleep, roadmap punto 4).
+(cervello NoctaliX, roadmap punto 4).
 
 Estratto MECCANICAMENTE da intervals_coach.py (06/10/2026): stima_lthr_sport,
 aggiorna_lthr_automatico, stima_bike_ftp, aggiorna_bike_ftp_automatico e la rotazione dei

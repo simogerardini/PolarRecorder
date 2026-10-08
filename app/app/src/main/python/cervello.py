@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-CERVELLO BIOSLEEP — ingresso unico per l'app Android (Chaquopy).  04/10/2026
+CERVELLO NOCTALIX — ingresso unico per l'app Android (Chaquopy).  04/10/2026
 
 L'app chiama  esegui_app(config_json) -> risultato_json  e non vede altro.
 
@@ -58,7 +58,7 @@ cs = None
 # mano; per chi installa l'app li crea prepara_account(), solo quelli mancanti (si puo'
 # rilanciare senza effetti). Definizione presa dal suo account (custom-item reali):
 # INPUT_FIELD numerico privato; qui in piu' unita' e descrizione, utili a chi li legge.
-CAMPI_BIOSLEEP = [
+CAMPI_WELLNESS = [
     {"code": "BioSleepRMSSD",      "nome": "rMSSD",      "units": "ms",  "desc": "rMSSD media delle finestre di 5' valide nel sonno"},
     {"code": "BioSleepSDNN",       "nome": "SDNN",       "units": "ms",  "desc": "SDNN della notte"},
     {"code": "BioSleepRHR",        "nome": "RHR",        "units": "bpm", "desc": "FC a riposo: media dei 5' piu' bassi"},
@@ -107,7 +107,7 @@ def prepara_account(config_json):
             return json.dumps(out)
         presenti = {((x.get("content") or {}).get("code") or x.get("name"))
                     for x in r.json() or [] if x.get("type") == "INPUT_FIELD"}
-        for campo in CAMPI_BIOSLEEP:
+        for campo in CAMPI_WELLNESS:
             if campo["code"] in presenti:
                 out["esistenti"].append(campo["code"])
                 continue

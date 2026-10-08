@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-SEDUTE — libreria e sintassi delle sedute di allenamento (cervello BioSleep).
+SEDUTE — libreria e sintassi delle sedute di allenamento (cervello NoctaliX).
 
 ORIGINE
 -------

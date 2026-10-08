@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-CARICO — forma attesa, TSB a domenica, carico sostenibile e tetto TSS (cervello BioSleep).
+CARICO — forma attesa, TSB a domenica, carico sostenibile e tetto TSS (cervello NoctaliX).
 
 Estratto MECCANICAMENTE da intervals_coach.py (04/10/2026, decisione di Simone):
 target_forma_settimana, tsb_domenica_da_calendario, calc_carico_sostenibile,

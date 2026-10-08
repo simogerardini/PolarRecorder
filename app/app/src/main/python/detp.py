@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """
 DETP — protocollo di allenamento con sensore CORE 2 (Heat Strain Index, HSI).
-Cervello BioSleep, roadmap punto 11 (07/10/2026), impostazione approvata da Simone.
+Cervello NoctaliX, roadmap punto 11 (07/10/2026), impostazione approvata da Simone.
 
 Dal documento "metodo_detp_per_core_2": si usa la PIANIFICAZIONE (heat block, tetto HSI
 nelle qualita', target del brick e del cambio T2, idratazione, sweat test); il pacing in

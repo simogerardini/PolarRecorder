@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-PALESTRA — libreria delle schede di forza e scelta deterministica (cervello BioSleep).
+PALESTRA — libreria delle schede di forza e scelta deterministica (cervello NoctaliX).
 06/10/2026, roadmap punto 6, regole approvate da Simone.
 
 DATI: le schede vengono dal documento "Ottimizzazione_Schede_Palestra_Triathlon.md",

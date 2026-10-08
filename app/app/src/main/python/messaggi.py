@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """
 MESSAGGI — codici stabili per i testi del riepilogo (motivi, avvisi, notifiche).
-Cervello BioSleep, roadmap punto 13a (lingue), 07/10/2026, impostazione approvata da Simone.
+Cervello NoctaliX, roadmap punto 13a (lingue), 07/10/2026, impostazione approvata da Simone.
 
 L'app traduce i messaggi nelle sue lingue usando il CODICE e i VALORI, non il testo
 italiano. Il cervello continua a scrivere i suoi testi in italiano dove nascono (nessun

@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
 """
-BIOMETRIA — banda biometrica HRV/FC a riposo e stato di forma (cervello BioSleep).
+BIOMETRIA — banda biometrica HRV/FC a riposo e stato di forma (cervello NoctaliX).
 
 Estratto MECCANICAMENTE da intervals_coach.py (03/10/2026): calc_baseline_biometrici (la
 formula affinata nel tempo, scelta da Simone come unica banda), stato_forma e l'adattatore
-della serie BioSleep (campi wellness BioSleep* su Intervals.icu). Stessa formula della
+della serie NoctaliX (campi wellness BioSleep* su Intervals.icu). Stessa formula della
 prontezza mostrata nell'app. Codice copiato senza modifiche; test in test_biometria.py.
 """
 import math, os
@@ -19,10 +19,10 @@ from sedute import now_local
 # Sotto soglia la notte resta fuori dalla serie: un rMSSD da artefatti/disconnessioni
 # sarebbe letto come affaticamento. Notti senza il campo (registrate prima che esistesse)
 # restano nella serie, altrimenti si perde lo storico.
-BIOSLEEP_QUALITA_MIN   = 80
+NOCTALIX_QUALITA_MIN   = 80
 
-def biosleep_history_da_wellness(wellness, oura_history=None):
-    """Serie BioSleep nello stesso formato di get_oura_history, per calc_baseline_biometrici.
+def noctalix_history_da_wellness(wellness, oura_history=None):
+    """Serie NoctaliX nello stesso formato di get_oura_history, per calc_baseline_biometrici.
     Giorno senza BioSleepRMSSD valido = saltato (mai zero). Tag confondenti presi da Oura."""
     tags = {g.get("data"): g.get("tags") for g in (oura_history or [])
             if isinstance(g, dict) and g.get("data") and g.get("tags")}
@@ -36,7 +36,7 @@ def biosleep_history_da_wellness(wellness, oura_history=None):
         if not d or hrv is None:
             continue
         q = w.get("BioSleepQuality")
-        if isinstance(q, (int, float)) and q < BIOSLEEP_QUALITA_MIN:
+        if isinstance(q, (int, float)) and q < NOCTALIX_QUALITA_MIN:
             continue
         sonno = num(w.get("BioSleepSleepHours"))
         g = {"data": d, "hrv_ms": hrv, "resting_hr": num(w.get("BioSleepAvgHR")),
@@ -261,7 +261,7 @@ def zona_forma_attesa(fase):
     return "Ottimale", "e' la zona in cui il carico produce adattamento"
 
 # tag che confondono il dato biometrico (non contano come segnale di carico).
-# MODIFICA (05/10/2026 — contratto con l'app BioSleep): i tag arrivano solo dall'app, con un
+# MODIFICA (05/10/2026 — contratto con l'app NoctaliX): i tag arrivano solo dall'app, con un
 # vocabolario fisso; il confronto e' ESATTO sulla chiave (prima: sottostringa sui nomi dei
 # tag Oura, per cui "malattia", "altitudine", "sonno_disturbato" e "caffeina_tardi" non
 # venivano riconosciuti). La copia Kotlin nell'app usa lo stesso elenco.

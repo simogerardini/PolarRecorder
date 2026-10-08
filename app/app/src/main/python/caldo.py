@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """
 CALDO — previsioni meteo nel luogo del telefono e regole per i giorni caldi
-(cervello BioSleep, roadmap punto 7, 06/10/2026).
+(cervello NoctaliX, roadmap punto 7, 06/10/2026).
 
 Regole di Simone, gia' in intervals_coach.py (regole 12a/12c e soglia del gate meteo):
 - caldo = temp >= 28 °C, oppure >= 26 °C con umidita' >= 70%, all'ora di allenamento
