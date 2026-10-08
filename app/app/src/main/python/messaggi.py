@@ -85,8 +85,12 @@ CATALOGO = [
                          rf"(?P<min>{_NUM})/(?P<max>{_NUM})"),
     ("sedute_non_scritte", r"(?P<n>\d+) sedute non scritte a calendario"),
     ("seduta_non_scritta", rf"{_D} — (?P<seduta>.+?): (?P<errore>.*)"),
+    # "+" sul calendario (08/10/2026): minuti per data
+    ("disponibilita_data_zero", rf"{_D}: non disponibile"),
+    ("disponibilita_data_ridotta", rf"{_D}: solo (?P<minuti>\d+)' disponibili"),
     # ── rimodulazione del mattino ─────────────────────────────────────────────────
     ("brick_alleggerito", r"brick alleggerito: corsa di qualita' di ieri oltre il 125% del TSS pianificato"),
+    ("seduta_accorciata_disponibilita", r"(?P<seduta>.+) accorciata a (?P<minuti>\d+)' — disponibilita' del giorno"),
     ("seduta_rimossa", r"(?P<seduta>.+) rimossa — (?P<motivo>.+)"),
     ("seduta_resa_aerobica", r"(?P<seduta>.+) convertita in aerobica — (?P<motivo>.+)"),
 ]
