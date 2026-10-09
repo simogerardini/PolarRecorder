@@ -62,6 +62,7 @@ import palestra    # libreria delle schede di forza (documento di Simone, 06/10/
 import caldo       # previsioni nel luogo del telefono e regole dei giorni caldi
 import detp        # protocollo DETP con sensore CORE 2 (punto 11)
 import traduzioni  # 13b: nomi e note delle sedute nella lingua dell'atleta
+import messaggi    # 13d: codici per i testi del riepilogo
 from requests.adapters import HTTPAdapter
 from urllib3.util.retry import Retry
 
@@ -3646,6 +3647,30 @@ def _discipline(activities, oggi_dt, distanza):
     return out
 
 
+# 13d (09/10/2026, richiesta della Parte 3): codici da elenchi chiusi per i campi di testo
+# del riepilogo fuori da "messaggi", cosi' l'app li traduce. I testi restano (italiano).
+CODICI_ZONA = {"Fresco": "fresco", "Ottimale": "ottimale", "Grigia": "grigia",
+               "Transizione": "transizione", "Alto rischio": "alto_rischio"}
+CODICI_DIREZIONE = {"in salita": "in_salita", "in calo": "in_calo", "stabile": "stabile",
+                    "non determinabile": "non_determinabile"}
+
+
+def codice_azione(azione):
+    """(codice, [note]) dell'azione della banda scritta da biometria.calc_baseline_biometrici."""
+    a = azione or ""
+    if not a:
+        return None, []
+    codice = ("procedi" if a.startswith("Procedi") else "riduci" if a.startswith("Riduci")
+              else "recupero" if a.startswith("Recupero") else
+              "dati_insufficienti" if a.startswith("Dati insufficienti") else None)
+    note = []
+    if "saturazione parasimpatica" in a or "oltre +1 SD sopra la baseline" in a:
+        note.append("saturazione_parasimpatica")
+    if "quasi azzerata" in a:
+        note.append("cv_collassato")
+    return codice, note
+
+
 def blocchi_riepilogo(oggi_str, pos, baseline, mod, wellness, activities, eventi_settimana,
                       ore_target=None, non_scritte=None):
     oggi_dt = _dt(oggi_str)
@@ -3702,8 +3727,15 @@ def blocchi_riepilogo(oggi_str, pos, baseline, mod, wellness, activities, eventi
             info["fascia"][0] <= domenica["tsb"] <= info["fascia"][1]):
         avvisi.append(f"TSB previsto a domenica {domenica['tsb']} fuori dalla fascia attesa "
                       f"{info['fascia'][0]}/{info['fascia'][1]}")
+    az_codice, az_note = codice_azione(b.get("azione"))
+    nr = b.get("normal_range_ms") or (None, None)
+    nota_cod = messaggi.codifica(b["nota"]) if b.get("nota") else None
     return {
-        "decisione": {"codice": codice, "etichetta": DECISIONI[codice], "motivo": motivo},
+        "fase_codice": pos.get("fase"),
+        "decisione": {"codice": codice, "etichetta": DECISIONI[codice], "motivo": motivo,
+                      "motivo_codice": ("motivi" if mod.get("motivi") else
+                                        "banda_segue_piano" if banda else "calibrazione_segue_piano"),
+                      "motivo_valori": {"banda": banda} if banda and not mod.get("motivi") else {}},
         "biometria": {"ok": bool(b.get("ok")), "banda": banda, "azione": b.get("azione"),
                       "nota": b.get("nota"), "hrv_7gg": b.get("rolling7_hrv"),
                       "hrv_baseline": b.get("baseline_hrv"), "pct_vs_baseline": b.get("pct_vs_baseline"),
@@ -3713,10 +3745,18 @@ def blocchi_riepilogo(oggi_str, pos, baseline, mod, wellness, activities, eventi
                       "gg_sotto_range": b.get("persistenza_gg_sotto"),
                       "fc_7gg": fc.get("rolling7"), "fc_baseline": fc.get("baseline"),
                       "fc_delta": fc.get("delta"), "fc_allarme": bool(fc.get("allarme")),
-                      "gg_ritardo": b.get("gg_ritardo_oura")},
+                      "gg_ritardo": b.get("gg_ritardo_oura"),
+                      "azione_codice": az_codice, "azione_note": az_note,
+                      "azione_valori": {"z": b.get("z_ln"), "pct": b.get("pct_vs_baseline"),
+                                        "range_min": nr[0], "range_max": nr[1]},
+                      "nota_codice": nota_cod["codice"] if nota_cod else None,
+                      "nota_valori": nota_cod["valori"] if nota_cod else {},
+                      "direzione_7v7_codice": CODICI_DIREZIONE.get(b.get("direzione_7v7"))},
         "forma": {"ctl": fo.get("ctl"), "atl": fo.get("atl"), "tsb": fo.get("tsb"),
                   "form_pct": fo.get("form_pct"), "zona": fo.get("zona"),
                   "zona_attesa": biometria.zona_forma_attesa(fase_ic)[0],
+                  "zona_codice": CODICI_ZONA.get(fo.get("zona")),
+                  "zona_attesa_codice": CODICI_ZONA.get(biometria.zona_forma_attesa(fase_ic)[0]),
                   "tsb_obiettivo": info.get("tsb_obiettivo"),
                   "fascia": list(info["fascia"]) if info.get("fascia") else None,
                   "tsb_domenica": domenica.get("tsb"),
