@@ -50,7 +50,7 @@ from marchio import NOME_APP
 import campi
 import messaggi   # 07/10/2026 (punto 13a): codici dei messaggi per l'app
 
-VERSIONE = "2026.10.09-lingue13d3"   # anche nel LEGGIMI del pacchetto
+VERSIONE = "2026.10.09-pulizia-mattino"   # anche nel LEGGIMI del pacchetto
 import contextlib, importlib, io, json, os, re, sys, traceback
 
 _VARIABILI_ESTERNE = ("GH_TOKEN", "GITHUB_REPOSITORY", "TELEGRAM_TOKEN", "TELEGRAM_CHAT_ID")

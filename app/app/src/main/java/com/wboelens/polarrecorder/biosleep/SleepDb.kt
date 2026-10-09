@@ -5,6 +5,7 @@ import android.content.Context
 import android.database.Cursor
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
+import com.wboelens.polarrecorder.biosleep.sopravvivenza.EventiNotte
 import com.wboelens.polarrecorder.biosleep.auto.NightTimes
 
 /**
@@ -52,6 +53,9 @@ data class SessionInfo(
  */
 class SleepDb private constructor(context: Context) :
     SQLiteOpenHelper(context, DB_NAME, null, DB_VERSION) {
+
+  /** Per cancellare una notte anche negli altri database dell'app. */
+  private val appContext: Context = context.applicationContext
 
   companion object {
     private const val DB_NAME = "biosleep.db"
@@ -401,6 +405,8 @@ class SleepDb private constructor(context: Context) :
     } finally {
       db.endTransaction()
     }
+    // Anche cio' che la notte ha lasciato negli eventi: minuti persi, causa, rapporto fascia
+    EventiNotte.get(appContext).dimenticaSessione(sessionId)
   }
 
   /**

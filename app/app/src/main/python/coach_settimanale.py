@@ -3560,6 +3560,14 @@ def esegui_giornaliero(dry=False, force=False, pre_lock=None):
           + (f" — {'; '.join(mod['motivi'])}" if mod["motivi"] else ""))
 
     eventi = get_events(oggi, oggi)
+    # 09/10/2026 (bug visto da Simone): protezione contro intervals_coach ancora attivo su
+    # GitHub. Anche al mattino, e non solo nella pianificazione settimanale, si tolgono da oggi
+    # a domenica le sedute e le note "coach:" (nota Riepilogo, brick/nuoto specchio Garmin).
+    domenica = (_dt(lunedi_di(oggi)) + timedelta(days=6)).strftime("%Y-%m-%d")
+    for ev in eventi_vecchio_coach(get_events(oggi, domenica), oggi):
+        print(f"    − rimuovo {ev.get('name')} ({ev.get('start_date_local', '')[:10]}): scritta da intervals_coach")
+        cancella_evento(ev, dry)
+    eventi = [e for e in eventi if not (e.get("external_id") or "").startswith("coach:")]
     coach = [e for e in eventi if (e.get("external_id") or "").startswith("sw:")
              and not (e.get("external_id") or "").startswith("sw:nota:")]
     if not coach:

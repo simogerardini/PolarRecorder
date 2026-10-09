@@ -6,6 +6,10 @@ import android.database.SQLException
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
 import android.util.Log
+import java.time.Instant
+import java.time.ZoneId
+import org.json.JSONException
+import org.json.JSONObject
 
 /**
  * Eventi della notte (servizio avviato/chiuso, Bluetooth, fascia) e interruzioni calcolate.
@@ -13,6 +17,8 @@ import android.util.Log
  */
 class EventiNotte private constructor(context: Context) :
     SQLiteOpenHelper(context, "biosleep_eventi.db", null, 2) {
+
+  private val appContext: Context = context.applicationContext
 
   companion object {
     private const val TENUTA_MS = 30L * 86_400_000L // gli eventi servono solo per qualche notte
@@ -99,6 +105,32 @@ class EventiNotte private constructor(context: Context) :
               }
             }
           }
+
+  /**
+   * Notte cancellata dall'utente: toglie le sue interruzioni e il suo rapporto fascia e, se la card
+   * "Registrazione interrotta" riguardava quella notte, anche la card (contratto biosleep_interruzioni).
+   */
+  fun dimenticaSessione(sessionId: Long) {
+    val db = writableDatabase
+    val arg = arrayOf(sessionId.toString())
+    val fine =
+        db.rawQuery("SELECT fine_notte_ms FROM interruzioni WHERE session_id = ?", arg).use { c ->
+          if (c.moveToFirst()) c.getLong(0) else null
+        }
+    db.delete("interruzioni", "session_id = ?", arg)
+    db.delete("fascia_sessione", "session_id = ?", arg)
+    if (fine != null) {
+      val data = Instant.ofEpochMilli(fine).atZone(ZoneId.systemDefault()).toLocalDate().toString()
+      val prefs = appContext.getSharedPreferences("biosleep_interruzioni", Context.MODE_PRIVATE)
+      val dataCard =
+          try {
+            prefs.getString("ultima", null)?.let { JSONObject(it).optString("data") }
+          } catch (e: JSONException) {
+            null
+          }
+      if (dataCard == data) prefs.edit().remove("ultima").apply()
+    }
+  }
 
   fun salvaInterruzioni(sessionId: Long, r: InterruzioniNotte, fineNotteMs: Long) {
     val db = writableDatabase
