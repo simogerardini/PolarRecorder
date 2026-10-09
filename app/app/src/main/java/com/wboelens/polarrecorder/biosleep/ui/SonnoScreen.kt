@@ -1,5 +1,7 @@
 package com.wboelens.polarrecorder.biosleep.ui
 
+import com.wboelens.polarrecorder.R
+import androidx.compose.ui.res.stringResource
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -113,7 +115,7 @@ fun RiquadroSonno(onApri: () -> Unit) {
   if (s.ultima == null) return
   Card(Modifier.fillMaxWidth().clickable(onClick = onApri)) {
     Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-      Text("Sonno · ${DateIt.breve(s.ultima.giorno)}", style = MaterialTheme.typography.titleMedium)
+      Text(stringResource(R.string.sonno_sonno, (DateIt.breve(s.ultima.giorno)).toString()), style = MaterialTheme.typography.titleMedium)
       Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
         Mini("Punteggio", s.punteggio?.totale?.toString() ?: "—", s.punteggio?.let { PunteggioSonno.etichetta(it.totale) })
         Mini(
@@ -154,7 +156,7 @@ fun SonnoScreen(onBack: () -> Unit) {
   Scaffold(
       topBar = {
         TopAppBar(
-            title = { Text("Sonno") },
+            title = { Text(stringResource(R.string.sonno_sonno_2)) },
             navigationIcon = { IconButton(onClick = onBack) { Icon(Icons.AutoMirrored.Filled.ArrowBack, "Indietro") } })
       },
   ) { padding ->
@@ -185,7 +187,7 @@ private fun Nota(t: String) =
 private fun Punteggio(s: StatoSonno) {
   val p = s.punteggio
   if (p == null || s.ultima == null) {
-    Nota("Nessuna notte registrata con le fasi del sonno.")
+    Nota(stringResource(R.string.sonno_nessuna_notte_registrata_con))
     return
   }
   Row(verticalAlignment = Alignment.Bottom) {
@@ -193,7 +195,7 @@ private fun Punteggio(s: StatoSonno) {
     Spacer(Modifier.width(10.dp))
     Text(PunteggioSonno.etichetta(p.totale), style = MaterialTheme.typography.titleMedium, color = BLU, modifier = Modifier.padding(bottom = 10.dp))
   }
-  Nota("Notte del ${DateIt.breve(s.ultima.giorno)} · ${durata(s.ultima.sonnoMin / 60.0)} di sonno")
+  Nota(stringResource(R.string.sonno_notte_del_di_sonno, (DateIt.breve(s.ultima.giorno)).toString(), (durata(s.ultima.sonnoMin / 60.0)).toString()))
   for (c in p.contributi) {
     Column {
       Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
@@ -205,8 +207,7 @@ private fun Punteggio(s: StatoSonno) {
     }
   }
   Nota(
-      "Media pesata: durata rispetto al tuo fabbisogno, efficienza, sonno profondo e REM, minuti svegli e orario. " +
-          "Profondo e REM sono stime da battito e respiro: pesano meno della durata.")
+      stringResource(R.string.sonno_media_pesata_durata_rispetto))
 }
 
 @Composable
@@ -252,7 +253,7 @@ private fun Orologio(s: StatoSonno) {
   val c = s.cronotipo
   val n = s.ultima
   if (c == null) {
-    Nota("Calibrazione: ${s.notti}/${OrologioBiologico.NOTTI_MINIME} notti negli ultimi 90 giorni. Servono anche alcune notti del weekend.")
+    Nota(stringResource(R.string.sonno_calibrazione_notti_negli_ultimi, s.notti.toString(), OrologioBiologico.NOTTI_MINIME.toString()))
   }
   val misuratore = rememberTextMeasurer()
   val stile = MaterialTheme.typography.labelSmall.copy(color = MaterialTheme.colorScheme.onSurfaceVariant)
@@ -290,14 +291,14 @@ private fun Orologio(s: StatoSonno) {
   }
   if (n != null) {
     Text(
-        "Stanotte: ${orario(minutiNotte(n.inizio))} → ${orario(minutiNotte(n.fine))}, punto centrale alle ${orario(minutiNotte(n.centro))}",
+        stringResource(R.string.sonno_stanotte_punto_centrale_alle, (orario(minutiNotte(n.inizio))).toString(), (orario(minutiNotte(n.fine))).toString(), (orario(minutiNotte(n.centro))).toString()),
         style = MaterialTheme.typography.bodyMedium)
   }
   s.scartoMin?.let { scarto ->
     Text(OrologioBiologico.allineamento(scarto).etichetta, style = MaterialTheme.typography.titleLarge)
-    Text("Il punto centrale del tuo sonno è caduto ${scartoTesto(scarto)}.", style = MaterialTheme.typography.bodyMedium)
+    Text(stringResource(R.string.sonno_il_punto_centrale_del, (scartoTesto(scarto)).toString()), style = MaterialTheme.typography.bodyMedium)
   }
-  Nota("Anello esterno (azzurro): la notte appena passata. Anello interno: gli orari ottimali per il tuo cronotipo.")
+  Nota(stringResource(R.string.sonno_anello_esterno_azzurro_la))
 }
 
 @Composable
@@ -305,19 +306,16 @@ private fun Cronotipo(s: StatoSonno) {
   val c = s.cronotipo
   if (c == null) {
     Nota(
-        "Il cronotipo si calcola dal punto centrale del sonno nei giorni liberi, dopo almeno ${OrologioBiologico.NOTTI_MINIME} " +
-            "notti (ora ${s.notti}).")
+        stringResource(R.string.sonno_il_cronotipo_si_calcola, OrologioBiologico.NOTTI_MINIME.toString(), s.notti.toString()))
     return
   }
   Text(c.tipo.etichetta, style = MaterialTheme.typography.headlineSmall)
-  Text("Orari di sonno ottimali per te", style = MaterialTheme.typography.labelLarge, color = MaterialTheme.colorScheme.onSurfaceVariant)
+  Text(stringResource(R.string.sonno_orari_di_sonno_ottimali), style = MaterialTheme.typography.labelLarge, color = MaterialTheme.colorScheme.onSurfaceVariant)
   Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
     Mini("Sonno", orario(c.sonnoMin).toString(), null)
     Mini("Punto centrale", orario(c.centroMin).toString(), null)
     Mini("Sveglia", orario(c.svegliaMin).toString(), null)
   }
   Nota(
-      "Dal punto centrale del sonno nelle notti libere (venerdì e sabato), corretto per il sonno recuperato nel " +
-          "weekend, sulle ultime ${c.notti} notti. Sveglia e addormentamento: il punto centrale più e meno metà del " +
-          "tuo fabbisogno.")
+      stringResource(R.string.sonno_dal_punto_centrale_del, c.notti.toString()))
 }

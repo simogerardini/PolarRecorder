@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Testi di GraficiScreen.kt (italiano, base). Generato da estrai_testi.py. -->
+<resources>
+    <string name="grafici_grafici">Grafici</string>
+    <string name="grafici_giorni" formatted="true">%1$s giorni</string>
+    <string name="grafici_quando_la_stanchezza_atl">Quando la stanchezza (ATL) supera la forma fisica (CTL), la forma (TSB) scende sotto zero.</string>
+</resources>

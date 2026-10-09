@@ -1,5 +1,7 @@
 package com.wboelens.polarrecorder.biosleep.ui.allenamento
 
+import com.wboelens.polarrecorder.R
+import androidx.compose.ui.res.stringResource
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectHorizontalDragGestures
@@ -87,7 +89,7 @@ fun AttivitaScreen(id: String, onBack: () -> Unit) {
       null -> Box(Modifier.fillMaxSize().padding(padding), contentAlignment = Alignment.Center) { CircularProgressIndicator() }
       is EsitoDettaglio.Errore ->
           Box(Modifier.fillMaxSize().padding(padding).padding(24.dp), contentAlignment = Alignment.Center) {
-            Text("Seduta non disponibile: ${e.messaggio}", color = MaterialTheme.colorScheme.error)
+            Text(stringResource(R.string.attivita_seduta_non_disponibile, e.messaggio.toString()), color = MaterialTheme.colorScheme.error)
           }
       is EsitoDettaglio.Pronto ->
           Column(
@@ -203,7 +205,7 @@ private fun Grafici(a: DettaglioAttivita, f: Flussi) {
   }
   if (lavoro.isNotEmpty()) {
     Text(
-        "Le fasce chiare sono gli intervalli di lavoro.",
+        stringResource(R.string.attivita_le_fasce_chiare_sono),
         style = MaterialTheme.typography.labelSmall,
         color = MaterialTheme.colorScheme.onSurfaceVariant)
   }

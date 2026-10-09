@@ -1,5 +1,7 @@
 package com.wboelens.polarrecorder.biosleep.ui
 
+import com.wboelens.polarrecorder.R
+import androidx.compose.ui.res.stringResource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
@@ -91,7 +93,7 @@ fun TagSera() {
   val scope = rememberCoroutineScope()
   val ordine = Vocabolario.GIORNO_SERA + Vocabolario.GIORNO_CONTESTO + Vocabolario.GIORNO_NOTTE + Vocabolario.GIORNO_CORPO
   Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
-    Text("Tag per la notte · scorri per gli altri", style = MaterialTheme.typography.labelLarge)
+    Text(stringResource(R.string.tag_tag_per_la_notte), style = MaterialTheme.typography.labelLarge)
     LazyRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
       items(ordine, key = { it }) { k ->
         FilterChip(
@@ -136,7 +138,7 @@ fun TagSeduta(id: String, data: String) {
   val s = scelti ?: return
   val scope = rememberCoroutineScope()
   Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
-    Text("Tag per il coach", style = MaterialTheme.typography.labelLarge)
+    Text(stringResource(R.string.tag_tag_per_il_coach), style = MaterialTheme.typography.labelLarge)
     ChipTag(Vocabolario.SEDUTA, s) { nuovi -> scope.launch(Dispatchers.IO) { TagDb.get(context).impostaSeduta(id, data, nuovi) } }
   }
 }
@@ -164,7 +166,7 @@ fun TagScreen(dataIniziale: String, onBack: () -> Unit) {
   Scaffold(
       topBar = {
         TopAppBar(
-            title = { Text("Tag") },
+            title = { Text(stringResource(R.string.tag_tag)) },
             navigationIcon = { IconButton(onClick = onBack) { Icon(Icons.AutoMirrored.Filled.ArrowBack, "Indietro") } })
       },
   ) { padding ->
@@ -204,12 +206,11 @@ fun TagScreen(dataIniziale: String, onBack: () -> Unit) {
       Gruppo("Salute e contesto") { ChipTag(Vocabolario.GIORNO_CONTESTO, s, onCambia = cambia) }
       Gruppo("Corpo") {
         ChipTag(listOf("dolore_muscolare"), s, onCambia = cambia)
-        Text("Infortunio", style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
+        Text(stringResource(R.string.tag_infortunio), style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
         ChipTag(Vocabolario.ZONE.map { "infortunio:$it" }, s, { it.substringAfter(':').replaceFirstChar { c -> c.uppercase() } }, cambia)
       }
       Text(
-          "Alcol, cena tardiva, caffeina, stress, viaggio, malattia, sonno disturbato, caldo e altitudine " +
-              "escludono la notte dal calcolo della tua HRV abituale.",
+          stringResource(R.string.tag_alcol_cena_tardiva_caffeina),
           style = MaterialTheme.typography.bodySmall,
           color = MaterialTheme.colorScheme.onSurfaceVariant)
       Button(
@@ -226,7 +227,7 @@ fun TagScreen(dataIniziale: String, onBack: () -> Unit) {
           },
           enabled = s != salvati,
       ) {
-        Text("Salva")
+        Text(stringResource(R.string.tag_salva))
       }
       esito?.let { Text(it, color = MaterialTheme.colorScheme.primary) }
     }

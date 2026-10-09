@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Testi di TagUi.kt (italiano, base). Generato da estrai_testi.py. -->
+<resources>
+    <string name="tag_tag_per_la_notte">Tag per la notte · scorri per gli altri</string>
+    <string name="tag_tag_per_il_coach">Tag per il coach</string>
+    <string name="tag_tag">Tag</string>
+    <string name="tag_infortunio">Infortunio</string>
+    <string name="tag_alcol_cena_tardiva_caffeina">Alcol, cena tardiva, caffeina, stress, viaggio, malattia, sonno disturbato, caldo e altitudine escludono la notte dal calcolo della tua HRV abituale.</string>
+    <string name="tag_salva">Salva</string>
+</resources>

@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Testi di OggiScreen.kt (italiano, base). Generato da estrai_testi.py. -->
+<resources>
+    <string name="oggi_oggi">Oggi</string>
+    <string name="oggi_calibrazione_notti" formatted="true">Calibrazione: %1$s/%2$s notti</string>
+    <string name="oggi_il_range_personale_si" formatted="true">Il range personale si costruisce sulle tue notti %1$s: fino ad allora l\'app non da\' un colore.</string>
+    <string name="oggi_sotto_il_range_da" formatted="true">Sotto il range da %1$s notti consecutive</string>
+    <string name="oggi_riposo">Riposo</string>
+    <string name="oggi_prossima" formatted="true">Prossima: %1$s · %2$s · %3$s</string>
+    <string name="oggi_svolto_pianificato" formatted="true">Svolto %1$s · pianificato %2$s</string>
+    <string name="oggi_pianificato">pianificato</string>
+    <string name="oggi_svolto">svolto</string>
+</resources>

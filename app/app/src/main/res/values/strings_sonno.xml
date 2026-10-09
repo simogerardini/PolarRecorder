@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Testi di SonnoScreen.kt (italiano, base). Generato da estrai_testi.py. -->
+<resources>
+    <string name="sonno_sonno" formatted="true">Sonno · %1$s</string>
+    <string name="sonno_sonno_2">Sonno</string>
+    <string name="sonno_nessuna_notte_registrata_con">Nessuna notte registrata con le fasi del sonno.</string>
+    <string name="sonno_notte_del_di_sonno" formatted="true">Notte del %1$s · %2$s di sonno</string>
+    <string name="sonno_media_pesata_durata_rispetto">Media pesata: durata rispetto al tuo fabbisogno, efficienza, sonno profondo e REM, minuti svegli e orario. Profondo e REM sono stime da battito e respiro: pesano meno della durata.</string>
+    <string name="sonno_calibrazione_notti_negli_ultimi" formatted="true">Calibrazione: %1$s/%2$s notti negli ultimi 90 giorni. Servono anche alcune notti del weekend.</string>
+    <string name="sonno_stanotte_punto_centrale_alle" formatted="true">Stanotte: %1$s → %2$s, punto centrale alle %3$s</string>
+    <string name="sonno_il_punto_centrale_del" formatted="true">Il punto centrale del tuo sonno è caduto %1$s.</string>
+    <string name="sonno_anello_esterno_azzurro_la">Anello esterno (azzurro): la notte appena passata. Anello interno: gli orari ottimali per il tuo cronotipo.</string>
+    <string name="sonno_il_cronotipo_si_calcola" formatted="true">Il cronotipo si calcola dal punto centrale del sonno nei giorni liberi, dopo almeno %1$s notti (ora %2$s).</string>
+    <string name="sonno_orari_di_sonno_ottimali">Orari di sonno ottimali per te</string>
+    <string name="sonno_dal_punto_centrale_del" formatted="true">Dal punto centrale del sonno nelle notti libere (venerdì e sabato), corretto per il sonno recuperato nel weekend, sulle ultime %1$s notti. Sveglia e addormentamento: il punto centrale più e meno metà del tuo fabbisogno.</string>
+</resources>

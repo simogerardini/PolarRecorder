@@ -1,5 +1,7 @@
 package com.wboelens.polarrecorder.biosleep.ui.allenamento
 
+import com.wboelens.polarrecorder.R
+import androidx.compose.ui.res.stringResource
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -121,9 +123,9 @@ private fun CampoData(etichetta: String, data: LocalDate, modifier: Modifier, on
     DatePickerDialog(
         onDismissRequest = { aperto = false },
         confirmButton = {
-          TextButton(onClick = { stato.selectedDateMillis?.let { onCambia(daUtc(it)) }; aperto = false }) { Text("OK") }
+          TextButton(onClick = { stato.selectedDateMillis?.let { onCambia(daUtc(it)) }; aperto = false }) { Text(stringResource(R.string.piu_calendario_ok)) }
         },
-        dismissButton = { TextButton(onClick = { aperto = false }) { Text("Annulla") } },
+        dismissButton = { TextButton(onClick = { aperto = false }) { Text(stringResource(R.string.piu_calendario_annulla)) } },
     ) {
       DatePicker(state = stato)
     }
@@ -180,7 +182,7 @@ fun ModuloPausa(
         Column(Modifier.verticalScroll(rememberScrollState()), verticalArrangement = Arrangement.spacedBy(10.dp)) {
           if (soloElimina) {
             Text(
-                "Questa pausa è stata inserita su Intervals.icu: qui si può solo eliminare (dal ${DateIt.breve(dal)} al ${DateIt.breve(al)}).",
+                stringResource(R.string.piu_calendario_questa_pausa_e_stata, (DateIt.breve(dal)).toString(), (DateIt.breve(al)).toString()),
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant)
           } else {
@@ -192,22 +194,22 @@ fun ModuloPausa(
               for ((k, etichetta) in Pause.TIPI) FilterChip(selected = tipo == k, onClick = { tipo = k }, label = { Text(etichetta) })
             }
             OutlinedTextField(
-                value = nota, onValueChange = { nota = it.take(80) }, label = { Text("Nota (facoltativa)") },
+                value = nota, onValueChange = { nota = it.take(80) }, label = { Text(stringResource(R.string.piu_calendario_nota_facoltativa)) },
                 singleLine = true, modifier = Modifier.fillMaxWidth())
             Text(
-                "Il coach non pianifica sedute nei giorni di pausa.",
+                stringResource(R.string.piu_calendario_il_coach_non_pianifica),
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant)
           }
           errore?.let { Text(it, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.error) }
           if (permesso) {
-            Text("Il collegamento non permette di scrivere il calendario.", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.error)
-            Button(onClick = { OAuthIntervals.avvia(context) }) { Text("Ricollega Intervals.icu") }
+            Text(stringResource(R.string.piu_calendario_il_collegamento_non_permette), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.error)
+            Button(onClick = { OAuthIntervals.avvia(context) }) { Text(stringResource(R.string.piu_calendario_ricollega_intervals_icu)) }
           }
           if (inCorso) CircularProgressIndicator()
           if (esistente != null) {
             TextButton(onClick = { esegui { c -> Cervello.eliminaPausa(context, c, esistente.id) } }, enabled = !inCorso) {
-              Text("Elimina", color = MaterialTheme.colorScheme.error)
+              Text(stringResource(R.string.piu_calendario_elimina), color = MaterialTheme.colorScheme.error)
             }
           }
         }
@@ -220,11 +222,11 @@ fun ModuloPausa(
                 esegui { c -> Cervello.salvaPausa(context, c, dal, al, t, nota.trim(), esistente?.id) }
               },
               enabled = errori.isEmpty() && !inCorso) {
-                Text("Salva")
+                Text(stringResource(R.string.piu_calendario_salva))
               }
         }
       },
-      dismissButton = { TextButton(onClick = onChiudi, enabled = !inCorso) { Text("Annulla") } },
+      dismissButton = { TextButton(onClick = onChiudi, enabled = !inCorso) { Text(stringResource(R.string.piu_calendario_annulla)) } },
   )
 }
 
@@ -237,7 +239,7 @@ fun ModuloTempo(data: LocalDate, attuale: Int?, onChiudi: () -> Unit, onFatto: (
   val minuti = testo.trim().toIntOrNull()?.takeIf { it in 0..600 }
   AlertDialog(
       onDismissRequest = onChiudi,
-      title = { Text("Tempo disponibile") },
+      title = { Text(stringResource(R.string.piu_calendario_tempo_disponibile)) },
       text = {
         Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
           Text(DateIt.lunga(data), style = MaterialTheme.typography.bodyMedium)
@@ -247,21 +249,21 @@ fun ModuloTempo(data: LocalDate, attuale: Int?, onChiudi: () -> Unit, onFatto: (
             }
           }
           OutlinedTextField(
-              value = testo, onValueChange = { testo = it.filter(Char::isDigit).take(3) }, label = { Text("Minuti") },
+              value = testo, onValueChange = { testo = it.filter(Char::isDigit).take(3) }, label = { Text(stringResource(R.string.piu_calendario_minuti)) },
               singleLine = true, keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number), modifier = Modifier.fillMaxWidth())
           Text(
-              "Vale solo per questo giorno, al posto della disponibilità della settimana tipo.",
+              stringResource(R.string.piu_calendario_vale_solo_per_questo),
               style = MaterialTheme.typography.bodySmall,
               color = MaterialTheme.colorScheme.onSurfaceVariant)
           if (attuale != null) {
-            TextButton(onClick = { DisponibilitaDate.salva(context, data, null); onFatto() }) { Text("Torna alla settimana tipo") }
+            TextButton(onClick = { DisponibilitaDate.salva(context, data, null); onFatto() }) { Text(stringResource(R.string.piu_calendario_torna_alla_settimana_tipo)) }
           }
         }
       },
       confirmButton = {
-        TextButton(onClick = { DisponibilitaDate.salva(context, data, minuti); onFatto() }, enabled = minuti != null) { Text("Salva") }
+        TextButton(onClick = { DisponibilitaDate.salva(context, data, minuti); onFatto() }, enabled = minuti != null) { Text(stringResource(R.string.piu_calendario_salva)) }
       },
-      dismissButton = { TextButton(onClick = onChiudi) { Text("Annulla") } },
+      dismissButton = { TextButton(onClick = onChiudi) { Text(stringResource(R.string.piu_calendario_annulla)) } },
   )
 }
 
@@ -274,14 +276,14 @@ fun ChiediRipianifica(onChiudi: (String) -> Unit) {
   val context = LocalContext.current.applicationContext
   AlertDialog(
       onDismissRequest = { onChiudi("Varrà dalla prossima pianificazione") },
-      title = { Text("Aggiorno subito il piano?") },
-      text = { Text("Le sedute da oggi a domenica verranno ricalcolate. I giorni passati non si toccano.") },
+      title = { Text(stringResource(R.string.piu_calendario_aggiorno_subito_il_piano)) },
+      text = { Text(stringResource(R.string.piu_calendario_le_sedute_da_oggi)) },
       confirmButton = {
         TextButton(onClick = {
           RipianificaWorker.avvia(context)
           onChiudi("Ripianificazione in corso: il riepilogo arriverà con la notifica del coach")
-        }) { Text("Sì, aggiorna") }
+        }) { Text(stringResource(R.string.piu_calendario_si_aggiorna)) }
       },
-      dismissButton = { TextButton(onClick = { onChiudi("Varrà dalla prossima pianificazione") }) { Text("No") } },
+      dismissButton = { TextButton(onClick = { onChiudi("Varrà dalla prossima pianificazione") }) { Text(stringResource(R.string.piu_calendario_no)) } },
   )
 }

@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Testi di AttivitaScreen.kt (italiano, base). Generato da estrai_testi.py. -->
+<resources>
+    <string name="attivita_seduta_non_disponibile" formatted="true">Seduta non disponibile: %1$s</string>
+    <string name="attivita_le_fasce_chiare_sono">Le fasce chiare sono gli intervalli di lavoro.</string>
+</resources>

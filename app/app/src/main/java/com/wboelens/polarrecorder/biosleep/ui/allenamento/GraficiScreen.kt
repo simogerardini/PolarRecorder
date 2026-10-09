@@ -1,5 +1,7 @@
 package com.wboelens.polarrecorder.biosleep.ui.allenamento
 
+import com.wboelens.polarrecorder.R
+import androidx.compose.ui.res.stringResource
 import com.wboelens.polarrecorder.biosleep.intervals.CampiWellness
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -102,7 +104,7 @@ fun GraficiScreen(bottomBar: @Composable () -> Unit) {
   val tutti = rememberDallaCache { repo, oggi -> DatiGrafici.carica(repo, oggi) }
   var periodo by rememberSaveable { mutableIntStateOf(90) }
   Scaffold(
-      topBar = { TopAppBar(title = { Text("Grafici") }, actions = { AzioneAggiorna() }) },
+      topBar = { TopAppBar(title = { Text(stringResource(R.string.grafici_grafici)) }, actions = { AzioneAggiorna() }) },
       bottomBar = bottomBar,
   ) { padding ->
     if (tutti == null) {
@@ -116,14 +118,14 @@ fun GraficiScreen(bottomBar: @Composable () -> Unit) {
         verticalArrangement = Arrangement.spacedBy(16.dp),
     ) {
       Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-        for (p in listOf(30, 90)) FilterChip(selected = p == periodo, onClick = { periodo = p }, label = { Text("$p giorni") })
+        for (p in listOf(30, 90)) FilterChip(selected = p == periodo, onClick = { periodo = p }, label = { Text(stringResource(R.string.grafici_giorni, p.toString())) })
       }
       Sezione("Forma fisica e stanchezza") {
         GraficoLinee(
             d.giorni,
             listOf(SerieGrafico("CTL forma fisica", ColoriBio.ctl, d.ctl), SerieGrafico("ATL stanchezza", ColoriBio.atl, d.atl)),
             altezza)
-        Nota("Quando la stanchezza (ATL) supera la forma fisica (CTL), la forma (TSB) scende sotto zero.")
+        Nota(stringResource(R.string.grafici_quando_la_stanchezza_atl))
       }
       Sezione("Forma (TSB) e zone") { FormaZone(d) }
       Sezione("HRV notturno (rMSSD, ms)") {

@@ -1,5 +1,7 @@
 package com.wboelens.polarrecorder.biosleep.ui
 
+import com.wboelens.polarrecorder.R
+import androidx.compose.ui.res.stringResource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -64,10 +66,10 @@ fun TestOggi() {
   if (t.inProgramma(oggi)) {
     Card(Modifier.fillMaxWidth()) {
       Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
-        Text("Test in programma · ${DateIt.breve(t.data)}", style = MaterialTheme.typography.labelLarge, color = MaterialTheme.colorScheme.primary)
+        Text(stringResource(R.string.test_test_in_programma, (DateIt.breve(t.data)).toString()), style = MaterialTheme.typography.labelLarge, color = MaterialTheme.colorScheme.primary)
         Text(t.nome, style = MaterialTheme.typography.titleMedium)
         Text(
-            "Il protocollo è nella descrizione della seduta in calendario. Dopo il test il coach aggiorna le soglie da solo.",
+            stringResource(R.string.test_il_protocollo_e_nella),
             style = MaterialTheme.typography.bodySmall,
             color = MaterialTheme.colorScheme.onSurfaceVariant)
       }
@@ -89,9 +91,9 @@ private fun CardCss(t: UltimoTest, onSalvato: () -> Unit) {
   val s200 = secondiDaMmSs(t200)
   Card(Modifier.fillMaxWidth()) {
     Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-      Text("Inserisci i tempi del test CSS", style = MaterialTheme.typography.titleMedium)
+      Text(stringResource(R.string.test_inserisci_i_tempi_del), style = MaterialTheme.typography.titleMedium)
       Text(
-          "${t.nome} del ${DateIt.breve(t.data)}: i tempi dei 400 m e dei 200 m a tutta, in minuti e secondi.",
+          stringResource(R.string.test_del_i_tempi_dei, t.nome.toString(), (DateIt.breve(t.data)).toString()),
           style = MaterialTheme.typography.bodySmall,
           color = MaterialTheme.colorScheme.onSurfaceVariant)
       Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
@@ -108,8 +110,8 @@ private fun CardCss(t: UltimoTest, onSalvato: () -> Unit) {
         EsitoCss.NON_VALIDI ->
             Text(esito?.errore ?: "Tempi incoerenti: il 400 deve durare circa il doppio del 200", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.error)
         EsitoCss.PERMESSO_MANCANTE -> {
-          Text("Il collegamento non permette di salvare il CSS: ricollega Intervals.icu.", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.error)
-          Button(onClick = { OAuthIntervals.avvia(context) }) { Text("Ricollega Intervals.icu") }
+          Text(stringResource(R.string.test_il_collegamento_non_permette), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.error)
+          Button(onClick = { OAuthIntervals.avvia(context) }) { Text(stringResource(R.string.test_ricollega_intervals_icu)) }
         }
         null, EsitoCss.OK -> Unit
         else -> Text("Non salvato: ${esito?.errore ?: "errore"}", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.error)
@@ -137,7 +139,7 @@ private fun CardCss(t: UltimoTest, onSalvato: () -> Unit) {
           },
           enabled = s400 != null && s200 != null && !inCorso,
       ) {
-        Text("Conferma")
+        Text(stringResource(R.string.test_conferma))
       }
     }
   }

@@ -1,5 +1,7 @@
 package com.wboelens.polarrecorder.biosleep.ui.allenamento
 
+import com.wboelens.polarrecorder.R
+import androidx.compose.ui.res.stringResource
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -174,13 +176,13 @@ fun StatoAggiornamento() {
   val errore = stato.errore
   when {
     errore != null ->
-        Text("Dati non aggiornati: $errore", style = stile, color = MaterialTheme.colorScheme.error)
+        Text(stringResource(R.string.comuni_dati_non_aggiornati, errore.toString()), style = stile, color = MaterialTheme.colorScheme.error)
     stato.aggiornatoMs != null -> {
       val ora =
           java.time.Instant.ofEpochMilli(stato.aggiornatoMs!!)
               .atZone(java.time.ZoneId.systemDefault())
               .format(DateTimeFormatter.ofPattern("d MMM HH:mm", Locale.ITALIAN))
-      Text("Aggiornato: $ora", style = stile, color = MaterialTheme.colorScheme.onSurfaceVariant)
+      Text(stringResource(R.string.comuni_aggiornato, ora.toString()), style = stile, color = MaterialTheme.colorScheme.onSurfaceVariant)
     }
   }
 }
@@ -228,7 +230,7 @@ fun RigaForma(forma: FormaHome?, modifier: Modifier = Modifier) {
   val oggi = forma?.oggi
   if (oggi == null) {
     Text(
-        "Forma non disponibile: servono i dati di Intervals.icu",
+        stringResource(R.string.comuni_forma_non_disponibile_servono),
         modifier,
         style = MaterialTheme.typography.bodySmall,
         color = MaterialTheme.colorScheme.onSurfaceVariant)
@@ -310,7 +312,7 @@ fun GraficoLinee(
           (if (lineaZero) listOf(0.0) else emptyList()) +
           includi
   if (giorni.size < 2 || serie.all { s -> s.valori.all { it == null } }) {
-    Box(modifier, contentAlignment = Alignment.Center) { Text("Dati insufficienti per il grafico", style = stile) }
+    Box(modifier, contentAlignment = Alignment.Center) { Text(stringResource(R.string.comuni_dati_insufficienti_per_il), style = stile) }
     return
   }
   val minV = tutti.min()

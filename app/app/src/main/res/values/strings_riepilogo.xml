@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Testi di RiepilogoScreen.kt (italiano, base). Generato da estrai_testi.py. -->
+<resources>
+    <string name="riepilogo_ci_sono_avvisi_apri">Ci sono avvisi: apri il riepilogo</string>
+    <string name="riepilogo_coach" formatted="true">Coach · %1$s</string>
+    <string name="riepilogo_riepilogo_non_disponibile_per">Riepilogo non disponibile per questa data</string>
+    <string name="riepilogo_riposo">Riposo</string>
+    <string name="riepilogo_apri_nel_calendario">Apri nel calendario</string>
+    <string name="riepilogo_avvisi">Avvisi</string>
+    <string name="riepilogo_sedute_che_il_coach">Sedute che il coach non è riuscito a scrivere a calendario:</string>
+    <string name="riepilogo_baseline_in_calibrazione">Baseline in calibrazione</string>
+    <string name="riepilogo_range_ms" formatted="true">range %1$s–%2$s ms</string>
+    <string name="riepilogo_fuori_dalla_fascia_attesa">Fuori dalla fascia attesa</string>
+    <string name="riepilogo_oggi" formatted="true">oggi %1$s</string>
+    <string name="riepilogo_domenica_previsto" formatted="true">domenica %1$s (previsto)</string>
+    <string name="riepilogo_facile" formatted="true">Facile %1$s%%</string>
+    <string name="riepilogo_intenso" formatted="true">Intenso %1$s%%</string>
+    <string name="riepilogo_la_linea_segna_l">La linea segna l\'80%: con la regola 80/20 il verde dovrebbe arrivare fin lì.</string>
+    <string name="riepilogo_di_alta_intensita" formatted="true">%1$s%% di alta intensità</string>
+    <string name="riepilogo_intensi_su_di_bici" formatted="true">%1$s\' intensi su %2$s\' di bici e corsa</string>
+    <string name="riepilogo_tetto" formatted="true">tetto %1$s%%</string>
+    <string name="riepilogo_pieno_fatto_chiaro_con">Pieno = fatto · chiaro = con le sedute ancora in calendario · linea = obiettivo · rosso = tetto</string>
+</resources>

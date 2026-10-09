@@ -1,5 +1,7 @@
 package com.wboelens.polarrecorder.biosleep.ui.allenamento
 
+import com.wboelens.polarrecorder.R
+import androidx.compose.ui.res.stringResource
 import com.wboelens.polarrecorder.biosleep.riepilogo.TraduzioneMessaggi
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.foundation.Canvas
@@ -183,7 +185,7 @@ fun RiquadroRiepilogo(oggi: LocalDate, onApri: (String) -> Unit) {
       Text(titolo(r), style = MaterialTheme.typography.titleLarge)
       motivo(r)?.let { RigaConTag(it, MaterialTheme.typography.bodyMedium, MaterialTheme.colorScheme.onSurface, it in motiviDaTag(r)) }
       if (r.avvisi != null || r.nonScritte.isNotEmpty()) {
-        Text("Ci sono avvisi: apri il riepilogo", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.error)
+        Text(stringResource(R.string.riepilogo_ci_sono_avvisi_apri), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.error)
       }
     }
   }
@@ -200,7 +202,7 @@ fun RiepilogoScreen(data: String, onBack: () -> Unit, onApriSeduta: (String) -> 
   Scaffold(
       topBar = {
         TopAppBar(
-            title = { Text("Coach · ${DateIt.breve(LocalDate.parse(data))}") },
+            title = { Text(stringResource(R.string.riepilogo_coach, (DateIt.breve(LocalDate.parse(data))).toString())) },
             navigationIcon = { IconButton(onClick = onBack) { Icon(Icons.AutoMirrored.Filled.ArrowBack, "Indietro") } },
         )
       },
@@ -208,7 +210,7 @@ fun RiepilogoScreen(data: String, onBack: () -> Unit, onApriSeduta: (String) -> 
     if (r == null) {
       Box(Modifier.fillMaxSize().padding(padding), contentAlignment = Alignment.Center) {
         if (!caricato) CircularProgressIndicator()
-        else Text("Riepilogo non disponibile per questa data", color = MaterialTheme.colorScheme.onSurfaceVariant)
+        else Text(stringResource(R.string.riepilogo_riepilogo_non_disponibile_per), color = MaterialTheme.colorScheme.onSurfaceVariant)
       }
       return@Scaffold
     }
@@ -240,11 +242,11 @@ fun RiepilogoScreen(data: String, onBack: () -> Unit, onApriSeduta: (String) -> 
           // dal calendario (con lo stato svolta/da fare); il testo del coach solo se il calendario non c'e'
           if (giorno == null) r.oggi?.let { Text(it, style = MaterialTheme.typography.bodyMedium) }
           giorno?.let { g ->
-            if (g.pianificate.isEmpty() && g.nonPianificate.isEmpty()) Text("Riposo", style = MaterialTheme.typography.bodyMedium)
+            if (g.pianificate.isEmpty() && g.nonPianificate.isEmpty()) Text(stringResource(R.string.riepilogo_riposo), style = MaterialTheme.typography.bodyMedium)
             for (s in g.pianificate) CardSeduta(s, onClick = { onApriSeduta(data) })
             for (a in g.nonPianificate) CardAttivita(a, onClick = { onApriSeduta(data) })
           }
-          TextButton(onClick = { onApriSeduta(data) }) { Text("Apri nel calendario") }
+          TextButton(onClick = { onApriSeduta(data) }) { Text(stringResource(R.string.riepilogo_apri_nel_calendario)) }
         }
       }
       biometria?.let { Sezione("Biometria") { Biometria(it) } }
@@ -276,10 +278,10 @@ private fun Avvisi(r: Riepilogo) {
   Card(Modifier.fillMaxWidth(), colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.errorContainer)) {
     Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
       val colore = MaterialTheme.colorScheme.onErrorContainer
-      Text("Avvisi", style = MaterialTheme.typography.titleSmall, color = colore, fontWeight = FontWeight.Bold)
+      Text(stringResource(R.string.riepilogo_avvisi), style = MaterialTheme.typography.titleSmall, color = colore, fontWeight = FontWeight.Bold)
       righe.forEach { RigaConTag(it, MaterialTheme.typography.bodyMedium, colore) }
       if (r.nonScritte.isNotEmpty()) {
-        Text("Sedute che il coach non è riuscito a scrivere a calendario:", style = MaterialTheme.typography.bodyMedium, color = colore)
+        Text(stringResource(R.string.riepilogo_sedute_che_il_coach), style = MaterialTheme.typography.bodyMedium, color = colore)
         for (s in r.nonScritte) Text("• $s", style = MaterialTheme.typography.bodyMedium, color = colore)
       }
     }
@@ -312,7 +314,7 @@ private fun Biometria(b: BiometriaCoach) {
   val nota = MaterialTheme.typography.bodySmall
   val grigio = MaterialTheme.colorScheme.onSurfaceVariant
   if (b.ok == false) {
-    Text("Baseline in calibrazione", fontWeight = FontWeight.Bold)
+    Text(stringResource(R.string.riepilogo_baseline_in_calibrazione), fontWeight = FontWeight.Bold)
     b.nota?.let { Text(it, style = nota, color = grigio) }
     return
   }
@@ -393,7 +395,7 @@ private fun BarraRange(valore: Double, range: Pair<Double, Double>, colore: Colo
       drawCircle(colore, 5.dp.toPx(), Offset(x(valore), y))
     }
     Text(
-        "range ${Formato.decimale(lo)}–${Formato.decimale(hi)} ms",
+        stringResource(R.string.riepilogo_range_ms, (Formato.decimale(lo)).toString(), (Formato.decimale(hi)).toString()),
         style = MaterialTheme.typography.labelSmall,
         color = MaterialTheme.colorScheme.onSurfaceVariant)
   }
@@ -412,7 +414,7 @@ private fun Forma(f: FormaCoach, giorno: LocalDate, storico: List<Pair<LocalDate
             .background(MaterialTheme.colorScheme.errorContainer, RoundedCornerShape(8.dp))
             .padding(10.dp),
         verticalArrangement = Arrangement.spacedBy(4.dp)) {
-          Text("Fuori dalla fascia attesa", style = MaterialTheme.typography.titleSmall, color = MaterialTheme.colorScheme.onErrorContainer, fontWeight = FontWeight.Bold)
+          Text(stringResource(R.string.riepilogo_fuori_dalla_fascia_attesa), style = MaterialTheme.typography.titleSmall, color = MaterialTheme.colorScheme.onErrorContainer, fontWeight = FontWeight.Bold)
           for (riga in fuoriFascia) Text(TraduzioneMessaggi.testo(LocalContext.current, riga), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onErrorContainer)
         }
   }
@@ -497,11 +499,11 @@ private fun GraficoTsb(f: FormaCoach, giorno: LocalDate, storico: List<Pair<Loca
     }
     Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
       Text(DateIt.asse(inizio), style = MaterialTheme.typography.labelSmall)
-      Text("oggi ${Formato.conSegno(tsb)}", style = MaterialTheme.typography.labelSmall, fontWeight = FontWeight.Bold)
+      Text(stringResource(R.string.riepilogo_oggi, (Formato.conSegno(tsb)).toString()), style = MaterialTheme.typography.labelSmall, fontWeight = FontWeight.Bold)
       f.tsbDomenica?.takeIf { fine > giorno }?.let {
         val fuori = f.fascia?.let { (a, b) -> it < a || it > b } == true
         Text(
-            "domenica ${Formato.conSegno(it)} (previsto)",
+            stringResource(R.string.riepilogo_domenica_previsto, (Formato.conSegno(it)).toString()),
             style = MaterialTheme.typography.labelSmall,
             color = if (fuori) ColoriBio.rosso else MaterialTheme.colorScheme.onSurface,
             fontWeight = if (fuori) FontWeight.Bold else FontWeight.Normal)
@@ -579,11 +581,11 @@ private fun FacileIntenso(facile: Double?, intenso: Double?) {
     drawLine(segno, Offset(x80, 0f), Offset(x80, size.height), strokeWidth = 2.dp.toPx())
   }
   Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-    Text("Facile ${Formato.decimale(f, 0)}%", color = verde, fontWeight = FontWeight.Bold)
-    Text("Intenso ${Formato.decimale(i, 0)}%", color = rosso, fontWeight = FontWeight.Bold)
+    Text(stringResource(R.string.riepilogo_facile, (Formato.decimale(f, 0)).toString()), color = verde, fontWeight = FontWeight.Bold)
+    Text(stringResource(R.string.riepilogo_intenso, (Formato.decimale(i, 0)).toString()), color = rosso, fontWeight = FontWeight.Bold)
   }
   Text(
-      "La linea segna l'80%: con la regola 80/20 il verde dovrebbe arrivare fin lì.",
+      stringResource(R.string.riepilogo_la_linea_segna_l),
       style = MaterialTheme.typography.bodySmall,
       color = MaterialTheme.colorScheme.onSurfaceVariant)
 }
@@ -601,7 +603,7 @@ private fun AltaIntensitaSettimana(a: AltaIntensita) {
   val tetto = a.tettoPct
   val scala = maxOf((tetto ?: a.pct) * 2, a.pct * 1.2, 1.0)
   Text(
-      "${Formato.decimale(a.pct)}% di alta intensità",
+      stringResource(R.string.riepilogo_di_alta_intensita, (Formato.decimale(a.pct)).toString()),
       style = MaterialTheme.typography.titleMedium,
       color = colore,
       fontWeight = FontWeight.Bold)
@@ -617,10 +619,10 @@ private fun AltaIntensitaSettimana(a: AltaIntensita) {
     }
   }
   Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-    Text("${a.minuti}' intensi su ${a.suMinuti}' di bici e corsa", style = MaterialTheme.typography.bodySmall)
+    Text(stringResource(R.string.riepilogo_intensi_su_di_bici, a.minuti.toString(), a.suMinuti.toString()), style = MaterialTheme.typography.bodySmall)
     tetto?.let {
       Text(
-          "tetto ${Formato.decimale(it, 0)}%",
+          stringResource(R.string.riepilogo_tetto, (Formato.decimale(it, 0)).toString()),
           style = MaterialTheme.typography.bodySmall,
           fontWeight = FontWeight.Bold,
           color = if (a.sopraTetto) ColoriBio.rosso else MaterialTheme.colorScheme.onSurface)
@@ -640,7 +642,7 @@ private fun AltaIntensitaSettimana(a: AltaIntensita) {
 private fun Settimana(volume: Volume?, carico: Carico?) {
   if (volume == null && carico == null) return
   Text(
-      "Pieno = fatto · chiaro = con le sedute ancora in calendario · linea = obiettivo · rosso = tetto",
+      stringResource(R.string.riepilogo_pieno_fatto_chiaro_con),
       style = MaterialTheme.typography.labelSmall,
       color = MaterialTheme.colorScheme.onSurfaceVariant)
   volume?.let { v ->
@@ -742,7 +744,7 @@ private fun Seduta(s: SedutaPiano, onApri: () -> Unit) {
     if (aperta) {
       s.descrizione?.let { Text(it, style = MaterialTheme.typography.bodySmall) }
       Text(
-          "Apri nel calendario",
+          stringResource(R.string.riepilogo_apri_nel_calendario),
           style = MaterialTheme.typography.labelLarge,
           color = MaterialTheme.colorScheme.primary,
           modifier = Modifier.clickable(onClick = onApri).padding(vertical = 4.dp))

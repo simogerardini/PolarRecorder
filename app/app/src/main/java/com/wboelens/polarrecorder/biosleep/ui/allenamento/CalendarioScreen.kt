@@ -1,5 +1,7 @@
 package com.wboelens.polarrecorder.biosleep.ui.allenamento
 
+import com.wboelens.polarrecorder.R
+import androidx.compose.ui.res.stringResource
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectDragGesturesAfterLongPress
@@ -160,7 +162,7 @@ fun CalendarioScreen(
   }
 
   Scaffold(
-      topBar = { TopAppBar(title = { Text("Calendario") }, actions = { AzioneAggiorna() }) },
+      topBar = { TopAppBar(title = { Text(stringResource(R.string.calendario_calendario)) }, actions = { AzioneAggiorna() }) },
       bottomBar = bottomBar,
   ) { padding ->
     if (dati == null) {
@@ -267,7 +269,7 @@ private fun Giorno(
       val (svolto, pianificato) = dati.settimane[g.data] ?: (0.0 to 0.0)
       HorizontalDivider(Modifier.padding(top = 8.dp))
       Text(
-          "Settimana dal ${DateIt.asse(g.data)} · TSS ${svolto.toInt()} svolto / ${pianificato.toInt()} pianificato",
+          stringResource(R.string.calendario_settimana_dal_tss_svolto, (DateIt.asse(g.data)).toString(), (svolto.toInt()).toString(), (pianificato.toInt()).toString()),
           style = MaterialTheme.typography.labelMedium,
           color = MaterialTheme.colorScheme.onSurfaceVariant)
     }
@@ -333,7 +335,7 @@ private fun SchedaDettaglio(det: Dettaglio, onApriAttivita: (String) -> Unit) {
           // Seduta su Garmin Connect (multisport): le parti, la guida strutturata e' sull'orologio
           for (p in e.parti) Text("${p.sport.etichetta} · ${Formato.durata(p.minuti * 60)}", style = MaterialTheme.typography.bodyMedium)
           Text(
-              "Seduta su Garmin Connect: la guida strutturata e' sull'orologio.",
+              stringResource(R.string.calendario_seduta_su_garmin_connect),
               style = MaterialTheme.typography.bodySmall,
               color = MaterialTheme.colorScheme.onSurfaceVariant)
         }
@@ -351,15 +353,15 @@ private fun SchedaDettaglio(det: Dettaglio, onApriAttivita: (String) -> Unit) {
             det.s.svolte.firstOrNull()?.let { a -> TagSeduta(a.id, a.data.toString()) }
           }
           det.s.esito == Esito.NON_SVOLTA ->
-              Text("Non svolta", color = ColoriBio.rosso, fontWeight = FontWeight.Bold)
+              Text(stringResource(R.string.calendario_non_svolta), color = ColoriBio.rosso, fontWeight = FontWeight.Bold)
           else -> {}
         }
       }
       is Dettaglio.Libera -> {
         val a = det.a
         Text(a.nome, style = MaterialTheme.typography.titleLarge)
-        Text("${DateIt.lunga(a.data)} · ${a.sport.etichetta} · non pianificata", color = MaterialTheme.colorScheme.onSurfaceVariant)
-        TextButton(onClick = { onApriAttivita(a.id) }) { Text("Analisi della seduta") }
+        Text(stringResource(R.string.calendario_non_pianificata, (DateIt.lunga(a.data)).toString(), a.sport.etichetta.toString()), color = MaterialTheme.colorScheme.onSurfaceVariant)
+        TextButton(onClick = { onApriAttivita(a.id) }) { Text(stringResource(R.string.calendario_analisi_della_seduta)) }
         TagSeduta(a.id, a.data.toString())
         Blocco("Svolto", a.durataS, a.tss, a.distanzaM, null)
       }

@@ -1,5 +1,7 @@
 package com.wboelens.polarrecorder.biosleep.ui.allenamento
 
+import com.wboelens.polarrecorder.R
+import androidx.compose.ui.res.stringResource
 import com.wboelens.polarrecorder.biosleep.intervals.CampiWellness
 import com.wboelens.polarrecorder.BuildConfig
 import androidx.compose.foundation.background
@@ -130,7 +132,7 @@ fun OggiScreen(
   Scaffold(
       topBar = {
         TopAppBar(
-            title = { Text("Oggi") },
+            title = { Text(stringResource(R.string.oggi_oggi)) },
             actions = {
               AzioneAggiorna()
               // Impostazioni di tutta l'app (Intervals.icu, coach, profilo atleta): dalla home
@@ -195,11 +197,11 @@ private fun Recupero(d: DatiOggi) {
   val grigio = MaterialTheme.colorScheme.onSurfaceVariant
   when (val p = d.prontezza) {
     is Prontezza.Calibrazione -> {
-      Text("Calibrazione: ${p.notti}/${p.servono} notti", fontWeight = FontWeight.Bold)
+      Text(stringResource(R.string.oggi_calibrazione_notti, p.notti.toString(), p.servono.toString()), fontWeight = FontWeight.Bold)
       LinearProgressIndicator(
           progress = { (p.notti.toFloat() / p.servono).coerceIn(0f, 1f) }, modifier = Modifier.fillMaxWidth())
       Text(
-          "Il range personale si costruisce sulle tue notti ${BuildConfig.APP_NAME}: fino ad allora l'app non da' un colore.",
+          stringResource(R.string.oggi_il_range_personale_si, BuildConfig.APP_NAME),
           style = stileNota,
           color = grigio)
     }
@@ -215,7 +217,7 @@ private fun Recupero(d: DatiOggi) {
           "Media 7 gg ${b.rolling7Hrv?.let { Formato.decimale(it) } ?: "—"} ms" +
               (r?.let { " · range ${Formato.decimale(it.first)}–${Formato.decimale(it.second)} ms" } ?: ""),
           style = stileNota)
-      if (b.persistenzaGgSotto >= 2) Text("Sotto il range da ${b.persistenzaGgSotto} notti consecutive", style = stileNota)
+      if (b.persistenzaGgSotto >= 2) Text(stringResource(R.string.oggi_sotto_il_range_da, b.persistenzaGgSotto.toString()), style = stileNota)
     }
   }
   if (d.baseline.ok && d.baseline.ggRitardo >= 1) {
@@ -269,13 +271,13 @@ private fun Valore(titolo: String, valore: String, nota: String?, allarme: Boole
 private fun AllenamentoDiOggi(d: DatiOggi, onApriSeduta: (LocalDate, String?) -> Unit) {
   val g = d.giorno
   if (g.pianificate.isEmpty() && g.nonPianificate.isEmpty()) {
-    Text("Riposo", style = MaterialTheme.typography.bodyLarge)
+    Text(stringResource(R.string.oggi_riposo), style = MaterialTheme.typography.bodyLarge)
   }
   for (s in g.pianificate) CardSeduta(s, onClick = { onApriSeduta(g.data, s.evento.id) })
   for (a in g.nonPianificate) CardAttivita(a, onClick = { onApriSeduta(g.data, null) })
   d.prossima?.let { p ->
     Text(
-        "Prossima: ${DateIt.breve(p.evento.data)} · ${p.evento.nome} · ${Formato.durata(p.evento.durataS)}",
+        stringResource(R.string.oggi_prossima, (DateIt.breve(p.evento.data)).toString(), p.evento.nome.toString(), (Formato.durata(p.evento.durataS)).toString()),
         style = MaterialTheme.typography.bodySmall,
         color = MaterialTheme.colorScheme.onSurfaceVariant,
         modifier = Modifier.clickable { onApriSeduta(p.evento.data, p.evento.id) })
@@ -400,13 +402,12 @@ private fun Settimana(d: DatiOggi) {
     }
   }
   Text(
-      "Svolto ${Formato.metrica(barre.sumOf { it.svolto }, metrica)} · " +
-          "pianificato ${Formato.metrica(barre.sumOf { it.pianificato }, metrica)}",
+      stringResource(R.string.oggi_svolto_pianificato, (Formato.metrica(barre.sumOf { it.svolto }, metrica)).toString(), (Formato.metrica(barre.sumOf { it.pianificato }, metrica)).toString()),
       style = MaterialTheme.typography.bodySmall)
   Row(horizontalArrangement = Arrangement.spacedBy(12.dp), verticalAlignment = Alignment.CenterVertically) {
     Box(Modifier.size(10.dp).border(1.dp, bordo))
-    Text("pianificato", style = MaterialTheme.typography.labelSmall)
+    Text(stringResource(R.string.oggi_pianificato), style = MaterialTheme.typography.labelSmall)
     Box(Modifier.size(10.dp).background(primario))
-    Text("svolto", style = MaterialTheme.typography.labelSmall)
+    Text(stringResource(R.string.oggi_svolto), style = MaterialTheme.typography.labelSmall)
   }
 }

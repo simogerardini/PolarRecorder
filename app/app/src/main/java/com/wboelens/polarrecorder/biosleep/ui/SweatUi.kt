@@ -1,5 +1,7 @@
 package com.wboelens.polarrecorder.biosleep.ui
 
+import com.wboelens.polarrecorder.R
+import androidx.compose.ui.res.stringResource
 import android.content.Context
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -80,9 +82,9 @@ fun CardSweat() {
 
   Card(Modifier.fillMaxWidth()) {
     Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-      Text("Inserisci i dati dello sweat test", style = MaterialTheme.typography.titleMedium)
+      Text(stringResource(R.string.sweat_inserisci_i_dati_dello), style = MaterialTheme.typography.titleMedium)
       Text(
-          "Test del ${DateIt.breve(giorno)}. Pesi nudo e asciutto, borraccia piena e a fine test.",
+          stringResource(R.string.sweat_test_del_pesi_nudo, (DateIt.breve(giorno)).toString()),
           style = MaterialTheme.typography.bodySmall,
           color = MaterialTheme.colorScheme.onSurfaceVariant)
       Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
@@ -118,7 +120,7 @@ fun CardSweat() {
             }
           },
           enabled = dati != null && problema == null && !inCorso) {
-            Text("Salva")
+            Text(stringResource(R.string.sweat_salva))
           }
     }
   }
