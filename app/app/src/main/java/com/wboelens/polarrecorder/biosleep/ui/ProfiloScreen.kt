@@ -1,5 +1,7 @@
 package com.wboelens.polarrecorder.biosleep.ui
 
+import com.wboelens.polarrecorder.R
+import androidx.compose.ui.res.stringResource
 import com.wboelens.polarrecorder.BuildConfig
 import android.Manifest
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -164,7 +166,7 @@ fun ProfiloScreen(onBack: () -> Unit, onApriGare: () -> Unit = {}) {
   Scaffold(
       topBar = {
         TopAppBar(
-            title = { Text("Profilo atleta") },
+            title = { Text(stringResource(R.string.profilo_profilo_atleta)) },
             navigationIcon = { IconButton(onClick = onBack) { Icon(Icons.AutoMirrored.Filled.ArrowBack, "Indietro") } })
       },
   ) { padding ->
@@ -173,17 +175,17 @@ fun ProfiloScreen(onBack: () -> Unit, onApriGare: () -> Unit = {}) {
         verticalArrangement = Arrangement.spacedBy(12.dp),
     ) {
       Text(
-          "Il coach usa questi valori al posto di quelli di Intervals.icu. Un campo vuoto non viene mandato.",
+          stringResource(R.string.profilo_il_coach_usa_questi),
           style = MaterialTheme.typography.bodySmall,
           color = MaterialTheme.colorScheme.onSurfaceVariant)
 
       // Gare: la preparazione si costruisce su quella che detta la stagione
-      OutlinedButton(onClick = onApriGare) { Text("Gare in programma") }
+      OutlinedButton(onClick = onApriGare) { Text(stringResource(R.string.profilo_gare_in_programma)) }
 
       // Soglie di corsa, bici e nuoto su Intervals.icu (controllate a ogni apertura)
       SezioneSoglie()
 
-      Text("Frequenza cardiaca", style = MaterialTheme.typography.titleSmall)
+      Text(stringResource(R.string.profilo_frequenza_cardiaca), style = MaterialTheme.typography.titleSmall)
       CampoNumero(fcMax, { fcMax = it; esito = null }, "FC massima (bpm)", errFcMax)
       suggerimenti?.fcMax?.let { s ->
         Proposta("Più alta nelle sedute degli ultimi 90 giorni: $s bpm (${suggerimenti?.fcMaxData})") { fcMax = s.toString() }
@@ -195,29 +197,29 @@ fun ProfiloScreen(onBack: () -> Unit, onApriGare: () -> Unit = {}) {
             Proposta("Mediana delle ultime ${sr.nottiFcRiposo} notti ${BuildConfig.APP_NAME}: ${sr.fcRiposo} bpm. Se lasci vuoto, il coach usa questa.") {
               fcRiposo = sr.fcRiposo.toString()
             }
-        sr != null -> Nota("Con almeno 5 notti ${BuildConfig.APP_NAME} l'app propone la FC a riposo misurata (ora ${sr.nottiFcRiposo}).")
+        sr != null -> Nota(stringResource(R.string.profilo_con_almeno_5_notti, BuildConfig.APP_NAME, sr.nottiFcRiposo.toString()))
       }
 
-      Text("Volume", style = MaterialTheme.typography.titleSmall)
+      Text(stringResource(R.string.profilo_volume), style = MaterialTheme.typography.titleSmall)
       OutlinedTextField(
           value = tetto,
           onValueChange = { tetto = it; esito = null },
-          label = { Text("Ore cardio massime a settimana (palestra esclusa)") },
+          label = { Text(stringResource(R.string.profilo_ore_cardio_massime_a)) },
           singleLine = true,
           isError = errTetto,
           keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
           modifier = Modifier.fillMaxWidth())
 
-      Text("Disponibilità", style = MaterialTheme.typography.titleSmall)
-      Nota("Minuti disponibili per giorno. 0 = giorno non disponibile, vuoto = nessun limite.")
+      Text(stringResource(R.string.profilo_disponibilita), style = MaterialTheme.typography.titleSmall)
+      Nota(stringResource(R.string.profilo_minuti_disponibili_per_giorno))
       for (g in GIORNI) {
         Row(verticalAlignment = Alignment.CenterVertically) {
           Text(NOMI_GIORNI.getValue(g), Modifier.width(110.dp))
           OutlinedTextField(
               value = minuti.getValue(g),
               onValueChange = { v -> minuti = minuti + (g to v); esito = null },
-              placeholder = { Text("nessun limite") },
-              suffix = { Text("min") },
+              placeholder = { Text(stringResource(R.string.profilo_nessun_limite)) },
+              suffix = { Text(stringResource(R.string.profilo_min)) },
               singleLine = true,
               isError = g in errGiorni,
               keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
@@ -226,8 +228,8 @@ fun ProfiloScreen(onBack: () -> Unit, onApriGare: () -> Unit = {}) {
       }
 
       // --- Settimana tipo ------------------------------------------------------------------------
-      Text("Settimana tipo", style = MaterialTheme.typography.titleSmall)
-      Nota("Nei giorni feriali il coach mette al massimo una seduta cardio, più la forza.")
+      Text(stringResource(R.string.profilo_settimana_tipo), style = MaterialTheme.typography.titleSmall)
+      Nota(stringResource(R.string.profilo_nei_giorni_feriali_il))
       SceltaGiorno("Lungo in bici", lungoBici, vietati = setOfNotNull(lungoCorsa, riposo)) { lungoBici = it!!; esito = null }
       SceltaGiorno("Lungo di corsa", lungoCorsa, vietati = setOfNotNull(lungoBici, riposo)) { lungoCorsa = it!!; esito = null }
       SceltaGiorno("Riposo", riposo, vietati = setOf(lungoBici, lungoCorsa), facoltativo = true) { riposo = it; esito = null }
@@ -249,8 +251,8 @@ fun ProfiloScreen(onBack: () -> Unit, onApriGare: () -> Unit = {}) {
       }
 
       // --- Palestra ------------------------------------------------------------------------------
-      Text("Palestra", style = MaterialTheme.typography.titleSmall)
-      Nota("Attrezzatura disponibile: il coach sceglie le schede di forza tra quelle che puoi fare.")
+      Text(stringResource(R.string.profilo_palestra), style = MaterialTheme.typography.titleSmall)
+      Nota(stringResource(R.string.profilo_attrezzatura_disponibile_il_coach))
       for ((k, etichetta) in Palestra.ATTREZZI) {
         val sempre = k in Palestra.SEMPRE
         Row(verticalAlignment = Alignment.CenterVertically) {
@@ -261,60 +263,57 @@ fun ProfiloScreen(onBack: () -> Unit, onApriGare: () -> Unit = {}) {
           Text(etichetta + if (sempre) " (sempre incluso)" else "")
         }
       }
-      Text("Livello", style = MaterialTheme.typography.labelLarge)
+      Text(stringResource(R.string.profilo_livello), style = MaterialTheme.typography.labelLarge)
       Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
         for ((k, etichetta) in Palestra.LIVELLI) FilterChip(selected = livello == k, onClick = { livello = k; esito = null }, label = { Text(etichetta) })
       }
-      Nota("Principiante: le prime 4 settimane una scheda di adattamento.")
+      Nota(stringResource(R.string.profilo_principiante_le_prime_4))
       // nel riepilogo piu' recente: sedute di forza tolte dal coach (e perche')
       ultimo?.motivi?.filter { Regex("""forza del .* tolta""", RegexOption.IGNORE_CASE).containsMatchIn(it) }?.forEach {
         Text("• " + it.trim(), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
       }
 
       // --- Caldo --------------------------------------------------------------------------------
-      Text("Caldo", style = MaterialTheme.typography.titleSmall)
+      Text(stringResource(R.string.profilo_caldo), style = MaterialTheme.typography.titleSmall)
       Row(verticalAlignment = Alignment.CenterVertically) {
-        Text("Nei giorni caldi trasforma la corsa facile in bici indoor", Modifier.weight(1f))
+        Text(stringResource(R.string.profilo_nei_giorni_caldi_trasforma), Modifier.weight(1f))
         Switch(checked = converti, onCheckedChange = { converti = it; esito = null })
       }
-      Text("Di solito mi alleno alle…", style = MaterialTheme.typography.labelLarge)
+      Text(stringResource(R.string.profilo_di_solito_mi_alleno), style = MaterialTheme.typography.labelLarge)
       OraAllenamento("Giorni feriali", oraFeriale) { oraFeriale = it; esito = null }
       OraAllenamento("Weekend", oraWeekend) { oraWeekend = it; esito = null }
-      Nota("Il coach legge la previsione a quest'ora.")
+      Nota(stringResource(R.string.profilo_il_coach_legge_la))
       if (posizioneOk) {
-        Nota("Posizione approssimativa consentita: il coach usa le previsioni del luogo in cui ti trovi.")
+        Nota(stringResource(R.string.profilo_posizione_approssimativa_consentita_il))
       } else {
-        Nota("Serve per le previsioni meteo: nei giorni caldi il coach adatta le corse. Senza, il coach funziona uguale, senza regole del caldo.")
+        Nota(stringResource(R.string.profilo_serve_per_le_previsioni))
         RigaInformativa("Come viene usata la posizione")
         OutlinedButton(onClick = { chiediPosizione.launch(Manifest.permission.ACCESS_COARSE_LOCATION) }) {
-          Text("Consenti la posizione approssimativa")
+          Text(stringResource(R.string.profilo_consenti_la_posizione_approssimativa))
         }
         if (posizioneNegata) {
-          Nota("Se Android non la chiede più: Impostazioni di Android → App → ${BuildConfig.APP_NAME} → Autorizzazioni → Posizione.")
+          Nota(stringResource(R.string.profilo_se_android_non_la, BuildConfig.APP_NAME))
         }
       }
 
       // --- Sensori: Stryd, CORE 2 e DETP ------------------------------------------------------------
-      Text("Sensori", style = MaterialTheme.typography.titleSmall)
+      Text(stringResource(R.string.profilo_sensori), style = MaterialTheme.typography.titleSmall)
       Row(verticalAlignment = Alignment.CenterVertically) {
-        Text("Ho uno Stryd", Modifier.weight(1f))
+        Text(stringResource(R.string.profilo_ho_uno_stryd), Modifier.weight(1f))
         Switch(checked = stryd, onCheckedChange = { stryd = it; esito = null })
       }
       Nota(
-          "Le sedute di qualità di corsa (salite, ripetute, soglia) useranno la potenza. Serve la CP su " +
-              "Intervals.icu (campo FTP della corsa): il coach la aggiorna da solo dalle corse con Stryd.")
+          stringResource(R.string.profilo_le_sedute_di_qualita))
       Row(verticalAlignment = Alignment.CenterVertically) {
-        Text("Ho un sensore CORE 2", Modifier.weight(1f))
+        Text(stringResource(R.string.profilo_ho_un_sensore_core), Modifier.weight(1f))
         Switch(checked = core2, onCheckedChange = { core2 = it; if (!it) detp = false; esito = null })
       }
       Row(verticalAlignment = Alignment.CenterVertically) {
-        Text("Applica il protocollo DETP", Modifier.weight(1f), color = if (core2) MaterialTheme.colorScheme.onSurface else MaterialTheme.colorScheme.onSurfaceVariant)
+        Text(stringResource(R.string.profilo_applica_il_protocollo_detp), Modifier.weight(1f), color = if (core2) MaterialTheme.colorScheme.onSurface else MaterialTheme.colorScheme.onSurfaceVariant)
         Switch(checked = detp, onCheckedChange = { detp = it; esito = null }, enabled = core2)
       }
       Nota(
-          "Con il DETP il coach inserisce sedute di adattamento al caldo (heat block) e aggiunge i target HSI " +
-              "agli allenamenti. Interrompi sempre ai primi sintomi (capogiri, nausea, brividi). Non adatto in caso " +
-              "di malattia o problemi cardiovascolari.")
+          stringResource(R.string.profilo_con_il_detp_il))
 
       Button(
           onClick = {
@@ -331,11 +330,11 @@ fun ProfiloScreen(onBack: () -> Unit, onApriGare: () -> Unit = {}) {
           },
           enabled = valido,
       ) {
-        Text("Salva")
+        Text(stringResource(R.string.profilo_salva))
       }
       if (!valido) {
         Text(
-            "Valori fuori dai limiti: FC massima 120–230, FC a riposo 30–100, ore 1–30, minuti 0–600.",
+            stringResource(R.string.profilo_valori_fuori_dai_limiti),
             style = MaterialTheme.typography.bodySmall,
             color = MaterialTheme.colorScheme.error)
       }
@@ -343,9 +342,9 @@ fun ProfiloScreen(onBack: () -> Unit, onApriGare: () -> Unit = {}) {
 
       // --- Ripianifica subito (solo su richiesta) -------------------------------------------------
       val inCorso = lavoro?.state == WorkInfo.State.RUNNING || lavoro?.state == WorkInfo.State.ENQUEUED
-      OutlinedButton(onClick = { conferma = true }, enabled = valido && !inCorso) { Text("Ripianifica questa settimana") }
+      OutlinedButton(onClick = { conferma = true }, enabled = valido && !inCorso) { Text(stringResource(R.string.profilo_ripianifica_questa_settimana)) }
       when {
-        inCorso -> Nota("Ripianificazione in corso: richiede qualche minuto, puoi lasciare questa schermata.")
+        inCorso -> Nota(stringResource(R.string.profilo_ripianificazione_in_corso_richiede))
         lavoro?.state == WorkInfo.State.SUCCEEDED -> {
           val e = lavoro.outputData.getString(RipianificaWorker.K_ESITO)
           if (e != RisultatoCervello.PIANIFICATA) {
@@ -362,9 +361,9 @@ fun ProfiloScreen(onBack: () -> Unit, onApriGare: () -> Unit = {}) {
   if (conferma) {
     AlertDialog(
         onDismissRequest = { conferma = false },
-        title = { Text("Ripianificare la settimana?") },
+        title = { Text(stringResource(R.string.profilo_ripianificare_la_settimana)) },
         text = {
-          Text("Le sedute da oggi a domenica verranno ricalcolate con questo profilo. Le sedute passate restano invariate.")
+          Text(stringResource(R.string.profilo_le_sedute_da_oggi))
         },
         confirmButton = {
           TextButton(
@@ -374,10 +373,10 @@ fun ProfiloScreen(onBack: () -> Unit, onApriGare: () -> Unit = {}) {
                 avviatoQui = true
                 RipianificaWorker.avvia(context)
               }) {
-                Text("Ripianifica")
+                Text(stringResource(R.string.profilo_ripianifica))
               }
         },
-        dismissButton = { TextButton(onClick = { conferma = false }) { Text("Annulla") } },
+        dismissButton = { TextButton(onClick = { conferma = false }) { Text(stringResource(R.string.profilo_annulla)) } },
     )
   }
 }
@@ -392,7 +391,7 @@ private fun SceltaGiorno(titolo: String, scelto: String?, vietati: Set<String>, 
   Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
     Text(titolo, style = MaterialTheme.typography.labelLarge)
     FlowRow(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
-      if (facoltativo) FilterChip(selected = scelto == null, onClick = { onScegli(null) }, label = { Text("Nessuno") })
+      if (facoltativo) FilterChip(selected = scelto == null, onClick = { onScegli(null) }, label = { Text(stringResource(R.string.profilo_nessuno)) })
       for (g in GIORNI) {
         FilterChip(
             selected = scelto == g,
@@ -442,7 +441,7 @@ private fun CampoNumero(valore: String, onCambia: (String) -> Unit, etichetta: S
 private fun Proposta(testo: String, onUsa: () -> Unit) {
   Row(verticalAlignment = Alignment.CenterVertically) {
     Text(testo, Modifier.weight(1f), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
-    TextButton(onClick = onUsa) { Text("Usa") }
+    TextButton(onClick = onUsa) { Text(stringResource(R.string.profilo_usa)) }
   }
 }
 

@@ -1,5 +1,7 @@
 package com.wboelens.polarrecorder.biosleep.ui
 
+import com.wboelens.polarrecorder.R
+import androidx.compose.ui.res.stringResource
 import com.wboelens.polarrecorder.biosleep.cervello.Lingua
 import com.wboelens.polarrecorder.biosleep.cervello.DisponibilitaDate
 import androidx.compose.foundation.clickable
@@ -63,10 +65,9 @@ fun SezioneCoach(onApriProfilo: () -> Unit = {}, onApriGare: () -> Unit = {}) {
   var log by remember { mutableStateOf<String?>(null) }
 
   Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
-    Text("3. Coach", style = MaterialTheme.typography.titleSmall)
+    Text(stringResource(R.string.coach_settings_3_coach), style = MaterialTheme.typography.titleSmall)
     Text(
-        "Il coach gira nell'app subito dopo l'invio della notte, e alle 10:30 se la notte non è " +
-            "arrivata. Usa la stessa API key di Intervals.icu.",
+        stringResource(R.string.coach_settings_il_coach_gira_nell),
         style = MaterialTheme.typography.bodySmall,
         color = MaterialTheme.colorScheme.onSurfaceVariant)
     OutlinedTextField(
@@ -75,16 +76,16 @@ fun SezioneCoach(onApriProfilo: () -> Unit = {}, onApriGare: () -> Unit = {}) {
           atleta = it
           settings.athleteId = it
         },
-        label = { Text("Id atleta per la API key (0 = quello della API key)") },
+        label = { Text(stringResource(R.string.coach_settings_id_atleta_per_la)) },
         singleLine = true,
         modifier = Modifier.fillMaxWidth())
 
     val esito = stato.esito
     when {
-      esito == null -> Text("Il coach non ha ancora girato su questo telefono", style = MaterialTheme.typography.bodySmall)
+      esito == null -> Text(stringResource(R.string.coach_settings_il_coach_non_ha), style = MaterialTheme.typography.bodySmall)
       esito == RisultatoCervello.ERRORE ->
           Text(
-              "Ultimo run del coach non riuscito (${stato.data}): tocca per il log",
+              stringResource(R.string.coach_settings_ultimo_run_del_coach, stato.data.toString()),
               style = MaterialTheme.typography.bodySmall,
               color = MaterialTheme.colorScheme.error,
               modifier =
@@ -100,15 +101,15 @@ fun SezioneCoach(onApriProfilo: () -> Unit = {}, onApriGare: () -> Unit = {}) {
                   })
       else ->
           Text(
-              "Ultimo run (${stato.data}): $esito in ${durata(stato.durataMs)}",
+              stringResource(R.string.coach_settings_ultimo_run_in, stato.data.toString(), esito.toString(), (durata(stato.durataMs)).toString()),
               style = MaterialTheme.typography.bodySmall)
     }
     if (stato.durataSettimanaleMs > 0) {
-      Text("Durata di un run settimanale: ${durata(stato.durataSettimanaleMs)}", style = MaterialTheme.typography.bodySmall)
+      Text(stringResource(R.string.coach_settings_durata_di_un_run, (durata(stato.durataSettimanaleMs)).toString()), style = MaterialTheme.typography.bodySmall)
     }
 
-    OutlinedButton(onClick = onApriProfilo) { Text("Profilo atleta: FC, ore massime, disponibilità") }
-    OutlinedButton(onClick = onApriGare) { Text("Gare") }
+    OutlinedButton(onClick = onApriProfilo) { Text(stringResource(R.string.coach_settings_profilo_atleta_fc_ore)) }
+    OutlinedButton(onClick = onApriGare) { Text(stringResource(R.string.coach_settings_gare)) }
     OutlinedButton(
         onClick = {
           inMisura = true
@@ -139,7 +140,7 @@ fun SezioneCoach(onApriProfilo: () -> Unit = {}, onApriGare: () -> Unit = {}) {
         },
         enabled = !inMisura && settings.isConfigured,
     ) {
-      Text("Misura un run settimanale (prova, non scrive nulla)")
+      Text(stringResource(R.string.coach_settings_misura_un_run_settimanale))
     }
     if (inMisura) CircularProgressIndicator()
     misura?.let { Text(it, style = MaterialTheme.typography.bodySmall) }
@@ -148,7 +149,7 @@ fun SezioneCoach(onApriProfilo: () -> Unit = {}, onApriGare: () -> Unit = {}) {
   log?.let { testo ->
     AlertDialog(
         onDismissRequest = { log = null },
-        title = { Text("Log del coach") },
+        title = { Text(stringResource(R.string.coach_settings_log_del_coach)) },
         text = {
           Text(
               testo,
@@ -156,7 +157,7 @@ fun SezioneCoach(onApriProfilo: () -> Unit = {}, onApriGare: () -> Unit = {}) {
               style = MaterialTheme.typography.bodySmall,
               modifier = Modifier.heightIn(max = 480.dp).verticalScroll(rememberScrollState()))
         },
-        confirmButton = { TextButton(onClick = { log = null }) { Text("Chiudi") } },
+        confirmButton = { TextButton(onClick = { log = null }) { Text(stringResource(R.string.coach_settings_chiudi)) } },
     )
   }
 }

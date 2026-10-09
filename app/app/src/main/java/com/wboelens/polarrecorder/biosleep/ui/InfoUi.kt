@@ -1,5 +1,7 @@
 package com.wboelens.polarrecorder.biosleep.ui
 
+import com.wboelens.polarrecorder.R
+import androidx.compose.ui.res.stringResource
 import kotlinx.coroutines.withContext
 import kotlinx.coroutines.Dispatchers
 import androidx.compose.runtime.produceState
@@ -68,7 +70,7 @@ fun RigaInformativa(testo: String = "Informativa sulla privacy") {
 @Composable
 fun SezioneInformazioni(onApriLicenze: () -> Unit) {
   Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
-    Text("Informazioni", style = MaterialTheme.typography.titleSmall)
+    Text(stringResource(R.string.info_informazioni), style = MaterialTheme.typography.titleSmall)
     val context = LocalContext.current.applicationContext
     val versioneCoach by produceState<String?>(null) { value = withContext(Dispatchers.IO) { Cervello.versione(context) } }
     Text(
@@ -76,7 +78,7 @@ fun SezioneInformazioni(onApriLicenze: () -> Unit) {
         style = MaterialTheme.typography.bodySmall,
         color = MaterialTheme.colorScheme.onSurfaceVariant)
     RigaInformativa()
-    TextButton(onClick = onApriLicenze) { Text("Licenze open source") }
+    TextButton(onClick = onApriLicenze) { Text(stringResource(R.string.info_licenze_open_source)) }
   }
 }
 
@@ -89,7 +91,7 @@ fun LicenzeScreen(onBack: () -> Unit) {
   Scaffold(
       topBar = {
         TopAppBar(
-            title = { Text("Licenze open source") },
+            title = { Text(stringResource(R.string.info_licenze_open_source)) },
             navigationIcon = { IconButton(onClick = onBack) { Icon(Icons.AutoMirrored.Filled.ArrowBack, "Indietro") } })
       },
   ) { padding ->
@@ -100,7 +102,7 @@ fun LicenzeScreen(onBack: () -> Unit) {
       Text(Licenze.ORIGINE.descrizione, style = MaterialTheme.typography.bodyMedium)
       RigaComponente(Licenze.ORIGINE) { aperto = it }
       HorizontalDivider()
-      Text("Componenti usati", style = MaterialTheme.typography.titleSmall)
+      Text(stringResource(R.string.info_componenti_usati), style = MaterialTheme.typography.titleSmall)
       for (c in Licenze.COMPONENTI) RigaComponente(c) { aperto = it }
       HorizontalDivider()
       Text(Licenze.NOTA_GOOGLE, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
@@ -118,8 +120,8 @@ fun LicenzeScreen(onBack: () -> Unit) {
               style = MaterialTheme.typography.bodySmall,
               modifier = Modifier.heightIn(max = 480.dp).verticalScroll(rememberScrollState()))
         },
-        confirmButton = { TextButton(onClick = { aperto = null }) { Text("Chiudi") } },
-        dismissButton = { TextButton(onClick = { apriPagina(context, c.url) }) { Text("Sito del progetto") } },
+        confirmButton = { TextButton(onClick = { aperto = null }) { Text(stringResource(R.string.info_chiudi)) } },
+        dismissButton = { TextButton(onClick = { apriPagina(context, c.url) }) { Text(stringResource(R.string.info_sito_del_progetto)) } },
     )
   }
 }

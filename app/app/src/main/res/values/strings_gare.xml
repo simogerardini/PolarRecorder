@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Testi di GareScreen.kt (italiano, base). Generato da estrai_testi.py. -->
+<resources>
+    <string name="gare_gare">Gare</string>
+    <string name="gare_il_collegamento_non_permette">Il collegamento non permette di leggere il calendario: ricollega Intervals.icu.</string>
+    <string name="gare_ricollega_intervals_icu">Ricollega Intervals.icu</string>
+    <string name="gare_riprova">Riprova</string>
+    <string name="gare_nessuna_gara_in_programma">Nessuna gara in programma: il coach segue il ciclo continuo. Aggiungine una con +.</string>
+    <string name="gare_aggiorno_subito_il_piano">Aggiorno subito il piano della settimana?</string>
+    <string name="gare_le_sedute_da_oggi">Le sedute da oggi a domenica verranno ricalcolate tenendo conto delle gare. Le sedute passate restano invariate.</string>
+    <string name="gare_si_ripianifica">Sì, ripianifica</string>
+    <string name="gare_no">No</string>
+    <string name="gare_gara" formatted="true">Gara %1$s</string>
+    <string name="gare_detta_la_preparazione">Detta la preparazione</string>
+    <string name="gare_distanza_non_riconosciuta_tocca">Distanza non riconosciuta: tocca per indicarla, il coach la usa per la preparazione</string>
+    <string name="gare_nome">Nome</string>
+    <string name="gare_priorita">Priorità</string>
+    <string name="gare_distanza">Distanza</string>
+    <string name="gare_gara_calda_prevista_con">Gara calda (prevista con caldo)</string>
+    <string name="gare_il_collegamento_non_permette_2">Il collegamento non permette di scrivere il calendario.</string>
+    <string name="gare_elimina">Elimina</string>
+    <string name="gare_salva">Salva</string>
+    <string name="gare_annulla">Annulla</string>
+    <string name="gare_ok">OK</string>
+    <string name="gare_eliminare_la_gara">Eliminare la gara?</string>
+    <string name="gare_sparisce_dal_calendario_di" formatted="true">%1$s sparisce dal calendario di Intervals.icu.</string>
+</resources>

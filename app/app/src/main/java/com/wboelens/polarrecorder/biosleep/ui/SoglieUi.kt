@@ -1,5 +1,7 @@
 package com.wboelens.polarrecorder.biosleep.ui
 
+import com.wboelens.polarrecorder.R
+import androidx.compose.ui.res.stringResource
 import android.content.ActivityNotFoundException
 import android.content.Context
 import android.content.Intent
@@ -69,18 +71,18 @@ fun CardSoglie(e: EsitoSoglie?, avviso: String? = null) {
     e?.esito == Soglie.PERMESSO_MANCANTE ->
         Card(Modifier.fillMaxWidth(), colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.errorContainer)) {
           Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-            Text("Soglie non controllabili", style = MaterialTheme.typography.titleMedium, color = MaterialTheme.colorScheme.onErrorContainer)
+            Text(stringResource(R.string.soglie_soglie_non_controllabili), style = MaterialTheme.typography.titleMedium, color = MaterialTheme.colorScheme.onErrorContainer)
             Text(
-                "Il collegamento a Intervals.icu non permette di leggere le impostazioni: ricollega e accetta tutti i permessi.",
+                stringResource(R.string.soglie_il_collegamento_a_intervals),
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onErrorContainer)
-            Button(onClick = { OAuthIntervals.avvia(context) }) { Text("Ricollega Intervals.icu") }
+            Button(onClick = { OAuthIntervals.avvia(context) }) { Text(stringResource(R.string.soglie_ricollega_intervals_icu)) }
           }
         }
     e?.daCompletare == true || avviso != null ->
         Card(Modifier.fillMaxWidth(), colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.errorContainer)) {
           Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-            Text("Soglie da completare", style = MaterialTheme.typography.titleMedium, color = MaterialTheme.colorScheme.onErrorContainer)
+            Text(stringResource(R.string.soglie_soglie_da_completare), style = MaterialTheme.typography.titleMedium, color = MaterialTheme.colorScheme.onErrorContainer)
             val mancanti = e?.takeIf { it.daCompletare }?.mancanti.orEmpty().sortedBy { !it.bloccante }
             if (mancanti.isEmpty()) {
               avviso?.let { Text(it, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onErrorContainer) }
@@ -96,7 +98,7 @@ fun CardSoglie(e: EsitoSoglie?, avviso: String? = null) {
                 Text(m.effetto.replaceFirstChar { it.uppercase() }, style = MaterialTheme.typography.bodySmall, color = colore)
               }
             }
-            Button(onClick = { apri(context, e?.link ?: "https://intervals.icu/settings") }) { Text("Apri Intervals.icu") }
+            Button(onClick = { apri(context, e?.link ?: "https://intervals.icu/settings") }) { Text(stringResource(R.string.soglie_apri_intervals_icu)) }
           }
         }
   }
@@ -125,9 +127,9 @@ fun SezioneSoglie() {
   LaunchedEffect(Unit) { withContext(Dispatchers.IO) { SoglieRepo.carica(context); SoglieRepo.controlla(context, forza = true) } }
   val ultimoTest = rememberUltimoTest()
   Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-    Text("Soglie su Intervals.icu", style = MaterialTheme.typography.titleSmall)
+    Text(stringResource(R.string.soglie_soglie_su_intervals_icu), style = MaterialTheme.typography.titleSmall)
     ultimoTest?.let {
-      Text("Ultimo test: ${it.nome}, ${DateIt.breve(it.data)}", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+      Text(stringResource(R.string.soglie_ultimo_test, it.nome.toString(), (DateIt.breve(it.data)).toString()), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
     }
     val e = stato
     if (e == null || e.esito == Soglie.ERRORE) {
@@ -143,11 +145,11 @@ fun SezioneSoglie() {
       }
       for (m in e.mancanti) {
         Text(
-            "${m.titolo} (consigliato): ${m.effetto}",
+            stringResource(R.string.soglie_consigliato, m.titolo.toString(), m.effetto.toString()),
             style = MaterialTheme.typography.bodySmall,
             color = MaterialTheme.colorScheme.onSurfaceVariant)
       }
-      OutlinedButton(onClick = { apri(context, e.link) }) { Text("Apri Intervals.icu") }
+      OutlinedButton(onClick = { apri(context, e.link) }) { Text(stringResource(R.string.soglie_apri_intervals_icu)) }
     }
   }
 }

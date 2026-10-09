@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Testi di SoglieUi.kt (italiano, base). Generato da estrai_testi.py. -->
+<resources>
+    <string name="soglie_soglie_non_controllabili">Soglie non controllabili</string>
+    <string name="soglie_il_collegamento_a_intervals">Il collegamento a Intervals.icu non permette di leggere le impostazioni: ricollega e accetta tutti i permessi.</string>
+    <string name="soglie_ricollega_intervals_icu">Ricollega Intervals.icu</string>
+    <string name="soglie_soglie_da_completare">Soglie da completare</string>
+    <string name="soglie_apri_intervals_icu">Apri Intervals.icu</string>
+    <string name="soglie_soglie_su_intervals_icu">Soglie su Intervals.icu</string>
+    <string name="soglie_ultimo_test" formatted="true">Ultimo test: %1$s, %2$s</string>
+    <string name="soglie_consigliato" formatted="true">%1$s (consigliato): %2$s</string>
+</resources>

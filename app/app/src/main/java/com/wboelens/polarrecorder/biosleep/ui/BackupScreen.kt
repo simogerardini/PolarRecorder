@@ -1,5 +1,7 @@
 package com.wboelens.polarrecorder.biosleep.ui
 
+import com.wboelens.polarrecorder.R
+import androidx.compose.ui.res.stringResource
 import com.wboelens.polarrecorder.BuildConfig
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -63,8 +65,8 @@ fun PromemoriaBackup(onApri: () -> Unit) {
   if (!serve) return
   Card(Modifier.fillMaxWidth()) {
     Row(Modifier.padding(12.dp), verticalAlignment = Alignment.CenterVertically) {
-      Text("Nessun backup delle notti negli ultimi 30 giorni.", Modifier.weight(1f), style = MaterialTheme.typography.bodySmall)
-      TextButton(onClick = onApri) { Text("Fai il backup") }
+      Text(stringResource(R.string.backup_nessun_backup_delle_notti), Modifier.weight(1f), style = MaterialTheme.typography.bodySmall)
+      TextButton(onClick = onApri) { Text(stringResource(R.string.backup_fai_il_backup)) }
     }
   }
 }
@@ -127,7 +129,7 @@ fun BackupScreen(onBack: () -> Unit) {
   Scaffold(
       topBar = {
         TopAppBar(
-            title = { Text("Backup e ripristino") },
+            title = { Text(stringResource(R.string.backup_backup_e_ripristino)) },
             navigationIcon = { IconButton(onClick = onBack) { Icon(Icons.AutoMirrored.Filled.ArrowBack, "Indietro") } })
       },
   ) { padding ->
@@ -135,42 +137,39 @@ fun BackupScreen(onBack: () -> Unit) {
         Modifier.fillMaxSize().padding(padding).verticalScroll(rememberScrollState()).padding(16.dp),
         verticalArrangement = Arrangement.spacedBy(12.dp),
     ) {
-      Text("Backup", style = MaterialTheme.typography.titleSmall)
+      Text(stringResource(R.string.backup_backup), style = MaterialTheme.typography.titleSmall)
       Text(
-          "Notti, stato del coach, profilo e tag in un unico file cifrato con una password che scegli tu. " +
-              "Lo salvi dove vuoi: Google Drive, memoria del telefono, computer. Non contiene il collegamento a " +
-              "Intervals.icu: dopo un ripristino su un telefono nuovo va ricollegato.",
+          stringResource(R.string.backup_notti_stato_del_coach),
           style = MaterialTheme.typography.bodySmall,
           color = MaterialTheme.colorScheme.onSurfaceVariant)
       Text(
           if (ultimo > 0) "Ultimo backup: " + Instant.ofEpochMilli(ultimo).atZone(ZoneId.systemDefault()).format(DateTimeFormatter.ofPattern("d MMM yyyy, HH:mm"))
           else "Nessun backup fatto da questo telefono",
           style = MaterialTheme.typography.bodySmall)
-      Button(onClick = { chiediPassword = Azione.BACKUP }, enabled = !inCorso) { Text("Crea backup") }
+      Button(onClick = { chiediPassword = Azione.BACKUP }, enabled = !inCorso) { Text(stringResource(R.string.backup_crea_backup)) }
 
       HorizontalDivider()
-      Text("Ripristino", style = MaterialTheme.typography.titleSmall)
+      Text(stringResource(R.string.backup_ripristino), style = MaterialTheme.typography.titleSmall)
       Text(
-          "Da un file .noctalix (o .biosleep, dei backup fatti prima del cambio di nome). Prima del ripristino vedrai quante notti contiene e potrai annullare.",
+          stringResource(R.string.backup_da_un_file_noctalix),
           style = MaterialTheme.typography.bodySmall,
           color = MaterialTheme.colorScheme.onSurfaceVariant)
-      OutlinedButton(onClick = { chiediPassword = Azione.RIPRISTINO }, enabled = !inCorso) { Text("Ripristina da un backup") }
+      OutlinedButton(onClick = { chiediPassword = Azione.RIPRISTINO }, enabled = !inCorso) { Text(stringResource(R.string.backup_ripristina_da_un_backup)) }
 
       HorizontalDivider()
-      Text("Esporta notti", style = MaterialTheme.typography.titleSmall)
+      Text(stringResource(R.string.backup_esporta_notti), style = MaterialTheme.typography.titleSmall)
       Text(
-          "Un CSV con una riga per notte, da aprire in un foglio di calcolo. Il file NON è cifrato: chiunque lo " +
-              "apra vede i tuoi dati di sonno e frequenza cardiaca.",
+          stringResource(R.string.backup_un_csv_con_una),
           style = MaterialTheme.typography.bodySmall,
           color = MaterialTheme.colorScheme.error)
       Row(verticalAlignment = Alignment.CenterVertically) {
         Checkbox(checked = conRr, onCheckedChange = { conRr = it })
-        Text("Aggiungi gli intervalli RR di ogni notte (file zip, più grande)")
+        Text(stringResource(R.string.backup_aggiungi_gli_intervalli_rr))
       }
       OutlinedButton(
           onClick = { esportaCsv.launch(if (conRr) "noctalix_notti_${LocalDate.now()}.zip" else "noctalix_notti_${LocalDate.now()}.csv") },
           enabled = !inCorso) {
-            Text("Esporta")
+            Text(stringResource(R.string.backup_esporta))
           }
 
       if (inCorso) CircularProgressIndicator()
@@ -194,15 +193,15 @@ fun BackupScreen(onBack: () -> Unit) {
           Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
             if (nuovo) {
               Text(
-                  "Serve per riaprire il backup. Se la dimentichi il backup non si può più aprire: nessuno può recuperarla.",
+                  stringResource(R.string.backup_serve_per_riaprire_il),
                   style = MaterialTheme.typography.bodySmall)
             }
             OutlinedTextField(
-                value = password, onValueChange = { password = it }, label = { Text("Password (almeno ${CifraturaBackup.PASSWORD_MINIMA} caratteri)") },
+                value = password, onValueChange = { password = it }, label = { Text(stringResource(R.string.backup_password_almeno_caratteri, CifraturaBackup.PASSWORD_MINIMA.toString())) },
                 singleLine = true, visualTransformation = PasswordVisualTransformation(), modifier = Modifier.fillMaxWidth())
             if (nuovo) {
               OutlinedTextField(
-                  value = conferma, onValueChange = { conferma = it }, label = { Text("Ripeti la password") },
+                  value = conferma, onValueChange = { conferma = it }, label = { Text(stringResource(R.string.backup_ripeti_la_password)) },
                   singleLine = true, visualTransformation = PasswordVisualTransformation(), isError = conferma.isNotEmpty() && diverse,
                   modifier = Modifier.fillMaxWidth())
             }
@@ -215,10 +214,10 @@ fun BackupScreen(onBack: () -> Unit) {
                 if (nuovo) creaFile.launch("noctalix_${LocalDate.now()}.noctalix") else apriFile.launch(arrayOf("*/*"))
               },
               enabled = !corta && !diverse) {
-                Text("Continua")
+                Text(stringResource(R.string.backup_continua))
               }
         },
-        dismissButton = { TextButton(onClick = { chiediPassword = null; password = ""; conferma = "" }) { Text("Annulla") } },
+        dismissButton = { TextButton(onClick = { chiediPassword = null; password = ""; conferma = "" }) { Text(stringResource(R.string.backup_annulla)) } },
     )
   }
 
@@ -226,11 +225,10 @@ fun BackupScreen(onBack: () -> Unit) {
   pronto?.let { p ->
     AlertDialog(
         onDismissRequest = { p.scarta(); pronto = null },
-        title = { Text("Ripristinare questo backup?") },
+        title = { Text(stringResource(R.string.backup_ripristinare_questo_backup)) },
         text = {
           Text(
-              "Backup del ${p.manifest.creato.replace('T', ' ')} (${BuildConfig.APP_NAME} ${p.manifest.appVersion}), con ${p.notti} notti.\n\n" +
-                  "Le notti di questo telefono verranno sostituite da quelle del backup, insieme allo stato del coach, al profilo e ai tag.")
+              stringResource(R.string.backup_backup_del_con_notti, (p.manifest.creato.replace('T', ' ')).toString(), BuildConfig.APP_NAME, p.manifest.appVersion.toString(), p.notti.toString()))
         },
         confirmButton = {
           TextButton(
@@ -238,10 +236,10 @@ fun BackupScreen(onBack: () -> Unit) {
                 pronto = null
                 lavora { BackupRepo.applica(context, p, registrando()) }
               }) {
-                Text("Sostituisci", color = MaterialTheme.colorScheme.error)
+                Text(stringResource(R.string.backup_sostituisci), color = MaterialTheme.colorScheme.error)
               }
         },
-        dismissButton = { TextButton(onClick = { p.scarta(); pronto = null }) { Text("Annulla") } },
+        dismissButton = { TextButton(onClick = { p.scarta(); pronto = null }) { Text(stringResource(R.string.backup_annulla)) } },
     )
   }
 }

@@ -1,5 +1,7 @@
 package com.wboelens.polarrecorder.biosleep.ui
 
+import com.wboelens.polarrecorder.R
+import androidx.compose.ui.res.stringResource
 import com.wboelens.polarrecorder.BuildConfig
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -90,7 +92,7 @@ fun IntervalsSettingsScreen(
   Scaffold(
       topBar = {
         TopAppBar(
-            title = { Text("Impostazioni") },
+            title = { Text(stringResource(R.string.intervals_settings_impostazioni)) },
             navigationIcon = {
               IconButton(onClick = onBack) { Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Indietro") }
             },
@@ -102,7 +104,7 @@ fun IntervalsSettingsScreen(
         verticalArrangement = Arrangement.spacedBy(16.dp),
     ) {
       // --- 1. Collegamento ---------------------------------------------------------------------
-      Text("1. Intervals.icu", style = MaterialTheme.typography.titleSmall)
+      Text(stringResource(R.string.intervals_settings_1_intervals_icu), style = MaterialTheme.typography.titleSmall)
       if (collegato) {
         Text(
             "Collegato" + settings.atletaCollegato.takeIf { it.isNotBlank() }?.let { " come atleta $it" }.orEmpty(),
@@ -114,16 +116,15 @@ fun IntervalsSettingsScreen(
                 giro++
               }
             }) {
-              Text("Scollega")
+              Text(stringResource(R.string.intervals_settings_scollega))
             }
       } else {
         Text(
-            "Collega il tuo account: ${BuildConfig.APP_NAME} potrà inviare le notti, leggere sedute e calendario e " +
-                "creare da solo i campi ${BuildConfig.APP_NAME}. Prima di collegarti leggi quali dati vanno a Intervals.icu.",
+            stringResource(R.string.intervals_settings_collega_il_tuo_account, BuildConfig.APP_NAME, BuildConfig.APP_NAME),
             style = MaterialTheme.typography.bodySmall,
             color = MaterialTheme.colorScheme.onSurfaceVariant)
         RigaInformativa()
-        Button(onClick = { OAuthIntervals.avvia(context) }) { Text("Collega Intervals.icu") }
+        Button(onClick = { OAuthIntervals.avvia(context) }) { Text(stringResource(R.string.intervals_settings_collega_intervals_icu)) }
       }
       stato.messaggio?.let { Text(it, style = MaterialTheme.typography.bodySmall) }
 
@@ -139,19 +140,19 @@ fun IntervalsSettingsScreen(
                   color = MaterialTheme.colorScheme.primary)
           EsitoPrepara.PERMESSO_MANCANTE -> {
             Text(
-                "Il collegamento non ha il permesso di creare i campi (SETTINGS:WRITE): ricollega e accetta tutti i permessi.",
+                stringResource(R.string.intervals_settings_il_collegamento_non_ha),
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.error)
-            Button(onClick = { OAuthIntervals.avvia(context) }) { Text("Ricollega") }
+            Button(onClick = { OAuthIntervals.avvia(context) }) { Text(stringResource(R.string.intervals_settings_ricollega)) }
           }
           else -> {
             Text("Campi ${BuildConfig.APP_NAME} non preparati: ${e.errore ?: "errore"}", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.error)
-            OutlinedButton(onClick = { prepara() }, enabled = !stato.inCorso) { Text("Riprova") }
+            OutlinedButton(onClick = { prepara() }, enabled = !stato.inCorso) { Text(stringResource(R.string.intervals_settings_riprova)) }
           }
         }
       }
       if (settings.isConfigured && stato.esito == null && !stato.inCorso) {
-        TextButton(onClick = { prepara() }) { Text("Prepara i campi ${BuildConfig.APP_NAME}") }
+        TextButton(onClick = { prepara() }) { Text(stringResource(R.string.intervals_settings_prepara_i_campi, BuildConfig.APP_NAME)) }
       }
 
       Row(verticalAlignment = Alignment.CenterVertically) {
@@ -163,7 +164,7 @@ fun IntervalsSettingsScreen(
             },
         )
         Spacer(Modifier.width(12.dp))
-        Text("Invia automaticamente ogni notte dopo lo stop")
+        Text(stringResource(R.string.intervals_settings_invia_automaticamente_ogni_notte))
       }
 
       // --- Opzione avanzata: API key -----------------------------------------------------------
@@ -172,8 +173,7 @@ fun IntervalsSettingsScreen(
       }
       if (avanzate) {
         Text(
-            "Alternativa al collegamento (utile finché l'app non è approvata su Intervals.icu). " +
-                "Se sei collegato, il collegamento ha la precedenza.",
+            stringResource(R.string.intervals_settings_alternativa_al_collegamento_utile),
             style = MaterialTheme.typography.bodySmall,
             color = MaterialTheme.colorScheme.onSurfaceVariant)
         OutlinedTextField(
@@ -182,7 +182,7 @@ fun IntervalsSettingsScreen(
               apiKey = it
               testResult = null
             },
-            label = { Text("API key (Settings → Developer Settings)") },
+            label = { Text(stringResource(R.string.intervals_settings_api_key_settings_developer)) },
             singleLine = true,
             visualTransformation = if (showKey) VisualTransformation.None else PasswordVisualTransformation(),
             trailingIcon = {
@@ -211,7 +211,7 @@ fun IntervalsSettingsScreen(
             },
             enabled = apiKey.isNotBlank() && !testing,
         ) {
-          Text("Salva e prova connessione")
+          Text(stringResource(R.string.intervals_settings_salva_e_prova_connessione))
         }
         if (testing) CircularProgressIndicator()
         testResult?.let {
@@ -227,8 +227,8 @@ fun IntervalsSettingsScreen(
 
       HorizontalDivider()
       // Registrazione notturna: batteria, notifiche, Bluetooth, istruzioni per la marca
-      TextButton(onClick = onApriProtezione) { Text("Protezione notturna") }
-      TextButton(onClick = onApriFascia) { Text("Fascia") }
+      TextButton(onClick = onApriProtezione) { Text(stringResource(R.string.intervals_settings_protezione_notturna)) }
+      TextButton(onClick = onApriFascia) { Text(stringResource(R.string.intervals_settings_fascia)) }
 
       HorizontalDivider()
       // Lingua delle sedute sul calendario e sull'orologio
@@ -236,10 +236,10 @@ fun IntervalsSettingsScreen(
 
       HorizontalDivider()
       // Dati: backup cifrato, ripristino, esportazione CSV
-      Text("Dati", style = MaterialTheme.typography.titleSmall)
+      Text(stringResource(R.string.intervals_settings_dati), style = MaterialTheme.typography.titleSmall)
       PromemoriaBackup(onApriBackup)
-      TextButton(onClick = onApriBackup) { Text("Backup e ripristino") }
-      TextButton(onClick = onApriBackup) { Text("Esporta notti") }
+      TextButton(onClick = onApriBackup) { Text(stringResource(R.string.intervals_settings_backup_e_ripristino)) }
+      TextButton(onClick = onApriBackup) { Text(stringResource(R.string.intervals_settings_esporta_notti)) }
 
       HorizontalDivider()
       SezioneInformazioni(onApriLicenze)

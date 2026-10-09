@@ -1,5 +1,7 @@
 package com.wboelens.polarrecorder.biosleep.ui
 
+import com.wboelens.polarrecorder.R
+import androidx.compose.ui.res.stringResource
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -99,7 +101,7 @@ fun GareScreen(onBack: () -> Unit) {
   Scaffold(
       topBar = {
         TopAppBar(
-            title = { Text("Gare") },
+            title = { Text(stringResource(R.string.gare_gare)) },
             navigationIcon = { IconButton(onClick = onBack) { Icon(Icons.AutoMirrored.Filled.ArrowBack, "Indietro") } })
       },
       floatingActionButton = { FloatingActionButton(onClick = { modulo = Modulo(null) }) { Icon(Icons.Filled.Add, "Nuova gara") } },
@@ -113,16 +115,16 @@ fun GareScreen(onBack: () -> Unit) {
       when {
         e == null -> Box(Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) { CircularProgressIndicator() }
         e.esito == Gare.PERMESSO_MANCANTE -> {
-          Text("Il collegamento non permette di leggere il calendario: ricollega Intervals.icu.", color = MaterialTheme.colorScheme.error)
-          Button(onClick = { OAuthIntervals.avvia(context) }) { Text("Ricollega Intervals.icu") }
+          Text(stringResource(R.string.gare_il_collegamento_non_permette), color = MaterialTheme.colorScheme.error)
+          Button(onClick = { OAuthIntervals.avvia(context) }) { Text(stringResource(R.string.gare_ricollega_intervals_icu)) }
         }
         e.esito != Gare.OK -> {
           Text("Gare non lette: ${e.errore ?: "errore"}", color = MaterialTheme.colorScheme.error)
-          OutlinedButton(onClick = { giro++ }) { Text("Riprova") }
+          OutlinedButton(onClick = { giro++ }) { Text(stringResource(R.string.gare_riprova)) }
         }
         e.gare.isEmpty() ->
             Text(
-                "Nessuna gara in programma: il coach segue il ciclo continuo. Aggiungine una con +.",
+                stringResource(R.string.gare_nessuna_gara_in_programma),
                 color = MaterialTheme.colorScheme.onSurfaceVariant)
         else -> for (g in e.gare) CardGara(g) { modulo = Modulo(g) }
       }
@@ -151,8 +153,8 @@ fun GareScreen(onBack: () -> Unit) {
           chiediRipianifica = false
           messaggio = "La modifica vale dalla prossima pianificazione settimanale"
         },
-        title = { Text("Aggiorno subito il piano della settimana?") },
-        text = { Text("Le sedute da oggi a domenica verranno ricalcolate tenendo conto delle gare. Le sedute passate restano invariate.") },
+        title = { Text(stringResource(R.string.gare_aggiorno_subito_il_piano)) },
+        text = { Text(stringResource(R.string.gare_le_sedute_da_oggi)) },
         confirmButton = {
           TextButton(
               onClick = {
@@ -160,7 +162,7 @@ fun GareScreen(onBack: () -> Unit) {
                 RipianificaWorker.avvia(context)
                 messaggio = "Ripianificazione in corso: richiede qualche minuto, il riepilogo arriverà con la notifica del coach"
               }) {
-                Text("Sì, ripianifica")
+                Text(stringResource(R.string.gare_si_ripianifica))
               }
         },
         dismissButton = {
@@ -169,7 +171,7 @@ fun GareScreen(onBack: () -> Unit) {
                 chiediRipianifica = false
                 messaggio = "La modifica vale dalla prossima pianificazione settimanale"
               }) {
-                Text("No")
+                Text(stringResource(R.string.gare_no))
               }
         },
     )
@@ -186,16 +188,16 @@ private fun CardGara(g: Gara, onApri: () -> Unit) {
         if (g.obiettivo) Icon(Icons.Filled.Flag, null, Modifier.padding(end = 6.dp), tint = MaterialTheme.colorScheme.primary)
         Text(g.nome, style = MaterialTheme.typography.titleMedium, modifier = Modifier.weight(1f))
         if (g.calda) Icon(Icons.Filled.WbSunny, "Gara calda", Modifier.padding(end = 6.dp), tint = ColoriBio.giallo)
-        Text("Gara ${g.priorita}", style = MaterialTheme.typography.labelLarge, fontWeight = FontWeight.Bold)
+        Text(stringResource(R.string.gare_gara, g.priorita.toString()), style = MaterialTheme.typography.labelLarge, fontWeight = FontWeight.Bold)
       }
       Text(
           DateIt.lunga(g.data) + (g.settimane?.let { " · tra $it settimane" } ?: ""),
           style = MaterialTheme.typography.bodyMedium)
-      if (g.obiettivo) Text("Detta la preparazione", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.primary)
+      if (g.obiettivo) Text(stringResource(R.string.gare_detta_la_preparazione), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.primary)
       val d = Gare.distanzaPerModulo(g)
       if (d == null) {
         Text(
-            "Distanza non riconosciuta: tocca per indicarla, il coach la usa per la preparazione",
+            stringResource(R.string.gare_distanza_non_riconosciuta_tocca),
             style = MaterialTheme.typography.bodySmall,
             color = MaterialTheme.colorScheme.error)
       } else {
@@ -257,11 +259,11 @@ private fun ModuloGara(
       title = { Text(if (gara == null) "Nuova gara" else "Modifica gara") },
       text = {
         Column(Modifier.verticalScroll(rememberScrollState()), verticalArrangement = Arrangement.spacedBy(10.dp)) {
-          OutlinedTextField(value = nome, onValueChange = { nome = it.take(60) }, label = { Text("Nome") }, singleLine = true, modifier = Modifier.fillMaxWidth())
+          OutlinedTextField(value = nome, onValueChange = { nome = it.take(60) }, label = { Text(stringResource(R.string.gare_nome)) }, singleLine = true, modifier = Modifier.fillMaxWidth())
           OutlinedButton(onClick = { calendario = true }, modifier = Modifier.fillMaxWidth()) {
             Text(data?.let { DateIt.lunga(it) } ?: "Scegli la data")
           }
-          Text("Priorità", style = MaterialTheme.typography.labelLarge)
+          Text(stringResource(R.string.gare_priorita), style = MaterialTheme.typography.labelLarge)
           FlowRow(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
             for ((p, _) in Gare.PRIORITA) FilterChip(selected = priorita == p, onClick = { priorita = p }, label = { Text(p) })
           }
@@ -269,23 +271,23 @@ private fun ModuloGara(
               Gare.PRIORITA.joinToString("\n") { (p, d) -> "$p = $d" },
               style = MaterialTheme.typography.bodySmall,
               color = MaterialTheme.colorScheme.onSurfaceVariant)
-          Text("Distanza", style = MaterialTheme.typography.labelLarge)
+          Text(stringResource(R.string.gare_distanza), style = MaterialTheme.typography.labelLarge)
           FlowRow(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
             for ((k, etichetta) in Gare.DISTANZE) FilterChip(selected = distanza == k, onClick = { distanza = k }, label = { Text(etichetta) })
           }
           Row(verticalAlignment = Alignment.CenterVertically) {
             Checkbox(checked = calda, onCheckedChange = { calda = it })
-            Text("Gara calda (prevista con caldo)")
+            Text(stringResource(R.string.gare_gara_calda_prevista_con))
           }
           errore?.let { Text(it, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.error) }
           if (permesso) {
-            Text("Il collegamento non permette di scrivere il calendario.", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.error)
-            Button(onClick = { OAuthIntervals.avvia(context) }) { Text("Ricollega Intervals.icu") }
+            Text(stringResource(R.string.gare_il_collegamento_non_permette_2), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.error)
+            Button(onClick = { OAuthIntervals.avvia(context) }) { Text(stringResource(R.string.gare_ricollega_intervals_icu)) }
           }
           if (inCorso) CircularProgressIndicator()
           if (gara != null) {
             TextButton(onClick = { confermaElimina = true }, enabled = !inCorso) {
-              Text("Elimina", color = MaterialTheme.colorScheme.error)
+              Text(stringResource(R.string.gare_elimina), color = MaterialTheme.colorScheme.error)
             }
           }
         }
@@ -299,10 +301,10 @@ private fun ModuloGara(
               esegui { c -> Cervello.salvaGara(context, c, nome.trim(), d.toString(), p, dist, gara?.id, calda) }
             },
             enabled = errori.isEmpty() && !inCorso) {
-              Text("Salva")
+              Text(stringResource(R.string.gare_salva))
             }
       },
-      dismissButton = { TextButton(onClick = onChiudi, enabled = !inCorso) { Text("Annulla") } },
+      dismissButton = { TextButton(onClick = onChiudi, enabled = !inCorso) { Text(stringResource(R.string.gare_annulla)) } },
   )
 
   if (calendario) {
@@ -327,10 +329,10 @@ private fun ModuloGara(
                 stato.selectedDateMillis?.let { data = Instant.ofEpochMilli(it).atZone(ZoneOffset.UTC).toLocalDate() }
                 calendario = false
               }) {
-                Text("OK")
+                Text(stringResource(R.string.gare_ok))
               }
         },
-        dismissButton = { TextButton(onClick = { calendario = false }) { Text("Annulla") } },
+        dismissButton = { TextButton(onClick = { calendario = false }) { Text(stringResource(R.string.gare_annulla)) } },
     ) {
       DatePicker(state = stato)
     }
@@ -339,18 +341,18 @@ private fun ModuloGara(
   if (confermaElimina && gara != null) {
     AlertDialog(
         onDismissRequest = { confermaElimina = false },
-        title = { Text("Eliminare la gara?") },
-        text = { Text("${gara.nome} sparisce dal calendario di Intervals.icu.") },
+        title = { Text(stringResource(R.string.gare_eliminare_la_gara)) },
+        text = { Text(stringResource(R.string.gare_sparisce_dal_calendario_di, gara.nome.toString())) },
         confirmButton = {
           TextButton(
               onClick = {
                 confermaElimina = false
                 esegui { c -> Cervello.eliminaGara(context, c, gara.id) }
               }) {
-                Text("Elimina", color = MaterialTheme.colorScheme.error)
+                Text(stringResource(R.string.gare_elimina), color = MaterialTheme.colorScheme.error)
               }
         },
-        dismissButton = { TextButton(onClick = { confermaElimina = false }) { Text("Annulla") } },
+        dismissButton = { TextButton(onClick = { confermaElimina = false }) { Text(stringResource(R.string.gare_annulla)) } },
     )
   }
 }

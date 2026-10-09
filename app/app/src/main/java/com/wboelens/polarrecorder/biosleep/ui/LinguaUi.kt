@@ -1,5 +1,7 @@
 package com.wboelens.polarrecorder.biosleep.ui
 
+import com.wboelens.polarrecorder.R
+import androidx.compose.ui.res.stringResource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
@@ -41,9 +43,9 @@ fun SezioneLingua() {
   }
 
   Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
-    Text("Lingua", style = MaterialTheme.typography.titleSmall)
+    Text(stringResource(R.string.lingua_lingua), style = MaterialTheme.typography.titleSmall)
     FlowRow(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
-      FilterChip(selected = scelta == null, onClick = { cambia(null) }, label = { Text("Come il telefono") })
+      FilterChip(selected = scelta == null, onClick = { cambia(null) }, label = { Text(stringResource(R.string.lingua_come_il_telefono)) })
       for ((codice, nome) in Lingua.LINGUE) FilterChip(selected = scelta == codice, onClick = { cambia(codice) }, label = { Text(nome) })
     }
     Text(
@@ -53,7 +55,7 @@ fun SezioneLingua() {
         color = MaterialTheme.colorScheme.onSurfaceVariant)
     if (Lingua.calendarioInInglese(effettiva)) {
       Text(
-          "Le sedute sull'orologio saranno in inglese: molti orologi non mostrano i caratteri cinesi.",
+          stringResource(R.string.lingua_le_sedute_sull_orologio),
           style = MaterialTheme.typography.bodySmall,
           color = MaterialTheme.colorScheme.primary)
     }
@@ -63,16 +65,16 @@ fun SezioneLingua() {
   if (chiedi) {
     AlertDialog(
         onDismissRequest = { chiedi = false; messaggio = "Varrà dalla prossima pianificazione" },
-        title = { Text("Aggiorno il piano della settimana nella nuova lingua?") },
-        text = { Text("Le sedute da oggi a domenica verranno riscritte. I giorni passati non si toccano.") },
+        title = { Text(stringResource(R.string.lingua_aggiorno_il_piano_della)) },
+        text = { Text(stringResource(R.string.lingua_le_sedute_da_oggi)) },
         confirmButton = {
           TextButton(onClick = {
             chiedi = false
             RipianificaWorker.avvia(context)
             messaggio = "Ripianificazione in corso: il riepilogo arriverà con la notifica del coach"
-          }) { Text("Sì, aggiorna") }
+          }) { Text(stringResource(R.string.lingua_si_aggiorna)) }
         },
-        dismissButton = { TextButton(onClick = { chiedi = false; messaggio = "Varrà dalla prossima pianificazione" }) { Text("No") } },
+        dismissButton = { TextButton(onClick = { chiedi = false; messaggio = "Varrà dalla prossima pianificazione" }) { Text(stringResource(R.string.lingua_no)) } },
     )
   }
 }

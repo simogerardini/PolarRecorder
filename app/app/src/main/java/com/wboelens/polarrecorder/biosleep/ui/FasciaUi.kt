@@ -1,5 +1,7 @@
 package com.wboelens.polarrecorder.biosleep.ui
 
+import com.wboelens.polarrecorder.R
+import androidx.compose.ui.res.stringResource
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
@@ -114,7 +116,7 @@ fun FasciaScreen(onBack: () -> Unit) {
   Scaffold(
       topBar = {
         TopAppBar(
-            title = { Text("Fascia") },
+            title = { Text(stringResource(R.string.fascia_fascia)) },
             navigationIcon = { IconButton(onClick = onBack) { Icon(Icons.AutoMirrored.Filled.ArrowBack, "Indietro") } })
       },
   ) { padding ->
@@ -125,7 +127,7 @@ fun FasciaScreen(onBack: () -> Unit) {
       val d = dati ?: return@Column
       val (nome, rapporto) = d
       if (nome == null) {
-        Text("Nessuna fascia collegata: collegala dalla scheda Notte.", style = MaterialTheme.typography.bodyMedium)
+        Text(stringResource(R.string.fascia_nessuna_fascia_collegata_collegala), style = MaterialTheme.typography.bodyMedium)
         return@Column
       }
       Text(nome, style = MaterialTheme.typography.titleLarge)
@@ -133,14 +135,14 @@ fun FasciaScreen(onBack: () -> Unit) {
       BadgeFascia(p)
       descrizioneFascia(p)?.let { Text(it, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant) }
       if (p.hrv == false) AvvisoSenzaHrv()
-      Text("Per cambiare fascia: scheda Notte → Cambia fascia.", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+      Text(stringResource(R.string.fascia_per_cambiare_fascia_scheda), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
       HorizontalDivider()
-      Text("Rapporto fascia dell'ultima notte", style = MaterialTheme.typography.titleSmall)
+      Text(stringResource(R.string.fascia_rapporto_fascia_dell_ultima), style = MaterialTheme.typography.titleSmall)
       if (rapporto == null) {
-        Text("Disponibile dopo la prima notte registrata.", style = MaterialTheme.typography.bodySmall)
+        Text(stringResource(R.string.fascia_disponibile_dopo_la_prima), style = MaterialTheme.typography.bodySmall)
       } else {
         Text(
-            "Descrive la fascia e la qualità del collegamento, senza dati sanitari: serve ai tester per segnalare problemi.",
+            stringResource(R.string.fascia_descrive_la_fascia_e),
             style = MaterialTheme.typography.bodySmall,
             color = MaterialTheme.colorScheme.onSurfaceVariant)
         Text(
@@ -149,7 +151,7 @@ fun FasciaScreen(onBack: () -> Unit) {
                 .padding(12.dp).verticalScroll(rememberScrollState()),
             fontFamily = FontFamily.Monospace,
             style = MaterialTheme.typography.bodySmall)
-        Button(onClick = { Fasce.condividi(context) }) { Text("Condividi il rapporto") }
+        Button(onClick = { Fasce.condividi(context) }) { Text(stringResource(R.string.fascia_condividi_il_rapporto)) }
       }
     }
   }

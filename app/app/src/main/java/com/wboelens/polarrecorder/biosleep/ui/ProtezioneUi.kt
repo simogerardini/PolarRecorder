@@ -1,5 +1,7 @@
 package com.wboelens.polarrecorder.biosleep.ui
 
+import com.wboelens.polarrecorder.R
+import androidx.compose.ui.res.stringResource
 import com.wboelens.polarrecorder.BuildConfig
 import android.os.Build
 import androidx.compose.foundation.layout.Arrangement
@@ -74,12 +76,12 @@ fun CardProtezione(onApri: () -> Unit) {
   if (rosse.isEmpty()) return
   Card(Modifier.fillMaxWidth(), colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.errorContainer)) {
     Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
-      Text("Protezione notturna incompleta", style = MaterialTheme.typography.titleMedium, color = MaterialTheme.colorScheme.onErrorContainer)
+      Text(stringResource(R.string.protezione_protezione_notturna_incompleta), style = MaterialTheme.typography.titleMedium, color = MaterialTheme.colorScheme.onErrorContainer)
       Text(
           "Da sistemare: " + rosse.joinToString(", ") { it.titolo.lowercase() } + ". Android potrebbe interrompere la registrazione.",
           style = MaterialTheme.typography.bodySmall,
           color = MaterialTheme.colorScheme.onErrorContainer)
-      Button(onClick = onApri) { Text("Sistema") }
+      Button(onClick = onApri) { Text(stringResource(R.string.protezione_sistema)) }
     }
   }
 }
@@ -99,15 +101,15 @@ fun CardInterruzione(onApriIstruzioni: () -> Unit) {
   Card(Modifier.fillMaxWidth()) {
     Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
       Text(
-          "Registrazione interrotta per ${x.minuti} minuti (${x.causa})",
+          stringResource(R.string.protezione_registrazione_interrotta_per_minuti, x.minuti.toString(), x.causa.toString()),
           style = MaterialTheme.typography.titleSmall,
           color = MaterialTheme.colorScheme.error)
       Text(
-          "Succede soprattutto quando il sistema chiude le app in background per risparmiare batteria.",
+          stringResource(R.string.protezione_succede_soprattutto_quando_il),
           style = MaterialTheme.typography.bodySmall)
       Row {
-        TextButton(onClick = onApriIstruzioni) { Text("Istruzioni per ${Marca.da(Build.MANUFACTURER).nome}") }
-        TextButton(onClick = { Protezione.chiudiInterruzione(context, x.data); giro++ }) { Text("Chiudi") }
+        TextButton(onClick = onApriIstruzioni) { Text(stringResource(R.string.protezione_istruzioni_per, (Marca.da(Build.MANUFACTURER).nome).toString())) }
+        TextButton(onClick = { Protezione.chiudiInterruzione(context, x.data); giro++ }) { Text(stringResource(R.string.protezione_chiudi)) }
       }
     }
   }
@@ -126,7 +128,7 @@ fun ProtezioneScreen(onBack: () -> Unit) {
   Scaffold(
       topBar = {
         TopAppBar(
-            title = { Text("Protezione notturna") },
+            title = { Text(stringResource(R.string.protezione_protezione_notturna)) },
             navigationIcon = { IconButton(onClick = onBack) { Icon(Icons.AutoMirrored.Filled.ArrowBack, "Indietro") } })
       },
   ) { padding ->
@@ -135,20 +137,19 @@ fun ProtezioneScreen(onBack: () -> Unit) {
         verticalArrangement = Arrangement.spacedBy(12.dp),
     ) {
       Text(
-          "${BuildConfig.APP_NAME} registra per 8 ore con lo schermo spento. Android tende a chiudere le app che lavorano a lungo " +
-              "in background: queste impostazioni lo impediscono.",
+          stringResource(R.string.protezione_registra_per_8_ore, BuildConfig.APP_NAME),
           style = MaterialTheme.typography.bodyMedium)
       for (v in stato) VoceChecklist(v) { Protezione.apri(context, v.id) }
       HorizontalDivider()
-      Text("Istruzioni per ${marca.nome}", style = MaterialTheme.typography.titleSmall)
+      Text(stringResource(R.string.protezione_istruzioni_per, marca.nome.toString()), style = MaterialTheme.typography.titleSmall)
       for ((k, riga) in marca.istruzioni.withIndex()) Text("${k + 1}. $riga", style = MaterialTheme.typography.bodyMedium)
       if (marca != Marca.PIXEL && marca != Marca.ALTRA) {
-        Button(onClick = { marcaNonAperta = !Protezione.apriMarca(context, marca) }) { Text("Apri le impostazioni di ${marca.nome}") }
+        Button(onClick = { marcaNonAperta = !Protezione.apriMarca(context, marca) }) { Text(stringResource(R.string.protezione_apri_le_impostazioni_di, marca.nome.toString())) }
         if (marcaNonAperta) {
-          Text("Su questa versione la schermata non si apre direttamente: segui la guida.", style = MaterialTheme.typography.bodySmall)
+          Text(stringResource(R.string.protezione_su_questa_versione_la), style = MaterialTheme.typography.bodySmall)
         }
       }
-      OutlinedButton(onClick = { apriPagina(context, marca.dontKillMyApp) }) { Text("Guida dettagliata su dontkillmyapp.com") }
+      OutlinedButton(onClick = { apriPagina(context, marca.dontKillMyApp) }) { Text(stringResource(R.string.protezione_guida_dettagliata_su_dontkillmyapp)) }
     }
   }
 }
@@ -164,7 +165,7 @@ private fun VoceChecklist(v: VoceProtezione, onSistema: () -> Unit) {
     Column(Modifier.weight(1f)) {
       Text(v.titolo, style = MaterialTheme.typography.bodyLarge, fontWeight = FontWeight.SemiBold)
       Text(v.spiegazione, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
-      if (!v.ok) TextButton(onClick = onSistema) { Text("Sistema") }
+      if (!v.ok) TextButton(onClick = onSistema) { Text(stringResource(R.string.protezione_sistema)) }
     }
   }
 }
