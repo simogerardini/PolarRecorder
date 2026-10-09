@@ -1,5 +1,7 @@
 package com.wboelens.polarrecorder.biosleep.ui
 
+import com.wboelens.polarrecorder.R
+import androidx.compose.ui.res.stringResource
 import android.database.SQLException
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -84,8 +86,8 @@ fun NightDetailScreen(sessionId: Long, onBack: () -> Unit) {
   if (askDelete) {
     AlertDialog(
         onDismissRequest = { askDelete = false },
-        title = { Text("Eliminare questa notte?") },
-        text = { Text("Riepilogo, grafici e battiti registrati verranno cancellati definitivamente.") },
+        title = { Text(stringResource(R.string.night_detail_eliminare_questa_notte)) },
+        text = { Text(stringResource(R.string.night_detail_riepilogo_grafici_e_battiti)) },
         confirmButton = {
           TextButton(
               onClick = {
@@ -100,10 +102,10 @@ fun NightDetailScreen(sessionId: Long, onBack: () -> Unit) {
                 }
               }
           ) {
-            Text("Elimina")
+            Text(stringResource(R.string.night_detail_elimina))
           }
         },
-        dismissButton = { TextButton(onClick = { askDelete = false }) { Text("Annulla") } },
+        dismissButton = { TextButton(onClick = { askDelete = false }) { Text(stringResource(R.string.night_detail_annulla)) } },
     )
   }
 
@@ -171,15 +173,15 @@ private fun NightContent(
         color = MaterialTheme.colorScheme.onSurfaceVariant,
     )
 
-    MetricRow(Metric("FC minima", fmt(s.hrMin), "bpm"), Metric("FC a riposo", fmt(s.restingHr), "bpm"))
-    MetricRow(Metric("FC media", fmt(s.hrAvg), "bpm"), Metric("rMSSD", fmt(s.rmssd, 1), "ms"))
-    MetricRow(Metric("SDNN", fmt(s.sdnn, 1), "ms"), Metric("pNN50", fmt(s.pnn50, 1), "%"))
+    MetricRow(Metric(stringResource(R.string.night_detail_fc_minima), fmt(s.hrMin), "bpm"), Metric(stringResource(R.string.night_detail_fc_a_riposo), fmt(s.restingHr), "bpm"))
+    MetricRow(Metric(stringResource(R.string.night_detail_fc_media), fmt(s.hrAvg), "bpm"), Metric(stringResource(R.string.night_detail_rmssd), fmt(s.rmssd, 1), "ms"))
+    MetricRow(Metric(stringResource(R.string.night_detail_sdnn), fmt(s.sdnn, 1), "ms"), Metric(stringResource(R.string.night_detail_pnn50), fmt(s.pnn50, 1), "%"))
     // Punto 10: fascia senza RR affidabili (solo FC o sensore ottico)
     if (detail.night.stages?.mode?.startsWith("FC") == true) {
       // dopo la notte: stesso avviso di prima della notte, piu' cosa non arriva a Intervals.icu
       AvvisoSenzaHrv()
       Text(
-          "L'HRV di questa notte non è calcolata e non viene inviata a Intervals.icu.",
+          stringResource(R.string.night_detail_l_hrv_di_questa),
           style = MaterialTheme.typography.bodySmall,
           color = MaterialTheme.colorScheme.onSurfaceVariant,
       )
@@ -188,7 +190,7 @@ private fun NightContent(
     // Fase 7: fasi del sonno
     SleepStagesSection(detail.night)
 
-    Text("Frequenza cardiaca (media 5 minuti)", style = MaterialTheme.typography.titleSmall)
+    Text(stringResource(R.string.night_detail_frequenza_cardiaca_media_5), style = MaterialTheme.typography.titleSmall)
     TimeLineChart(
         times = w.map { it.startMs },
         values = w.map { it.hr },
@@ -196,7 +198,7 @@ private fun NightContent(
         modifier = Modifier.fillMaxWidth().height(180.dp),
     )
 
-    Text("rMSSD (5 minuti)", style = MaterialTheme.typography.titleSmall)
+    Text(stringResource(R.string.night_detail_rmssd_5_minuti), style = MaterialTheme.typography.titleSmall)
     TimeLineChart(
         times = w.map { it.startMs },
         values = w.map { it.rmssd },
@@ -204,19 +206,16 @@ private fun NightContent(
         modifier = Modifier.fillMaxWidth().height(180.dp),
     )
 
-    Text("Qualità del segnale", style = MaterialTheme.typography.titleSmall)
+    Text(stringResource(R.string.night_detail_qualita_del_segnale), style = MaterialTheme.typography.titleSmall)
     Text(
-        "Affidabilità ${fmt(s.qualityPct, 1)} % (notte coperta da battiti validi) · " +
-        "${s.beats} battiti · buoni ${fmt(s.pctGood, 1)} % · corretti ${fmt(s.pctCorrected, 1)} % · " +
-            "scartati ${fmt(s.pctDropped, 1)} % · interruzioni ${s.gaps} · " +
-            "finestre valide ${s.windowsOk}/${s.windowsTotal}",
+        stringResource(R.string.night_detail_affidabilita_notte_coperta_da, (fmt(s.qualityPct, 1)).toString(), s.beats.toString(), (fmt(s.pctGood, 1)).toString(), (fmt(s.pctCorrected, 1)).toString(), (fmt(s.pctDropped, 1)).toString(), s.gaps.toString(), s.windowsOk.toString(), s.windowsTotal.toString()),
         style = MaterialTheme.typography.bodySmall,
         color = MaterialTheme.colorScheme.onSurfaceVariant,
     )
 
     // Fase 6: stato e invio manuale a Intervals.icu
     val night = detail.night
-    Text("Intervals.icu", style = MaterialTheme.typography.titleSmall)
+    Text(stringResource(R.string.night_detail_intervals_icu), style = MaterialTheme.typography.titleSmall)
     Text(
         when {
           night.syncedAt != null -> "✓ Inviata il ${dateTimeLabel(night.syncedAt)}"
@@ -243,10 +242,10 @@ private fun NightContent(
 @Composable
 private fun SleepStagesSection(night: NightListItem, titolo: Boolean = true) {
   val st = night.stages
-  if (titolo) Text("Fasi del sonno", style = MaterialTheme.typography.titleSmall)
+  if (titolo) Text(stringResource(R.string.night_detail_fasi_del_sonno), style = MaterialTheme.typography.titleSmall)
   if (st == null || st.tstMin == 0) {
     Text(
-        "Non disponibili per questa notte (registrazione troppo breve o segnale insufficiente).",
+        stringResource(R.string.night_detail_non_disponibili_per_questa),
         style = MaterialTheme.typography.bodySmall,
         color = MaterialTheme.colorScheme.onSurfaceVariant,
     )
@@ -258,8 +257,8 @@ private fun SleepStagesSection(night: NightListItem, titolo: Boolean = true) {
   val latency = st.sleepOnsetMs?.let { ((it - s.startMs) / 60_000).toInt().coerceAtLeast(0) }
 
   MetricRow(
-      Metric("Sonno effettivo", hm(st.tstMin), ""),
-      Metric("Efficienza", fmt(efficiency), "%"),
+      Metric(stringResource(R.string.night_detail_sonno_effettivo), hm(st.tstMin), ""),
+      Metric(stringResource(R.string.night_detail_efficienza), fmt(efficiency), "%"),
   )
   Text(
       buildString {
@@ -272,12 +271,12 @@ private fun SleepStagesSection(night: NightListItem, titolo: Boolean = true) {
   )
   Hypnogram(st, Modifier.fillMaxWidth().height(160.dp))
   MetricRow(
-      Metric("Profondo", hm(st.deepMin), ""),
-      Metric("REM", hm(st.remMin), ""),
+      Metric(stringResource(R.string.night_detail_profondo), hm(st.deepMin), ""),
+      Metric(stringResource(R.string.night_detail_rem), hm(st.remMin), ""),
   )
   MetricRow(
-      Metric("Leggero", hm(st.lightMin), ""),
-      Metric("Veglia notturna", hm(st.wakeMin), ""),
+      Metric(stringResource(R.string.night_detail_leggero), hm(st.lightMin), ""),
+      Metric(stringResource(R.string.night_detail_veglia_notturna), hm(st.wakeMin), ""),
   )
   Text(
       if (st.mode.startsWith("FC"))
@@ -362,35 +361,34 @@ fun RiepilogoNotte(sessionId: Long) {
       val w = st.data.windows
       val soloFc = night.stages?.mode?.startsWith("FC") == true
 
-      Sezione("Fasi del sonno") {
+      Sezione(stringResource(R.string.night_detail_fasi_del_sonno)) {
         Text(nightTimes(s.startMs, s.endMs), style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
         SleepStagesSection(night, titolo = false)
       }
 
-      Sezione("Frequenza cardiaca") {
-        MetricRow(Metric("FC a riposo", fmt(s.restingHr), "bpm"), Metric("FC minima", fmt(s.hrMin), "bpm"))
-        Text("Media della notte ${fmt(s.hrAvg)} bpm · valori ogni 5 minuti", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+      Sezione(stringResource(R.string.night_detail_frequenza_cardiaca)) {
+        MetricRow(Metric(stringResource(R.string.night_detail_fc_a_riposo), fmt(s.restingHr), "bpm"), Metric(stringResource(R.string.night_detail_fc_minima), fmt(s.hrMin), "bpm"))
+        Text(stringResource(R.string.night_detail_media_della_notte_bpm, (fmt(s.hrAvg)).toString()), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
         TimeLineChart(times = w.map { it.startMs }, values = w.map { it.hr }, lineColor = HR_COLOR, modifier = Modifier.fillMaxWidth().height(160.dp))
       }
 
-      Sezione("Variabilità cardiaca (HRV)") {
+      Sezione(stringResource(R.string.night_detail_variabilita_cardiaca_hrv)) {
         if (soloFc) {
           AvvisoSenzaHrv()
           Text(
-              "L'HRV di questa notte non è calcolata e non viene inviata a Intervals.icu.",
+              stringResource(R.string.night_detail_l_hrv_di_questa),
               style = MaterialTheme.typography.bodySmall,
               color = MaterialTheme.colorScheme.onSurfaceVariant)
         } else {
-          MetricRow(Metric("rMSSD", fmt(s.rmssd, 1), "ms"), Metric("SDNN", fmt(s.sdnn, 1), "ms"))
-          Text("pNN50 ${fmt(s.pnn50, 1)} % · rMSSD ogni 5 minuti", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+          MetricRow(Metric(stringResource(R.string.night_detail_rmssd), fmt(s.rmssd, 1), "ms"), Metric(stringResource(R.string.night_detail_sdnn), fmt(s.sdnn, 1), "ms"))
+          Text(stringResource(R.string.night_detail_pnn50_rmssd_ogni_5, (fmt(s.pnn50, 1)).toString()), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
           TimeLineChart(times = w.map { it.startMs }, values = w.map { it.rmssd }, lineColor = RMSSD_COLOR, modifier = Modifier.fillMaxWidth().height(160.dp))
         }
       }
 
-      Sezione("Registrazione") {
+      Sezione(stringResource(R.string.night_detail_registrazione)) {
         Text(
-            "Affidabilità ${fmt(s.qualityPct, 1)} % · ${s.beats} battiti · scartati ${fmt(s.pctDropped, 1)} % · " +
-                "interruzioni ${s.gaps} · finestre valide ${s.windowsOk}/${s.windowsTotal}",
+            stringResource(R.string.night_detail_affidabilita_battiti_scartati_interruzioni, (fmt(s.qualityPct, 1)).toString(), s.beats.toString(), (fmt(s.pctDropped, 1)).toString(), s.gaps.toString(), s.windowsOk.toString(), s.windowsTotal.toString()),
             style = MaterialTheme.typography.bodySmall,
             color = MaterialTheme.colorScheme.onSurfaceVariant)
         Text(
@@ -415,7 +413,7 @@ fun RiepilogoNotte(sessionId: Long) {
                   }
                 },
                 enabled = !syncing) {
-                  Text("Invia ora")
+                  Text(stringResource(R.string.night_detail_invia_ora))
                 }
             if (syncing) {
               Spacer(Modifier.width(12.dp))

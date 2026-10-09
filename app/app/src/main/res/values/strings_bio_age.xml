@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Testi di BioAgeScreen.kt (italiano, base). Generato da estrai_testi.py. -->
+<resources>
+    <string name="bio_age_eta" formatted="true">Età %1$s</string>
+    <string name="bio_age_impossibile_leggere_le_attivita" formatted="true">Impossibile leggere le attività da Intervals.icu (%1$s)</string>
+    <string name="bio_age_fitness_e_allenamento_non">Fitness e allenamento non sono calcolati finché la lettura non riesce. Se l\'errore è 401 o 403, ricollega Intervals.icu dalle Impostazioni.</string>
+    <string name="bio_age_riprova">Riprova</string>
+    <string name="bio_age_modifica_data_di_nascita">Modifica data di nascita e sesso</string>
+    <string name="bio_age_cosa_la_determina">Cosa la determina</string>
+    <string name="bio_age_ritmo_d_invecchiamento">Ritmo d\'invecchiamento</string>
+    <string name="bio_age_in_calibrazione">In calibrazione</string>
+    <string name="bio_age_notti_degli_ultimi_28">Notti degli ultimi 28 giorni</string>
+    <string name="bio_age_registrate_valide_escluse_per" formatted="true">%1$s registrate · %2$s valide · %3$s escluse per affidabilità sotto l\'80%% · %4$s escluse perché senza fasi del sonno</string>
+    <string name="bio_age_servono_notti_valide_con" formatted="true">Servono %1$s notti valide: con meno notti l\'età cambierebbe troppo da un giorno all\'altro.</string>
+    <string name="bio_age_anteprima_non_ancora_un">Anteprima (non ancora un\'età)</string>
+    <string name="bio_age_nessuna_componente_ancora_calcolabile">Nessuna componente ancora calcolabile.</string>
+    <string name="bio_age_sonno_compare_da_3">Sonno: compare da 3 notti valide.</string>
+    <string name="bio_age_il_tuo_profilo">Il tuo profilo</string>
+    <string name="bio_age_servono_per_confrontarti_con">Servono per confrontarti con i valori tipici della tua età e del tuo sesso. Restano sul telefono.</string>
+    <string name="bio_age_data_di_nascita_aaaa">Data di nascita (AAAA-MM-GG)</string>
+    <string name="bio_age_uomo">Uomo</string>
+    <string name="bio_age_donna">Donna</string>
+    <string name="bio_age_salva">Salva</string>
+    <string name="bio_age_come_e_calcolata_ogni">Come è calcolata: ogni componente viene confrontata con una persona tipica della tua età e del tuo sesso e convertita in anni con i rischi di mortalità pubblicati in studi su centinaia di migliaia di persone (VO2max: Kodama 2009; allenamento: Arem 2015; durata del sonno: Cappuccio 2010; regolarità: Windred 2024), assumendo che il rischio raddoppi ogni ~8 anni. L\'intervallo tiene conto dell\'errore di misura e dell\'incertezza degli studi. FC a riposo e HRV non sono incluse: i riferimenti pubblicati sono misurati da svegli e non sono confrontabili con i valori notturni. È una stima statistica di benessere, non una valutazione medica.</string>
+</resources>

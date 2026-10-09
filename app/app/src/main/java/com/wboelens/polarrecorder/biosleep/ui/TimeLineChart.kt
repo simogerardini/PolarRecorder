@@ -1,5 +1,7 @@
 package com.wboelens.polarrecorder.biosleep.ui
 
+import com.wboelens.polarrecorder.R
+import androidx.compose.ui.res.stringResource
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.Box
 import androidx.compose.material3.MaterialTheme
@@ -37,7 +39,7 @@ fun TimeLineChart(
   val valid = values.filterNotNull()
   if (times.size < 2 || valid.isEmpty() || times.first() == times.last()) {
     Box(modifier, contentAlignment = Alignment.Center) {
-      Text("Dati insufficienti per il grafico", style = labelStyle)
+      Text(stringResource(R.string.time_line_chart_dati_insufficienti_per_il), style = labelStyle)
     }
     return
   }

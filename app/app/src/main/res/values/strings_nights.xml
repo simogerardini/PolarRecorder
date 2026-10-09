@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Testi di NightsScreen.kt (italiano, base). Generato da estrai_testi.py. -->
+<resources>
+    <string name="nights_le_mie_notti">Le mie notti</string>
+    <string name="nights_analisi_della_notte_in">Analisi della notte in corso…</string>
+    <string name="nights_abitudini_apprese">Abitudini apprese</string>
+    <string name="nights_a_letto_di_solito" formatted="true">A letto di solito tra %1$s e %2$s · stop automatico dalle %3$s</string>
+    <string name="nights_apprendimento_abitudini_di_notti" formatted="true">Apprendimento abitudini: %1$s di %2$s notti</string>
+    <string name="nights_contano_le_notti_di">Contano le notti di almeno 4 ore degli ultimi 28 giorni. Intanto avvia la notte con \"Avvia notte\": lo stop del mattino è già automatico.</string>
+</resources>

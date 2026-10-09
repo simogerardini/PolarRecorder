@@ -1,5 +1,7 @@
 package com.wboelens.polarrecorder.biosleep.ui
 
+import com.wboelens.polarrecorder.R
+import androidx.compose.ui.res.stringResource
 import com.wboelens.polarrecorder.BuildConfig
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -215,14 +217,9 @@ private fun SetupStrap(
     }
   }
 
-  Text("Collega la tua fascia", style = MaterialTheme.typography.headlineSmall)
+  Text(stringResource(R.string.home_collega_la_tua_fascia), style = MaterialTheme.typography.headlineSmall)
   Text(
-      "1. Bagna gli elettrodi e indossa la fascia: si accende da sola.\n" +
-          "2. Quando compare qui sotto, premi Connetti.\n" +
-          "${BuildConfig.APP_NAME} imposta tutto da solo: battito e intervalli RR, e con la Polar H10 anche " +
-          "movimento e respiro. Funzionano anche le fasce cardio di altre marche (Garmin, " +
-          "Wahoo, Coospo…): con queste niente accelerometro, e gli RR vengono verificati nei " +
-          "primi minuti di registrazione.",
+      stringResource(R.string.home_1_bagna_gli_elettrodi, BuildConfig.APP_NAME),
       style = MaterialTheme.typography.bodyMedium,
   )
   error?.let { Text(it, color = MaterialTheme.colorScheme.error) }
@@ -234,7 +231,7 @@ private fun SetupStrap(
     Row(verticalAlignment = Alignment.CenterVertically) {
       CircularProgressIndicator(Modifier.size(20.dp))
       Spacer(Modifier.width(12.dp))
-      Text("Ricerca della fascia…")
+      Text(stringResource(R.string.home_ricerca_della_fascia))
     }
   }
   polar.forEach { d ->
@@ -266,7 +263,7 @@ private fun SetupStrap(
               },
               enabled = connectingId == null,
           ) {
-            Text("Connetti")
+            Text(stringResource(R.string.home_connetti))
           }
         }
       }
@@ -293,7 +290,7 @@ private fun ReadyCard(
 
   Card(Modifier.fillMaxWidth()) {
     Column(Modifier.padding(20.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
-      Text("Pronta per la notte", style = MaterialTheme.typography.headlineSmall)
+      Text(stringResource(R.string.home_pronta_per_la_notte), style = MaterialTheme.typography.headlineSmall)
       Text(
           "${profile.deviceName.ifBlank { profile.deviceId }} · " +
               profile.dataTypes.joinToString(" + ") { if (it.name == "ACC") "movimento e respiro" else "battito e HRV" },
@@ -311,12 +308,12 @@ private fun ReadyCard(
       val rapporto = remember { Fasce.rapportoUltimaSessione(context) }
       val nomeFascia = profile.deviceName.ifBlank { profile.deviceId }
       if (InfoFascia.prevedi(nomeFascia, DriverRegistry.tipo(nomeFascia), rapporto).hrv == false) AvvisoSenzaHrv()
-      if (rapporto != null) TextButton(onClick = { Fasce.condividi(context) }) { Text("Invia rapporto fascia") }
+      if (rapporto != null) TextButton(onClick = { Fasce.condividi(context) }) { Text(stringResource(R.string.home_invia_rapporto_fascia)) }
       // Ultima lettura: la fascia ora e' scollegata, il valore vero arriva all'avvio della notte
       RigaBatteria(ultimaBatteria?.first, ultimaBatteria?.second?.let { "letta il ${quandoLetta(it)}" })
       (avvio as? AvvioNotte.Fallito)?.let {
         Text(
-            "Avvio non riuscito: ${it.motivo}",
+            stringResource(R.string.home_avvio_non_riuscito, it.motivo.toString()),
             style = MaterialTheme.typography.bodySmall,
             color = MaterialTheme.colorScheme.error,
         )
@@ -335,21 +332,21 @@ private fun ReadyCard(
       }
     }
   }
-  OutlinedButton(onClick = onOpenNights, modifier = Modifier.fillMaxWidth()) { Text("Le mie notti") }
-  TextButton(onClick = { askChange = true }) { Text("Cambia fascia") }
+  OutlinedButton(onClick = onOpenNights, modifier = Modifier.fillMaxWidth()) { Text(stringResource(R.string.home_le_mie_notti)) }
+  TextButton(onClick = { askChange = true }) { Text(stringResource(R.string.home_cambia_fascia)) }
 
   if (askChange) {
     AlertDialog(
         onDismissRequest = { askChange = false },
-        title = { Text("Cambiare fascia?") },
-        text = { Text("Le notti registrate restano. Poi collegherai la nuova fascia.") },
+        title = { Text(stringResource(R.string.home_cambiare_fascia)) },
+        text = { Text(stringResource(R.string.home_le_notti_registrate_restano)) },
         confirmButton = {
           TextButton(onClick = {
             askChange = false
             onChangeStrap()
-          }) { Text("Cambia") }
+          }) { Text(stringResource(R.string.home_cambia)) }
         },
-        dismissButton = { TextButton(onClick = { askChange = false }) { Text("Annulla") } },
+        dismissButton = { TextButton(onClick = { askChange = false }) { Text(stringResource(R.string.home_annulla)) } },
     )
   }
 }
@@ -378,11 +375,11 @@ private fun NightInProgress(
 
   Card(Modifier.fillMaxWidth()) {
     Column(Modifier.padding(20.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
-      Text("Notte in corso", style = MaterialTheme.typography.headlineSmall)
+      Text(stringResource(R.string.home_notte_in_corso), style = MaterialTheme.typography.headlineSmall)
       // dopo i primi minuti il driver sa se gli RR servono: avviso subito, non al mattino
       AvvisoFasciaInCorso()
       Text(
-          "Da ${hm(((now - startMs) / 60_000).toInt())} · iniziata alle ${hourLabel(startMs)}",
+          stringResource(R.string.home_da_iniziata_alle, (hm(((now - startMs) / 60_000).toInt())).toString(), (hourLabel(startMs)).toString()),
           style = MaterialTheme.typography.titleMedium,
       )
       Text(
@@ -395,26 +392,26 @@ private fun NightInProgress(
       OutlinedButton(onClick = onMostraFiore, modifier = Modifier.fillMaxWidth()) {
         Icon(Icons.Filled.FilterVintage, null, Modifier.size(18.dp))
         Spacer(Modifier.width(8.dp))
-        Text("Mostra il fiore")
+        Text(stringResource(R.string.home_mostra_il_fiore))
       }
       OutlinedButton(onClick = { askStop = true }, modifier = Modifier.fillMaxWidth()) {
-        Text("Termina notte")
+        Text(stringResource(R.string.home_termina_notte))
       }
     }
   }
   if (askStop) {
     AlertDialog(
         onDismissRequest = { askStop = false },
-        title = { Text("Terminare la notte?") },
-        text = { Text("La registrazione si ferma e la notte viene analizzata.") },
+        title = { Text(stringResource(R.string.home_terminare_la_notte)) },
+        text = { Text(stringResource(R.string.home_la_registrazione_si_ferma)) },
         confirmButton = {
           TextButton(onClick = {
             askStop = false
             serviceConnection.stopRecordingService()
             onNightStopped()
-          }) { Text("Termina") }
+          }) { Text(stringResource(R.string.home_termina)) }
         },
-        dismissButton = { TextButton(onClick = { askStop = false }) { Text("Continua") } },
+        dismissButton = { TextButton(onClick = { askStop = false }) { Text(stringResource(R.string.home_continua)) } },
     )
   }
 }

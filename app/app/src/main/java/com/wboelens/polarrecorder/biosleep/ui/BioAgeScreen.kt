@@ -1,5 +1,7 @@
 package com.wboelens.polarrecorder.biosleep.ui
 
+import com.wboelens.polarrecorder.R
+import androidx.compose.ui.res.stringResource
 import com.wboelens.polarrecorder.BuildConfig
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.Spring
@@ -92,7 +94,7 @@ fun BioAgeScreen(onBack: () -> Unit) {
   Scaffold(
       topBar = {
         TopAppBar(
-            title = { Text("Età ${BuildConfig.APP_NAME}") },
+            title = { Text(stringResource(R.string.bio_age_eta, BuildConfig.APP_NAME)) },
             navigationIcon = {
               IconButton(onClick = onBack) {
                 Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Indietro")
@@ -121,15 +123,14 @@ fun BioAgeScreen(onBack: () -> Unit) {
         OutlinedCard(Modifier.fillMaxWidth()) {
           Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
             Text(
-                "Impossibile leggere le attività da Intervals.icu ($e)",
+                stringResource(R.string.bio_age_impossibile_leggere_le_attivita, e.toString()),
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.error)
             Text(
-                "Fitness e allenamento non sono calcolati finché la lettura non riesce. Se l'errore è 401 o 403, " +
-                    "ricollega Intervals.icu dalle Impostazioni.",
+                stringResource(R.string.bio_age_fitness_e_allenamento_non),
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant)
-            TextButton(onClick = { reload++ }) { Text("Riprova") }
+            TextButton(onClick = { reload++ }) { Text(stringResource(R.string.bio_age_riprova)) }
           }
         }
       }
@@ -144,7 +145,7 @@ fun BioAgeScreen(onBack: () -> Unit) {
               is BioAgeOutcome.Ready -> ReadyContent(o.result, d)
             }
       }
-      TextButton(onClick = { editing = true }) { Text("Modifica data di nascita e sesso") }
+      TextButton(onClick = { editing = true }) { Text(stringResource(R.string.bio_age_modifica_data_di_nascita)) }
       MethodNote()
     }
   }
@@ -235,7 +236,7 @@ private fun ReadyContent(r: BioAgeResult, d: BioAgeScreenData) {
   )
   OutlinedCard(Modifier.fillMaxWidth()) {
     Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
-      Text("Cosa la determina", style = MaterialTheme.typography.titleSmall)
+      Text(stringResource(R.string.bio_age_cosa_la_determina), style = MaterialTheme.typography.titleSmall)
       r.components.forEach { ComponentRow(it) }
       if (r.missing.isNotEmpty()) {
         Text(
@@ -248,7 +249,7 @@ private fun ReadyContent(r: BioAgeResult, d: BioAgeScreenData) {
   }
   OutlinedCard(Modifier.fillMaxWidth()) {
     Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
-      Text("Ritmo d'invecchiamento", style = MaterialTheme.typography.titleSmall)
+      Text(stringResource(R.string.bio_age_ritmo_d_invecchiamento), style = MaterialTheme.typography.titleSmall)
       Text(
           d.pace?.let {
             "${fmt(it, 2)} anni biologici per anno di calendario " +
@@ -279,19 +280,16 @@ private fun ComponentRow(c: AgeComponent) {
 @Composable
 private fun CalibratingContent(o: BioAgeOutcome.Calibrating, d: BioAgeScreenData) {
   AgeRings(null, "${o.validNights}/${o.requiredNights}", "notti valide", dimmed = true)
-  Text("In calibrazione", style = MaterialTheme.typography.titleMedium)
+  Text(stringResource(R.string.bio_age_in_calibrazione), style = MaterialTheme.typography.titleMedium)
   OutlinedCard(Modifier.fillMaxWidth()) {
     Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
-      Text("Notti degli ultimi 28 giorni", style = MaterialTheme.typography.titleSmall)
+      Text(stringResource(R.string.bio_age_notti_degli_ultimi_28), style = MaterialTheme.typography.titleSmall)
       Text(
-          "${d.nightsRecent} registrate · ${o.validNights} valide · " +
-              "${d.nightsLowQuality} escluse per affidabilità sotto l'80% · " +
-              "${d.nightsNoStages} escluse perché senza fasi del sonno",
+          stringResource(R.string.bio_age_registrate_valide_escluse_per, d.nightsRecent.toString(), o.validNights.toString(), d.nightsLowQuality.toString(), d.nightsNoStages.toString()),
           style = MaterialTheme.typography.bodyMedium,
       )
       Text(
-          "Servono ${o.requiredNights} notti valide: con meno notti l'età cambierebbe troppo da " +
-              "un giorno all'altro.",
+          stringResource(R.string.bio_age_servono_notti_valide_con, o.requiredNights.toString()),
           style = MaterialTheme.typography.bodySmall,
           color = MaterialTheme.colorScheme.onSurfaceVariant,
       )
@@ -299,14 +297,14 @@ private fun CalibratingContent(o: BioAgeOutcome.Calibrating, d: BioAgeScreenData
   }
   OutlinedCard(Modifier.fillMaxWidth()) {
     Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
-      Text("Anteprima (non ancora un'età)", style = MaterialTheme.typography.titleSmall)
+      Text(stringResource(R.string.bio_age_anteprima_non_ancora_un), style = MaterialTheme.typography.titleSmall)
       if (o.preview.isEmpty()) {
-        Text("Nessuna componente ancora calcolabile.", style = MaterialTheme.typography.bodySmall)
+        Text(stringResource(R.string.bio_age_nessuna_componente_ancora_calcolabile), style = MaterialTheme.typography.bodySmall)
       }
       o.preview.forEach { ComponentRow(it) }
       if (o.validNights < 3) {
         Text(
-            "Sonno: compare da 3 notti valide.",
+            stringResource(R.string.bio_age_sonno_compare_da_3),
             style = MaterialTheme.typography.bodySmall,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
@@ -328,38 +326,31 @@ private fun ProfileForm(birth: LocalDate?, sex: Sex?, onSave: (LocalDate, Sex) -
   var chosen by remember { mutableStateOf(sex) }
   val parsed = runCatching { LocalDate.parse(text.trim()) }.getOrNull()
   val validDate = parsed != null && parsed.isBefore(LocalDate.now().minusYears(15))
-  Text("Il tuo profilo", style = MaterialTheme.typography.titleMedium)
+  Text(stringResource(R.string.bio_age_il_tuo_profilo), style = MaterialTheme.typography.titleMedium)
   Text(
-      "Servono per confrontarti con i valori tipici della tua età e del tuo sesso. Restano sul telefono.",
+      stringResource(R.string.bio_age_servono_per_confrontarti_con),
       style = MaterialTheme.typography.bodySmall,
       color = MaterialTheme.colorScheme.onSurfaceVariant,
   )
   OutlinedTextField(
       value = text,
       onValueChange = { text = it },
-      label = { Text("Data di nascita (AAAA-MM-GG)") },
+      label = { Text(stringResource(R.string.bio_age_data_di_nascita_aaaa)) },
       singleLine = true,
       isError = text.isNotBlank() && !validDate,
       modifier = Modifier.fillMaxWidth(),
   )
   Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-    FilterChip(selected = chosen == Sex.MALE, onClick = { chosen = Sex.MALE }, label = { Text("Uomo") })
-    FilterChip(selected = chosen == Sex.FEMALE, onClick = { chosen = Sex.FEMALE }, label = { Text("Donna") })
+    FilterChip(selected = chosen == Sex.MALE, onClick = { chosen = Sex.MALE }, label = { Text(stringResource(R.string.bio_age_uomo)) })
+    FilterChip(selected = chosen == Sex.FEMALE, onClick = { chosen = Sex.FEMALE }, label = { Text(stringResource(R.string.bio_age_donna)) })
   }
-  Button(onClick = { onSave(parsed!!, chosen!!) }, enabled = validDate && chosen != null) { Text("Salva") }
+  Button(onClick = { onSave(parsed!!, chosen!!) }, enabled = validDate && chosen != null) { Text(stringResource(R.string.bio_age_salva)) }
 }
 
 @Composable
 private fun MethodNote() {
   Text(
-      "Come è calcolata: ogni componente viene confrontata con una persona tipica della tua età e " +
-          "del tuo sesso e convertita in anni con i rischi di mortalità pubblicati in studi su " +
-          "centinaia di migliaia di persone (VO2max: Kodama 2009; allenamento: Arem 2015; durata " +
-          "del sonno: Cappuccio 2010; regolarità: Windred 2024), assumendo che il rischio raddoppi " +
-          "ogni ~8 anni. L'intervallo tiene conto dell'errore di misura e dell'incertezza degli " +
-          "studi. FC a riposo e HRV non sono incluse: i riferimenti pubblicati sono misurati da " +
-          "svegli e non sono confrontabili con i valori notturni. È una stima statistica di " +
-          "benessere, non una valutazione medica.",
+      stringResource(R.string.bio_age_come_e_calcolata_ogni),
       style = MaterialTheme.typography.bodySmall,
       color = MaterialTheme.colorScheme.onSurfaceVariant,
   )

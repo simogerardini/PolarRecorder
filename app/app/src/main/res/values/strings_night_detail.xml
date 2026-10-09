@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Testi di NightDetailScreen.kt (italiano, base). Generato da estrai_testi.py. -->
+<resources>
+    <string name="night_detail_eliminare_questa_notte">Eliminare questa notte?</string>
+    <string name="night_detail_riepilogo_grafici_e_battiti">Riepilogo, grafici e battiti registrati verranno cancellati definitivamente.</string>
+    <string name="night_detail_elimina">Elimina</string>
+    <string name="night_detail_annulla">Annulla</string>
+    <string name="night_detail_fc_minima">FC minima</string>
+    <string name="night_detail_fc_a_riposo">FC a riposo</string>
+    <string name="night_detail_fc_media">FC media</string>
+    <string name="night_detail_rmssd">rMSSD</string>
+    <string name="night_detail_sdnn">SDNN</string>
+    <string name="night_detail_pnn50">pNN50</string>
+    <string name="night_detail_l_hrv_di_questa">L\'HRV di questa notte non è calcolata e non viene inviata a Intervals.icu.</string>
+    <string name="night_detail_frequenza_cardiaca_media_5">Frequenza cardiaca (media 5 minuti)</string>
+    <string name="night_detail_rmssd_5_minuti">rMSSD (5 minuti)</string>
+    <string name="night_detail_qualita_del_segnale">Qualità del segnale</string>
+    <string name="night_detail_affidabilita_notte_coperta_da" formatted="true">Affidabilità %1$s %% (notte coperta da battiti validi) · %2$s battiti · buoni %3$s %% · corretti %4$s %% · scartati %5$s %% · interruzioni %6$s · finestre valide %7$s/%8$s</string>
+    <string name="night_detail_intervals_icu">Intervals.icu</string>
+    <string name="night_detail_fasi_del_sonno">Fasi del sonno</string>
+    <string name="night_detail_non_disponibili_per_questa">Non disponibili per questa notte (registrazione troppo breve o segnale insufficiente).</string>
+    <string name="night_detail_sonno_effettivo">Sonno effettivo</string>
+    <string name="night_detail_efficienza">Efficienza</string>
+    <string name="night_detail_profondo">Profondo</string>
+    <string name="night_detail_rem">REM</string>
+    <string name="night_detail_leggero">Leggero</string>
+    <string name="night_detail_veglia_notturna">Veglia notturna</string>
+    <string name="night_detail_frequenza_cardiaca">Frequenza cardiaca</string>
+    <string name="night_detail_media_della_notte_bpm" formatted="true">Media della notte %1$s bpm · valori ogni 5 minuti</string>
+    <string name="night_detail_variabilita_cardiaca_hrv">Variabilità cardiaca (HRV)</string>
+    <string name="night_detail_pnn50_rmssd_ogni_5" formatted="true">pNN50 %1$s %% · rMSSD ogni 5 minuti</string>
+    <string name="night_detail_registrazione">Registrazione</string>
+    <string name="night_detail_affidabilita_battiti_scartati_interruzioni" formatted="true">Affidabilità %1$s %% · %2$s battiti · scartati %3$s %% · interruzioni %4$s · finestre valide %5$s/%6$s</string>
+    <string name="night_detail_invia_ora">Invia ora</string>
+</resources>

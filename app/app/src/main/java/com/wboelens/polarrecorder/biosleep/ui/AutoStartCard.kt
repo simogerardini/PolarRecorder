@@ -1,5 +1,7 @@
 package com.wboelens.polarrecorder.biosleep.ui
 
+import com.wboelens.polarrecorder.R
+import androidx.compose.ui.res.stringResource
 import android.os.Build
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.IntentSenderRequest
@@ -48,7 +50,7 @@ fun AutoStartCard(habits: Habits) {
 
   OutlinedCard(Modifier.fillMaxWidth()) {
     Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-      Text("Avvio automatico", style = MaterialTheme.typography.titleSmall)
+      Text(stringResource(R.string.auto_start_card_avvio_automatico), style = MaterialTheme.typography.titleSmall)
       when {
         !AutoStart.isSupported -> InfoText("Richiede Android 13 o successivo.")
         profile == null -> InfoText("Fai prima una registrazione: serve sapere quale fascia usare.")
@@ -72,7 +74,7 @@ fun AutoStartCard(habits: Habits) {
                   )
                 }
               }) {
-                Text("Associa la fascia")
+                Text(stringResource(R.string.auto_start_card_associa_la_fascia))
               }
         }
         else -> {
@@ -104,7 +106,7 @@ fun AutoStartCard(habits: Habits) {
                   message = "Associazione rimossa"
                 }
               }) {
-                Text("Rimuovi associazione")
+                Text(stringResource(R.string.auto_start_card_rimuovi_associazione))
               }
         }
       }

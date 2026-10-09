@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Testi di AutoStartCard.kt (italiano, base). Generato da estrai_testi.py. -->
+<resources>
+    <string name="auto_start_card_avvio_automatico">Avvio automatico</string>
+    <string name="auto_start_card_associa_la_fascia">Associa la fascia</string>
+    <string name="auto_start_card_rimuovi_associazione">Rimuovi associazione</string>
+</resources>

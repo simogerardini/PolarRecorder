@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Testi di TimeLineChart.kt (italiano, base). Generato da estrai_testi.py. -->
+<resources>
+    <string name="time_line_chart_dati_insufficienti_per_il">Dati insufficienti per il grafico</string>
+</resources>

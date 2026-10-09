@@ -1,5 +1,7 @@
 package com.wboelens.polarrecorder.biosleep.ui
 
+import com.wboelens.polarrecorder.R
+import androidx.compose.ui.res.stringResource
 import com.wboelens.polarrecorder.BuildConfig
 import android.database.SQLException
 import androidx.compose.foundation.layout.Arrangement
@@ -78,7 +80,7 @@ fun NightsScreen(
   Scaffold(
       topBar = {
         TopAppBar(
-            title = { Text("Le mie notti") },
+            title = { Text(stringResource(R.string.nights_le_mie_notti)) },
             navigationIcon = {
               IconButton(onClick = onBack) {
                 Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Indietro")
@@ -129,7 +131,7 @@ fun NightsScreen(
 private fun AnalyzingCard() {
   OutlinedCard(Modifier.fillMaxWidth()) {
     Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-      Text("Analisi della notte in corso…", style = MaterialTheme.typography.titleSmall)
+      Text(stringResource(R.string.nights_analisi_della_notte_in), style = MaterialTheme.typography.titleSmall)
       LinearProgressIndicator(Modifier.fillMaxWidth())
     }
   }
@@ -143,17 +145,15 @@ private fun HabitsCard(h: Habits) {
   OutlinedCard(Modifier.fillMaxWidth()) {
     Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
       if (h.learned) {
-        Text("Abitudini apprese", style = MaterialTheme.typography.titleSmall)
+        Text(stringResource(R.string.nights_abitudini_apprese), style = MaterialTheme.typography.titleSmall)
         Text(
-            "A letto di solito tra ${HabitLearner.noonMinutesToClock(h.bedtimeFromNoon!!)} e " +
-                "${HabitLearner.noonMinutesToClock(h.bedtimeToNoon!!)} · stop automatico " +
-                "dalle ${HabitLearner.minutesToClock(h.morningFromMinute)}",
+            stringResource(R.string.nights_a_letto_di_solito, (HabitLearner.noonMinutesToClock(h.bedtimeFromNoon!!)).toString(), (HabitLearner.noonMinutesToClock(h.bedtimeToNoon!!)).toString(), (HabitLearner.minutesToClock(h.morningFromMinute)).toString()),
             style = MaterialTheme.typography.bodySmall,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
       } else {
         Text(
-            "Apprendimento abitudini: ${h.nightsUsed} di ${h.nightsRequired} notti",
+            stringResource(R.string.nights_apprendimento_abitudini_di_notti, h.nightsUsed.toString(), h.nightsRequired.toString()),
             style = MaterialTheme.typography.titleSmall,
         )
         LinearProgressIndicator(
@@ -161,8 +161,7 @@ private fun HabitsCard(h: Habits) {
             modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp),
         )
         Text(
-            "Contano le notti di almeno 4 ore degli ultimi 28 giorni. Intanto avvia la notte con " +
-                "\"Avvia notte\": lo stop del mattino è già automatico.",
+            stringResource(R.string.nights_contano_le_notti_di),
             style = MaterialTheme.typography.bodySmall,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
