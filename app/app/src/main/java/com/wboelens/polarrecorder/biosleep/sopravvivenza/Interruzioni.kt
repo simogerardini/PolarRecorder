@@ -17,8 +17,17 @@ enum class TipoEvento {
   FASCIA_COLLEGATA,
 }
 
+/** Causa di un buco come codice stabile: contratto biosleep_interruzioni e traduzioni. */
+enum class CodiceCausa { APP_CHIUSA, BT_SPENTO, FUORI_PORTATA, SENZA_CONTATTO }
+
 /** [causa] per esteso con l'ora; [breve] senza ora, per la card "Registrazione interrotta". */
-data class Buco(val daMs: Long, val aMs: Long, val causa: String, val breve: String) {
+data class Buco(
+    val daMs: Long,
+    val aMs: Long,
+    val causa: String,
+    val breve: String,
+    val codice: CodiceCausa,
+) {
   val minuti: Int
     get() = ((aMs - daMs) / 60_000).toInt()
 }
@@ -33,6 +42,13 @@ data class InterruzioniNotte(val buchi: List<Buco>) {
       else "$minutiPersi' persi: " + buchi.joinToString("; ") { "${it.causa} (${it.minuti}')" }
 
   /** Causa del buco piu' lungo, piu' quanti altri ce ne sono: "app chiusa dal sistema, +2 interruzioni". */
+  /** Buco piu' lungo: la causa principale della notte. */
+  fun principale(): Buco? = buchi.maxByOrNull { it.aMs - it.daMs }
+
+  /** Quanti buchi oltre al principale. */
+  val altre: Int
+    get() = (buchi.size - 1).coerceAtLeast(0)
+
   fun causaBreve(): String? {
     val principale = buchi.maxByOrNull { it.aMs - it.daMs } ?: return null
     val altri = buchi.size - 1
@@ -72,26 +88,26 @@ object RilevaInterruzioni {
       val a = t[i - 1]
       val b = t[i]
       if (b - a < MIN_BUCO_MS) continue
-      val (causa, breve) = causa(a, b, eventi, zona)
-      buchi += Buco(a, b, causa, breve)
+      val (causa, breve, codice) = causa(a, b, eventi, zona)
+      buchi += Buco(a, b, causa, breve, codice)
     }
     return InterruzioniNotte(buchi)
   }
 
   /** (causa con l'ora, causa breve). */
-  private fun causa(a: Long, b: Long, eventi: List<EventoNotte>, zona: ZoneId): Pair<String, String> {
+  private fun causa(a: Long, b: Long, eventi: List<EventoNotte>, zona: ZoneId): Triple<String, String, CodiceCausa> {
     val dentro = eventi.filter { it.tMs in (a - MARGINE_MS)..(b + MARGINE_MS) }
     fun ora(ms: Long) = Instant.ofEpochMilli(ms).atZone(zona).format(ORA)
     dentro.firstOrNull { it.tipo == TipoEvento.BT_SPENTO }?.let {
-      return "Bluetooth spento alle ${ora(it.tMs)}" to "Bluetooth spento"
+      return Triple("Bluetooth spento alle ${ora(it.tMs)}", "Bluetooth spento", CodiceCausa.BT_SPENTO)
     }
     val chiusuraOrdinata = dentro.any { it.tipo == TipoEvento.SERVIZIO_CHIUSO }
     val ripartito = dentro.any { it.tipo == TipoEvento.SERVIZIO_AVVIATO || it.tipo == TipoEvento.RIPRESA }
-    if (ripartito && !chiusuraOrdinata) return "app chiusa dal sistema alle ${ora(a)}" to "app chiusa dal sistema"
+    if (ripartito && !chiusuraOrdinata) return Triple("app chiusa dal sistema alle ${ora(a)}", "app chiusa dal sistema", CodiceCausa.APP_CHIUSA)
     if (dentro.any { it.tipo == TipoEvento.FASCIA_SCOLLEGATA }) {
-      return "fascia fuori portata o spenta alle ${ora(a)}" to "fascia fuori portata"
+      return Triple("fascia fuori portata o spenta alle ${ora(a)}", "fascia fuori portata", CodiceCausa.FUORI_PORTATA)
     }
-    return "nessun battito dalle ${ora(a)} (fascia spostata o senza contatto)" to "fascia senza contatto"
+    return Triple("nessun battito dalle ${ora(a)} (fascia spostata o senza contatto)", "fascia senza contatto", CodiceCausa.SENZA_CONTATTO)
   }
 }
 

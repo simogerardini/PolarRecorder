@@ -648,7 +648,9 @@ class BioSleepDataSaver(
         val eventi = EventiNotte.get(appContext).eventiTra(startMs - 60_000, endMs + 60_000)
         val r = RilevaInterruzioni.trova(phoneMs, eventi)
         EventiNotte.get(appContext).salvaInterruzioni(sessionId, r, endMs)
-        r.causaBreve()?.let { causa -> segnalaInterruzione(endMs, r.minutiPersi, causa) }
+        r.causaBreve()?.let { causa ->
+          segnalaInterruzione(endMs, r.minutiPersi, causa, r.principale()?.codice?.name, r.altre)
+        }
         r.testo()?.also { AutoStopLog.write(appContext, "Notte $sessionId: $it") }
       } catch (e: Exception) {
         Log.e(TAG, "Calcolo interruzioni fallito", e)
@@ -657,18 +659,22 @@ class BioSleepDataSaver(
 
   /**
    * Contratto con la Parte 3 (card in Oggi): SharedPreferences "biosleep_interruzioni", chiave
-   * "ultima", JSON {"data": mattina del risveglio, "minuti": minuti persi, "causa": testo breve}.
+   * "ultima", JSON {"data": mattina del risveglio, "minuti": minuti persi, "causa": testo breve,
+   * "codice": APP_CHIUSA|BT_SPENTO|FUORI_PORTATA|SENZA_CONTATTO, "altre": buchi oltre al principale}.
    * Una sola voce, sovrascritta a ogni notte interrotta; notti senza interruzioni: nulla.
    * Le notti di prova (modalita' prova degli script) non la scrivono.
    */
-  private fun segnalaInterruzione(fineNotteMs: Long, minuti: Int, causa: String) {
+  private fun segnalaInterruzione(fineNotteMs: Long, minuti: Int, causa: String, codice: String?, altre: Int) {
     if (minuti <= 0) return
     if (AutoStopLog.testMode(appContext)) {
       AutoStopLog.write(appContext, "Interruzione di prova non segnalata alla card ($minuti min, $causa)")
       return
     }
     val data = Instant.ofEpochMilli(fineNotteMs).atZone(ZoneId.systemDefault()).toLocalDate().toString()
-    val json = JSONObject().put("data", data).put("minuti", minuti).put("causa", causa).toString()
+    val json = JSONObject()
+        .put("data", data).put("minuti", minuti).put("causa", causa)
+        .put("codice", codice).put("altre", altre)
+        .toString()
     appContext.getSharedPreferences(PREFS_INTERRUZIONI, Context.MODE_PRIVATE).edit().putString("ultima", json).apply()
   }
 

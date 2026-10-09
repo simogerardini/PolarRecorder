@@ -72,4 +72,27 @@ class InterruzioniTest {
     assertEquals("app chiusa dal sistema, +2 interruzioni", RilevaInterruzioni.trova(p, ev, z).causaBreve())
     assertNull(RilevaInterruzioni.trova(LongArray(100) { t0 + it * 1000L }, ev, z).causaBreve())
   }
+
+  @Test
+  fun codiceEAltrePerIlContratto() {
+    val buchi = listOf(at(3, 12) to at(3, 30), at(4, 0) to at(4, 10), at(5, 40) to at(5, 45))
+    val p =
+        generateSequence(t0) { it + 1000 }
+            .takeWhile { it < at(7, 0) }
+            .filter { x -> buchi.none { x > it.first && x < it.second } }
+            .toList()
+            .toLongArray()
+    val ev =
+        listOf(
+            EventoNotte(at(3, 25), TipoEvento.SERVIZIO_AVVIATO),
+            EventoNotte(at(4, 0), TipoEvento.BT_SPENTO),
+            EventoNotte(at(5, 41), TipoEvento.FASCIA_SCOLLEGATA))
+    val r = RilevaInterruzioni.trova(p, ev, z)
+    assertEquals(CodiceCausa.APP_CHIUSA, r.principale()!!.codice)
+    assertEquals(2, r.altre)
+    assertEquals(listOf(CodiceCausa.APP_CHIUSA, CodiceCausa.BT_SPENTO, CodiceCausa.FUORI_PORTATA), r.buchi.map { it.codice })
+    val vuota = RilevaInterruzioni.trova(LongArray(100) { t0 + it * 1000L }, ev, z)
+    assertNull(vuota.principale())
+    assertEquals(0, vuota.altre)
+  }
 }
