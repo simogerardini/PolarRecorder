@@ -50,9 +50,11 @@ from marchio import NOME_APP
 import campi
 import messaggi   # 07/10/2026 (punto 13a): codici dei messaggi per l'app
 
-VERSIONE = "2026.10.09-pulizia-mattino"   # anche nel LEGGIMI del pacchetto
+VERSIONE = "2026.10.09-privacy2"   # anche nel LEGGIMI del pacchetto
 import contextlib, importlib, io, json, os, re, sys, traceback
 
+# 09/10/2026: il cervello non usa piu' GitHub ne' Telegram; le variabili si tolgono comunque
+# dall'ambiente, nel caso il processo le avesse ereditate.
 _VARIABILI_ESTERNE = ("GH_TOKEN", "GITHUB_REPOSITORY", "TELEGRAM_TOKEN", "TELEGRAM_CHAT_ID")
 cs = None
 
@@ -479,6 +481,63 @@ def pause(config_json):
     except Exception as e:
         out["errore"] = f"{type(e).__name__}: {e}"
     return json.dumps(out, ensure_ascii=False)
+
+
+# ── PULIZIA ALLO SCOLLEGAMENTO (09/10/2026, inventario privacy) ──────────────────────────
+# Toglie da Intervals.icu cio' che l'app ha scritto: sedute del coach (sw:), gare (app:gara:)
+# e pause (app:pausa:) create dall'app; a richiesta i 12 campi personalizzati Noctalix*.
+# Non tocca sedute, gare o note inserite a mano, ne' quelle del vecchio intervals_coach.
+# Le soglie aggiornate (LTHR, FTP, CP, passo, CSS) non si possono riportare ai valori di prima.
+PREFISSI_APP = ("sw:", "app:gara:", "app:pausa:")
+
+
+def pulisci_intervals(config_json):
+    """{"conferma": true per eseguire (senza: prova), "anche_passato": false (default: da oggi),
+    "campi": false (true: elimina anche le definizioni dei campi Noctalix*)}.
+    Risultato: {"esito": "prova"|"ok"|"permesso_mancante"|"errore", "eventi_da_eliminare",
+    "per_tipo": {"sedute", "gare", "pause", "altro"},
+    "eventi_eliminati", "campi_da_eliminare", "campi_eliminati"}."""
+    from datetime import timedelta
+    cfg = json.loads(config_json)
+    out = {"esito": "errore", "eventi_da_eliminare": [], "eventi_eliminati": 0,
+           "campi_da_eliminare": [], "campi_eliminati": 0}
+    try:
+        http, h, base = _http_icu(cfg)
+        oggi = _adesso(cfg).strftime("%Y-%m-%d")
+        dal = (_adesso(cfg) - timedelta(days=3 * 365)).strftime("%Y-%m-%d") if cfg.get("anche_passato") else oggi
+        al = (_adesso(cfg) + timedelta(days=GARA_MESI_MAX * 31)).strftime("%Y-%m-%d")
+        r = http.get(f"{base}/events", headers=h, params={"oldest": dal, "newest": al}, timeout=60)
+        if r.status_code in (401, 403):
+            out["esito"] = "permesso_mancante"
+            return json.dumps(out)
+        ev = [e for e in (r.json() or []) if (e.get("external_id") or "").startswith(PREFISSI_APP)
+              and (e.get("start_date_local") or "")[:10] >= dal]
+        out["eventi_da_eliminare"] = [e["id"] for e in ev]
+        # 09/10/2026 (Parte 3): conteggio per tipo, dalla category degli eventi da eliminare
+        tipi = {"sedute": 0, "gare": 0, "pause": 0, "altro": 0}
+        for e in ev:
+            cat = e.get("category") or ""
+            tipi["sedute" if cat == "WORKOUT" else "gare" if cat.startswith("RACE")
+                 else "pause" if cat in CATEGORIE_PAUSA else "altro"] += 1
+        out["per_tipo"] = tipi
+        if cfg.get("campi"):
+            ri = http.get(f"{base}/custom-item", headers=h, timeout=60)
+            codici = {c["code"] for c in campi.CAMPI}
+            out["campi_da_eliminare"] = [x["id"] for x in (ri.json() or []) if x.get("type") == "INPUT_FIELD"
+                                         and (x.get("content") or {}).get("code") in codici]
+        if not cfg.get("conferma"):
+            out["esito"] = "prova"
+            return json.dumps(out)
+        for i in out["eventi_da_eliminare"]:
+            if http.delete(f"{base}/events/{i}", headers=h, timeout=30).status_code in (200, 204):
+                out["eventi_eliminati"] += 1
+        for i in out["campi_da_eliminare"]:
+            if http.delete(f"{base}/custom-item/{i}", headers=h, timeout=30).status_code in (200, 204):
+                out["campi_eliminati"] += 1
+        out["esito"] = "ok"
+    except Exception as e:
+        out["errore"] = f"{type(e).__name__}: {e}"
+    return json.dumps(out)
 
 
 def elimina_gara(config_json):

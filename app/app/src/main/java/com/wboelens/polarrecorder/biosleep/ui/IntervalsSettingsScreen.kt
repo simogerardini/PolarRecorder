@@ -77,6 +77,8 @@ fun IntervalsSettingsScreen(
   val stato by OAuthIntervals.stato.collectAsState()
   // rilettura dopo collega/scollega/salva
   var giro by remember { mutableIntStateOf(0) }
+  var dialogoScollega by remember { mutableStateOf(false) }
+  var esitoPulizia by remember { mutableStateOf<String?>(null) }
   val collegato = remember(giro, stato) { settings.collegato }
 
   var apiKey by remember { mutableStateOf(settings.apiKey) }
@@ -110,15 +112,17 @@ fun IntervalsSettingsScreen(
         Text(
             tr("Collegato" + settings.atletaCollegato.takeIf { it.isNotBlank() }?.let { " come atleta $it" }.orEmpty()),
             color = MaterialTheme.colorScheme.primary)
-        OutlinedButton(
-            onClick = {
-              scope.launch {
-                OAuthIntervals.scollega(context.applicationContext)
-                giro++
-              }
-            }) {
-              Text(stringResource(R.string.intervals_settings_scollega))
-            }
+        OutlinedButton(onClick = { dialogoScollega = true }) {
+          Text(stringResource(R.string.intervals_settings_scollega))
+        }
+        if (dialogoScollega)
+            DialogoScollega(
+                onChiudi = { dialogoScollega = false },
+                onFatto = { m ->
+                  dialogoScollega = false
+                  esitoPulizia = m.ifBlank { null }
+                  giro++
+                })
       } else {
         Text(
             stringResource(R.string.intervals_settings_collega_il_tuo_account, BuildConfig.APP_NAME, BuildConfig.APP_NAME),
@@ -128,6 +132,7 @@ fun IntervalsSettingsScreen(
         Button(onClick = { OAuthIntervals.avvia(context) }) { Text(stringResource(R.string.intervals_settings_collega_intervals_icu)) }
       }
       stato.messaggio?.let { Text(tr(it), style = MaterialTheme.typography.bodySmall) }
+      esitoPulizia?.let { Text(it, style = MaterialTheme.typography.bodySmall) }
 
       // Campi BioSleep su Intervals.icu (cervello.prepara_account)
       if (stato.inCorso) CircularProgressIndicator()

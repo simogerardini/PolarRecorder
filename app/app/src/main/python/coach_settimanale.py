@@ -114,11 +114,7 @@ def now_local():
 # ── CREDENZIALI ──────────────────────────────────────────────────────────────
 API_KEY            = os.getenv("INTERVALS_API_KEY")
 ATHLETE_ID         = os.getenv("INTERVALS_ATHLETE_ID")
-TELEGRAM_TOKEN     = os.getenv("TELEGRAM_TOKEN", "")
-TELEGRAM_CHAT_ID   = os.getenv("TELEGRAM_CHAT_ID", "")
 STATE_FILE         = os.getenv("COACH_SETT_STATE", "coach_settimanale_state.json")
-GH_TOKEN           = os.getenv("GH_TOKEN", "")
-GITHUB_REPOSITORY  = os.getenv("GITHUB_REPOSITORY", "")
 
 # 06/10/2026: accesso OAuth dall'app (token Bearer, atleta "0" = proprietario del token);
 # la chiave API personale resta valida (Basic auth).
@@ -3174,10 +3170,10 @@ def scrivi_nota(testo, data_str, esistenti, dry=False):
 
 
 def telegram(testo):
-    if not (TELEGRAM_TOKEN and TELEGRAM_CHAT_ID):
-        return
-    requests.post(f"https://api.telegram.org/bot{TELEGRAM_TOKEN}/sendMessage",
-                  json={"chat_id": TELEGRAM_CHAT_ID, "text": testo[:4000]})
+    """Consegna di una notifica all'app. 09/10/2026 (privacy): nessun invio di rete; il
+    vecchio invio a Telegram di intervals_coach e' stato tolto. cervello.esegui_app la
+    sostituisce con l'aggiunta a "notifiche"; da sola non fa nulla."""
+    return None
 
 
 # ── LOCK A FLAG SU GITHUB ────────────────────────────────────────────────────
@@ -3192,38 +3188,16 @@ def telegram(testo):
 FLAG_PREFISSI = ("sett_piano_", "sett_giorno_")
 
 
-def _gh_headers():
-    return {"Authorization": f"Bearer {GH_TOKEN}",
-            "Accept": "application/vnd.github+json"}
-
-
-def _gh_attivo():
-    return bool(GH_TOKEN and GITHUB_REPOSITORY)
-
-
-def _flag_url(nome):
-    return f"https://api.github.com/repos/{GITHUB_REPOSITORY}/contents/{nome}"
-
-
 def lock_presente(nome):
-    if not _gh_attivo():
-        return nome in (carica_stato().get("flag") or [])
-    r = requests.get(_flag_url(nome), headers=_gh_headers())
-    return r.status_code == 200
+    # 09/10/2026 (privacy): i lock vivono solo nello stato sul telefono (niente GitHub)
+    return nome in (carica_stato().get("flag") or [])
 
 
 def lock_crea(nome):
-    if not _gh_attivo():
-        st = carica_stato()
-        st["flag"] = sorted(set(st.get("flag") or []) | {nome})
-        salva_stato(st)
-        return True
-    contenuto = base64.b64encode(
-        f"coach settimanale {now_local().isoformat(timespec='seconds')}".encode()).decode()
-    r = requests.put(_flag_url(nome), headers=_gh_headers(),
-                     json={"message": f"lock {nome}", "content": contenuto})
-    print(f"  Lock {nome}: {r.status_code}")
-    return r.status_code in (200, 201)
+    st = carica_stato()
+    st["flag"] = sorted(set(st.get("flag") or []) | {nome})
+    salva_stato(st)
+    return True
 
 
 def lock_rimuovi(nome, motivo="retry"):
@@ -3231,18 +3205,10 @@ def lock_rimuovi(nome, motivo="retry"):
     lo scatto successivo della finestra puo' riprovare invece di lasciare la giornata
     senza piano. Se invece qualcosa e' gia' stato scritto il lock RESTA: un secondo run
     rifarebbe il lavoro, e un piano monco e' meglio di un piano doppio."""
-    if not _gh_attivo():
-        st = carica_stato()
-        st["flag"] = [f for f in (st.get("flag") or []) if f != nome]
-        salva_stato(st)
-        return True
-    r = requests.get(_flag_url(nome), headers=_gh_headers())
-    if r.status_code != 200:
-        return False
-    rd = requests.delete(_flag_url(nome), headers=_gh_headers(),
-                         json={"message": f"{motivo} {nome}", "sha": (r.json() or {}).get("sha")})
-    print(f"  Lock {nome} rimosso per consentire un nuovo tentativo: {rd.status_code}")
-    return rd.status_code in (200, 204)
+    st = carica_stato()
+    st["flag"] = [f for f in (st.get("flag") or []) if f != nome]
+    salva_stato(st)
+    return True
 
 
 def flag_da_ripulire(nomi, oggi_str, lunedi_str):
@@ -3263,31 +3229,13 @@ def flag_da_ripulire(nomi, oggi_str, lunedi_str):
 
 
 def pulisci_flag_vecchi(oggi_str, lunedi_str):
-    """I flag si accumulerebbero nella root del repo, uno al giorno. Mai bloccante:
-    un errore qui non deve poter lasciare il repo senza il lock appena creato."""
-    if not _gh_attivo():
-        st = carica_stato()
-        tenere = set(st.get("flag") or []) - set(
-            flag_da_ripulire(st.get("flag") or [], oggi_str, lunedi_str))
-        st["flag"] = sorted(tenere)
-        salva_stato(st)
-        return
-    try:
-        r = requests.get(f"https://api.github.com/repos/{GITHUB_REPOSITORY}/contents/",
-                         headers=_gh_headers())
-        if r.status_code != 200:
-            print(f"  Pulizia flag saltata: listing {r.status_code}")
-            return
-        contenuti = {f.get("name"): f.get("sha") for f in (r.json() or [])}
-        for nome in flag_da_ripulire(list(contenuti), oggi_str, lunedi_str):
-            rd = requests.delete(_flag_url(nome), headers=_gh_headers(),
-                                 json={"message": f"cleanup {nome}", "sha": contenuti[nome]})
-            print(f"  Flag vecchio {nome} rimosso: {rd.status_code}")
-    except Exception as e:
-        print(f"  Pulizia flag saltata: {type(e).__name__}: {e}")
+    """I flag vecchi si tolgono dallo stato (uno al giorno si accumulerebbe)."""
+    st = carica_stato()
+    tenere = set(st.get("flag") or []) - set(flag_da_ripulire(st.get("flag") or [], oggi_str, lunedi_str))
+    st["flag"] = sorted(tenere)
+    salva_stato(st)
 
 
-# ── STATO / LOCK ─────────────────────────────────────────────────────────────
 def carica_stato():
     try:
         with open(STATE_FILE) as f:

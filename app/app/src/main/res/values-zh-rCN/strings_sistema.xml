@@ -429,4 +429,22 @@
     <string name="sis_banda_rossa_min">红色</string>
     <string name="sis_banda_grigia_min">灰色</string>
     <string name="sis_piano_n_sedute" formatted="true">本周计划：%1$s 次训练</string>
+    <string name="sis_sc_titolo">断开 Intervals.icu</string>
+    <string name="sis_sc_controllo">正在检查 Intervals.icu 上的内容…</string>
+    <string name="sis_sc_eventi" formatted="true">将删除的应用创建的事件：%1$s</string>
+    <string name="sis_sc_per_tipo" formatted="true">%1$s 次训练 · %2$s 场比赛 · %3$s 段休息</string>
+    <string name="sis_sc_campi_n" formatted="true">将删除的个人资料中的应用字段：%1$s</string>
+    <string name="sis_sc_opz_campi" formatted="true">同时删除我个人资料中的 %1$s 字段</string>
+    <string name="sis_sc_opz_passato">包括过去的记录</string>
+    <string name="sis_sc_soglie">教练更新过的阈值（FTP、LTHR、配速、CSS）保持不变，不会恢复为之前的数值。</string>
+    <string name="sis_sc_niente">没有需要删除的内容。</string>
+    <string name="sis_sc_permesso">Intervals.icu 不允许读取日历：你可以断开连接而不删除。</string>
+    <string name="sis_sc_errore" formatted="true">检查失败：%1$s</string>
+    <string name="sis_sc_elimina_scollega">删除并断开</string>
+    <string name="sis_sc_solo">断开但不删除</string>
+    <string name="sis_annulla">取消</string>
+    <string name="sis_sc_in_corso">正在删除…</string>
+    <string name="sis_sc_eliminati" formatted="true">已从 Intervals.icu 删除：%1$s 个事件和 %2$s 个字段。</string>
+    <string name="sis_sc_parziale" formatted="true">已删除 %2$s 个事件中的 %1$s 个、%4$s 个字段中的 %3$s 个：请在 Intervals.icu 上检查其余部分。</string>
+    <string name="sis_sc_non_eliminato">删除失败：未断开连接。请重试。</string>
 </resources>

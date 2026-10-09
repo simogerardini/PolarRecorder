@@ -429,4 +429,22 @@
     <string name="sis_banda_rossa_min">red</string>
     <string name="sis_banda_grigia_min">grey</string>
     <string name="sis_piano_n_sedute" formatted="true">Weekly plan: %1$s sessions</string>
+    <string name="sis_sc_titolo">Disconnect Intervals.icu</string>
+    <string name="sis_sc_controllo">Checking what is on Intervals.icu…</string>
+    <string name="sis_sc_eventi" formatted="true">Events created by the app to delete: %1$s</string>
+    <string name="sis_sc_per_tipo" formatted="true">%1$s sessions · %2$s races · %3$s breaks</string>
+    <string name="sis_sc_campi_n" formatted="true">App fields in your profile to delete: %1$s</string>
+    <string name="sis_sc_opz_campi" formatted="true">Also delete the %1$s fields from my profile</string>
+    <string name="sis_sc_opz_passato">Past history too</string>
+    <string name="sis_sc_soglie">Thresholds updated by the coach (FTP, LTHR, pace, CSS) stay as they are: they do not go back to the previous values.</string>
+    <string name="sis_sc_niente">Nothing to delete.</string>
+    <string name="sis_sc_permesso">Intervals.icu does not allow reading the calendar: you can disconnect without deleting.</string>
+    <string name="sis_sc_errore" formatted="true">Check failed: %1$s</string>
+    <string name="sis_sc_elimina_scollega">Delete and disconnect</string>
+    <string name="sis_sc_solo">Disconnect without deleting</string>
+    <string name="sis_annulla">Cancel</string>
+    <string name="sis_sc_in_corso">Deleting…</string>
+    <string name="sis_sc_eliminati" formatted="true">Deleted from Intervals.icu: %1$s events and %2$s fields.</string>
+    <string name="sis_sc_parziale" formatted="true">Deleted %1$s of %2$s events and %3$s of %4$s fields: check the rest on Intervals.icu.</string>
+    <string name="sis_sc_non_eliminato">Deletion failed: not disconnected. Try again.</string>
 </resources>

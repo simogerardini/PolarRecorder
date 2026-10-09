@@ -238,6 +238,14 @@ object Cervello {
       chiama(context, "elimina_gara", c) { addProperty("id", id) }?.let { Gare.esito(it) }
           ?: EsitoGara("errore", null, false, "Python non disponibile")
 
+  /** cervello.pulisci_intervals: senza [conferma] e' una prova (conta), con [conferma] elimina. */
+  fun pulisciIntervals(context: Context, c: Credenziali, conferma: Boolean, campi: Boolean, anchePassato: Boolean): EsitoPulizia =
+      chiama(context, "pulisci_intervals", c) {
+        addProperty("conferma", conferma)
+        addProperty("campi", campi)
+        addProperty("anche_passato", anchePassato)
+      }?.let { EsitoPulizia.da(it) } ?: EsitoPulizia.errore("Python non disponibile")
+
   /** Funzioni senza credenziali (esporta_stato, importa_stato): {"esito", ...} o null se Python fallisce. */
   fun chiamaFile(context: Context, funzione: String, file: java.io.File, extra: JsonObject.() -> Unit = {}): JsonObject? =
       synchronized(lucchetto) {

@@ -428,4 +428,22 @@
     <string name="sis_banda_rossa_min">rossa</string>
     <string name="sis_banda_grigia_min">grigia</string>
     <string name="sis_piano_n_sedute" formatted="true">Piano della settimana: %1$s sedute</string>
+    <string name="sis_sc_titolo">Scollega Intervals.icu</string>
+    <string name="sis_sc_controllo">Controllo di cosa c\'è su Intervals.icu…</string>
+    <string name="sis_sc_eventi" formatted="true">Eventi creati dall\'app da eliminare: %1$s</string>
+    <string name="sis_sc_per_tipo" formatted="true">%1$s sedute · %2$s gare · %3$s pause</string>
+    <string name="sis_sc_campi_n" formatted="true">Campi dell\'app nel profilo da eliminare: %1$s</string>
+    <string name="sis_sc_opz_campi" formatted="true">Elimina anche i campi %1$s dal mio profilo</string>
+    <string name="sis_sc_opz_passato">Anche lo storico passato</string>
+    <string name="sis_sc_soglie">Le soglie aggiornate dal coach (FTP, LTHR, passo, CSS) restano come sono: non tornano ai valori precedenti.</string>
+    <string name="sis_sc_niente">Niente da eliminare.</string>
+    <string name="sis_sc_permesso">Intervals.icu non permette di leggere il calendario: puoi scollegare senza eliminare.</string>
+    <string name="sis_sc_errore" formatted="true">Controllo non riuscito: %1$s</string>
+    <string name="sis_sc_elimina_scollega">Elimina e scollega</string>
+    <string name="sis_sc_solo">Scollega senza eliminare</string>
+    <string name="sis_annulla">Annulla</string>
+    <string name="sis_sc_in_corso">Eliminazione in corso…</string>
+    <string name="sis_sc_eliminati" formatted="true">Eliminati da Intervals.icu: %1$s eventi e %2$s campi.</string>
+    <string name="sis_sc_parziale" formatted="true">Eliminati %1$s eventi su %2$s e %3$s campi su %4$s: controlla il resto su Intervals.icu.</string>
+    <string name="sis_sc_non_eliminato">Eliminazione non riuscita: non ho scollegato. Riprova.</string>
 </resources>
