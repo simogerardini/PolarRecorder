@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Ipnogramma: etichette delle righe -->
+<resources>
+    <string name="hypnogram_veglia">Awake</string>
+    <string name="hypnogram_rem">REM</string>
+    <string name="hypnogram_leggero">Light</string>
+    <string name="hypnogram_profondo">Deep</string>
+</resources>

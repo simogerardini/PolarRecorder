@@ -10,9 +10,11 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.drawText
 import androidx.compose.ui.text.rememberTextMeasurer
 import androidx.compose.ui.unit.dp
+import com.wboelens.polarrecorder.R
 import com.wboelens.polarrecorder.biosleep.SleepStages
 import com.wboelens.polarrecorder.biosleep.Stage
 
@@ -27,7 +29,6 @@ val STAGE_COLORS =
 
 /** Ordine delle righe dall'alto: veglia, REM, leggero, profondo (come in un ipnogramma clinico). */
 private val ROWS = listOf(Stage.WAKE, Stage.REM, Stage.LIGHT, Stage.DEEP)
-private val ROW_LABELS = listOf("Veglia", "REM", "Leggero", "Profondo")
 
 /** Solo per il disegno: blocchi da 5 minuti (10 epoche), fase prevalente in ciascuno. */
 private const val DISPLAY_EPOCHS = 10
@@ -69,6 +70,14 @@ private fun segments(hyp: String): List<Segment> {
 @Composable
 fun Hypnogram(stages: SleepStages, modifier: Modifier = Modifier) {
   val textMeasurer = rememberTextMeasurer()
+  // Etichette delle righe nella lingua dell'app (stesso ordine di ROWS)
+  val rowLabels =
+      listOf(
+          stringResource(R.string.hypnogram_veglia),
+          stringResource(R.string.hypnogram_rem),
+          stringResource(R.string.hypnogram_leggero),
+          stringResource(R.string.hypnogram_profondo),
+      )
   val labelStyle =
       MaterialTheme.typography.labelSmall.copy(color = MaterialTheme.colorScheme.onSurfaceVariant)
   val gridColor = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.4f)
@@ -96,7 +105,7 @@ fun Hypnogram(stages: SleepStages, modifier: Modifier = Modifier) {
     ROWS.forEachIndexed { r, _ ->
       val yMid = rowH * r + rowH / 2
       drawLine(gridColor, Offset(left, yMid), Offset(size.width - right, yMid), 1.dp.toPx())
-      val label = textMeasurer.measure(ROW_LABELS[r], labelStyle)
+      val label = textMeasurer.measure(rowLabels[r], labelStyle)
       drawText(label, topLeft = Offset(0f, yMid - label.size.height / 2f))
     }
 
