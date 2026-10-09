@@ -11,7 +11,7 @@ App Android per il monitoraggio notturno con una fascia cardio Bluetooth (Polar 
 
 ## Privacy
 
-I dati restano sul telefono, tranne quelli che invii al tuo account Intervals.icu. Informativa completa: https://biosleep-oauth.simonegerardini.workers.dev/privacy
+I dati restano sul telefono, tranne quelli che invii al tuo account Intervals.icu. Informativa completa: https://auth.noctalix.com/privacy
 
 ## Origine e licenza
 
