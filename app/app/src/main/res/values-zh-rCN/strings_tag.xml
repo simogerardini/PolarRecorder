@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Cinese semplificato: DA RIVEDERE da un madrelingua (closed testing). Traduzione iniziale della Parte 3, ottobre 2026. -->
+<resources>
+    <string name="tag_tag_per_la_notte">夜间标签 · 滑动查看更多</string>
+    <string name="tag_tag_per_il_coach">给教练的标签</string>
+    <string name="tag_tag">标签</string>
+    <string name="tag_infortunio">受伤</string>
+    <string name="tag_alcol_cena_tardiva_caffeina">饮酒、晚餐过晚、咖啡因、压力、出行、生病、睡眠受扰、高温和高海拔会使该晚不计入你的日常 HRV 计算。</string>
+    <string name="tag_salva">保存</string>
+</resources>

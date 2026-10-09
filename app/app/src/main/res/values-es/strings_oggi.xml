@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Spagnolo: DA RIVEDERE da un madrelingua (closed testing). Traduzione iniziale della Parte 3, ottobre 2026. -->
+<resources>
+    <string name="oggi_oggi">Hoy</string>
+    <string name="oggi_calibrazione_notti" formatted="true">Calibración: %1$s/%2$s noches</string>
+    <string name="oggi_il_range_personale_si" formatted="true">Tu rango personal se construye con tus noches de %1$s: hasta entonces la app no muestra color.</string>
+    <string name="oggi_sotto_il_range_da" formatted="true">Por debajo del rango desde hace %1$s noches seguidas</string>
+    <string name="oggi_riposo">Descanso</string>
+    <string name="oggi_prossima" formatted="true">Próxima: %1$s · %2$s · %3$s</string>
+    <string name="oggi_svolto_pianificato" formatted="true">Hecho %1$s · planificado %2$s</string>
+    <string name="oggi_pianificato">planificado</string>
+    <string name="oggi_svolto">hecho</string>
+</resources>

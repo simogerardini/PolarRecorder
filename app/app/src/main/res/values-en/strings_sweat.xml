@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Inglese: DA RIVEDERE da un madrelingua (closed testing). Traduzione iniziale della Parte 3, ottobre 2026. -->
+<resources>
+    <string name="sweat_inserisci_i_dati_dello">Enter your sweat test data</string>
+    <string name="sweat_test_del_pesi_nudo" formatted="true">Test on %1$s. Weigh yourself naked and dry, and the bottle full and at the end of the test.</string>
+    <string name="sweat_salva">Save</string>
+</resources>

@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Cinese semplificato: DA RIVEDERE da un madrelingua (closed testing). Traduzione iniziale della Parte 3, ottobre 2026. -->
+<resources>
+    <string name="attivita_seduta_non_disponibile" formatted="true">训练不可用：%1$s</string>
+    <string name="attivita_le_fasce_chiare_sono">浅色区域为训练间歇段。</string>
+</resources>

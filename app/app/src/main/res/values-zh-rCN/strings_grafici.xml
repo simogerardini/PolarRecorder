@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Cinese semplificato: DA RIVEDERE da un madrelingua (closed testing). Traduzione iniziale della Parte 3, ottobre 2026. -->
+<resources>
+    <string name="grafici_grafici">图表</string>
+    <string name="grafici_giorni" formatted="true">%1$s 天</string>
+    <string name="grafici_quando_la_stanchezza_atl">当疲劳（ATL）超过体能（CTL）时，状态（TSB）会降到零以下。</string>
+</resources>

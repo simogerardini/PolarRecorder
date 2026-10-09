@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Inglese: DA RIVEDERE da un madrelingua (closed testing). Traduzione iniziale della Parte 3, ottobre 2026. -->
+<resources>
+    <string name="grafici_grafici">Charts</string>
+    <string name="grafici_giorni" formatted="true">%1$s days</string>
+    <string name="grafici_quando_la_stanchezza_atl">When fatigue (ATL) exceeds fitness (CTL), form (TSB) drops below zero.</string>
+</resources>

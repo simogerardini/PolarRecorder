@@ -117,12 +117,12 @@ fun RiquadroSonno(onApri: () -> Unit) {
     Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
       Text(stringResource(R.string.sonno_sonno, (DateIt.breve(s.ultima.giorno)).toString()), style = MaterialTheme.typography.titleMedium)
       Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-        Mini("Punteggio", s.punteggio?.totale?.toString() ?: "—", s.punteggio?.let { PunteggioSonno.etichetta(it.totale) })
+        Mini(stringResource(R.string.sonno_punteggio), s.punteggio?.totale?.toString() ?: "—", s.punteggio?.let { PunteggioSonno.etichetta(it.totale) })
         Mini(
-            "Deficit", if (s.deficit.ore < 0.02) "0m" else durata(s.deficit.ore),
+            stringResource(R.string.sonno_deficit), if (s.deficit.ore < 0.02) "0m" else durata(s.deficit.ore),
             if (s.fabbisogno.appreso) s.deficit.livello.etichetta else "${s.fabbisogno.notti}/${Debito.NOTTI_MINIME} notti")
         Mini(
-            "Orologio",
+            stringResource(R.string.sonno_orologio),
             s.scartoMin?.let { OrologioBiologico.allineamento(it).etichetta } ?: "—",
             if (s.cronotipo == null) "${s.notti}/${OrologioBiologico.NOTTI_MINIME} notti" else null)
       }
@@ -168,13 +168,13 @@ fun SonnoScreen(onBack: () -> Unit) {
         Modifier.fillMaxSize().padding(padding).verticalScroll(rememberScrollState()).padding(16.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp),
     ) {
-      Sezione("Punteggio del sonno") { Punteggio(s) }
+      Sezione(stringResource(R.string.sonno_punteggio_del_sonno)) { Punteggio(s) }
       // la notte: fasi, frequenza cardiaca, HRV, registrazione
       ultimaNotte?.let { RiepilogoNotte(it) }
       // le tendenze di piu' notti
-      Sezione("Deficit di sonno") { Deficit(s) }
-      Sezione("Orologio biologico") { Orologio(s) }
-      Sezione("Cronotipo") { Cronotipo(s) }
+      Sezione(stringResource(R.string.sonno_deficit_di_sonno)) { Deficit(s) }
+      Sezione(stringResource(R.string.sonno_orologio_biologico)) { Orologio(s) }
+      Sezione(stringResource(R.string.sonno_cronotipo)) { Cronotipo(s) }
     }
   }
 }
@@ -312,9 +312,9 @@ private fun Cronotipo(s: StatoSonno) {
   Text(c.tipo.etichetta, style = MaterialTheme.typography.headlineSmall)
   Text(stringResource(R.string.sonno_orari_di_sonno_ottimali), style = MaterialTheme.typography.labelLarge, color = MaterialTheme.colorScheme.onSurfaceVariant)
   Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-    Mini("Sonno", orario(c.sonnoMin).toString(), null)
-    Mini("Punto centrale", orario(c.centroMin).toString(), null)
-    Mini("Sveglia", orario(c.svegliaMin).toString(), null)
+    Mini(stringResource(R.string.sonno_sonno_3), orario(c.sonnoMin).toString(), null)
+    Mini(stringResource(R.string.sonno_punto_centrale), orario(c.centroMin).toString(), null)
+    Mini(stringResource(R.string.sonno_sveglia), orario(c.svegliaMin).toString(), null)
   }
   Nota(
       stringResource(R.string.sonno_dal_punto_centrale_del, c.notti.toString()))

@@ -120,15 +120,15 @@ fun GraficiScreen(bottomBar: @Composable () -> Unit) {
       Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
         for (p in listOf(30, 90)) FilterChip(selected = p == periodo, onClick = { periodo = p }, label = { Text(stringResource(R.string.grafici_giorni, p.toString())) })
       }
-      Sezione("Forma fisica e stanchezza") {
+      Sezione(stringResource(R.string.grafici_forma_fisica_e_stanchezza)) {
         GraficoLinee(
             d.giorni,
             listOf(SerieGrafico("CTL forma fisica", ColoriBio.ctl, d.ctl), SerieGrafico("ATL stanchezza", ColoriBio.atl, d.atl)),
             altezza)
         Nota(stringResource(R.string.grafici_quando_la_stanchezza_atl))
       }
-      Sezione("Forma (TSB) e zone") { FormaZone(d) }
-      Sezione("HRV notturno (rMSSD, ms)") {
+      Sezione(stringResource(R.string.grafici_forma_tsb_e_zone)) { FormaZone(d) }
+      Sezione(stringResource(R.string.grafici_hrv_notturno_rmssd_ms)) {
         GraficoLinee(
             d.giorni,
             listOf(
@@ -140,10 +140,10 @@ fun GraficiScreen(bottomBar: @Composable () -> Unit) {
             if (d.rangeHrv != null) "Il range si confronta con la media 7 gg, non con la singola notte."
             else "Il range compare dopo 14 notti valide.")
       }
-      Sezione("FC a riposo (media notte, bpm)") {
+      Sezione(stringResource(R.string.grafici_fc_a_riposo_media)) {
         GraficoLinee(d.giorni, listOf(SerieGrafico("notte", ColoriBio.rosso, d.fc, punti = true)), altezza)
       }
-      Sezione("Sonno (ore)") {
+      Sezione(stringResource(R.string.grafici_sonno_ore)) {
         GraficoLinee(d.giorni, listOf(SerieGrafico("notte", ColoriBio.blu, d.sonno, punti = true)), altezza)
       }
     }

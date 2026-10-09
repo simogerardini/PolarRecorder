@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Cinese semplificato: DA RIVEDERE da un madrelingua (closed testing). Traduzione iniziale della Parte 3, ottobre 2026. -->
+<resources>
+    <string name="calendario_calendario">日历</string>
+    <string name="calendario_settimana_dal_tss_svolto" formatted="true">%1$s 起的一周 · TSS 已完成 %2$s / 计划 %3$s</string>
+    <string name="calendario_seduta_su_garmin_connect">Garmin Connect 中的训练：结构化指引在手表上。</string>
+    <string name="calendario_non_svolta">未完成</string>
+    <string name="calendario_non_pianificata" formatted="true">%1$s · %2$s · 未计划</string>
+    <string name="calendario_analisi_della_seduta">训练分析</string>
+</resources>

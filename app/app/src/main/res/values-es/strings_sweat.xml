@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Spagnolo: DA RIVEDERE da un madrelingua (closed testing). Traduzione iniziale della Parte 3, ottobre 2026. -->
+<resources>
+    <string name="sweat_inserisci_i_dati_dello">Introduce los datos del sweat test</string>
+    <string name="sweat_test_del_pesi_nudo" formatted="true">Test del %1$s. Pésate desnudo y seco, y la botella llena y al final del test.</string>
+    <string name="sweat_salva">Guardar</string>
+</resources>

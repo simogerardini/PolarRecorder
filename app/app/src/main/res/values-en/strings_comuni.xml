@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Inglese: DA RIVEDERE da un madrelingua (closed testing). Traduzione iniziale della Parte 3, ottobre 2026. -->
+<resources>
+    <string name="comuni_dati_non_aggiornati" formatted="true">Data not up to date: %1$s</string>
+    <string name="comuni_aggiornato" formatted="true">Updated: %1$s</string>
+    <string name="comuni_forma_non_disponibile_servono">Form not available: Intervals.icu data needed</string>
+    <string name="comuni_dati_insufficienti_per_il">Not enough data for the chart</string>
+</resources>

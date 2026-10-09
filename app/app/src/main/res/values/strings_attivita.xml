@@ -3,4 +3,10 @@
 <resources>
     <string name="attivita_seduta_non_disponibile" formatted="true">Seduta non disponibile: %1$s</string>
     <string name="attivita_le_fasce_chiare_sono">Le fasce chiare sono gli intervalli di lavoro.</string>
+    <string name="attivita_riepilogo">Riepilogo</string>
+    <string name="attivita_andamento">Andamento</string>
+    <string name="attivita_zone_di_potenza">Zone di potenza</string>
+    <string name="attivita_zone_di_frequenza_cardiaca">Zone di frequenza cardiaca</string>
+    <string name="attivita_zone_di_passo">Zone di passo</string>
+    <string name="attivita_intervalli">Intervalli</string>
 </resources>

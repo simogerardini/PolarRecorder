@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Cinese semplificato: DA RIVEDERE da un madrelingua (closed testing). Traduzione iniziale della Parte 3, ottobre 2026. -->
+<resources>
+    <string name="riepilogo_ci_sono_avvisi_apri">有提醒：请打开摘要</string>
+    <string name="riepilogo_coach" formatted="true">教练 · %1$s</string>
+    <string name="riepilogo_riepilogo_non_disponibile_per">此日期没有摘要</string>
+    <string name="riepilogo_riposo">休息</string>
+    <string name="riepilogo_apri_nel_calendario">在日历中打开</string>
+    <string name="riepilogo_avvisi">提醒</string>
+    <string name="riepilogo_sedute_che_il_coach">教练未能写入日历的训练：</string>
+    <string name="riepilogo_baseline_in_calibrazione">基线校准中</string>
+    <string name="riepilogo_range_ms" formatted="true">范围 %1$s–%2$s ms</string>
+    <string name="riepilogo_fuori_dalla_fascia_attesa">超出预期范围</string>
+    <string name="riepilogo_oggi" formatted="true">今天 %1$s</string>
+    <string name="riepilogo_domenica_previsto" formatted="true">周日 %1$s（预计）</string>
+    <string name="riepilogo_facile" formatted="true">轻松 %1$s%%</string>
+    <string name="riepilogo_intenso" formatted="true">高强度 %1$s%%</string>
+    <string name="riepilogo_la_linea_segna_l">参考线为 80%：按 80/20 原则，绿色应达到这里。</string>
+    <string name="riepilogo_di_alta_intensita" formatted="true">高强度占 %1$s%%</string>
+    <string name="riepilogo_intensi_su_di_bici" formatted="true">骑行和跑步共 %2$s 分钟，其中高强度 %1$s 分钟</string>
+    <string name="riepilogo_tetto" formatted="true">上限 %1$s%%</string>
+    <string name="riepilogo_pieno_fatto_chiaro_con">实色 = 已完成 · 浅色 = 含日历中尚未完成的训练 · 线 = 目标 · 红色 = 上限</string>
+</resources>

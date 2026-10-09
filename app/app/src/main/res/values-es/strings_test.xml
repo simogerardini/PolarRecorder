@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Spagnolo: DA RIVEDERE da un madrelingua (closed testing). Traduzione iniziale della Parte 3, ottobre 2026. -->
+<resources>
+    <string name="test_test_in_programma" formatted="true">Test programado · %1$s</string>
+    <string name="test_il_protocollo_e_nella">El protocolo está en la descripción de la sesión en el calendario. Tras el test el coach actualiza los umbrales solo.</string>
+    <string name="test_inserisci_i_tempi_del">Introduce los tiempos del test CSS</string>
+    <string name="test_del_i_tempi_dei" formatted="true">%1$s del %2$s: los tiempos de 400 m y 200 m a tope, en minutos y segundos.</string>
+    <string name="test_il_collegamento_non_permette">La conexión no permite guardar el CSS: vuelve a conectar Intervals.icu.</string>
+    <string name="test_ricollega_intervals_icu">Volver a conectar Intervals.icu</string>
+    <string name="test_conferma">Confirmar</string>
+</resources>

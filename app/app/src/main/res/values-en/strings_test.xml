@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Inglese: DA RIVEDERE da un madrelingua (closed testing). Traduzione iniziale della Parte 3, ottobre 2026. -->
+<resources>
+    <string name="test_test_in_programma" formatted="true">Test scheduled · %1$s</string>
+    <string name="test_il_protocollo_e_nella">The protocol is in the session description in the calendar. After the test the coach updates the thresholds by itself.</string>
+    <string name="test_inserisci_i_tempi_del">Enter your CSS test times</string>
+    <string name="test_del_i_tempi_dei" formatted="true">%1$s on %2$s: your all-out 400 m and 200 m times, in minutes and seconds.</string>
+    <string name="test_il_collegamento_non_permette">The connection does not allow saving the CSS: reconnect Intervals.icu.</string>
+    <string name="test_ricollega_intervals_icu">Reconnect Intervals.icu</string>
+    <string name="test_conferma">Confirm</string>
+</resources>

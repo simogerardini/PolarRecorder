@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Cinese semplificato: DA RIVEDERE da un madrelingua (closed testing). Traduzione iniziale della Parte 3, ottobre 2026. -->
+<resources>
+    <string name="test_test_in_programma" formatted="true">已安排测试 · %1$s</string>
+    <string name="test_il_protocollo_e_nella">测试流程见日历中的训练说明。测试后教练会自动更新阈值。</string>
+    <string name="test_inserisci_i_tempi_del">输入 CSS 测试成绩</string>
+    <string name="test_del_i_tempi_dei" formatted="true">%2$s 的 %1$s：400 米和 200 米全力成绩，以分和秒填写。</string>
+    <string name="test_il_collegamento_non_permette">当前连接无法保存 CSS：请重新连接 Intervals.icu。</string>
+    <string name="test_ricollega_intervals_icu">重新连接 Intervals.icu</string>
+    <string name="test_conferma">确认</string>
+</resources>

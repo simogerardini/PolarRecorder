@@ -163,10 +163,10 @@ fun OggiScreen(
         Box(Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) { CircularProgressIndicator() }
         return@Column
       }
-      Sezione("Prestazioni") { RigaForma(dati.forma) }
-      Sezione("Analisi del recupero") { Recupero(dati) }
-      Sezione("Allenamento di oggi") { AllenamentoDiOggi(dati, onApriSeduta) }
-      Sezione("Settimana") { Settimana(dati) }
+      Sezione(stringResource(R.string.oggi_prestazioni)) { RigaForma(dati.forma) }
+      Sezione(stringResource(R.string.oggi_analisi_del_recupero)) { Recupero(dati) }
+      Sezione(stringResource(R.string.oggi_allenamento_di_oggi)) { AllenamentoDiOggi(dati, onApriSeduta) }
+      Sezione(stringResource(R.string.oggi_settimana)) { Settimana(dati) }
     }
   }
 }

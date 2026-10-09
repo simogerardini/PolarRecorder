@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Inglese: DA RIVEDERE da un madrelingua (closed testing). Traduzione iniziale della Parte 3, ottobre 2026. -->
+<resources>
+    <string name="attivita_seduta_non_disponibile" formatted="true">Session not available: %1$s</string>
+    <string name="attivita_le_fasce_chiare_sono">The light bands are the work intervals.</string>
+</resources>

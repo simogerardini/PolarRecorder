@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Inglese: DA RIVEDERE da un madrelingua (closed testing). Traduzione iniziale della Parte 3, ottobre 2026. -->
+<resources>
+    <string name="sonno_sonno" formatted="true">Sleep · %1$s</string>
+    <string name="sonno_sonno_2">Sleep</string>
+    <string name="sonno_nessuna_notte_registrata_con">No night recorded with sleep stages.</string>
+    <string name="sonno_notte_del_di_sonno" formatted="true">Night of %1$s · %2$s of sleep</string>
+    <string name="sonno_media_pesata_durata_rispetto">Weighted average: duration relative to your need, efficiency, deep and REM sleep, minutes awake and timing. Deep and REM are estimates from heart rate and breathing: they weigh less than duration.</string>
+    <string name="sonno_calibrazione_notti_negli_ultimi" formatted="true">Calibration: %1$s/%2$s nights in the last 90 days. A few weekend nights are needed too.</string>
+    <string name="sonno_stanotte_punto_centrale_alle" formatted="true">Last night: %1$s → %2$s, midpoint at %3$s</string>
+    <string name="sonno_il_punto_centrale_del" formatted="true">Your sleep midpoint was %1$s.</string>
+    <string name="sonno_anello_esterno_azzurro_la">Outer ring (blue): last night. Inner ring: the optimal times for your chronotype.</string>
+    <string name="sonno_il_cronotipo_si_calcola" formatted="true">The chronotype is calculated from your sleep midpoint on free days, after at least %1$s nights (now %2$s).</string>
+    <string name="sonno_orari_di_sonno_ottimali">Your optimal sleep times</string>
+    <string name="sonno_dal_punto_centrale_del" formatted="true">From your sleep midpoint on free nights (Friday and Saturday), corrected for sleep caught up at the weekend, over the last %1$s nights. Wake-up and bedtime: the midpoint plus and minus half of your sleep need.</string>
+</resources>

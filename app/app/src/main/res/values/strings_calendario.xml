@@ -7,4 +7,8 @@
     <string name="calendario_non_svolta">Non svolta</string>
     <string name="calendario_non_pianificata" formatted="true">%1$s · %2$s · non pianificata</string>
     <string name="calendario_analisi_della_seduta">Analisi della seduta</string>
+    <string name="calendario_durata">Durata</string>
+    <string name="calendario_tss">TSS</string>
+    <string name="calendario_distanza">Distanza</string>
+    <string name="calendario_aderenza">Aderenza</string>
 </resources>

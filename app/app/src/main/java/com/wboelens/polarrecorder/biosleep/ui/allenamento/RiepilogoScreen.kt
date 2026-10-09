@@ -227,7 +227,7 @@ fun RiepilogoScreen(data: String, onBack: () -> Unit, onApriSeduta: (String) -> 
       Intestazione(r)
       // LTHR, FTP e passo soglia aggiornati dal coach su Intervals.icu (avvisi del riepilogo)
       AvvisiSoglie.aggiornate(r.avvisi).takeIf { it.isNotEmpty() }?.let { righe ->
-        Sezione("Soglie aggiornate") {
+        Sezione(stringResource(R.string.riepilogo_soglie_aggiornate)) {
           for (riga in righe) {
             Row(verticalAlignment = Alignment.Top) {
               Icon(Icons.Filled.Update, "Aggiornata", Modifier.padding(top = 2.dp, end = 6.dp).size(16.dp), tint = MaterialTheme.colorScheme.primary)
@@ -238,7 +238,7 @@ fun RiepilogoScreen(data: String, onBack: () -> Unit, onApriSeduta: (String) -> 
       }
       val giorno = locale?.giorno
       if (r.oggi != null || giorno != null) {
-        Sezione("Oggi") {
+        Sezione(stringResource(R.string.riepilogo_oggi_2)) {
           // dal calendario (con lo stato svolta/da fare); il testo del coach solo se il calendario non c'e'
           if (giorno == null) r.oggi?.let { Text(it, style = MaterialTheme.typography.bodyMedium) }
           giorno?.let { g ->
@@ -249,22 +249,22 @@ fun RiepilogoScreen(data: String, onBack: () -> Unit, onApriSeduta: (String) -> 
           TextButton(onClick = { onApriSeduta(data) }) { Text(stringResource(R.string.riepilogo_apri_nel_calendario)) }
         }
       }
-      biometria?.let { Sezione("Biometria") { Biometria(it) } }
-      forma?.let { Sezione("Forma") { Forma(it, LocalDate.parse(data), locale?.storicoTsb.orEmpty(), r.avvisi) } }
-      if (discipline.isNotEmpty()) Sezione("Discipline") { Discipline(discipline) }
+      biometria?.let { Sezione(stringResource(R.string.riepilogo_biometria)) { Biometria(it) } }
+      forma?.let { Sezione(stringResource(R.string.riepilogo_forma)) { Forma(it, LocalDate.parse(data), locale?.storicoTsb.orEmpty(), r.avvisi) } }
+      if (discipline.isNotEmpty()) Sezione(stringResource(R.string.riepilogo_discipline)) { Discipline(discipline) }
       when {
-        r.altaIntensita != null -> Sezione("Intensità") { AltaIntensitaSettimana(r.altaIntensita) }
-        r.intensita != null -> Sezione("Intensità") { FacileIntenso(r.intensita.pctFacile, r.intensita.pctIntenso) }
+        r.altaIntensita != null -> Sezione(stringResource(R.string.riepilogo_intensita)) { AltaIntensitaSettimana(r.altaIntensita) }
+        r.intensita != null -> Sezione(stringResource(R.string.riepilogo_intensita)) { FacileIntenso(r.intensita.pctFacile, r.intensita.pctIntenso) }
       }
       val forza = forzaTolta(r)
       if (volume != null || carico != null || forza.isNotEmpty()) {
-        Sezione("Settimana") {
+        Sezione(stringResource(R.string.riepilogo_settimana)) {
           Settimana(volume, carico)
           // sedute di forza che il coach non ha potuto mettere, con il motivo
           for (m in forza) Text("• " + m.trim().replaceFirstChar { it.uppercase() }, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
         }
       }
-      if (r.sedute.isNotEmpty()) Sezione("Sedute della settimana") { SeduteDellaSettimana(r.sedute, onApriSeduta) }
+      if (r.sedute.isNotEmpty()) Sezione(stringResource(R.string.riepilogo_sedute_della_settimana)) { SeduteDellaSettimana(r.sedute, onApriSeduta) }
     }
   }
 }
@@ -419,9 +419,9 @@ private fun Forma(f: FormaCoach, giorno: LocalDate, storico: List<Pair<LocalDate
         }
   }
   Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-    f.ctl?.let { Cifra("CTL", Formato.decimale(it), ColoriBio.ctl) }
-    f.atl?.let { Cifra("ATL", Formato.decimale(it), ColoriBio.atl) }
-    f.tsb?.let { Cifra("TSB", Formato.conSegno(it) + (f.formPct?.let { p -> " (${Formato.conSegno(p)}%)" } ?: ""), ColoriBio.tsb) }
+    f.ctl?.let { Cifra(stringResource(R.string.riepilogo_ctl), Formato.decimale(it), ColoriBio.ctl) }
+    f.atl?.let { Cifra(stringResource(R.string.riepilogo_atl), Formato.decimale(it), ColoriBio.atl) }
+    f.tsb?.let { Cifra(stringResource(R.string.riepilogo_tsb), Formato.conSegno(it) + (f.formPct?.let { p -> " (${Formato.conSegno(p)}%)" } ?: ""), ColoriBio.tsb) }
   }
   val zona = listOfNotNull(f.zona?.let { "zona $it" }, f.zonaAttesa?.let { "attesa in questa fase: $it" })
   if (zona.isNotEmpty()) Text(zona.joinToString(" · "), style = MaterialTheme.typography.bodySmall)

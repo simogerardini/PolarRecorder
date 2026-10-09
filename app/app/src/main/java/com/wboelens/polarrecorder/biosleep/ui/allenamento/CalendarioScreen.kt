@@ -374,10 +374,10 @@ private fun Blocco(titolo: String, durataS: Int?, tss: Int?, distanzaM: Double?,
   Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
     Text(titolo, style = MaterialTheme.typography.labelLarge, color = MaterialTheme.colorScheme.onSurfaceVariant)
     Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-      Cifra("Durata", Formato.durata(durataS))
-      Cifra("TSS", tss?.toString() ?: "—")
-      Cifra("Distanza", Formato.distanza(distanzaM))
-      if (compliance != null && compliance > 0) Cifra("Aderenza", "${compliance.toInt()}%", ColoriBio.aderenza(Allenamenti.aderenza(compliance)))
+      Cifra(stringResource(R.string.calendario_durata), Formato.durata(durataS))
+      Cifra(stringResource(R.string.calendario_tss), tss?.toString() ?: "—")
+      Cifra(stringResource(R.string.calendario_distanza), Formato.distanza(distanzaM))
+      if (compliance != null && compliance > 0) Cifra(stringResource(R.string.calendario_aderenza), "${compliance.toInt()}%", ColoriBio.aderenza(Allenamenti.aderenza(compliance)))
     }
   }
 }

@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Spagnolo: DA RIVEDERE da un madrelingua (closed testing). Traduzione iniziale della Parte 3, ottobre 2026. -->
+<resources>
+    <string name="sonno_sonno" formatted="true">Sueño · %1$s</string>
+    <string name="sonno_sonno_2">Sueño</string>
+    <string name="sonno_nessuna_notte_registrata_con">Ninguna noche registrada con fases del sueño.</string>
+    <string name="sonno_notte_del_di_sonno" formatted="true">Noche del %1$s · %2$s de sueño</string>
+    <string name="sonno_media_pesata_durata_rispetto">Media ponderada: duración respecto a tu necesidad, eficiencia, sueño profundo y REM, minutos despierto y horario. Profundo y REM son estimaciones a partir del pulso y la respiración: pesan menos que la duración.</string>
+    <string name="sonno_calibrazione_notti_negli_ultimi" formatted="true">Calibración: %1$s/%2$s noches en los últimos 90 días. También se necesitan algunas noches de fin de semana.</string>
+    <string name="sonno_stanotte_punto_centrale_alle" formatted="true">Anoche: %1$s → %2$s, punto medio a las %3$s</string>
+    <string name="sonno_il_punto_centrale_del" formatted="true">El punto medio de tu sueño fue %1$s.</string>
+    <string name="sonno_anello_esterno_azzurro_la">Anillo exterior (azul): la noche que acaba de pasar. Anillo interior: los horarios óptimos para tu cronotipo.</string>
+    <string name="sonno_il_cronotipo_si_calcola" formatted="true">El cronotipo se calcula a partir del punto medio del sueño en los días libres, tras al menos %1$s noches (ahora %2$s).</string>
+    <string name="sonno_orari_di_sonno_ottimali">Tus horarios de sueño óptimos</string>
+    <string name="sonno_dal_punto_centrale_del" formatted="true">A partir del punto medio del sueño en las noches libres (viernes y sábado), corregido por el sueño recuperado el fin de semana, en las últimas %1$s noches. Despertar y acostarse: el punto medio más y menos la mitad de tu necesidad.</string>
+</resources>

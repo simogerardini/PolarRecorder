@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Spagnolo: DA RIVEDERE da un madrelingua (closed testing). Traduzione iniziale della Parte 3, ottobre 2026. -->
+<resources>
+    <string name="piu_calendario_ok">Aceptar</string>
+    <string name="piu_calendario_annulla">Cancelar</string>
+    <string name="piu_calendario_questa_pausa_e_stata" formatted="true">Esta pausa se añadió en Intervals.icu: aquí solo se puede eliminar (del %1$s al %2$s).</string>
+    <string name="piu_calendario_nota_facoltativa">Nota (opcional)</string>
+    <string name="piu_calendario_il_coach_non_pianifica">El coach no programa sesiones en los días de pausa.</string>
+    <string name="piu_calendario_il_collegamento_non_permette">La conexión no permite escribir en el calendario.</string>
+    <string name="piu_calendario_ricollega_intervals_icu">Volver a conectar Intervals.icu</string>
+    <string name="piu_calendario_elimina">Eliminar</string>
+    <string name="piu_calendario_salva">Guardar</string>
+    <string name="piu_calendario_tempo_disponibile">Tiempo disponible</string>
+    <string name="piu_calendario_minuti">Minutos</string>
+    <string name="piu_calendario_vale_solo_per_questo">Solo vale para este día, en lugar de la disponibilidad de la semana tipo.</string>
+    <string name="piu_calendario_torna_alla_settimana_tipo">Volver a la semana tipo</string>
+    <string name="piu_calendario_aggiorno_subito_il_piano">¿Actualizo el plan ahora?</string>
+    <string name="piu_calendario_le_sedute_da_oggi">Las sesiones de hoy al domingo se recalcularán. Los días pasados no se tocan.</string>
+    <string name="piu_calendario_si_aggiorna">Sí, actualizar</string>
+    <string name="piu_calendario_no">No</string>
+</resources>

@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Cinese semplificato: DA RIVEDERE da un madrelingua (closed testing). Traduzione iniziale della Parte 3, ottobre 2026. -->
+<resources>
+    <string name="sonno_sonno" formatted="true">睡眠 · %1$s</string>
+    <string name="sonno_sonno_2">睡眠</string>
+    <string name="sonno_nessuna_notte_registrata_con">没有带睡眠阶段的夜间记录。</string>
+    <string name="sonno_notte_del_di_sonno" formatted="true">%1$s 夜间 · 睡眠 %2$s</string>
+    <string name="sonno_media_pesata_durata_rispetto">加权平均：相对于你所需的睡眠时长、效率、深睡和 REM、清醒分钟数及作息时间。深睡和 REM 由心跳和呼吸估算，权重低于时长。</string>
+    <string name="sonno_calibrazione_notti_negli_ultimi" formatted="true">校准中：最近 90 天 %1$s/%2$s 晚。还需要几晚周末数据。</string>
+    <string name="sonno_stanotte_punto_centrale_alle" formatted="true">昨晚：%1$s → %2$s，睡眠中点 %3$s</string>
+    <string name="sonno_il_punto_centrale_del" formatted="true">你的睡眠中点%1$s。</string>
+    <string name="sonno_anello_esterno_azzurro_la">外环（蓝色）：刚过去的一晚。内环：适合你作息类型的最佳时间。</string>
+    <string name="sonno_il_cronotipo_si_calcola" formatted="true">作息类型根据休息日的睡眠中点计算，至少需要 %1$s 晚（目前 %2$s 晚）。</string>
+    <string name="sonno_orari_di_sonno_ottimali">你的最佳睡眠时间</string>
+    <string name="sonno_dal_punto_centrale_del" formatted="true">根据最近 %1$s 晚中休息日（周五和周六）的睡眠中点计算，并扣除周末补觉的影响。起床和入睡时间：中点加减你所需睡眠时长的一半。</string>
+</resources>

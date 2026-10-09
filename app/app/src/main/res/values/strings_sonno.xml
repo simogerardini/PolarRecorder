@@ -13,4 +13,14 @@
     <string name="sonno_il_cronotipo_si_calcola" formatted="true">Il cronotipo si calcola dal punto centrale del sonno nei giorni liberi, dopo almeno %1$s notti (ora %2$s).</string>
     <string name="sonno_orari_di_sonno_ottimali">Orari di sonno ottimali per te</string>
     <string name="sonno_dal_punto_centrale_del" formatted="true">Dal punto centrale del sonno nelle notti libere (venerdì e sabato), corretto per il sonno recuperato nel weekend, sulle ultime %1$s notti. Sveglia e addormentamento: il punto centrale più e meno metà del tuo fabbisogno.</string>
+    <string name="sonno_punteggio">Punteggio</string>
+    <string name="sonno_deficit">Deficit</string>
+    <string name="sonno_orologio">Orologio</string>
+    <string name="sonno_punteggio_del_sonno">Punteggio del sonno</string>
+    <string name="sonno_deficit_di_sonno">Deficit di sonno</string>
+    <string name="sonno_orologio_biologico">Orologio biologico</string>
+    <string name="sonno_cronotipo">Cronotipo</string>
+    <string name="sonno_sonno_3">Sonno</string>
+    <string name="sonno_punto_centrale">Punto centrale</string>
+    <string name="sonno_sveglia">Sveglia</string>
 </resources>

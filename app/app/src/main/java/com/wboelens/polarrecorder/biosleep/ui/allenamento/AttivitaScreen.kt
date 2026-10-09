@@ -97,12 +97,12 @@ fun AttivitaScreen(id: String, onBack: () -> Unit) {
               verticalArrangement = Arrangement.spacedBy(16.dp),
           ) {
             Intestazione(e.attivita)
-            Sezione("Riepilogo") { Numeri(e.attivita) }
-            e.flussi?.takeIf { it.serie.isNotEmpty() }?.let { f -> Sezione("Andamento") { Grafici(e.attivita, f) } }
-            if (e.attivita.zonePotenza.isNotEmpty()) Sezione("Zone di potenza") { Zone(e.attivita.zonePotenza) }
-            if (e.attivita.zoneFc.any { it.secondi > 0 }) Sezione("Zone di frequenza cardiaca") { Zone(e.attivita.zoneFc) }
-            if (e.attivita.zonePasso.any { it.secondi > 0 }) Sezione("Zone di passo") { Zone(e.attivita.zonePasso) }
-            if (e.attivita.intervalli.size > 1) Sezione("Intervalli") { Intervalli(e.attivita) }
+            Sezione(stringResource(R.string.attivita_riepilogo)) { Numeri(e.attivita) }
+            e.flussi?.takeIf { it.serie.isNotEmpty() }?.let { f -> Sezione(stringResource(R.string.attivita_andamento)) { Grafici(e.attivita, f) } }
+            if (e.attivita.zonePotenza.isNotEmpty()) Sezione(stringResource(R.string.attivita_zone_di_potenza)) { Zone(e.attivita.zonePotenza) }
+            if (e.attivita.zoneFc.any { it.secondi > 0 }) Sezione(stringResource(R.string.attivita_zone_di_frequenza_cardiaca)) { Zone(e.attivita.zoneFc) }
+            if (e.attivita.zonePasso.any { it.secondi > 0 }) Sezione(stringResource(R.string.attivita_zone_di_passo)) { Zone(e.attivita.zonePasso) }
+            if (e.attivita.intervalli.size > 1) Sezione(stringResource(R.string.attivita_intervalli)) { Intervalli(e.attivita) }
           }
     }
   }

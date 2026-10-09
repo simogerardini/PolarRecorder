@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Inglese: DA RIVEDERE da un madrelingua (closed testing). Traduzione iniziale della Parte 3, ottobre 2026. -->
+<resources>
+    <string name="calendario_calendario">Calendar</string>
+    <string name="calendario_settimana_dal_tss_svolto" formatted="true">Week from %1$s · TSS %2$s done / %3$s planned</string>
+    <string name="calendario_seduta_su_garmin_connect">Session on Garmin Connect: the structured workout is on the watch.</string>
+    <string name="calendario_non_svolta">Not done</string>
+    <string name="calendario_non_pianificata" formatted="true">%1$s · %2$s · not planned</string>
+    <string name="calendario_analisi_della_seduta">Session analysis</string>
+</resources>

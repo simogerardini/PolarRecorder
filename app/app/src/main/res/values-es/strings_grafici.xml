@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Spagnolo: DA RIVEDERE da un madrelingua (closed testing). Traduzione iniziale della Parte 3, ottobre 2026. -->
+<resources>
+    <string name="grafici_grafici">Gráficos</string>
+    <string name="grafici_giorni" formatted="true">%1$s días</string>
+    <string name="grafici_quando_la_stanchezza_atl">Cuando la fatiga (ATL) supera la forma física (CTL), la forma (TSB) baja de cero.</string>
+</resources>

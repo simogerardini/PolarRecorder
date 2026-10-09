@@ -20,4 +20,15 @@
     <string name="riepilogo_intensi_su_di_bici" formatted="true">%1$s\' intensi su %2$s\' di bici e corsa</string>
     <string name="riepilogo_tetto" formatted="true">tetto %1$s%%</string>
     <string name="riepilogo_pieno_fatto_chiaro_con">Pieno = fatto · chiaro = con le sedute ancora in calendario · linea = obiettivo · rosso = tetto</string>
+    <string name="riepilogo_soglie_aggiornate">Soglie aggiornate</string>
+    <string name="riepilogo_oggi_2">Oggi</string>
+    <string name="riepilogo_biometria">Biometria</string>
+    <string name="riepilogo_forma">Forma</string>
+    <string name="riepilogo_discipline">Discipline</string>
+    <string name="riepilogo_intensita">Intensità</string>
+    <string name="riepilogo_settimana">Settimana</string>
+    <string name="riepilogo_sedute_della_settimana">Sedute della settimana</string>
+    <string name="riepilogo_ctl">CTL</string>
+    <string name="riepilogo_atl">ATL</string>
+    <string name="riepilogo_tsb">TSB</string>
 </resources>

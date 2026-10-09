@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Inglese: DA RIVEDERE da un madrelingua (closed testing). Traduzione iniziale della Parte 3, ottobre 2026. -->
+<resources>
+    <string name="riepilogo_ci_sono_avvisi_apri">There are warnings: open the summary</string>
+    <string name="riepilogo_coach" formatted="true">Coach · %1$s</string>
+    <string name="riepilogo_riepilogo_non_disponibile_per">Summary not available for this date</string>
+    <string name="riepilogo_riposo">Rest</string>
+    <string name="riepilogo_apri_nel_calendario">Open in calendar</string>
+    <string name="riepilogo_avvisi">Warnings</string>
+    <string name="riepilogo_sedute_che_il_coach">Sessions the coach could not write to the calendar:</string>
+    <string name="riepilogo_baseline_in_calibrazione">Baseline calibrating</string>
+    <string name="riepilogo_range_ms" formatted="true">range %1$s–%2$s ms</string>
+    <string name="riepilogo_fuori_dalla_fascia_attesa">Outside the expected range</string>
+    <string name="riepilogo_oggi" formatted="true">today %1$s</string>
+    <string name="riepilogo_domenica_previsto" formatted="true">Sunday %1$s (forecast)</string>
+    <string name="riepilogo_facile" formatted="true">Easy %1$s%%</string>
+    <string name="riepilogo_intenso" formatted="true">Hard %1$s%%</string>
+    <string name="riepilogo_la_linea_segna_l">The line marks 80%: with the 80/20 rule, green should reach that far.</string>
+    <string name="riepilogo_di_alta_intensita" formatted="true">%1$s%% high intensity</string>
+    <string name="riepilogo_intensi_su_di_bici" formatted="true">%1$s\' hard out of %2$s\' of cycling and running</string>
+    <string name="riepilogo_tetto" formatted="true">cap %1$s%%</string>
+    <string name="riepilogo_pieno_fatto_chiaro_con">Solid = done · light = with sessions still in the calendar · line = target · red = cap</string>
+</resources>

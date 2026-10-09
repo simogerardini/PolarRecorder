@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Cinese semplificato: DA RIVEDERE da un madrelingua (closed testing). Traduzione iniziale della Parte 3, ottobre 2026. -->
+<resources>
+    <string name="oggi_oggi">今天</string>
+    <string name="oggi_calibrazione_notti" formatted="true">校准中：%1$s/%2$s 晚</string>
+    <string name="oggi_il_range_personale_si" formatted="true">个人范围基于你的 %1$s 夜间数据建立：在此之前应用不显示颜色。</string>
+    <string name="oggi_sotto_il_range_da" formatted="true">已连续 %1$s 晚低于范围</string>
+    <string name="oggi_riposo">休息</string>
+    <string name="oggi_prossima" formatted="true">下一项：%1$s · %2$s · %3$s</string>
+    <string name="oggi_svolto_pianificato" formatted="true">已完成 %1$s · 计划 %2$s</string>
+    <string name="oggi_pianificato">计划</string>
+    <string name="oggi_svolto">已完成</string>
+</resources>

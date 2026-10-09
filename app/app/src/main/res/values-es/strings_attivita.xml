@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Spagnolo: DA RIVEDERE da un madrelingua (closed testing). Traduzione iniziale della Parte 3, ottobre 2026. -->
+<resources>
+    <string name="attivita_seduta_non_disponibile" formatted="true">Sesión no disponible: %1$s</string>
+    <string name="attivita_le_fasce_chiare_sono">Las franjas claras son los intervalos de trabajo.</string>
+</resources>

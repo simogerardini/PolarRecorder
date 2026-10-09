@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Inglese: DA RIVEDERE da un madrelingua (closed testing). Traduzione iniziale della Parte 3, ottobre 2026. -->
+<resources>
+    <string name="tag_tag_per_la_notte">Tags for the night · scroll for more</string>
+    <string name="tag_tag_per_il_coach">Tags for the coach</string>
+    <string name="tag_tag">Tags</string>
+    <string name="tag_infortunio">Injury</string>
+    <string name="tag_alcol_cena_tardiva_caffeina">Alcohol, late dinner, caffeine, stress, travel, illness, disturbed sleep, heat and altitude exclude the night from your usual HRV calculation.</string>
+    <string name="tag_salva">Save</string>
+</resources>

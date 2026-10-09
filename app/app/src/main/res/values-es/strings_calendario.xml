@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Spagnolo: DA RIVEDERE da un madrelingua (closed testing). Traduzione iniziale della Parte 3, ottobre 2026. -->
+<resources>
+    <string name="calendario_calendario">Calendario</string>
+    <string name="calendario_settimana_dal_tss_svolto" formatted="true">Semana del %1$s · TSS %2$s hecho / %3$s planificado</string>
+    <string name="calendario_seduta_su_garmin_connect">Sesión en Garmin Connect: la guía estructurada está en el reloj.</string>
+    <string name="calendario_non_svolta">No realizada</string>
+    <string name="calendario_non_pianificata" formatted="true">%1$s · %2$s · no planificada</string>
+    <string name="calendario_analisi_della_seduta">Análisis de la sesión</string>
+</resources>

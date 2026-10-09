@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Inglese: DA RIVEDERE da un madrelingua (closed testing). Traduzione iniziale della Parte 3, ottobre 2026. -->
+<resources>
+    <string name="piu_calendario_ok">OK</string>
+    <string name="piu_calendario_annulla">Cancel</string>
+    <string name="piu_calendario_questa_pausa_e_stata" formatted="true">This break was added on Intervals.icu: here it can only be deleted (from %1$s to %2$s).</string>
+    <string name="piu_calendario_nota_facoltativa">Note (optional)</string>
+    <string name="piu_calendario_il_coach_non_pianifica">The coach does not schedule sessions on break days.</string>
+    <string name="piu_calendario_il_collegamento_non_permette">The connection does not allow writing to the calendar.</string>
+    <string name="piu_calendario_ricollega_intervals_icu">Reconnect Intervals.icu</string>
+    <string name="piu_calendario_elimina">Delete</string>
+    <string name="piu_calendario_salva">Save</string>
+    <string name="piu_calendario_tempo_disponibile">Time available</string>
+    <string name="piu_calendario_minuti">Minutes</string>
+    <string name="piu_calendario_vale_solo_per_questo">Applies only to this day, instead of the typical week\'s availability.</string>
+    <string name="piu_calendario_torna_alla_settimana_tipo">Back to the typical week</string>
+    <string name="piu_calendario_aggiorno_subito_il_piano">Update the plan now?</string>
+    <string name="piu_calendario_le_sedute_da_oggi">Sessions from today to Sunday will be recalculated. Past days are not touched.</string>
+    <string name="piu_calendario_si_aggiorna">Yes, update</string>
+    <string name="piu_calendario_no">No</string>
+</resources>

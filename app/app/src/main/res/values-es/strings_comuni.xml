@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Spagnolo: DA RIVEDERE da un madrelingua (closed testing). Traduzione iniziale della Parte 3, ottobre 2026. -->
+<resources>
+    <string name="comuni_dati_non_aggiornati" formatted="true">Datos no actualizados: %1$s</string>
+    <string name="comuni_aggiornato" formatted="true">Actualizado: %1$s</string>
+    <string name="comuni_forma_non_disponibile_servono">Forma no disponible: se necesitan los datos de Intervals.icu</string>
+    <string name="comuni_dati_insufficienti_per_il">Datos insuficientes para el gráfico</string>
+</resources>

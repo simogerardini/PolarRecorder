@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Cinese semplificato: DA RIVEDERE da un madrelingua (closed testing). Traduzione iniziale della Parte 3, ottobre 2026. -->
+<resources>
+    <string name="sweat_inserisci_i_dati_dello">输入出汗测试数据</string>
+    <string name="sweat_test_del_pesi_nudo" formatted="true">%1$s 的测试。请在裸体且身体干燥时称重，并称量装满时和测试结束时的水壶。</string>
+    <string name="sweat_salva">保存</string>
+</resources>

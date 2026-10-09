@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Spagnolo: DA RIVEDERE da un madrelingua (closed testing). Traduzione iniziale della Parte 3, ottobre 2026. -->
+<resources>
+    <string name="tag_tag_per_la_notte">Etiquetas de la noche · desliza para ver más</string>
+    <string name="tag_tag_per_il_coach">Etiquetas para el coach</string>
+    <string name="tag_tag">Etiquetas</string>
+    <string name="tag_infortunio">Lesión</string>
+    <string name="tag_alcol_cena_tardiva_caffeina">Alcohol, cena tardía, cafeína, estrés, viaje, enfermedad, sueño alterado, calor y altitud excluyen la noche del cálculo de tu HRV habitual.</string>
+    <string name="tag_salva">Guardar</string>
+</resources>

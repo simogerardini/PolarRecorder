@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Inglese: DA RIVEDERE da un madrelingua (closed testing). Traduzione iniziale della Parte 3, ottobre 2026. -->
+<resources>
+    <string name="oggi_oggi">Today</string>
+    <string name="oggi_calibrazione_notti" formatted="true">Calibration: %1$s/%2$s nights</string>
+    <string name="oggi_il_range_personale_si" formatted="true">Your personal range is built from your %1$s nights: until then the app shows no colour.</string>
+    <string name="oggi_sotto_il_range_da" formatted="true">Below range for %1$s nights in a row</string>
+    <string name="oggi_riposo">Rest</string>
+    <string name="oggi_prossima" formatted="true">Next: %1$s · %2$s · %3$s</string>
+    <string name="oggi_svolto_pianificato" formatted="true">Done %1$s · planned %2$s</string>
+    <string name="oggi_pianificato">planned</string>
+    <string name="oggi_svolto">done</string>
+</resources>

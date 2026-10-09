@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Cinese semplificato: DA RIVEDERE da un madrelingua (closed testing). Traduzione iniziale della Parte 3, ottobre 2026. -->
+<resources>
+    <string name="piu_calendario_ok">确定</string>
+    <string name="piu_calendario_annulla">取消</string>
+    <string name="piu_calendario_questa_pausa_e_stata" formatted="true">此休息期是在 Intervals.icu 上添加的：这里只能删除（%1$s 至 %2$s）。</string>
+    <string name="piu_calendario_nota_facoltativa">备注（可选）</string>
+    <string name="piu_calendario_il_coach_non_pianifica">教练不会在休息期安排训练。</string>
+    <string name="piu_calendario_il_collegamento_non_permette">当前连接无法写入日历。</string>
+    <string name="piu_calendario_ricollega_intervals_icu">重新连接 Intervals.icu</string>
+    <string name="piu_calendario_elimina">删除</string>
+    <string name="piu_calendario_salva">保存</string>
+    <string name="piu_calendario_tempo_disponibile">可用时间</string>
+    <string name="piu_calendario_minuti">分钟</string>
+    <string name="piu_calendario_vale_solo_per_questo">仅适用于当天，替代标准周的可用时间。</string>
+    <string name="piu_calendario_torna_alla_settimana_tipo">恢复标准周</string>
+    <string name="piu_calendario_aggiorno_subito_il_piano">立即更新计划？</string>
+    <string name="piu_calendario_le_sedute_da_oggi">从今天到周日的训练将重新计算。已过去的日子不受影响。</string>
+    <string name="piu_calendario_si_aggiorna">是，更新</string>
+    <string name="piu_calendario_no">否</string>
+</resources>
