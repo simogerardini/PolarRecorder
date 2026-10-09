@@ -4,4 +4,9 @@
     <string name="grafici_grafici">Gráficos</string>
     <string name="grafici_giorni" formatted="true">%1$s días</string>
     <string name="grafici_quando_la_stanchezza_atl">Cuando la fatiga (ATL) supera la forma física (CTL), la forma (TSB) baja de cero.</string>
+    <string name="grafici_forma_fisica_e_stanchezza">Forma física y fatiga</string>
+    <string name="grafici_forma_tsb_e_zone">Forma (TSB) y zonas</string>
+    <string name="grafici_hrv_notturno_rmssd_ms">HRV nocturna (rMSSD, ms)</string>
+    <string name="grafici_fc_a_riposo_media">FC en reposo (media nocturna, ppm)</string>
+    <string name="grafici_sonno_ore">Sueño (horas)</string>
 </resources>

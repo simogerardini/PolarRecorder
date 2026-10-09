@@ -10,4 +10,8 @@
     <string name="oggi_svolto_pianificato" formatted="true">Done %1$s · planned %2$s</string>
     <string name="oggi_pianificato">planned</string>
     <string name="oggi_svolto">done</string>
+    <string name="oggi_prestazioni">Performance</string>
+    <string name="oggi_analisi_del_recupero">Recovery analysis</string>
+    <string name="oggi_allenamento_di_oggi">Today\'s workout</string>
+    <string name="oggi_settimana">Week</string>
 </resources>

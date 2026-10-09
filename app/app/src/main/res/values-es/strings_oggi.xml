@@ -10,4 +10,8 @@
     <string name="oggi_svolto_pianificato" formatted="true">Hecho %1$s · planificado %2$s</string>
     <string name="oggi_pianificato">planificado</string>
     <string name="oggi_svolto">hecho</string>
+    <string name="oggi_prestazioni">Rendimiento</string>
+    <string name="oggi_analisi_del_recupero">Análisis de la recuperación</string>
+    <string name="oggi_allenamento_di_oggi">Entrenamiento de hoy</string>
+    <string name="oggi_settimana">Semana</string>
 </resources>

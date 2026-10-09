@@ -13,4 +13,14 @@
     <string name="sonno_il_cronotipo_si_calcola" formatted="true">作息类型根据休息日的睡眠中点计算，至少需要 %1$s 晚（目前 %2$s 晚）。</string>
     <string name="sonno_orari_di_sonno_ottimali">你的最佳睡眠时间</string>
     <string name="sonno_dal_punto_centrale_del" formatted="true">根据最近 %1$s 晚中休息日（周五和周六）的睡眠中点计算，并扣除周末补觉的影响。起床和入睡时间：中点加减你所需睡眠时长的一半。</string>
+    <string name="sonno_punteggio">评分</string>
+    <string name="sonno_deficit">睡眠负债</string>
+    <string name="sonno_orologio">生物钟</string>
+    <string name="sonno_punteggio_del_sonno">睡眠评分</string>
+    <string name="sonno_deficit_di_sonno">睡眠负债</string>
+    <string name="sonno_orologio_biologico">生物钟</string>
+    <string name="sonno_cronotipo">作息类型</string>
+    <string name="sonno_sonno_3">睡眠</string>
+    <string name="sonno_punto_centrale">睡眠中点</string>
+    <string name="sonno_sveglia">起床</string>
 </resources>

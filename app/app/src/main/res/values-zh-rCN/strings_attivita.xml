@@ -3,4 +3,10 @@
 <resources>
     <string name="attivita_seduta_non_disponibile" formatted="true">训练不可用：%1$s</string>
     <string name="attivita_le_fasce_chiare_sono">浅色区域为训练间歇段。</string>
+    <string name="attivita_riepilogo">摘要</string>
+    <string name="attivita_andamento">走势</string>
+    <string name="attivita_zone_di_potenza">功率区间</string>
+    <string name="attivita_zone_di_frequenza_cardiaca">心率区间</string>
+    <string name="attivita_zone_di_passo">配速区间</string>
+    <string name="attivita_intervalli">间歇</string>
 </resources>

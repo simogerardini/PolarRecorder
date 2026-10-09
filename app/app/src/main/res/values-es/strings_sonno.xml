@@ -13,4 +13,14 @@
     <string name="sonno_il_cronotipo_si_calcola" formatted="true">El cronotipo se calcula a partir del punto medio del sueño en los días libres, tras al menos %1$s noches (ahora %2$s).</string>
     <string name="sonno_orari_di_sonno_ottimali">Tus horarios de sueño óptimos</string>
     <string name="sonno_dal_punto_centrale_del" formatted="true">A partir del punto medio del sueño en las noches libres (viernes y sábado), corregido por el sueño recuperado el fin de semana, en las últimas %1$s noches. Despertar y acostarse: el punto medio más y menos la mitad de tu necesidad.</string>
+    <string name="sonno_punteggio">Puntuación</string>
+    <string name="sonno_deficit">Déficit</string>
+    <string name="sonno_orologio">Reloj</string>
+    <string name="sonno_punteggio_del_sonno">Puntuación del sueño</string>
+    <string name="sonno_deficit_di_sonno">Déficit de sueño</string>
+    <string name="sonno_orologio_biologico">Reloj biológico</string>
+    <string name="sonno_cronotipo">Cronotipo</string>
+    <string name="sonno_sonno_3">Sueño</string>
+    <string name="sonno_punto_centrale">Punto medio</string>
+    <string name="sonno_sveglia">Despertar</string>
 </resources>

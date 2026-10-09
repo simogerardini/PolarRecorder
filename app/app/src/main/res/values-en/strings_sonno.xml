@@ -13,4 +13,14 @@
     <string name="sonno_il_cronotipo_si_calcola" formatted="true">The chronotype is calculated from your sleep midpoint on free days, after at least %1$s nights (now %2$s).</string>
     <string name="sonno_orari_di_sonno_ottimali">Your optimal sleep times</string>
     <string name="sonno_dal_punto_centrale_del" formatted="true">From your sleep midpoint on free nights (Friday and Saturday), corrected for sleep caught up at the weekend, over the last %1$s nights. Wake-up and bedtime: the midpoint plus and minus half of your sleep need.</string>
+    <string name="sonno_punteggio">Score</string>
+    <string name="sonno_deficit">Debt</string>
+    <string name="sonno_orologio">Clock</string>
+    <string name="sonno_punteggio_del_sonno">Sleep score</string>
+    <string name="sonno_deficit_di_sonno">Sleep debt</string>
+    <string name="sonno_orologio_biologico">Body clock</string>
+    <string name="sonno_cronotipo">Chronotype</string>
+    <string name="sonno_sonno_3">Sleep</string>
+    <string name="sonno_punto_centrale">Midpoint</string>
+    <string name="sonno_sveglia">Wake-up</string>
 </resources>

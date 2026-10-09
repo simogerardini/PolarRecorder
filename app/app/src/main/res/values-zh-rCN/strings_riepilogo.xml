@@ -20,4 +20,15 @@
     <string name="riepilogo_intensi_su_di_bici" formatted="true">骑行和跑步共 %2$s 分钟，其中高强度 %1$s 分钟</string>
     <string name="riepilogo_tetto" formatted="true">上限 %1$s%%</string>
     <string name="riepilogo_pieno_fatto_chiaro_con">实色 = 已完成 · 浅色 = 含日历中尚未完成的训练 · 线 = 目标 · 红色 = 上限</string>
+    <string name="riepilogo_soglie_aggiornate">已更新的阈值</string>
+    <string name="riepilogo_oggi_2">今天</string>
+    <string name="riepilogo_biometria">生理指标</string>
+    <string name="riepilogo_forma">状态</string>
+    <string name="riepilogo_discipline">项目</string>
+    <string name="riepilogo_intensita">强度</string>
+    <string name="riepilogo_settimana">本周</string>
+    <string name="riepilogo_sedute_della_settimana">本周训练</string>
+    <string name="riepilogo_ctl">CTL</string>
+    <string name="riepilogo_atl">ATL</string>
+    <string name="riepilogo_tsb">TSB</string>
 </resources>

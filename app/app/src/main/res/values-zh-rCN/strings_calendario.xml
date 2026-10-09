@@ -7,4 +7,8 @@
     <string name="calendario_non_svolta">未完成</string>
     <string name="calendario_non_pianificata" formatted="true">%1$s · %2$s · 未计划</string>
     <string name="calendario_analisi_della_seduta">训练分析</string>
+    <string name="calendario_durata">时长</string>
+    <string name="calendario_tss">TSS</string>
+    <string name="calendario_distanza">距离</string>
+    <string name="calendario_aderenza">完成度</string>
 </resources>

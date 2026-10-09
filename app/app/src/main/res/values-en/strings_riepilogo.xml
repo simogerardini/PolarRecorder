@@ -20,4 +20,15 @@
     <string name="riepilogo_intensi_su_di_bici" formatted="true">%1$s\' hard out of %2$s\' of cycling and running</string>
     <string name="riepilogo_tetto" formatted="true">cap %1$s%%</string>
     <string name="riepilogo_pieno_fatto_chiaro_con">Solid = done · light = with sessions still in the calendar · line = target · red = cap</string>
+    <string name="riepilogo_soglie_aggiornate">Thresholds updated</string>
+    <string name="riepilogo_oggi_2">Today</string>
+    <string name="riepilogo_biometria">Biometrics</string>
+    <string name="riepilogo_forma">Form</string>
+    <string name="riepilogo_discipline">Disciplines</string>
+    <string name="riepilogo_intensita">Intensity</string>
+    <string name="riepilogo_settimana">Week</string>
+    <string name="riepilogo_sedute_della_settimana">This week\'s sessions</string>
+    <string name="riepilogo_ctl">CTL</string>
+    <string name="riepilogo_atl">ATL</string>
+    <string name="riepilogo_tsb">TSB</string>
 </resources>

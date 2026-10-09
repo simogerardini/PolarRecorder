@@ -4,4 +4,9 @@
     <string name="grafici_grafici">Charts</string>
     <string name="grafici_giorni" formatted="true">%1$s days</string>
     <string name="grafici_quando_la_stanchezza_atl">When fatigue (ATL) exceeds fitness (CTL), form (TSB) drops below zero.</string>
+    <string name="grafici_forma_fisica_e_stanchezza">Fitness and fatigue</string>
+    <string name="grafici_forma_tsb_e_zone">Form (TSB) and zones</string>
+    <string name="grafici_hrv_notturno_rmssd_ms">Night HRV (rMSSD, ms)</string>
+    <string name="grafici_fc_a_riposo_media">Resting HR (night average, bpm)</string>
+    <string name="grafici_sonno_ore">Sleep (hours)</string>
 </resources>

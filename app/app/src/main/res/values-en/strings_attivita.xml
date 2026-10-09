@@ -3,4 +3,10 @@
 <resources>
     <string name="attivita_seduta_non_disponibile" formatted="true">Session not available: %1$s</string>
     <string name="attivita_le_fasce_chiare_sono">The light bands are the work intervals.</string>
+    <string name="attivita_riepilogo">Summary</string>
+    <string name="attivita_andamento">Trend</string>
+    <string name="attivita_zone_di_potenza">Power zones</string>
+    <string name="attivita_zone_di_frequenza_cardiaca">Heart rate zones</string>
+    <string name="attivita_zone_di_passo">Pace zones</string>
+    <string name="attivita_intervalli">Intervals</string>
 </resources>

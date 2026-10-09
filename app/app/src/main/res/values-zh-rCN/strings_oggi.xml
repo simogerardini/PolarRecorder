@@ -10,4 +10,8 @@
     <string name="oggi_svolto_pianificato" formatted="true">已完成 %1$s · 计划 %2$s</string>
     <string name="oggi_pianificato">计划</string>
     <string name="oggi_svolto">已完成</string>
+    <string name="oggi_prestazioni">训练表现</string>
+    <string name="oggi_analisi_del_recupero">恢复分析</string>
+    <string name="oggi_allenamento_di_oggi">今日训练</string>
+    <string name="oggi_settimana">本周</string>
 </resources>
