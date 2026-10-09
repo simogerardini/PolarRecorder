@@ -46,7 +46,7 @@ fun SezioneLingua() {
     }
     Text(
         "Vale per le sedute che il coach scrive sul calendario e sull'orologio: nomi, note degli step, test. " +
-            "Le schede di forza restano in italiano per ora. L'app per il momento è in italiano.",
+            "L'app per il momento è in italiano.",
         style = MaterialTheme.typography.bodySmall,
         color = MaterialTheme.colorScheme.onSurfaceVariant)
     if (Lingua.calendarioInInglese(effettiva)) {

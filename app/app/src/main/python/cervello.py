@@ -50,7 +50,7 @@ from marchio import NOME_APP
 import campi
 import messaggi   # 07/10/2026 (punto 13a): codici dei messaggi per l'app
 
-VERSIONE = "2026.10.08-lingue13b"   # anche nel LEGGIMI del pacchetto
+VERSIONE = "2026.10.08-lingue13c"   # anche nel LEGGIMI del pacchetto
 import contextlib, importlib, io, json, os, re, sys, traceback
 
 _VARIABILI_ESTERNE = ("GH_TOKEN", "GITHUB_REPOSITORY", "TELEGRAM_TOKEN", "TELEGRAM_CHAT_ID")
@@ -723,8 +723,8 @@ def _adesso(cfg):
 
 def _carica_moduli():
     global cs
-    import sedute, biometria, carico, soglie, palestra, caldo, detp, traduzioni, coach_settimanale
-    for m in (sedute, biometria, carico, soglie, palestra, caldo, detp, traduzioni, coach_settimanale):
+    import sedute, biometria, carico, soglie, palestra, caldo, detp, traduzioni_palestra, traduzioni, coach_settimanale
+    for m in (sedute, biometria, carico, soglie, palestra, caldo, detp, traduzioni_palestra, traduzioni, coach_settimanale):
         importlib.reload(m)
     cs = coach_settimanale
     return sedute

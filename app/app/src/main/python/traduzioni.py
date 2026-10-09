@@ -8,8 +8,8 @@ Il cervello scrive le sedute in italiano; prima di ogni scrittura su Intervals.i
 Le parti tecniche restano identiche in ogni lingua (durate, Z2 HR, % LTHR, % Pace,
 Press lap, intensity=..., [[tipo:...]]): si traducono solo parole e note.
 Lingue: it (nessuna modifica), en, es. zh -> en sul calendario (decisione di Simone:
-molti orologi non mostrano i caratteri cinesi). Le schede di forza (WeightTraining) si
-traducono nella fase 13c. Regole del testo tradotto: niente apostrofi negli step (" ' "
+molti orologi non mostrano i caratteri cinesi). Le schede di forza (WeightTraining) usano
+il catalogo di traduzioni_palestra.py (13c). Regole del testo tradotto: niente apostrofi negli step (" ' "
 e' letto come minuti) e niente %, come nell'italiano.
 """
 import re
@@ -224,6 +224,46 @@ for _l in ("en", "es"):
                  for it, en, es in sorted(FRAMMENTI, key=lambda x: -len(x[0]))]
 
 
+# ── schede di forza (13c): catalogo a parte, applicato solo agli eventi WeightTraining ──
+def _compila(voci):
+    out = {}
+    for l in ("en", "es"):
+        out[l] = [(re.compile(r"(?<![A-Za-zÀ-ÿ])" + re.escape(it) + r"(?![A-Za-zÀ-ÿ])"), en if l == "en" else es)
+                  for it, en, es in sorted(voci, key=lambda x: -len(x[0]))]
+    return out
+
+
+def _palestra():
+    global _PAL
+    if _PAL is None:
+        import traduzioni_palestra as tp
+        # un solo elenco, dal frammento piu' lungo al piu' corto: una frase lunga delle
+        # prescrizioni ("senza spinta del piede a terra") vince su una corta ("a terra")
+        _PAL = (_compila(tp.TITOLI + tp.ESERCIZI + tp.PRESCRIZIONI),)
+    return _PAL
+
+
+_PAL = None
+
+
+def traduci_palestra(testo, lingua):
+    """Testo di una scheda di forza (titoli, esercizi, prescrizioni), dal frammento piu'
+    lungo al piu' corto: le parole brevi come "con" ed "e" per ultime. [[tipo:Gym]] resta."""
+    l = lingua_calendario(lingua)
+    if l == "it" or not testo:
+        return testo
+    (tutti,) = _palestra()
+    righe = []
+    for riga in testo.split("\n"):
+        if riga.startswith("[[") and riga.endswith("]]"):
+            righe.append(riga)
+            continue
+        for rx, sost in tutti[l]:
+            riga = rx.sub(sost, riga)
+        righe.append(riga)
+    return "\n".join(righe)
+
+
 def lingua_calendario(lingua):
     return LINGUE_CALENDARIO.get((lingua or "it").lower()[:2], "it")
 
@@ -247,12 +287,12 @@ def traduci(testo, lingua):
 
 
 def traduci_evento(ev, lingua):
-    """Copia dell'evento con nome e descrizione tradotti. Le schede di forza restano in
-    italiano fino alla fase 13c."""
-    if lingua_calendario(lingua) == "it" or ev.get("type") == "WeightTraining":
+    """Copia dell'evento con nome e descrizione tradotti (13c: anche le schede di forza)."""
+    if lingua_calendario(lingua) == "it":
         return ev
+    f = traduci_palestra if ev.get("type") == "WeightTraining" else traduci
     out = dict(ev)
     for k in ("name", "description"):
         if isinstance(out.get(k), str):
-            out[k] = traduci(out[k], lingua)
+            out[k] = f(out[k], lingua)
     return out

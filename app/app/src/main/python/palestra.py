@@ -883,9 +883,16 @@ def evento(scheda, data_str, nome=None):
 
 
 def scheda_da_nome(nome):
-    """Scheda di un evento scritto da evento() ("Forza — <titolo>"), None altrimenti."""
+    """Scheda di un evento scritto da evento() ("Forza — <titolo>"), None altrimenti.
+    13c (08/10/2026): riconosce anche il nome tradotto in inglese e spagnolo."""
+    if not nome:
+        return None
+    base = re.sub(r"\s+\d+min$", "", nome)
+    import traduzioni
     for s in SCHEDE:
-        if nome and re.sub(r"\s+\d+min$", "", nome).endswith(s["titolo"]):
+        nomi = {f"Forza — {s['titolo']}"} | {traduzioni.traduci_palestra(f"Forza — {s['titolo']}", l)
+                                            for l in ("en", "es")}
+        if any(base.endswith(n.split(" — ", 1)[1]) or base == n for n in nomi):
             return s
     return None
 
