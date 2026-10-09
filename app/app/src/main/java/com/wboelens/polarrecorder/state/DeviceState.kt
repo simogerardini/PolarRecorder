@@ -6,7 +6,6 @@ import com.polar.sdk.api.model.PolarSensorSetting
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
-import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -133,7 +132,11 @@ class DeviceState {
     _batteryLevels.value = _batteryLevels.value + (deviceId to level)
   }
 
-  fun cleanup() {
-    scope.cancel()
-  }
+  /**
+   * Non fa nulla, di proposito. DeviceState vive quanto il processo: se lo scope venisse cancellato
+   * (attivita' o servizio chiusi con il processo ancora vivo), selectedDevices e connectedDevices
+   * smetterebbero di aggiornarsi e l'avvio della notte fallirebbe con "Stato della fascia non
+   * disponibile" fino al riavvio dell'app. Lo scope termina con il processo.
+   */
+  fun cleanup() = Unit
 }
