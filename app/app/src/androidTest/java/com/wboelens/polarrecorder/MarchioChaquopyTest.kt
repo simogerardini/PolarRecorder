@@ -8,7 +8,7 @@ import org.junit.Assert.assertEquals
 import org.junit.Test
 import org.junit.runner.RunWith
 
-/** Sul telefono: marchio.NOME_APP letto da Chaquopy == BuildConfig.APP_NAME. */
+/** SOLO SU EMULATORE: connectedAndroidTest a fine test disinstalla l app e cancella i dati. Controllo: marchio.NOME_APP letto da Chaquopy == BuildConfig.APP_NAME. */
 @RunWith(AndroidJUnit4::class)
 class MarchioChaquopyTest {
   @Test
