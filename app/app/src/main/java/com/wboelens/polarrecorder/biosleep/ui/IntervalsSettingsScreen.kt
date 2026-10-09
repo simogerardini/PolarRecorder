@@ -231,6 +231,10 @@ fun IntervalsSettingsScreen(
       TextButton(onClick = onApriFascia) { Text("Fascia") }
 
       HorizontalDivider()
+      // Lingua delle sedute sul calendario e sull'orologio
+      SezioneLingua()
+
+      HorizontalDivider()
       // Dati: backup cifrato, ripristino, esportazione CSV
       Text("Dati", style = MaterialTheme.typography.titleSmall)
       PromemoriaBackup(onApriBackup)

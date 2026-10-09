@@ -1,5 +1,6 @@
 package com.wboelens.polarrecorder.biosleep.ui
 
+import com.wboelens.polarrecorder.biosleep.cervello.Lingua
 import com.wboelens.polarrecorder.biosleep.cervello.DisponibilitaDate
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -127,7 +128,8 @@ fun SezioneCoach(onApriProfilo: () -> Unit = {}, onApriGare: () -> Unit = {}) {
                           profilo = ProfiloRepo.effettivo(ctx),
                           tag = runCatching { TagDb.get(ctx).perCervello() }.getOrNull(),
                           posizione = PosizioneTelefono.ultima(ctx),
-                          disponibilitaDate = DisponibilitaDate.perCervello(ctx)))
+                          disponibilitaDate = DisponibilitaDate.perCervello(ctx),
+                          lingua = Lingua.effettiva(ctx)))
                 }
             val ms = System.currentTimeMillis() - t0
             if (r.esito == RisultatoCervello.PIANIFICATA) stato.registraProva(ms)

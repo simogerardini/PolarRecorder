@@ -23,6 +23,8 @@ data class ConfigCervello(
     val posizione: Posizione? = null,
     /** Minuti per data dal "+" del calendario (solo da oggi in poi); null = campo omesso. */
     val disponibilitaDate: Map<String, Int>? = null,
+    /** "it" | "en" | "es" | "zh": lingua delle sedute scritte su Intervals.icu (13b). */
+    val lingua: String? = null,
     /** Profilo dell'atleta: le FC dell'app hanno la precedenza su quelle di Intervals.icu. */
     val profilo: ProfiloAtleta? = null,
     /** {"giorni": {data: [chiavi]}, "sedute": {id: [chiavi]}} dal TagDb. */
@@ -46,6 +48,7 @@ data class ConfigCervello(
             addProperty("senza_attesa", senzaAttesa)
             if (forza) addProperty("forza", true)
             disponibilitaDate?.takeIf { it.isNotEmpty() }?.let { add("disponibilita_date", PianoCalendario.json(it)) }
+            lingua?.let { addProperty("lingua", it) }
             posizione?.let { p ->
               add("posizione", JsonObject().apply {
                 addProperty("lat", p.lat)
@@ -172,7 +175,7 @@ object Cervello {
           val testo =
               Python.getInstance().getModule("cervello")
                   // il profilo serve a sapere se la CP di corsa e' necessaria (Stryd)
-                  .callAttr("controlla_soglie", ConfigCervello(c, cartella(context).absolutePath, profilo = profilo).json()).toString()
+                  .callAttr("controlla_soglie", ConfigCervello(c, cartella(context).absolutePath, lingua = Lingua.effettiva(context), profilo = profilo).json()).toString()
           ultimaRispostaSoglie = testo
           Soglie.da(testo)
         } catch (e: PyException) {
@@ -184,7 +187,7 @@ object Cervello {
   fun registraCss(context: Context, c: Credenziali, t400: Int, t200: Int): EsitoCss =
       synchronized(lucchetto) {
         if (!Python.isStarted()) Python.start(AndroidPlatform(context.applicationContext))
-        val cfg = JsonParser.parseString(ConfigCervello(c, cartella(context).absolutePath).json()).asJsonObject
+        val cfg = JsonParser.parseString(ConfigCervello(c, cartella(context).absolutePath, lingua = Lingua.effettiva(context)).json()).asJsonObject
         cfg.addProperty("t400", t400)
         cfg.addProperty("t200", t200)
         try {
@@ -198,7 +201,7 @@ object Cervello {
   private fun chiama(context: Context, funzione: String, c: Credenziali, extra: JsonObject.() -> Unit): String? =
       synchronized(lucchetto) {
         if (!Python.isStarted()) Python.start(AndroidPlatform(context.applicationContext))
-        val cfg = JsonParser.parseString(ConfigCervello(c, cartella(context).absolutePath).json()).asJsonObject.apply(extra)
+        val cfg = JsonParser.parseString(ConfigCervello(c, cartella(context).absolutePath, lingua = Lingua.effettiva(context)).json()).asJsonObject.apply(extra)
         try {
           Python.getInstance().getModule("cervello").callAttr(funzione, cfg.toString()).toString()
         } catch (e: PyException) {

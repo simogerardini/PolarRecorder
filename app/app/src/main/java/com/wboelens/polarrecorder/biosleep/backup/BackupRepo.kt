@@ -43,6 +43,7 @@ object BackupRepo {
           "biosleep_profilo" to null, // profilo atleta: FC, ore, disponibilita', settimana, palestra, caldo
           "biosleep_intervals" to setOf("auto_upload", "athlete_id"), // MAI token o API key
           "noctalix_disponibilita_date" to null, // tempo disponibile per data dal calendario
+          "noctalix_lingua" to null, // lingua delle sedute
       )
 
   // --- Stato del promemoria ---------------------------------------------------------------------
