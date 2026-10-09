@@ -1,5 +1,6 @@
 package com.wboelens.polarrecorder.services
 
+import com.wboelens.polarrecorder.BuildConfig
 import android.app.Notification
 import android.app.NotificationChannel
 import android.app.NotificationManager
@@ -439,7 +440,7 @@ class RecordingService : Service() {
     if (wakeLock?.isHeld == true) return
     wakeLock =
         getSystemService(PowerManager::class.java)
-            .newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "BioSleep:notte")
+            .newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "${BuildConfig.APP_NAME}:notte")
             .apply { acquire(WAKELOCK_TIMEOUT_MS) }
   }
 
