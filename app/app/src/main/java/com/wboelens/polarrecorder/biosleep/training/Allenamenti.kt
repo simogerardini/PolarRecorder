@@ -323,17 +323,17 @@ object Formato {
       when {
         m == null || m <= 0 -> "—"
         m < 1000 -> "${m.roundToInt()} m"
-        else -> String.format(Locale.ITALY, "%.1f km", m / 1000)
+        else -> String.format(Locale.getDefault(), "%.1f km", m / 1000)
       }
 
-  fun decimale(v: Double, cifre: Int = 1): String = String.format(Locale.ITALY, "%.${cifre}f", v)
+  fun decimale(v: Double, cifre: Int = 1): String = String.format(Locale.getDefault(), "%.${cifre}f", v)
 
   fun conSegno(v: Double, cifre: Int = 1): String = (if (v > 0) "+" else "") + decimale(v, cifre)
 
   fun metrica(v: Double, m: Metrica): String =
       when (m) {
         Metrica.DURATA -> durata((v * 3600).roundToInt())
-        Metrica.DISTANZA -> if (v <= 0) "—" else String.format(Locale.ITALY, "%.1f km", v)
+        Metrica.DISTANZA -> if (v <= 0) "—" else String.format(Locale.getDefault(), "%.1f km", v)
         Metrica.TSS -> v.roundToInt().toString()
       }
 }

@@ -50,7 +50,10 @@ android {
   }
 
   buildTypes {
-    debug { isDebuggable = true }
+    debug {
+      isDebuggable = true
+      isPseudoLocalesEnabled = true // en-XA / ar-XB per provare l'impaginazione
+    }
     release {
       isMinifyEnabled = false
       proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
@@ -137,4 +140,10 @@ chaquopy {
       install("tzdata") // fusi orari per zoneinfo: Android non li fornisce a Python
     }
   }
+}
+
+// I test girano sempre in italiano, qualunque sia la lingua del Mac (date e numeri dipendono dal Locale)
+tasks.withType<Test>().configureEach {
+  systemProperty("user.language", "it")
+  systemProperty("user.country", "IT")
 }

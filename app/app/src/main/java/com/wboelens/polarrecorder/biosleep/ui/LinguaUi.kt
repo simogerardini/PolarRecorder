@@ -18,24 +18,26 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import com.wboelens.polarrecorder.biosleep.cervello.Lingua
 import com.wboelens.polarrecorder.biosleep.cervello.RipianificaWorker
+import java.util.Locale
 
-/** Impostazioni -> Lingua: lingua delle sedute sul calendario e sull'orologio. */
+/**
+ * Impostazioni -> Lingua: lingua dell'app (Android 13+) e delle sedute sul calendario e
+ * sull'orologio. Cambiando lingua Android ricrea la schermata: la domanda sul piano compare dopo.
+ */
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun SezioneLingua() {
   val context = LocalContext.current.applicationContext
-  var scelta by remember { mutableStateOf(Lingua.scelta(context)) }
-  var chiedi by remember { mutableStateOf(false) }
+  val scelta = remember { Lingua.scelta(context) }
+  var chiedi by remember { mutableStateOf(Lingua.ripianificaInSospeso(context)) }
   var messaggio by remember { mutableStateOf<String?>(null) }
-  val effettiva = scelta ?: Lingua.daLocale(java.util.Locale.getDefault().language)
+  val effettiva = scelta ?: Lingua.daLocale(Locale.getDefault().language)
 
   fun cambia(nuova: String?) {
     if (nuova == scelta) return
-    val prima = effettiva
-    scelta = nuova
-    Lingua.salva(context, nuova)
-    messaggio = null
-    if ((nuova ?: Lingua.daLocale(java.util.Locale.getDefault().language)) != prima) chiedi = true
+    val dopo = nuova ?: Lingua.daLocale(Locale.getDefault().language)
+    Lingua.salva(context, nuova, chiediRipianifica = dopo != effettiva)
+    if (!Lingua.perAppDisponibile()) chiedi = dopo != effettiva // senza ricreazione: subito
   }
 
   Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
@@ -45,8 +47,8 @@ fun SezioneLingua() {
       for ((codice, nome) in Lingua.LINGUE) FilterChip(selected = scelta == codice, onClick = { cambia(codice) }, label = { Text(nome) })
     }
     Text(
-        "Vale per le sedute che il coach scrive sul calendario e sull'orologio: nomi, note degli step, test. " +
-            "L'app per il momento è in italiano.",
+        if (Lingua.perAppDisponibile()) "Lingua dell'app e delle sedute che il coach scrive sul calendario e sull'orologio."
+        else "Lingua delle sedute che il coach scrive sul calendario e sull'orologio. L'app segue la lingua del telefono.",
         style = MaterialTheme.typography.bodySmall,
         color = MaterialTheme.colorScheme.onSurfaceVariant)
     if (Lingua.calendarioInInglese(effettiva)) {

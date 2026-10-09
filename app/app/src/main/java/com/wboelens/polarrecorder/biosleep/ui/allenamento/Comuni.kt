@@ -109,19 +109,29 @@ object ColoriBio {
 // --- Date in italiano -----------------------------------------------------------------------------
 
 object DateIt {
-  private val IT = Locale.ITALIAN
-  private val breve = DateTimeFormatter.ofPattern("EEE d MMM", IT)
-  private val lunga = DateTimeFormatter.ofPattern("EEEE d MMMM", IT)
-  private val asse = DateTimeFormatter.ofPattern("d MMM", IT)
+  // Formati per lingua (Locale dell'utente, che con la lingua scelta per l'app segue quella).
+  // Modelli scelti per ogni lingua: l'ordine giorno/mese e le parole cambiano (es. zh "10月9日").
+  private fun modelli(l: Locale): Triple<String, String, String> =
+      when (l.language) {
+        "en" -> Triple("EEE, MMM d", "EEEE, MMMM d", "MMM d")
+        "es" -> Triple("EEE d MMM", "EEEE, d 'de' MMMM", "d MMM")
+        "zh" -> Triple("M月d日 EEE", "M月d日 EEEE", "M月d日")
+        else -> Triple("EEE d MMM", "EEEE d MMMM", "d MMM")
+      }
 
-  fun breve(d: LocalDate): String = d.format(breve)
+  private fun f(modello: (Triple<String, String, String>) -> String): DateTimeFormatter {
+    val l = Locale.getDefault()
+    return DateTimeFormatter.ofPattern(modello(modelli(l)), l)
+  }
 
-  fun lunga(d: LocalDate): String = d.format(lunga).replaceFirstChar { it.uppercase() }
+  fun breve(d: LocalDate): String = d.format(f { it.first })
 
-  fun asse(d: LocalDate): String = d.format(asse)
+  fun lunga(d: LocalDate): String = d.format(f { it.second }).replaceFirstChar { it.uppercase(Locale.getDefault()) }
 
-  /** L M M G V S D */
-  fun iniziale(d: LocalDate): String = d.dayOfWeek.getDisplayName(TextStyle.NARROW, IT).uppercase()
+  fun asse(d: LocalDate): String = d.format(f { it.third })
+
+  /** Iniziale del giorno nella lingua dell'utente (it: L M M G V S D). */
+  fun iniziale(d: LocalDate): String = d.dayOfWeek.getDisplayName(TextStyle.NARROW, Locale.getDefault()).uppercase(Locale.getDefault())
 }
 
 // --- Lettura della cache ---------------------------------------------------------------------------
