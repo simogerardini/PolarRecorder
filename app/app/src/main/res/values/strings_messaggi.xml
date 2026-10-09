@@ -94,6 +94,9 @@
     <string name="msg_oggi_riposo">Riposo</string>
     <string name="msg_frammento_nota_sat">" NOTA: media 7gg oltre +1 SD sopra la baseline: se coincide con FC a riposo bassa e gambe pesanti, leggila come possibile saturazione parasimpatica (overreaching), non come freschezza garantita."</string>
     <string name="msg_frammento_nota_cv">" NOTA: la variabilità giorno per giorno dell\'HRV si è quasi azzerata. In un atleta allenato un CV in collasso non è stabilità ma uno dei marcatori di overreaching non funzionale (Plews 2013): non aumentare il carico questa settimana anche se la banda è verde."</string>
+    <string name="msg_rm_riposo_biometrico">la curva biometrica prescrive riposo</string>
+    <string name="msg_rm_banda_rossa_forza">banda rossa: recupero, niente circuito di forza</string>
+    <string name="msg_rm_banda" formatted="true">banda %1$s</string>
     <string name="msg_frammento_caldo_tag">" (tag)"</string>
     <string name="msg_frammento_caldo_meteo" formatted="true">: %1$s °C, umidità %2$s%%</string>
     <string name="msg_frammento_alle" formatted="true">" alle %1$s"</string>

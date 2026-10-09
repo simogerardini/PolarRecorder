@@ -1,0 +1,3013 @@
+[
+ {
+  "nome": "continuo W1",
+  "testo": "🗓️ Piano settimanale — senza gara — ciclo continuo, blocco A, carico 1/4\nDistanza obiettivo: olimpico · fase senza_gara\nVolume cardio: 9h25 (target 9.42h, fattore biometrico 1.0)\nRipartizione: nuoto 18% · bici 45% · corsa 36%\nAlta intensita': 38' su 460' bici+corsa (8.3%, tetto 20%)\nBanda biometrica: VERDE\nHRV media 7gg 65.3ms su baseline 65.0ms (range 63.0-66.9ms), stabile\nCTL 69.8 · ATL 75 · TSB -5.2 · rampa 7gg +1.4\n\nLunedi 05/01: Forza 45' + Nuoto endurance e ritmo 45'\nMartedi 06/01: Bici chiave 75'\nMercoledi 07/01: Corsa di supporto 50' + Forza 30'\nGiovedi 08/01: Nuoto chiave progressivo 60'\nVenerdi 09/01: Corsa qualita' 60'\nSabato 10/01: Brick — bici 180' + Brick — corsa a seguire 15'\nDomenica 11/01: Lungo corsa 80'",
+  "righe": [
+   {
+    "tipo": "notifica_riga",
+    "codice": "nr_intestazione_continuo",
+    "valori": {
+     "blocco": "A",
+     "tipo_settimana": "carico",
+     "carico": "1"
+    },
+    "testo": "🗓️ Piano settimanale — senza gara — ciclo continuo, blocco A, carico 1/4"
+   },
+   {
+    "tipo": "notifica_riga",
+    "codice": "nr_distanza",
+    "valori": {
+     "distanza": "olimpico",
+     "fase": "senza_gara",
+     "tipo_settimana": "normale"
+    },
+    "testo": "Distanza obiettivo: olimpico · fase senza_gara"
+   },
+   {
+    "tipo": "notifica_riga",
+    "codice": "nr_volume",
+    "valori": {
+     "ore": "9",
+     "minuti": "25",
+     "target": "9.42",
+     "fattore": "1.0"
+    },
+    "testo": "Volume cardio: 9h25 (target 9.42h, fattore biometrico 1.0)"
+   },
+   {
+    "tipo": "notifica_riga",
+    "codice": "nr_ripartizione",
+    "valori": {
+     "nuoto": "18",
+     "bici": "45",
+     "corsa": "36"
+    },
+    "testo": "Ripartizione: nuoto 18% · bici 45% · corsa 36%"
+   },
+   {
+    "tipo": "notifica_riga",
+    "codice": "nr_alta_intensita",
+    "valori": {
+     "min": "38",
+     "tot": "460",
+     "pct": "8.3",
+     "tetto": "20"
+    },
+    "testo": "Alta intensita': 38' su 460' bici+corsa (8.3%, tetto 20%)"
+   },
+   {
+    "tipo": "notifica_riga",
+    "codice": "nr_banda",
+    "valori": {
+     "banda": "verde"
+    },
+    "testo": "Banda biometrica: VERDE"
+   },
+   {
+    "tipo": "notifica_riga",
+    "codice": "nr_hrv",
+    "valori": {
+     "media": "65.3",
+     "baseline": "65.0",
+     "min": "63.0",
+     "max": "66.9",
+     "direzione": "stabile"
+    },
+    "testo": "HRV media 7gg 65.3ms su baseline 65.0ms (range 63.0-66.9ms), stabile"
+   },
+   {
+    "tipo": "notifica_riga",
+    "codice": "nr_forma",
+    "valori": {
+     "ctl": "69.8",
+     "atl": "75",
+     "tsb": "-5.2",
+     "rampa": "+1.4"
+    },
+    "testo": "CTL 69.8 · ATL 75 · TSB -5.2 · rampa 7gg +1.4"
+   },
+   {
+    "tipo": "notifica_riga",
+    "codice": "nr_vuota",
+    "valori": {},
+    "testo": ""
+   },
+   {
+    "tipo": "notifica_riga",
+    "codice": "nr_giorno_sedute",
+    "valori": {
+     "giorno": "lun",
+     "data": "05/01",
+     "sedute": [
+      {
+       "chiave": "forza",
+       "minuti": "45",
+       "aerobica": "no"
+      },
+      {
+       "chiave": "nuoto_supporto",
+       "minuti": "45",
+       "aerobica": "no"
+      }
+     ]
+    },
+    "testo": "Lunedi 05/01: Forza 45' + Nuoto endurance e ritmo 45'"
+   },
+   {
+    "tipo": "notifica_riga",
+    "codice": "nr_giorno_sedute",
+    "valori": {
+     "giorno": "mar",
+     "data": "06/01",
+     "sedute": [
+      {
+       "chiave": "bici_chiave",
+       "minuti": "75",
+       "aerobica": "no"
+      }
+     ]
+    },
+    "testo": "Martedi 06/01: Bici chiave 75'"
+   },
+   {
+    "tipo": "notifica_riga",
+    "codice": "nr_giorno_sedute",
+    "valori": {
+     "giorno": "mer",
+     "data": "07/01",
+     "sedute": [
+      {
+       "chiave": "corsa_supporto",
+       "minuti": "50",
+       "aerobica": "no"
+      },
+      {
+       "chiave": "forza",
+       "minuti": "30",
+       "aerobica": "no"
+      }
+     ]
+    },
+    "testo": "Mercoledi 07/01: Corsa di supporto 50' + Forza 30'"
+   },
+   {
+    "tipo": "notifica_riga",
+    "codice": "nr_giorno_sedute",
+    "valori": {
+     "giorno": "gio",
+     "data": "08/01",
+     "sedute": [
+      {
+       "chiave": "nuoto_chiave",
+       "minuti": "60",
+       "aerobica": "no"
+      }
+     ]
+    },
+    "testo": "Giovedi 08/01: Nuoto chiave progressivo 60'"
+   },
+   {
+    "tipo": "notifica_riga",
+    "codice": "nr_giorno_sedute",
+    "valori": {
+     "giorno": "ven",
+     "data": "09/01",
+     "sedute": [
+      {
+       "chiave": "corsa_chiave",
+       "minuti": "60",
+       "aerobica": "no"
+      }
+     ]
+    },
+    "testo": "Venerdi 09/01: Corsa qualita' 60'"
+   },
+   {
+    "tipo": "notifica_riga",
+    "codice": "nr_giorno_sedute",
+    "valori": {
+     "giorno": "sab",
+     "data": "10/01",
+     "sedute": [
+      {
+       "chiave": "brick_bici",
+       "minuti": "180",
+       "aerobica": "no"
+      },
+      {
+       "chiave": "brick_corsa",
+       "minuti": "15",
+       "aerobica": "no"
+      }
+     ]
+    },
+    "testo": "Sabato 10/01: Brick — bici 180' + Brick — corsa a seguire 15'"
+   },
+   {
+    "tipo": "notifica_riga",
+    "codice": "nr_giorno_sedute",
+    "valori": {
+     "giorno": "dom",
+     "data": "11/01",
+     "sedute": [
+      {
+       "chiave": "lungo_corsa",
+       "minuti": "80",
+       "aerobica": "no"
+      }
+     ]
+    },
+    "testo": "Domenica 11/01: Lungo corsa 80'"
+   }
+  ]
+ },
+ {
+  "nome": "continuo W2",
+  "testo": "🗓️ Piano settimanale — senza gara — ciclo continuo, blocco A, carico 2/4\nDistanza obiettivo: olimpico · fase senza_gara\nVolume cardio: 10h05 (target 10.08h, fattore biometrico 1.0)\nRipartizione: nuoto 26% · bici 42% · corsa 31%\nAlta intensita': 38' su 445' bici+corsa (8.5%, tetto 20%)\nBanda biometrica: VERDE\nHRV media 7gg 65.3ms su baseline 65.0ms (range 63.0-66.9ms), stabile\nCTL 69.8 · ATL 75 · TSB -5.2 · rampa 7gg +1.4\n\nLunedi 12/01: Forza 45' + Nuoto endurance e ritmo 45'\nMartedi 13/01: Bici chiave 75'\nMercoledi 14/01: Corsa di supporto 50' + Forza 25'\nGiovedi 15/01: Nuoto chiave progressivo 65'\nVenerdi 16/01: Corsa qualita' 60'\nSabato 17/01: Brick — bici 180' + Brick — corsa a seguire 20'\nDomenica 18/01: Nuoto endurance e ritmo 50' + Corsa di supporto 60'",
+  "righe": [
+   {
+    "tipo": "notifica_riga",
+    "codice": "nr_intestazione_continuo",
+    "valori": {
+     "blocco": "A",
+     "tipo_settimana": "carico",
+     "carico": "2"
+    },
+    "testo": "🗓️ Piano settimanale — senza gara — ciclo continuo, blocco A, carico 2/4"
+   },
+   {
+    "tipo": "notifica_riga",
+    "codice": "nr_distanza",
+    "valori": {
+     "distanza": "olimpico",
+     "fase": "senza_gara",
+     "tipo_settimana": "normale"
+    },
+    "testo": "Distanza obiettivo: olimpico · fase senza_gara"
+   },
+   {
+    "tipo": "notifica_riga",
+    "codice": "nr_volume",
+    "valori": {
+     "ore": "10",
+     "minuti": "05",
+     "target": "10.08",
+     "fattore": "1.0"
+    },
+    "testo": "Volume cardio: 10h05 (target 10.08h, fattore biometrico 1.0)"
+   },
+   {
+    "tipo": "notifica_riga",
+    "codice": "nr_ripartizione",
+    "valori": {
+     "nuoto": "26",
+     "bici": "42",
+     "corsa": "31"
+    },
+    "testo": "Ripartizione: nuoto 26% · bici 42% · corsa 31%"
+   },
+   {
+    "tipo": "notifica_riga",
+    "codice": "nr_alta_intensita",
+    "valori": {
+     "min": "38",
+     "tot": "445",
+     "pct": "8.5",
+     "tetto": "20"
+    },
+    "testo": "Alta intensita': 38' su 445' bici+corsa (8.5%, tetto 20%)"
+   },
+   {
+    "tipo": "notifica_riga",
+    "codice": "nr_banda",
+    "valori": {
+     "banda": "verde"
+    },
+    "testo": "Banda biometrica: VERDE"
+   },
+   {
+    "tipo": "notifica_riga",
+    "codice": "nr_hrv",
+    "valori": {
+     "media": "65.3",
+     "baseline": "65.0",
+     "min": "63.0",
+     "max": "66.9",
+     "direzione": "stabile"
+    },
+    "testo": "HRV media 7gg 65.3ms su baseline 65.0ms (range 63.0-66.9ms), stabile"
+   },
+   {
+    "tipo": "notifica_riga",
+    "codice": "nr_forma",
+    "valori": {
+     "ctl": "69.8",
+     "atl": "75",
+     "tsb": "-5.2",
+     "rampa": "+1.4"
+    },
+    "testo": "CTL 69.8 · ATL 75 · TSB -5.2 · rampa 7gg +1.4"
+   },
+   {
+    "tipo": "notifica_riga",
+    "codice": "nr_vuota",
+    "valori": {},
+    "testo": ""
+   },
+   {
+    "tipo": "notifica_riga",
+    "codice": "nr_giorno_sedute",
+    "valori": {
+     "giorno": "lun",
+     "data": "12/01",
+     "sedute": [
+      {
+       "chiave": "forza",
+       "minuti": "45",
+       "aerobica": "no"
+      },
+      {
+       "chiave": "nuoto_supporto",
+       "minuti": "45",
+       "aerobica": "no"
+      }
+     ]
+    },
+    "testo": "Lunedi 12/01: Forza 45' + Nuoto endurance e ritmo 45'"
+   },
+   {
+    "tipo": "notifica_riga",
+    "codice": "nr_giorno_sedute",
+    "valori": {
+     "giorno": "mar",
+     "data": "13/01",
+     "sedute": [
+      {
+       "chiave": "bici_chiave",
+       "minuti": "75",
+       "aerobica": "no"
+      }
+     ]
+    },
+    "testo": "Martedi 13/01: Bici chiave 75'"
+   },
+   {
+    "tipo": "notifica_riga",
+    "codice": "nr_giorno_sedute",
+    "valori": {
+     "giorno": "mer",
+     "data": "14/01",
+     "sedute": [
+      {
+       "chiave": "corsa_supporto",
+       "minuti": "50",
+       "aerobica": "no"
+      },
+      {
+       "chiave": "forza",
+       "minuti": "25",
+       "aerobica": "no"
+      }
+     ]
+    },
+    "testo": "Mercoledi 14/01: Corsa di supporto 50' + Forza 25'"
+   },
+   {
+    "tipo": "notifica_riga",
+    "codice": "nr_giorno_sedute",
+    "valori": {
+     "giorno": "gio",
+     "data": "15/01",
+     "sedute": [
+      {
+       "chiave": "nuoto_chiave",
+       "minuti": "65",
+       "aerobica": "no"
+      }
+     ]
+    },
+    "testo": "Giovedi 15/01: Nuoto chiave progressivo 65'"
+   },
+   {
+    "tipo": "notifica_riga",
+    "codice": "nr_giorno_sedute",
+    "valori": {
+     "giorno": "ven",
+     "data": "16/01",
+     "sedute": [
+      {
+       "chiave": "corsa_chiave",
+       "minuti": "60",
+       "aerobica": "no"
+      }
+     ]
+    },
+    "testo": "Venerdi 16/01: Corsa qualita' 60'"
+   },
+   {
+    "tipo": "notifica_riga",
+    "codice": "nr_giorno_sedute",
+    "valori": {
+     "giorno": "sab",
+     "data": "17/01",
+     "sedute": [
+      {
+       "chiave": "brick_bici",
+       "minuti": "180",
+       "aerobica": "no"
+      },
+      {
+       "chiave": "brick_corsa",
+       "minuti": "20",
+       "aerobica": "no"
+      }
+     ]
+    },
+    "testo": "Sabato 17/01: Brick — bici 180' + Brick — corsa a seguire 20'"
+   },
+   {
+    "tipo": "notifica_riga",
+    "codice": "nr_giorno_sedute",
+    "valori": {
+     "giorno": "dom",
+     "data": "18/01",
+     "sedute": [
+      {
+       "chiave": "nuoto_supporto",
+       "minuti": "50",
+       "aerobica": "no"
+      },
+      {
+       "chiave": "corsa_supporto",
+       "minuti": "60",
+       "aerobica": "no"
+      }
+     ]
+    },
+    "testo": "Domenica 18/01: Nuoto endurance e ritmo 50' + Corsa di supporto 60'"
+   }
+  ]
+ },
+ {
+  "nome": "continuo W3",
+  "testo": "🗓️ Piano settimanale — senza gara — ciclo continuo, blocco A, carico 3/4\nDistanza obiettivo: olimpico · fase senza_gara\nVolume cardio: 10h25 (target 10.42h, fattore biometrico 1.0)\nRipartizione: nuoto 20% · bici 44% · corsa 36%\nAlta intensita': 38' su 500' bici+corsa (7.6%, tetto 20%)\nBanda biometrica: VERDE\nHRV media 7gg 65.3ms su baseline 65.0ms (range 63.0-66.9ms), stabile\nCTL 69.8 · ATL 75 · TSB -5.2 · rampa 7gg +1.4\n\nLunedi 19/01: Forza 45' + Nuoto endurance e ritmo 50'\nMartedi 20/01: Bici chiave 80'\nMercoledi 21/01: Corsa di supporto 55' + Forza 25'\nGiovedi 22/01: Nuoto chiave progressivo 75'\nVenerdi 23/01: Corsa qualita' 60'\nSabato 24/01: Brick — bici 195' + Brick — corsa a seguire 20'\nDomenica 25/01: Lungo corsa 90'",
+  "righe": [
+   {
+    "tipo": "notifica_riga",
+    "codice": "nr_intestazione_continuo",
+    "valori": {
+     "blocco": "A",
+     "tipo_settimana": "carico",
+     "carico": "3"
+    },
+    "testo": "🗓️ Piano settimanale — senza gara — ciclo continuo, blocco A, carico 3/4"
+   },
+   {
+    "tipo": "notifica_riga",
+    "codice": "nr_distanza",
+    "valori": {
+     "distanza": "olimpico",
+     "fase": "senza_gara",
+     "tipo_settimana": "normale"
+    },
+    "testo": "Distanza obiettivo: olimpico · fase senza_gara"
+   },
+   {
+    "tipo": "notifica_riga",
+    "codice": "nr_volume",
+    "valori": {
+     "ore": "10",
+     "minuti": "25",
+     "target": "10.42",
+     "fattore": "1.0"
+    },
+    "testo": "Volume cardio: 10h25 (target 10.42h, fattore biometrico 1.0)"
+   },
+   {
+    "tipo": "notifica_riga",
+    "codice": "nr_ripartizione",
+    "valori": {
+     "nuoto": "20",
+     "bici": "44",
+     "corsa": "36"
+    },
+    "testo": "Ripartizione: nuoto 20% · bici 44% · corsa 36%"
+   },
+   {
+    "tipo": "notifica_riga",
+    "codice": "nr_alta_intensita",
+    "valori": {
+     "min": "38",
+     "tot": "500",
+     "pct": "7.6",
+     "tetto": "20"
+    },
+    "testo": "Alta intensita': 38' su 500' bici+corsa (7.6%, tetto 20%)"
+   },
+   {
+    "tipo": "notifica_riga",
+    "codice": "nr_banda",
+    "valori": {
+     "banda": "verde"
+    },
+    "testo": "Banda biometrica: VERDE"
+   },
+   {
+    "tipo": "notifica_riga",
+    "codice": "nr_hrv",
+    "valori": {
+     "media": "65.3",
+     "baseline": "65.0",
+     "min": "63.0",
+     "max": "66.9",
+     "direzione": "stabile"
+    },
+    "testo": "HRV media 7gg 65.3ms su baseline 65.0ms (range 63.0-66.9ms), stabile"
+   },
+   {
+    "tipo": "notifica_riga",
+    "codice": "nr_forma",
+    "valori": {
+     "ctl": "69.8",
+     "atl": "75",
+     "tsb": "-5.2",
+     "rampa": "+1.4"
+    },
+    "testo": "CTL 69.8 · ATL 75 · TSB -5.2 · rampa 7gg +1.4"
+   },
+   {
+    "tipo": "notifica_riga",
+    "codice": "nr_vuota",
+    "valori": {},
+    "testo": ""
+   },
+   {
+    "tipo": "notifica_riga",
+    "codice": "nr_giorno_sedute",
+    "valori": {
+     "giorno": "lun",
+     "data": "19/01",
+     "sedute": [
+      {
+       "chiave": "forza",
+       "minuti": "45",
+       "aerobica": "no"
+      },
+      {
+       "chiave": "nuoto_supporto",
+       "minuti": "50",
+       "aerobica": "no"
+      }
+     ]
+    },
+    "testo": "Lunedi 19/01: Forza 45' + Nuoto endurance e ritmo 50'"
+   },
+   {
+    "tipo": "notifica_riga",
+    "codice": "nr_giorno_sedute",
+    "valori": {
+     "giorno": "mar",
+     "data": "20/01",
+     "sedute": [
+      {
+       "chiave": "bici_chiave",
+       "minuti": "80",
+       "aerobica": "no"
+      }
+     ]
+    },
+    "testo": "Martedi 20/01: Bici chiave 80'"
+   },
+   {
+    "tipo": "notifica_riga",
+    "codice": "nr_giorno_sedute",
+    "valori": {
+     "giorno": "mer",
+     "data": "21/01",
+     "sedute": [
+      {
+       "chiave": "corsa_supporto",
+       "minuti": "55",
+       "aerobica": "no"
+      },
+      {
+       "chiave": "forza",
+       "minuti": "25",
+       "aerobica": "no"
+      }
+     ]
+    },
+    "testo": "Mercoledi 21/01: Corsa di supporto 55' + Forza 25'"
+   },
+   {
+    "tipo": "notifica_riga",
+    "codice": "nr_giorno_sedute",
+    "valori": {
+     "giorno": "gio",
+     "data": "22/01",
+     "sedute": [
+      {
+       "chiave": "nuoto_chiave",
+       "minuti": "75",
+       "aerobica": "no"
+      }
+     ]
+    },
+    "testo": "Giovedi 22/01: Nuoto chiave progressivo 75'"
+   },
+   {
+    "tipo": "notifica_riga",
+    "codice": "nr_giorno_sedute",
+    "valori": {
+     "giorno": "ven",
+     "data": "23/01",
+     "sedute": [
+      {
+       "chiave": "corsa_chiave",
+       "minuti": "60",
+       "aerobica": "no"
+      }
+     ]
+    },
+    "testo": "Venerdi 23/01: Corsa qualita' 60'"
+   },
+   {
+    "tipo": "notifica_riga",
+    "codice": "nr_giorno_sedute",
+    "valori": {
+     "giorno": "sab",
+     "data": "24/01",
+     "sedute": [
+      {
+       "chiave": "brick_bici",
+       "minuti": "195",
+       "aerobica": "no"
+      },
+      {
+       "chiave": "brick_corsa",
+       "minuti": "20",
+       "aerobica": "no"
+      }
+     ]
+    },
+    "testo": "Sabato 24/01: Brick — bici 195' + Brick — corsa a seguire 20'"
+   },
+   {
+    "tipo": "notifica_riga",
+    "codice": "nr_giorno_sedute",
+    "valori": {
+     "giorno": "dom",
+     "data": "25/01",
+     "sedute": [
+      {
+       "chiave": "lungo_corsa",
+       "minuti": "90",
+       "aerobica": "no"
+      }
+     ]
+    },
+    "testo": "Domenica 25/01: Lungo corsa 90'"
+   }
+  ]
+ },
+ {
+  "nome": "continuo W4",
+  "testo": "🗓️ Piano settimanale — senza gara — ciclo continuo, blocco A, carico 4/4\nDistanza obiettivo: olimpico · fase senza_gara\nVolume cardio: 10h05 (target 10.08h, fattore biometrico 1.0)\nRipartizione: nuoto 19% · bici 44% · corsa 36%\nAlta intensita': 38' su 490' bici+corsa (7.8%, tetto 20%)\nBanda biometrica: VERDE\nHRV media 7gg 65.3ms su baseline 65.0ms (range 63.0-66.9ms), stabile\nCTL 69.8 · ATL 75 · TSB -5.2 · rampa 7gg +1.4\n\nLunedi 26/01: Forza 45' + Nuoto endurance e ritmo 45'\nMartedi 27/01: Bici chiave 75'\nMercoledi 28/01: Corsa di supporto 50' + Forza 40'\nGiovedi 29/01: Nuoto chiave progressivo 70'\nVenerdi 30/01: Corsa qualita' 60'\nSabato 31/01: Brick — bici 195' + Brick — corsa a seguire 20'\nDomenica 01/02: Lungo corsa 90'",
+  "righe": [
+   {
+    "tipo": "notifica_riga",
+    "codice": "nr_intestazione_continuo",
+    "valori": {
+     "blocco": "A",
+     "tipo_settimana": "carico",
+     "carico": "4"
+    },
+    "testo": "🗓️ Piano settimanale — senza gara — ciclo continuo, blocco A, carico 4/4"
+   },
+   {
+    "tipo": "notifica_riga",
+    "codice": "nr_distanza",
+    "valori": {
+     "distanza": "olimpico",
+     "fase": "senza_gara",
+     "tipo_settimana": "normale"
+    },
+    "testo": "Distanza obiettivo: olimpico · fase senza_gara"
+   },
+   {
+    "tipo": "notifica_riga",
+    "codice": "nr_volume",
+    "valori": {
+     "ore": "10",
+     "minuti": "05",
+     "target": "10.08",
+     "fattore": "1.0"
+    },
+    "testo": "Volume cardio: 10h05 (target 10.08h, fattore biometrico 1.0)"
+   },
+   {
+    "tipo": "notifica_riga",
+    "codice": "nr_ripartizione",
+    "valori": {
+     "nuoto": "19",
+     "bici": "44",
+     "corsa": "36"
+    },
+    "testo": "Ripartizione: nuoto 19% · bici 44% · corsa 36%"
+   },
+   {
+    "tipo": "notifica_riga",
+    "codice": "nr_alta_intensita",
+    "valori": {
+     "min": "38",
+     "tot": "490",
+     "pct": "7.8",
+     "tetto": "20"
+    },
+    "testo": "Alta intensita': 38' su 490' bici+corsa (7.8%, tetto 20%)"
+   },
+   {
+    "tipo": "notifica_riga",
+    "codice": "nr_banda",
+    "valori": {
+     "banda": "verde"
+    },
+    "testo": "Banda biometrica: VERDE"
+   },
+   {
+    "tipo": "notifica_riga",
+    "codice": "nr_hrv",
+    "valori": {
+     "media": "65.3",
+     "baseline": "65.0",
+     "min": "63.0",
+     "max": "66.9",
+     "direzione": "stabile"
+    },
+    "testo": "HRV media 7gg 65.3ms su baseline 65.0ms (range 63.0-66.9ms), stabile"
+   },
+   {
+    "tipo": "notifica_riga",
+    "codice": "nr_forma",
+    "valori": {
+     "ctl": "69.8",
+     "atl": "75",
+     "tsb": "-5.2",
+     "rampa": "+1.4"
+    },
+    "testo": "CTL 69.8 · ATL 75 · TSB -5.2 · rampa 7gg +1.4"
+   },
+   {
+    "tipo": "notifica_riga",
+    "codice": "nr_vuota",
+    "valori": {},
+    "testo": ""
+   },
+   {
+    "tipo": "notifica_riga",
+    "codice": "nr_giorno_sedute",
+    "valori": {
+     "giorno": "lun",
+     "data": "26/01",
+     "sedute": [
+      {
+       "chiave": "forza",
+       "minuti": "45",
+       "aerobica": "no"
+      },
+      {
+       "chiave": "nuoto_supporto",
+       "minuti": "45",
+       "aerobica": "no"
+      }
+     ]
+    },
+    "testo": "Lunedi 26/01: Forza 45' + Nuoto endurance e ritmo 45'"
+   },
+   {
+    "tipo": "notifica_riga",
+    "codice": "nr_giorno_sedute",
+    "valori": {
+     "giorno": "mar",
+     "data": "27/01",
+     "sedute": [
+      {
+       "chiave": "bici_chiave",
+       "minuti": "75",
+       "aerobica": "no"
+      }
+     ]
+    },
+    "testo": "Martedi 27/01: Bici chiave 75'"
+   },
+   {
+    "tipo": "notifica_riga",
+    "codice": "nr_giorno_sedute",
+    "valori": {
+     "giorno": "mer",
+     "data": "28/01",
+     "sedute": [
+      {
+       "chiave": "corsa_supporto",
+       "minuti": "50",
+       "aerobica": "no"
+      },
+      {
+       "chiave": "forza",
+       "minuti": "40",
+       "aerobica": "no"
+      }
+     ]
+    },
+    "testo": "Mercoledi 28/01: Corsa di supporto 50' + Forza 40'"
+   },
+   {
+    "tipo": "notifica_riga",
+    "codice": "nr_giorno_sedute",
+    "valori": {
+     "giorno": "gio",
+     "data": "29/01",
+     "sedute": [
+      {
+       "chiave": "nuoto_chiave",
+       "minuti": "70",
+       "aerobica": "no"
+      }
+     ]
+    },
+    "testo": "Giovedi 29/01: Nuoto chiave progressivo 70'"
+   },
+   {
+    "tipo": "notifica_riga",
+    "codice": "nr_giorno_sedute",
+    "valori": {
+     "giorno": "ven",
+     "data": "30/01",
+     "sedute": [
+      {
+       "chiave": "corsa_chiave",
+       "minuti": "60",
+       "aerobica": "no"
+      }
+     ]
+    },
+    "testo": "Venerdi 30/01: Corsa qualita' 60'"
+   },
+   {
+    "tipo": "notifica_riga",
+    "codice": "nr_giorno_sedute",
+    "valori": {
+     "giorno": "sab",
+     "data": "31/01",
+     "sedute": [
+      {
+       "chiave": "brick_bici",
+       "minuti": "195",
+       "aerobica": "no"
+      },
+      {
+       "chiave": "brick_corsa",
+       "minuti": "20",
+       "aerobica": "no"
+      }
+     ]
+    },
+    "testo": "Sabato 31/01: Brick — bici 195' + Brick — corsa a seguire 20'"
+   },
+   {
+    "tipo": "notifica_riga",
+    "codice": "nr_giorno_sedute",
+    "valori": {
+     "giorno": "dom",
+     "data": "01/02",
+     "sedute": [
+      {
+       "chiave": "lungo_corsa",
+       "minuti": "90",
+       "aerobica": "no"
+      }
+     ]
+    },
+    "testo": "Domenica 01/02: Lungo corsa 90'"
+   }
+  ]
+ },
+ {
+  "nome": "continuo W5",
+  "testo": "🗓️ Piano settimanale — senza gara — ciclo continuo, blocco A, scarico\nDistanza obiettivo: olimpico · fase senza_gara · SCARICO\nVolume cardio: 6h30 (target 6.5h, fattore biometrico 1.0)\nRipartizione: nuoto 21% · bici 42% · corsa 35%\nAlta intensita': 31' su 305' bici+corsa (10.2%, tetto 20%)\nBanda biometrica: VERDE\nHRV media 7gg 65.3ms su baseline 65.0ms (range 63.0-66.9ms), stabile\nCTL 69.8 · ATL 75 · TSB -5.2 · rampa 7gg +1.4\n\nLunedi 02/02: Forza 30' + Nuoto endurance e ritmo 40'\nMartedi 03/02: Bici chiave 60'\nMercoledi 04/02: Corsa di supporto 40'\nGiovedi 05/02: Nuoto chiave progressivo 45'\nVenerdi 06/02: Corsa qualita' 45'\nSabato 07/02: Brick — bici 105' + Brick — corsa a seguire 10'\nDomenica 08/02: Lungo corsa 45'",
+  "righe": [
+   {
+    "tipo": "notifica_riga",
+    "codice": "nr_intestazione_continuo",
+    "valori": {
+     "blocco": "A",
+     "tipo_settimana": "scarico"
+    },
+    "testo": "🗓️ Piano settimanale — senza gara — ciclo continuo, blocco A, scarico"
+   },
+   {
+    "tipo": "notifica_riga",
+    "codice": "nr_distanza",
+    "valori": {
+     "distanza": "olimpico",
+     "fase": "senza_gara",
+     "tipo_settimana": "scarico"
+    },
+    "testo": "Distanza obiettivo: olimpico · fase senza_gara · SCARICO"
+   },
+   {
+    "tipo": "notifica_riga",
+    "codice": "nr_volume",
+    "valori": {
+     "ore": "6",
+     "minuti": "30",
+     "target": "6.5",
+     "fattore": "1.0"
+    },
+    "testo": "Volume cardio: 6h30 (target 6.5h, fattore biometrico 1.0)"
+   },
+   {
+    "tipo": "notifica_riga",
+    "codice": "nr_ripartizione",
+    "valori": {
+     "nuoto": "21",
+     "bici": "42",
+     "corsa": "35"
+    },
+    "testo": "Ripartizione: nuoto 21% · bici 42% · corsa 35%"
+   },
+   {
+    "tipo": "notifica_riga",
+    "codice": "nr_alta_intensita",
+    "valori": {
+     "min": "31",
+     "tot": "305",
+     "pct": "10.2",
+     "tetto": "20"
+    },
+    "testo": "Alta intensita': 31' su 305' bici+corsa (10.2%, tetto 20%)"
+   },
+   {
+    "tipo": "notifica_riga",
+    "codice": "nr_banda",
+    "valori": {
+     "banda": "verde"
+    },
+    "testo": "Banda biometrica: VERDE"
+   },
+   {
+    "tipo": "notifica_riga",
+    "codice": "nr_hrv",
+    "valori": {
+     "media": "65.3",
+     "baseline": "65.0",
+     "min": "63.0",
+     "max": "66.9",
+     "direzione": "stabile"
+    },
+    "testo": "HRV media 7gg 65.3ms su baseline 65.0ms (range 63.0-66.9ms), stabile"
+   },
+   {
+    "tipo": "notifica_riga",
+    "codice": "nr_forma",
+    "valori": {
+     "ctl": "69.8",
+     "atl": "75",
+     "tsb": "-5.2",
+     "rampa": "+1.4"
+    },
+    "testo": "CTL 69.8 · ATL 75 · TSB -5.2 · rampa 7gg +1.4"
+   },
+   {
+    "tipo": "notifica_riga",
+    "codice": "nr_vuota",
+    "valori": {},
+    "testo": ""
+   },
+   {
+    "tipo": "notifica_riga",
+    "codice": "nr_giorno_sedute",
+    "valori": {
+     "giorno": "lun",
+     "data": "02/02",
+     "sedute": [
+      {
+       "chiave": "forza",
+       "minuti": "30",
+       "aerobica": "no"
+      },
+      {
+       "chiave": "nuoto_supporto",
+       "minuti": "40",
+       "aerobica": "no"
+      }
+     ]
+    },
+    "testo": "Lunedi 02/02: Forza 30' + Nuoto endurance e ritmo 40'"
+   },
+   {
+    "tipo": "notifica_riga",
+    "codice": "nr_giorno_sedute",
+    "valori": {
+     "giorno": "mar",
+     "data": "03/02",
+     "sedute": [
+      {
+       "chiave": "bici_chiave",
+       "minuti": "60",
+       "aerobica": "no"
+      }
+     ]
+    },
+    "testo": "Martedi 03/02: Bici chiave 60'"
+   },
+   {
+    "tipo": "notifica_riga",
+    "codice": "nr_giorno_sedute",
+    "valori": {
+     "giorno": "mer",
+     "data": "04/02",
+     "sedute": [
+      {
+       "chiave": "corsa_supporto",
+       "minuti": "40",
+       "aerobica": "no"
+      }
+     ]
+    },
+    "testo": "Mercoledi 04/02: Corsa di supporto 40'"
+   },
+   {
+    "tipo": "notifica_riga",
+    "codice": "nr_giorno_sedute",
+    "valori": {
+     "giorno": "gio",
+     "data": "05/02",
+     "sedute": [
+      {
+       "chiave": "nuoto_chiave",
+       "minuti": "45",
+       "aerobica": "no"
+      }
+     ]
+    },
+    "testo": "Giovedi 05/02: Nuoto chiave progressivo 45'"
+   },
+   {
+    "tipo": "notifica_riga",
+    "codice": "nr_giorno_sedute",
+    "valori": {
+     "giorno": "ven",
+     "data": "06/02",
+     "sedute": [
+      {
+       "chiave": "corsa_chiave",
+       "minuti": "45",
+       "aerobica": "no"
+      }
+     ]
+    },
+    "testo": "Venerdi 06/02: Corsa qualita' 45'"
+   },
+   {
+    "tipo": "notifica_riga",
+    "codice": "nr_giorno_sedute",
+    "valori": {
+     "giorno": "sab",
+     "data": "07/02",
+     "sedute": [
+      {
+       "chiave": "brick_bici",
+       "minuti": "105",
+       "aerobica": "no"
+      },
+      {
+       "chiave": "brick_corsa",
+       "minuti": "10",
+       "aerobica": "no"
+      }
+     ]
+    },
+    "testo": "Sabato 07/02: Brick — bici 105' + Brick — corsa a seguire 10'"
+   },
+   {
+    "tipo": "notifica_riga",
+    "codice": "nr_giorno_sedute",
+    "valori": {
+     "giorno": "dom",
+     "data": "08/02",
+     "sedute": [
+      {
+       "chiave": "lungo_corsa",
+       "minuti": "45",
+       "aerobica": "no"
+      }
+     ]
+    },
+    "testo": "Domenica 08/02: Lungo corsa 45'"
+   }
+  ]
+ },
+ {
+  "nome": "banda gialla",
+  "testo": "🗓️ Piano settimanale — senza gara — ciclo continuo, blocco A, carico 2/4\nDistanza obiettivo: olimpico · fase senza_gara\nVolume cardio: 7h40 (target 7.67h, fattore biometrico 0.82)\nRipartizione: nuoto 20% · bici 45% · corsa 33%\nAlta intensita': 0' su 365' bici+corsa (0.0%, tetto 20%)\nBanda biometrica: ROSSO\nHRV media 7gg 50.1ms su baseline 65.0ms (range 63.0-66.9ms), in calo\nCTL 69.8 · ATL 75 · TSB -5.2 · rampa 7gg +1.4\nMotivi della modulazione: HRV: media 7gg oltre 1 SD sotto il normal range (-4.32); HRV sotto il normal range da 7gg; banda rossa persistente: la curva biometrica prescrive recupero\nRIPOSO consigliato: Lunedi — lo chiedono i biometrici, non il calendario.\n\nLunedi 12/01: riposo\nMartedi 13/01: Bici chiave 60' [aerobica]\nMercoledi 14/01: Corsa di supporto 40'\nGiovedi 15/01: Nuoto chiave progressivo 55' [aerobica]\nVenerdi 16/01: Corsa qualita' 50' [aerobica]\nSabato 17/01: Brick — bici 150' + Brick — corsa a seguire 15'\nDomenica 18/01: Nuoto endurance e ritmo 40' + Corsa di supporto 50'",
+  "righe": [
+   {
+    "tipo": "notifica_riga",
+    "codice": "nr_intestazione_continuo",
+    "valori": {
+     "blocco": "A",
+     "tipo_settimana": "carico",
+     "carico": "2"
+    },
+    "testo": "🗓️ Piano settimanale — senza gara — ciclo continuo, blocco A, carico 2/4"
+   },
+   {
+    "tipo": "notifica_riga",
+    "codice": "nr_distanza",
+    "valori": {
+     "distanza": "olimpico",
+     "fase": "senza_gara",
+     "tipo_settimana": "normale"
+    },
+    "testo": "Distanza obiettivo: olimpico · fase senza_gara"
+   },
+   {
+    "tipo": "notifica_riga",
+    "codice": "nr_volume",
+    "valori": {
+     "ore": "7",
+     "minuti": "40",
+     "target": "7.67",
+     "fattore": "0.82"
+    },
+    "testo": "Volume cardio: 7h40 (target 7.67h, fattore biometrico 0.82)"
+   },
+   {
+    "tipo": "notifica_riga",
+    "codice": "nr_ripartizione",
+    "valori": {
+     "nuoto": "20",
+     "bici": "45",
+     "corsa": "33"
+    },
+    "testo": "Ripartizione: nuoto 20% · bici 45% · corsa 33%"
+   },
+   {
+    "tipo": "notifica_riga",
+    "codice": "nr_alta_intensita",
+    "valori": {
+     "min": "0",
+     "tot": "365",
+     "pct": "0.0",
+     "tetto": "20"
+    },
+    "testo": "Alta intensita': 0' su 365' bici+corsa (0.0%, tetto 20%)"
+   },
+   {
+    "tipo": "notifica_riga",
+    "codice": "nr_banda",
+    "valori": {
+     "banda": "rosso"
+    },
+    "testo": "Banda biometrica: ROSSO"
+   },
+   {
+    "tipo": "notifica_riga",
+    "codice": "nr_hrv",
+    "valori": {
+     "media": "50.1",
+     "baseline": "65.0",
+     "min": "63.0",
+     "max": "66.9",
+     "direzione": "in_calo"
+    },
+    "testo": "HRV media 7gg 50.1ms su baseline 65.0ms (range 63.0-66.9ms), in calo"
+   },
+   {
+    "tipo": "notifica_riga",
+    "codice": "nr_forma",
+    "valori": {
+     "ctl": "69.8",
+     "atl": "75",
+     "tsb": "-5.2",
+     "rampa": "+1.4"
+    },
+    "testo": "CTL 69.8 · ATL 75 · TSB -5.2 · rampa 7gg +1.4"
+   },
+   {
+    "tipo": "notifica_riga",
+    "codice": "nr_motivi",
+    "valori": {
+     "messaggi": [
+      {
+       "tipo": "motivo",
+       "codice": "hrv_sotto_range_forte",
+       "valori": {
+        "z": "-4.32"
+       },
+       "testo": "HRV: media 7gg oltre 1 SD sotto il normal range (-4.32)"
+      },
+      {
+       "tipo": "motivo",
+       "codice": "hrv_sotto_range_persistente",
+       "valori": {
+        "giorni": "7"
+       },
+       "testo": "HRV sotto il normal range da 7gg"
+      },
+      {
+       "tipo": "motivo",
+       "codice": "banda_rossa_persistente",
+       "valori": {},
+       "testo": "banda rossa persistente: la curva biometrica prescrive recupero"
+      }
+     ]
+    },
+    "testo": "Motivi della modulazione: HRV: media 7gg oltre 1 SD sotto il normal range (-4.32); HRV sotto il normal range da 7gg; banda rossa persistente: la curva biometrica prescrive recupero"
+   },
+   {
+    "tipo": "notifica_riga",
+    "codice": "nr_riposo_consigliato",
+    "valori": {
+     "giorno": "lun"
+    },
+    "testo": "RIPOSO consigliato: Lunedi — lo chiedono i biometrici, non il calendario."
+   },
+   {
+    "tipo": "notifica_riga",
+    "codice": "nr_vuota",
+    "valori": {},
+    "testo": ""
+   },
+   {
+    "tipo": "notifica_riga",
+    "codice": "nr_giorno_riposo",
+    "valori": {
+     "giorno": "lun",
+     "data": "12/01"
+    },
+    "testo": "Lunedi 12/01: riposo"
+   },
+   {
+    "tipo": "notifica_riga",
+    "codice": "nr_giorno_sedute",
+    "valori": {
+     "giorno": "mar",
+     "data": "13/01",
+     "sedute": [
+      {
+       "chiave": "bici_chiave",
+       "minuti": "60",
+       "aerobica": "si"
+      }
+     ]
+    },
+    "testo": "Martedi 13/01: Bici chiave 60' [aerobica]"
+   },
+   {
+    "tipo": "notifica_riga",
+    "codice": "nr_giorno_sedute",
+    "valori": {
+     "giorno": "mer",
+     "data": "14/01",
+     "sedute": [
+      {
+       "chiave": "corsa_supporto",
+       "minuti": "40",
+       "aerobica": "no"
+      }
+     ]
+    },
+    "testo": "Mercoledi 14/01: Corsa di supporto 40'"
+   },
+   {
+    "tipo": "notifica_riga",
+    "codice": "nr_giorno_sedute",
+    "valori": {
+     "giorno": "gio",
+     "data": "15/01",
+     "sedute": [
+      {
+       "chiave": "nuoto_chiave",
+       "minuti": "55",
+       "aerobica": "si"
+      }
+     ]
+    },
+    "testo": "Giovedi 15/01: Nuoto chiave progressivo 55' [aerobica]"
+   },
+   {
+    "tipo": "notifica_riga",
+    "codice": "nr_giorno_sedute",
+    "valori": {
+     "giorno": "ven",
+     "data": "16/01",
+     "sedute": [
+      {
+       "chiave": "corsa_chiave",
+       "minuti": "50",
+       "aerobica": "si"
+      }
+     ]
+    },
+    "testo": "Venerdi 16/01: Corsa qualita' 50' [aerobica]"
+   },
+   {
+    "tipo": "notifica_riga",
+    "codice": "nr_giorno_sedute",
+    "valori": {
+     "giorno": "sab",
+     "data": "17/01",
+     "sedute": [
+      {
+       "chiave": "brick_bici",
+       "minuti": "150",
+       "aerobica": "no"
+      },
+      {
+       "chiave": "brick_corsa",
+       "minuti": "15",
+       "aerobica": "no"
+      }
+     ]
+    },
+    "testo": "Sabato 17/01: Brick — bici 150' + Brick — corsa a seguire 15'"
+   },
+   {
+    "tipo": "notifica_riga",
+    "codice": "nr_giorno_sedute",
+    "valori": {
+     "giorno": "dom",
+     "data": "18/01",
+     "sedute": [
+      {
+       "chiave": "nuoto_supporto",
+       "minuti": "40",
+       "aerobica": "no"
+      },
+      {
+       "chiave": "corsa_supporto",
+       "minuti": "50",
+       "aerobica": "no"
+      }
+     ]
+    },
+    "testo": "Domenica 18/01: Nuoto endurance e ritmo 40' + Corsa di supporto 50'"
+   }
+  ]
+ },
+ {
+  "nome": "banda rossa",
+  "testo": "🗓️ Piano settimanale — senza gara — ciclo continuo, blocco A, carico 2/4\nDistanza obiettivo: olimpico · fase senza_gara\nVolume cardio: 7h40 (target 7.67h, fattore biometrico 0.82)\nRipartizione: nuoto 20% · bici 45% · corsa 33%\nAlta intensita': 0' su 365' bici+corsa (0.0%, tetto 20%)\nBanda biometrica: ROSSO\nHRV media 7gg 42.1ms su baseline 65.0ms (range 63.0-66.9ms), in calo\nCTL 69.8 · ATL 75 · TSB -5.2 · rampa 7gg +1.4\nMotivi della modulazione: HRV: media 7gg oltre 1 SD sotto il normal range (-7.22); HRV sotto il normal range da 7gg; banda rossa persistente: la curva biometrica prescrive recupero\nRIPOSO consigliato: Lunedi — lo chiedono i biometrici, non il calendario.\n\nLunedi 12/01: riposo\nMartedi 13/01: Bici chiave 60' [aerobica]\nMercoledi 14/01: Corsa di supporto 40'\nGiovedi 15/01: Nuoto chiave progressivo 55' [aerobica]\nVenerdi 16/01: Corsa qualita' 50' [aerobica]\nSabato 17/01: Brick — bici 150' + Brick — corsa a seguire 15'\nDomenica 18/01: Nuoto endurance e ritmo 40' + Corsa di supporto 50'",
+  "righe": [
+   {
+    "tipo": "notifica_riga",
+    "codice": "nr_intestazione_continuo",
+    "valori": {
+     "blocco": "A",
+     "tipo_settimana": "carico",
+     "carico": "2"
+    },
+    "testo": "🗓️ Piano settimanale — senza gara — ciclo continuo, blocco A, carico 2/4"
+   },
+   {
+    "tipo": "notifica_riga",
+    "codice": "nr_distanza",
+    "valori": {
+     "distanza": "olimpico",
+     "fase": "senza_gara",
+     "tipo_settimana": "normale"
+    },
+    "testo": "Distanza obiettivo: olimpico · fase senza_gara"
+   },
+   {
+    "tipo": "notifica_riga",
+    "codice": "nr_volume",
+    "valori": {
+     "ore": "7",
+     "minuti": "40",
+     "target": "7.67",
+     "fattore": "0.82"
+    },
+    "testo": "Volume cardio: 7h40 (target 7.67h, fattore biometrico 0.82)"
+   },
+   {
+    "tipo": "notifica_riga",
+    "codice": "nr_ripartizione",
+    "valori": {
+     "nuoto": "20",
+     "bici": "45",
+     "corsa": "33"
+    },
+    "testo": "Ripartizione: nuoto 20% · bici 45% · corsa 33%"
+   },
+   {
+    "tipo": "notifica_riga",
+    "codice": "nr_alta_intensita",
+    "valori": {
+     "min": "0",
+     "tot": "365",
+     "pct": "0.0",
+     "tetto": "20"
+    },
+    "testo": "Alta intensita': 0' su 365' bici+corsa (0.0%, tetto 20%)"
+   },
+   {
+    "tipo": "notifica_riga",
+    "codice": "nr_banda",
+    "valori": {
+     "banda": "rosso"
+    },
+    "testo": "Banda biometrica: ROSSO"
+   },
+   {
+    "tipo": "notifica_riga",
+    "codice": "nr_hrv",
+    "valori": {
+     "media": "42.1",
+     "baseline": "65.0",
+     "min": "63.0",
+     "max": "66.9",
+     "direzione": "in_calo"
+    },
+    "testo": "HRV media 7gg 42.1ms su baseline 65.0ms (range 63.0-66.9ms), in calo"
+   },
+   {
+    "tipo": "notifica_riga",
+    "codice": "nr_forma",
+    "valori": {
+     "ctl": "69.8",
+     "atl": "75",
+     "tsb": "-5.2",
+     "rampa": "+1.4"
+    },
+    "testo": "CTL 69.8 · ATL 75 · TSB -5.2 · rampa 7gg +1.4"
+   },
+   {
+    "tipo": "notifica_riga",
+    "codice": "nr_motivi",
+    "valori": {
+     "messaggi": [
+      {
+       "tipo": "motivo",
+       "codice": "hrv_sotto_range_forte",
+       "valori": {
+        "z": "-7.22"
+       },
+       "testo": "HRV: media 7gg oltre 1 SD sotto il normal range (-7.22)"
+      },
+      {
+       "tipo": "motivo",
+       "codice": "hrv_sotto_range_persistente",
+       "valori": {
+        "giorni": "7"
+       },
+       "testo": "HRV sotto il normal range da 7gg"
+      },
+      {
+       "tipo": "motivo",
+       "codice": "banda_rossa_persistente",
+       "valori": {},
+       "testo": "banda rossa persistente: la curva biometrica prescrive recupero"
+      }
+     ]
+    },
+    "testo": "Motivi della modulazione: HRV: media 7gg oltre 1 SD sotto il normal range (-7.22); HRV sotto il normal range da 7gg; banda rossa persistente: la curva biometrica prescrive recupero"
+   },
+   {
+    "tipo": "notifica_riga",
+    "codice": "nr_riposo_consigliato",
+    "valori": {
+     "giorno": "lun"
+    },
+    "testo": "RIPOSO consigliato: Lunedi — lo chiedono i biometrici, non il calendario."
+   },
+   {
+    "tipo": "notifica_riga",
+    "codice": "nr_vuota",
+    "valori": {},
+    "testo": ""
+   },
+   {
+    "tipo": "notifica_riga",
+    "codice": "nr_giorno_riposo",
+    "valori": {
+     "giorno": "lun",
+     "data": "12/01"
+    },
+    "testo": "Lunedi 12/01: riposo"
+   },
+   {
+    "tipo": "notifica_riga",
+    "codice": "nr_giorno_sedute",
+    "valori": {
+     "giorno": "mar",
+     "data": "13/01",
+     "sedute": [
+      {
+       "chiave": "bici_chiave",
+       "minuti": "60",
+       "aerobica": "si"
+      }
+     ]
+    },
+    "testo": "Martedi 13/01: Bici chiave 60' [aerobica]"
+   },
+   {
+    "tipo": "notifica_riga",
+    "codice": "nr_giorno_sedute",
+    "valori": {
+     "giorno": "mer",
+     "data": "14/01",
+     "sedute": [
+      {
+       "chiave": "corsa_supporto",
+       "minuti": "40",
+       "aerobica": "no"
+      }
+     ]
+    },
+    "testo": "Mercoledi 14/01: Corsa di supporto 40'"
+   },
+   {
+    "tipo": "notifica_riga",
+    "codice": "nr_giorno_sedute",
+    "valori": {
+     "giorno": "gio",
+     "data": "15/01",
+     "sedute": [
+      {
+       "chiave": "nuoto_chiave",
+       "minuti": "55",
+       "aerobica": "si"
+      }
+     ]
+    },
+    "testo": "Giovedi 15/01: Nuoto chiave progressivo 55' [aerobica]"
+   },
+   {
+    "tipo": "notifica_riga",
+    "codice": "nr_giorno_sedute",
+    "valori": {
+     "giorno": "ven",
+     "data": "16/01",
+     "sedute": [
+      {
+       "chiave": "corsa_chiave",
+       "minuti": "50",
+       "aerobica": "si"
+      }
+     ]
+    },
+    "testo": "Venerdi 16/01: Corsa qualita' 50' [aerobica]"
+   },
+   {
+    "tipo": "notifica_riga",
+    "codice": "nr_giorno_sedute",
+    "valori": {
+     "giorno": "sab",
+     "data": "17/01",
+     "sedute": [
+      {
+       "chiave": "brick_bici",
+       "minuti": "150",
+       "aerobica": "no"
+      },
+      {
+       "chiave": "brick_corsa",
+       "minuti": "15",
+       "aerobica": "no"
+      }
+     ]
+    },
+    "testo": "Sabato 17/01: Brick — bici 150' + Brick — corsa a seguire 15'"
+   },
+   {
+    "tipo": "notifica_riga",
+    "codice": "nr_giorno_sedute",
+    "valori": {
+     "giorno": "dom",
+     "data": "18/01",
+     "sedute": [
+      {
+       "chiave": "nuoto_supporto",
+       "minuti": "40",
+       "aerobica": "no"
+      },
+      {
+       "chiave": "corsa_supporto",
+       "minuti": "50",
+       "aerobica": "no"
+      }
+     ]
+    },
+    "testo": "Domenica 18/01: Nuoto endurance e ritmo 40' + Corsa di supporto 50'"
+   }
+  ]
+ },
+ {
+  "nome": "gara a 0 settimane",
+  "testo": "🗓️ Piano settimanale — settimana di gara — Ironman 70.3 Cervia\nDistanza obiettivo: 70.3 · fase gara\nVolume cardio: 2h55 (target 3.5h, fattore biometrico 1.0)\nRipartizione: nuoto 22% · bici 34% · corsa 42%\nAlta intensita': 0' su 135' bici+corsa (0.0%, tetto 10%)\nBanda biometrica: VERDE\nHRV media 7gg 65.3ms su baseline 65.0ms (range 63.0-66.9ms), stabile\nCTL 69.8 · ATL 75 · TSB -5.2 · rampa 7gg +1.4\n\nLunedi 14/09: Richiami a ritmo gara 45'\nMartedi 15/09: riposo\nMercoledi 16/09: Nuoto pre-gara 40'\nGiovedi 17/09: riposo\nVenerdi 18/09: Bici sciolta 60'\nSabato 19/09: Attivazione pre-gara 30'\nDomenica 20/09: riposo",
+  "righe": [
+   {
+    "tipo": "notifica_riga",
+    "codice": "nr_intestazione_gara",
+    "valori": {
+     "gara": "Ironman 70.3 Cervia"
+    },
+    "testo": "🗓️ Piano settimanale — settimana di gara — Ironman 70.3 Cervia"
+   },
+   {
+    "tipo": "notifica_riga",
+    "codice": "nr_distanza",
+    "valori": {
+     "distanza": "70.3",
+     "fase": "gara",
+     "tipo_settimana": "normale"
+    },
+    "testo": "Distanza obiettivo: 70.3 · fase gara"
+   },
+   {
+    "tipo": "notifica_riga",
+    "codice": "nr_volume",
+    "valori": {
+     "ore": "2",
+     "minuti": "55",
+     "target": "3.5",
+     "fattore": "1.0"
+    },
+    "testo": "Volume cardio: 2h55 (target 3.5h, fattore biometrico 1.0)"
+   },
+   {
+    "tipo": "notifica_riga",
+    "codice": "nr_ripartizione",
+    "valori": {
+     "nuoto": "22",
+     "bici": "34",
+     "corsa": "42"
+    },
+    "testo": "Ripartizione: nuoto 22% · bici 34% · corsa 42%"
+   },
+   {
+    "tipo": "notifica_riga",
+    "codice": "nr_alta_intensita",
+    "valori": {
+     "min": "0",
+     "tot": "135",
+     "pct": "0.0",
+     "tetto": "10"
+    },
+    "testo": "Alta intensita': 0' su 135' bici+corsa (0.0%, tetto 10%)"
+   },
+   {
+    "tipo": "notifica_riga",
+    "codice": "nr_banda",
+    "valori": {
+     "banda": "verde"
+    },
+    "testo": "Banda biometrica: VERDE"
+   },
+   {
+    "tipo": "notifica_riga",
+    "codice": "nr_hrv",
+    "valori": {
+     "media": "65.3",
+     "baseline": "65.0",
+     "min": "63.0",
+     "max": "66.9",
+     "direzione": "stabile"
+    },
+    "testo": "HRV media 7gg 65.3ms su baseline 65.0ms (range 63.0-66.9ms), stabile"
+   },
+   {
+    "tipo": "notifica_riga",
+    "codice": "nr_forma",
+    "valori": {
+     "ctl": "69.8",
+     "atl": "75",
+     "tsb": "-5.2",
+     "rampa": "+1.4"
+    },
+    "testo": "CTL 69.8 · ATL 75 · TSB -5.2 · rampa 7gg +1.4"
+   },
+   {
+    "tipo": "notifica_riga",
+    "codice": "nr_vuota",
+    "valori": {},
+    "testo": ""
+   },
+   {
+    "tipo": "notifica_riga",
+    "codice": "nr_giorno_sedute",
+    "valori": {
+     "giorno": "lun",
+     "data": "14/09",
+     "sedute": [
+      {
+       "chiave": "gara_richiami",
+       "minuti": "45",
+       "aerobica": "no"
+      }
+     ]
+    },
+    "testo": "Lunedi 14/09: Richiami a ritmo gara 45'"
+   },
+   {
+    "tipo": "notifica_riga",
+    "codice": "nr_giorno_riposo",
+    "valori": {
+     "giorno": "mar",
+     "data": "15/09"
+    },
+    "testo": "Martedi 15/09: riposo"
+   },
+   {
+    "tipo": "notifica_riga",
+    "codice": "nr_giorno_sedute",
+    "valori": {
+     "giorno": "mer",
+     "data": "16/09",
+     "sedute": [
+      {
+       "chiave": "gara_nuoto",
+       "minuti": "40",
+       "aerobica": "no"
+      }
+     ]
+    },
+    "testo": "Mercoledi 16/09: Nuoto pre-gara 40'"
+   },
+   {
+    "tipo": "notifica_riga",
+    "codice": "nr_giorno_riposo",
+    "valori": {
+     "giorno": "gio",
+     "data": "17/09"
+    },
+    "testo": "Giovedi 17/09: riposo"
+   },
+   {
+    "tipo": "notifica_riga",
+    "codice": "nr_giorno_sedute",
+    "valori": {
+     "giorno": "ven",
+     "data": "18/09",
+     "sedute": [
+      {
+       "chiave": "gara_bici_facile",
+       "minuti": "60",
+       "aerobica": "no"
+      }
+     ]
+    },
+    "testo": "Venerdi 18/09: Bici sciolta 60'"
+   },
+   {
+    "tipo": "notifica_riga",
+    "codice": "nr_giorno_sedute",
+    "valori": {
+     "giorno": "sab",
+     "data": "19/09",
+     "sedute": [
+      {
+       "chiave": "gara_attivazione",
+       "minuti": "30",
+       "aerobica": "no"
+      }
+     ]
+    },
+    "testo": "Sabato 19/09: Attivazione pre-gara 30'"
+   },
+   {
+    "tipo": "notifica_riga",
+    "codice": "nr_giorno_riposo",
+    "valori": {
+     "giorno": "dom",
+     "data": "20/09"
+    },
+    "testo": "Domenica 20/09: riposo"
+   }
+  ]
+ },
+ {
+  "nome": "gara a 1 settimane",
+  "testo": "🗓️ Piano settimanale — taper, 1 settimane alla gara\nDistanza obiettivo: 70.3 · fase taper\nVolume cardio: 6h50 (target 6.3h, fattore biometrico 1.0)\nRipartizione: nuoto 20% · bici 40% · corsa 39%\nAlta intensita': 10' su 325' bici+corsa (3.1%, tetto 10%)\nBanda biometrica: VERDE\nHRV media 7gg 65.3ms su baseline 65.0ms (range 63.0-66.9ms), stabile\nCTL 69.8 · ATL 75 · TSB -5.2 · rampa 7gg +1.4\n\nLunedi 14/09: riposo\nMartedi 15/09: Nuoto chiave progressivo 70'\nMercoledi 16/09: Bici chiave 50'\nGiovedi 17/09: riposo\nVenerdi 18/09: Corsa qualita' 45' + Bici supporto + opener 40'\nSabato 19/09: Lungo bici 75' + Brick — corsa a seguire 15'\nDomenica 20/09: Lungo corsa 100' + Nuoto rigenerante 15'",
+  "righe": [
+   {
+    "tipo": "notifica_riga",
+    "codice": "nr_intestazione_taper",
+    "valori": {
+     "settimane": "1"
+    },
+    "testo": "🗓️ Piano settimanale — taper, 1 settimane alla gara"
+   },
+   {
+    "tipo": "notifica_riga",
+    "codice": "nr_distanza",
+    "valori": {
+     "distanza": "70.3",
+     "fase": "taper",
+     "tipo_settimana": "normale"
+    },
+    "testo": "Distanza obiettivo: 70.3 · fase taper"
+   },
+   {
+    "tipo": "notifica_riga",
+    "codice": "nr_volume",
+    "valori": {
+     "ore": "6",
+     "minuti": "50",
+     "target": "6.3",
+     "fattore": "1.0"
+    },
+    "testo": "Volume cardio: 6h50 (target 6.3h, fattore biometrico 1.0)"
+   },
+   {
+    "tipo": "notifica_riga",
+    "codice": "nr_ripartizione",
+    "valori": {
+     "nuoto": "20",
+     "bici": "40",
+     "corsa": "39"
+    },
+    "testo": "Ripartizione: nuoto 20% · bici 40% · corsa 39%"
+   },
+   {
+    "tipo": "notifica_riga",
+    "codice": "nr_alta_intensita",
+    "valori": {
+     "min": "10",
+     "tot": "325",
+     "pct": "3.1",
+     "tetto": "10"
+    },
+    "testo": "Alta intensita': 10' su 325' bici+corsa (3.1%, tetto 10%)"
+   },
+   {
+    "tipo": "notifica_riga",
+    "codice": "nr_banda",
+    "valori": {
+     "banda": "verde"
+    },
+    "testo": "Banda biometrica: VERDE"
+   },
+   {
+    "tipo": "notifica_riga",
+    "codice": "nr_hrv",
+    "valori": {
+     "media": "65.3",
+     "baseline": "65.0",
+     "min": "63.0",
+     "max": "66.9",
+     "direzione": "stabile"
+    },
+    "testo": "HRV media 7gg 65.3ms su baseline 65.0ms (range 63.0-66.9ms), stabile"
+   },
+   {
+    "tipo": "notifica_riga",
+    "codice": "nr_forma",
+    "valori": {
+     "ctl": "69.8",
+     "atl": "75",
+     "tsb": "-5.2",
+     "rampa": "+1.4"
+    },
+    "testo": "CTL 69.8 · ATL 75 · TSB -5.2 · rampa 7gg +1.4"
+   },
+   {
+    "tipo": "notifica_riga",
+    "codice": "nr_vuota",
+    "valori": {},
+    "testo": ""
+   },
+   {
+    "tipo": "notifica_riga",
+    "codice": "nr_giorno_riposo",
+    "valori": {
+     "giorno": "lun",
+     "data": "14/09"
+    },
+    "testo": "Lunedi 14/09: riposo"
+   },
+   {
+    "tipo": "notifica_riga",
+    "codice": "nr_giorno_sedute",
+    "valori": {
+     "giorno": "mar",
+     "data": "15/09",
+     "sedute": [
+      {
+       "chiave": "nuoto_chiave",
+       "minuti": "70",
+       "aerobica": "no"
+      }
+     ]
+    },
+    "testo": "Martedi 15/09: Nuoto chiave progressivo 70'"
+   },
+   {
+    "tipo": "notifica_riga",
+    "codice": "nr_giorno_sedute",
+    "valori": {
+     "giorno": "mer",
+     "data": "16/09",
+     "sedute": [
+      {
+       "chiave": "bici_chiave",
+       "minuti": "50",
+       "aerobica": "no"
+      }
+     ]
+    },
+    "testo": "Mercoledi 16/09: Bici chiave 50'"
+   },
+   {
+    "tipo": "notifica_riga",
+    "codice": "nr_giorno_riposo",
+    "valori": {
+     "giorno": "gio",
+     "data": "17/09"
+    },
+    "testo": "Giovedi 17/09: riposo"
+   },
+   {
+    "tipo": "notifica_riga",
+    "codice": "nr_giorno_sedute",
+    "valori": {
+     "giorno": "ven",
+     "data": "18/09",
+     "sedute": [
+      {
+       "chiave": "corsa_chiave",
+       "minuti": "45",
+       "aerobica": "no"
+      },
+      {
+       "chiave": "bici_supporto",
+       "minuti": "40",
+       "aerobica": "no"
+      }
+     ]
+    },
+    "testo": "Venerdi 18/09: Corsa qualita' 45' + Bici supporto + opener 40'"
+   },
+   {
+    "tipo": "notifica_riga",
+    "codice": "nr_giorno_sedute",
+    "valori": {
+     "giorno": "sab",
+     "data": "19/09",
+     "sedute": [
+      {
+       "chiave": "lungo_bici",
+       "minuti": "75",
+       "aerobica": "no"
+      },
+      {
+       "chiave": "brick_corsa",
+       "minuti": "15",
+       "aerobica": "no"
+      }
+     ]
+    },
+    "testo": "Sabato 19/09: Lungo bici 75' + Brick — corsa a seguire 15'"
+   },
+   {
+    "tipo": "notifica_riga",
+    "codice": "nr_giorno_sedute",
+    "valori": {
+     "giorno": "dom",
+     "data": "20/09",
+     "sedute": [
+      {
+       "chiave": "lungo_corsa",
+       "minuti": "100",
+       "aerobica": "no"
+      },
+      {
+       "chiave": "nuoto_rigenerante",
+       "minuti": "15",
+       "aerobica": "no"
+      }
+     ]
+    },
+    "testo": "Domenica 20/09: Lungo corsa 100' + Nuoto rigenerante 15'"
+   }
+  ]
+ },
+ {
+  "nome": "gara a 3 settimane",
+  "testo": "🗓️ Piano settimanale — peak 6/6 — 3 settimane a Ironman 70.3 Cervia\nDistanza obiettivo: 70.3 · fase peak\nVolume cardio: 11h05 (target 11.0h, fattore biometrico 1.0)\nRipartizione: nuoto 21% · bici 42% · corsa 36%\nAlta intensita': 32' su 525' bici+corsa (6.1%, tetto 10%)\nBanda biometrica: VERDE\nHRV media 7gg 65.3ms su baseline 65.0ms (range 63.0-66.9ms), stabile\nCTL 69.8 · ATL 75 · TSB -5.2 · rampa 7gg +1.4\n\nLunedi 14/09: Corsa di supporto 50'\nMartedi 15/09: Nuoto chiave progressivo 55'\nMercoledi 16/09: Bici chiave 75' + Forza 30'\nGiovedi 17/09: Nuoto endurance e ritmo 55' + Forza 30'\nVenerdi 18/09: Corsa qualita' 65' + Bici supporto + opener 60'\nSabato 19/09: Brick — bici 145' + Brick — corsa a seguire 35'\nDomenica 20/09: Lungo corsa 95' + Nuoto rigenerante 30'",
+  "righe": [
+   {
+    "tipo": "notifica_riga",
+    "codice": "nr_intestazione_fase",
+    "valori": {
+     "fase": "peak",
+     "n": "6",
+     "tot": "6",
+     "scarico": "no",
+     "settimane": "3",
+     "gara": "Ironman 70.3 Cervia"
+    },
+    "testo": "🗓️ Piano settimanale — peak 6/6 — 3 settimane a Ironman 70.3 Cervia"
+   },
+   {
+    "tipo": "notifica_riga",
+    "codice": "nr_distanza",
+    "valori": {
+     "distanza": "70.3",
+     "fase": "peak",
+     "tipo_settimana": "normale"
+    },
+    "testo": "Distanza obiettivo: 70.3 · fase peak"
+   },
+   {
+    "tipo": "notifica_riga",
+    "codice": "nr_volume",
+    "valori": {
+     "ore": "11",
+     "minuti": "05",
+     "target": "11.0",
+     "fattore": "1.0"
+    },
+    "testo": "Volume cardio: 11h05 (target 11.0h, fattore biometrico 1.0)"
+   },
+   {
+    "tipo": "notifica_riga",
+    "codice": "nr_ripartizione",
+    "valori": {
+     "nuoto": "21",
+     "bici": "42",
+     "corsa": "36"
+    },
+    "testo": "Ripartizione: nuoto 21% · bici 42% · corsa 36%"
+   },
+   {
+    "tipo": "notifica_riga",
+    "codice": "nr_alta_intensita",
+    "valori": {
+     "min": "32",
+     "tot": "525",
+     "pct": "6.1",
+     "tetto": "10"
+    },
+    "testo": "Alta intensita': 32' su 525' bici+corsa (6.1%, tetto 10%)"
+   },
+   {
+    "tipo": "notifica_riga",
+    "codice": "nr_banda",
+    "valori": {
+     "banda": "verde"
+    },
+    "testo": "Banda biometrica: VERDE"
+   },
+   {
+    "tipo": "notifica_riga",
+    "codice": "nr_hrv",
+    "valori": {
+     "media": "65.3",
+     "baseline": "65.0",
+     "min": "63.0",
+     "max": "66.9",
+     "direzione": "stabile"
+    },
+    "testo": "HRV media 7gg 65.3ms su baseline 65.0ms (range 63.0-66.9ms), stabile"
+   },
+   {
+    "tipo": "notifica_riga",
+    "codice": "nr_forma",
+    "valori": {
+     "ctl": "69.8",
+     "atl": "75",
+     "tsb": "-5.2",
+     "rampa": "+1.4"
+    },
+    "testo": "CTL 69.8 · ATL 75 · TSB -5.2 · rampa 7gg +1.4"
+   },
+   {
+    "tipo": "notifica_riga",
+    "codice": "nr_vuota",
+    "valori": {},
+    "testo": ""
+   },
+   {
+    "tipo": "notifica_riga",
+    "codice": "nr_giorno_sedute",
+    "valori": {
+     "giorno": "lun",
+     "data": "14/09",
+     "sedute": [
+      {
+       "chiave": "corsa_supporto",
+       "minuti": "50",
+       "aerobica": "no"
+      }
+     ]
+    },
+    "testo": "Lunedi 14/09: Corsa di supporto 50'"
+   },
+   {
+    "tipo": "notifica_riga",
+    "codice": "nr_giorno_sedute",
+    "valori": {
+     "giorno": "mar",
+     "data": "15/09",
+     "sedute": [
+      {
+       "chiave": "nuoto_chiave",
+       "minuti": "55",
+       "aerobica": "no"
+      }
+     ]
+    },
+    "testo": "Martedi 15/09: Nuoto chiave progressivo 55'"
+   },
+   {
+    "tipo": "notifica_riga",
+    "codice": "nr_giorno_sedute",
+    "valori": {
+     "giorno": "mer",
+     "data": "16/09",
+     "sedute": [
+      {
+       "chiave": "bici_chiave",
+       "minuti": "75",
+       "aerobica": "no"
+      },
+      {
+       "chiave": "forza",
+       "minuti": "30",
+       "aerobica": "no"
+      }
+     ]
+    },
+    "testo": "Mercoledi 16/09: Bici chiave 75' + Forza 30'"
+   },
+   {
+    "tipo": "notifica_riga",
+    "codice": "nr_giorno_sedute",
+    "valori": {
+     "giorno": "gio",
+     "data": "17/09",
+     "sedute": [
+      {
+       "chiave": "nuoto_supporto",
+       "minuti": "55",
+       "aerobica": "no"
+      },
+      {
+       "chiave": "forza",
+       "minuti": "30",
+       "aerobica": "no"
+      }
+     ]
+    },
+    "testo": "Giovedi 17/09: Nuoto endurance e ritmo 55' + Forza 30'"
+   },
+   {
+    "tipo": "notifica_riga",
+    "codice": "nr_giorno_sedute",
+    "valori": {
+     "giorno": "ven",
+     "data": "18/09",
+     "sedute": [
+      {
+       "chiave": "corsa_chiave",
+       "minuti": "65",
+       "aerobica": "no"
+      },
+      {
+       "chiave": "bici_supporto",
+       "minuti": "60",
+       "aerobica": "no"
+      }
+     ]
+    },
+    "testo": "Venerdi 18/09: Corsa qualita' 65' + Bici supporto + opener 60'"
+   },
+   {
+    "tipo": "notifica_riga",
+    "codice": "nr_giorno_sedute",
+    "valori": {
+     "giorno": "sab",
+     "data": "19/09",
+     "sedute": [
+      {
+       "chiave": "brick_bici",
+       "minuti": "145",
+       "aerobica": "no"
+      },
+      {
+       "chiave": "brick_corsa",
+       "minuti": "35",
+       "aerobica": "no"
+      }
+     ]
+    },
+    "testo": "Sabato 19/09: Brick — bici 145' + Brick — corsa a seguire 35'"
+   },
+   {
+    "tipo": "notifica_riga",
+    "codice": "nr_giorno_sedute",
+    "valori": {
+     "giorno": "dom",
+     "data": "20/09",
+     "sedute": [
+      {
+       "chiave": "lungo_corsa",
+       "minuti": "95",
+       "aerobica": "no"
+      },
+      {
+       "chiave": "nuoto_rigenerante",
+       "minuti": "30",
+       "aerobica": "no"
+      }
+     ]
+    },
+    "testo": "Domenica 20/09: Lungo corsa 95' + Nuoto rigenerante 30'"
+   }
+  ]
+ },
+ {
+  "nome": "gara a 8 settimane",
+  "testo": "🗓️ Piano settimanale — peak 1/6 — 8 settimane a Ironman 70.3 Cervia\nDistanza obiettivo: 70.3 · fase peak\nVolume cardio: 11h05 (target 11.0h, fattore biometrico 1.0)\nRipartizione: nuoto 21% · bici 42% · corsa 36%\nAlta intensita': 32' su 525' bici+corsa (6.1%, tetto 10%)\nBanda biometrica: VERDE\nHRV media 7gg 65.3ms su baseline 65.0ms (range 63.0-66.9ms), stabile\nCTL 69.8 · ATL 75 · TSB -5.2 · rampa 7gg +1.4\n\nLunedi 14/09: Corsa di supporto 50'\nMartedi 15/09: Nuoto chiave progressivo 55'\nMercoledi 16/09: Bici chiave 75' + Forza 30'\nGiovedi 17/09: Nuoto endurance e ritmo 55' + Forza 30'\nVenerdi 18/09: Corsa qualita' 65' + Bici supporto + opener 60'\nSabato 19/09: Brick — bici 145' + Brick — corsa a seguire 35'\nDomenica 20/09: Lungo corsa 95' + Nuoto rigenerante 30'",
+  "righe": [
+   {
+    "tipo": "notifica_riga",
+    "codice": "nr_intestazione_fase",
+    "valori": {
+     "fase": "peak",
+     "n": "1",
+     "tot": "6",
+     "scarico": "no",
+     "settimane": "8",
+     "gara": "Ironman 70.3 Cervia"
+    },
+    "testo": "🗓️ Piano settimanale — peak 1/6 — 8 settimane a Ironman 70.3 Cervia"
+   },
+   {
+    "tipo": "notifica_riga",
+    "codice": "nr_distanza",
+    "valori": {
+     "distanza": "70.3",
+     "fase": "peak",
+     "tipo_settimana": "normale"
+    },
+    "testo": "Distanza obiettivo: 70.3 · fase peak"
+   },
+   {
+    "tipo": "notifica_riga",
+    "codice": "nr_volume",
+    "valori": {
+     "ore": "11",
+     "minuti": "05",
+     "target": "11.0",
+     "fattore": "1.0"
+    },
+    "testo": "Volume cardio: 11h05 (target 11.0h, fattore biometrico 1.0)"
+   },
+   {
+    "tipo": "notifica_riga",
+    "codice": "nr_ripartizione",
+    "valori": {
+     "nuoto": "21",
+     "bici": "42",
+     "corsa": "36"
+    },
+    "testo": "Ripartizione: nuoto 21% · bici 42% · corsa 36%"
+   },
+   {
+    "tipo": "notifica_riga",
+    "codice": "nr_alta_intensita",
+    "valori": {
+     "min": "32",
+     "tot": "525",
+     "pct": "6.1",
+     "tetto": "10"
+    },
+    "testo": "Alta intensita': 32' su 525' bici+corsa (6.1%, tetto 10%)"
+   },
+   {
+    "tipo": "notifica_riga",
+    "codice": "nr_banda",
+    "valori": {
+     "banda": "verde"
+    },
+    "testo": "Banda biometrica: VERDE"
+   },
+   {
+    "tipo": "notifica_riga",
+    "codice": "nr_hrv",
+    "valori": {
+     "media": "65.3",
+     "baseline": "65.0",
+     "min": "63.0",
+     "max": "66.9",
+     "direzione": "stabile"
+    },
+    "testo": "HRV media 7gg 65.3ms su baseline 65.0ms (range 63.0-66.9ms), stabile"
+   },
+   {
+    "tipo": "notifica_riga",
+    "codice": "nr_forma",
+    "valori": {
+     "ctl": "69.8",
+     "atl": "75",
+     "tsb": "-5.2",
+     "rampa": "+1.4"
+    },
+    "testo": "CTL 69.8 · ATL 75 · TSB -5.2 · rampa 7gg +1.4"
+   },
+   {
+    "tipo": "notifica_riga",
+    "codice": "nr_vuota",
+    "valori": {},
+    "testo": ""
+   },
+   {
+    "tipo": "notifica_riga",
+    "codice": "nr_giorno_sedute",
+    "valori": {
+     "giorno": "lun",
+     "data": "14/09",
+     "sedute": [
+      {
+       "chiave": "corsa_supporto",
+       "minuti": "50",
+       "aerobica": "no"
+      }
+     ]
+    },
+    "testo": "Lunedi 14/09: Corsa di supporto 50'"
+   },
+   {
+    "tipo": "notifica_riga",
+    "codice": "nr_giorno_sedute",
+    "valori": {
+     "giorno": "mar",
+     "data": "15/09",
+     "sedute": [
+      {
+       "chiave": "nuoto_chiave",
+       "minuti": "55",
+       "aerobica": "no"
+      }
+     ]
+    },
+    "testo": "Martedi 15/09: Nuoto chiave progressivo 55'"
+   },
+   {
+    "tipo": "notifica_riga",
+    "codice": "nr_giorno_sedute",
+    "valori": {
+     "giorno": "mer",
+     "data": "16/09",
+     "sedute": [
+      {
+       "chiave": "bici_chiave",
+       "minuti": "75",
+       "aerobica": "no"
+      },
+      {
+       "chiave": "forza",
+       "minuti": "30",
+       "aerobica": "no"
+      }
+     ]
+    },
+    "testo": "Mercoledi 16/09: Bici chiave 75' + Forza 30'"
+   },
+   {
+    "tipo": "notifica_riga",
+    "codice": "nr_giorno_sedute",
+    "valori": {
+     "giorno": "gio",
+     "data": "17/09",
+     "sedute": [
+      {
+       "chiave": "nuoto_supporto",
+       "minuti": "55",
+       "aerobica": "no"
+      },
+      {
+       "chiave": "forza",
+       "minuti": "30",
+       "aerobica": "no"
+      }
+     ]
+    },
+    "testo": "Giovedi 17/09: Nuoto endurance e ritmo 55' + Forza 30'"
+   },
+   {
+    "tipo": "notifica_riga",
+    "codice": "nr_giorno_sedute",
+    "valori": {
+     "giorno": "ven",
+     "data": "18/09",
+     "sedute": [
+      {
+       "chiave": "corsa_chiave",
+       "minuti": "65",
+       "aerobica": "no"
+      },
+      {
+       "chiave": "bici_supporto",
+       "minuti": "60",
+       "aerobica": "no"
+      }
+     ]
+    },
+    "testo": "Venerdi 18/09: Corsa qualita' 65' + Bici supporto + opener 60'"
+   },
+   {
+    "tipo": "notifica_riga",
+    "codice": "nr_giorno_sedute",
+    "valori": {
+     "giorno": "sab",
+     "data": "19/09",
+     "sedute": [
+      {
+       "chiave": "brick_bici",
+       "minuti": "145",
+       "aerobica": "no"
+      },
+      {
+       "chiave": "brick_corsa",
+       "minuti": "35",
+       "aerobica": "no"
+      }
+     ]
+    },
+    "testo": "Sabato 19/09: Brick — bici 145' + Brick — corsa a seguire 35'"
+   },
+   {
+    "tipo": "notifica_riga",
+    "codice": "nr_giorno_sedute",
+    "valori": {
+     "giorno": "dom",
+     "data": "20/09",
+     "sedute": [
+      {
+       "chiave": "lungo_corsa",
+       "minuti": "95",
+       "aerobica": "no"
+      },
+      {
+       "chiave": "nuoto_rigenerante",
+       "minuti": "30",
+       "aerobica": "no"
+      }
+     ]
+    },
+    "testo": "Domenica 20/09: Lungo corsa 95' + Nuoto rigenerante 30'"
+   }
+  ]
+ },
+ {
+  "nome": "gara a 16 settimane",
+  "testo": "🗓️ Piano settimanale — build 1/8 — 16 settimane a Ironman 70.3 Cervia\nDistanza obiettivo: 70.3 · fase build\nVolume cardio: 10h05 (target 10.0h, fattore biometrico 1.0)\nRipartizione: nuoto 21% · bici 42% · corsa 36%\nAlta intensita': 16' su 475' bici+corsa (3.4%, tetto 10%)\nBanda biometrica: VERDE\nHRV media 7gg 65.3ms su baseline 65.0ms (range 63.0-66.9ms), stabile\nCTL 69.8 · ATL 75 · TSB -5.2 · rampa 7gg +1.4\n\nLunedi 14/09: Corsa di supporto 45'\nMartedi 15/09: Nuoto chiave progressivo 65'\nMercoledi 16/09: Bici chiave 70' + Forza 40'\nGiovedi 17/09: Nuoto endurance e ritmo 65' + Forza 40'\nVenerdi 18/09: Corsa qualita' 60' + Bici supporto + opener 55'\nSabato 19/09: Brick — bici 130' + Brick — corsa a seguire 30'\nDomenica 20/09: Lungo corsa 85'",
+  "righe": [
+   {
+    "tipo": "notifica_riga",
+    "codice": "nr_intestazione_fase",
+    "valori": {
+     "fase": "build",
+     "n": "1",
+     "tot": "8",
+     "scarico": "no",
+     "settimane": "16",
+     "gara": "Ironman 70.3 Cervia"
+    },
+    "testo": "🗓️ Piano settimanale — build 1/8 — 16 settimane a Ironman 70.3 Cervia"
+   },
+   {
+    "tipo": "notifica_riga",
+    "codice": "nr_distanza",
+    "valori": {
+     "distanza": "70.3",
+     "fase": "build",
+     "tipo_settimana": "normale"
+    },
+    "testo": "Distanza obiettivo: 70.3 · fase build"
+   },
+   {
+    "tipo": "notifica_riga",
+    "codice": "nr_volume",
+    "valori": {
+     "ore": "10",
+     "minuti": "05",
+     "target": "10.0",
+     "fattore": "1.0"
+    },
+    "testo": "Volume cardio: 10h05 (target 10.0h, fattore biometrico 1.0)"
+   },
+   {
+    "tipo": "notifica_riga",
+    "codice": "nr_ripartizione",
+    "valori": {
+     "nuoto": "21",
+     "bici": "42",
+     "corsa": "36"
+    },
+    "testo": "Ripartizione: nuoto 21% · bici 42% · corsa 36%"
+   },
+   {
+    "tipo": "notifica_riga",
+    "codice": "nr_alta_intensita",
+    "valori": {
+     "min": "16",
+     "tot": "475",
+     "pct": "3.4",
+     "tetto": "10"
+    },
+    "testo": "Alta intensita': 16' su 475' bici+corsa (3.4%, tetto 10%)"
+   },
+   {
+    "tipo": "notifica_riga",
+    "codice": "nr_banda",
+    "valori": {
+     "banda": "verde"
+    },
+    "testo": "Banda biometrica: VERDE"
+   },
+   {
+    "tipo": "notifica_riga",
+    "codice": "nr_hrv",
+    "valori": {
+     "media": "65.3",
+     "baseline": "65.0",
+     "min": "63.0",
+     "max": "66.9",
+     "direzione": "stabile"
+    },
+    "testo": "HRV media 7gg 65.3ms su baseline 65.0ms (range 63.0-66.9ms), stabile"
+   },
+   {
+    "tipo": "notifica_riga",
+    "codice": "nr_forma",
+    "valori": {
+     "ctl": "69.8",
+     "atl": "75",
+     "tsb": "-5.2",
+     "rampa": "+1.4"
+    },
+    "testo": "CTL 69.8 · ATL 75 · TSB -5.2 · rampa 7gg +1.4"
+   },
+   {
+    "tipo": "notifica_riga",
+    "codice": "nr_vuota",
+    "valori": {},
+    "testo": ""
+   },
+   {
+    "tipo": "notifica_riga",
+    "codice": "nr_giorno_sedute",
+    "valori": {
+     "giorno": "lun",
+     "data": "14/09",
+     "sedute": [
+      {
+       "chiave": "corsa_supporto",
+       "minuti": "45",
+       "aerobica": "no"
+      }
+     ]
+    },
+    "testo": "Lunedi 14/09: Corsa di supporto 45'"
+   },
+   {
+    "tipo": "notifica_riga",
+    "codice": "nr_giorno_sedute",
+    "valori": {
+     "giorno": "mar",
+     "data": "15/09",
+     "sedute": [
+      {
+       "chiave": "nuoto_chiave",
+       "minuti": "65",
+       "aerobica": "no"
+      }
+     ]
+    },
+    "testo": "Martedi 15/09: Nuoto chiave progressivo 65'"
+   },
+   {
+    "tipo": "notifica_riga",
+    "codice": "nr_giorno_sedute",
+    "valori": {
+     "giorno": "mer",
+     "data": "16/09",
+     "sedute": [
+      {
+       "chiave": "bici_chiave",
+       "minuti": "70",
+       "aerobica": "no"
+      },
+      {
+       "chiave": "forza",
+       "minuti": "40",
+       "aerobica": "no"
+      }
+     ]
+    },
+    "testo": "Mercoledi 16/09: Bici chiave 70' + Forza 40'"
+   },
+   {
+    "tipo": "notifica_riga",
+    "codice": "nr_giorno_sedute",
+    "valori": {
+     "giorno": "gio",
+     "data": "17/09",
+     "sedute": [
+      {
+       "chiave": "nuoto_supporto",
+       "minuti": "65",
+       "aerobica": "no"
+      },
+      {
+       "chiave": "forza",
+       "minuti": "40",
+       "aerobica": "no"
+      }
+     ]
+    },
+    "testo": "Giovedi 17/09: Nuoto endurance e ritmo 65' + Forza 40'"
+   },
+   {
+    "tipo": "notifica_riga",
+    "codice": "nr_giorno_sedute",
+    "valori": {
+     "giorno": "ven",
+     "data": "18/09",
+     "sedute": [
+      {
+       "chiave": "corsa_chiave",
+       "minuti": "60",
+       "aerobica": "no"
+      },
+      {
+       "chiave": "bici_supporto",
+       "minuti": "55",
+       "aerobica": "no"
+      }
+     ]
+    },
+    "testo": "Venerdi 18/09: Corsa qualita' 60' + Bici supporto + opener 55'"
+   },
+   {
+    "tipo": "notifica_riga",
+    "codice": "nr_giorno_sedute",
+    "valori": {
+     "giorno": "sab",
+     "data": "19/09",
+     "sedute": [
+      {
+       "chiave": "brick_bici",
+       "minuti": "130",
+       "aerobica": "no"
+      },
+      {
+       "chiave": "brick_corsa",
+       "minuti": "30",
+       "aerobica": "no"
+      }
+     ]
+    },
+    "testo": "Sabato 19/09: Brick — bici 130' + Brick — corsa a seguire 30'"
+   },
+   {
+    "tipo": "notifica_riga",
+    "codice": "nr_giorno_sedute",
+    "valori": {
+     "giorno": "dom",
+     "data": "20/09",
+     "sedute": [
+      {
+       "chiave": "lungo_corsa",
+       "minuti": "85",
+       "aerobica": "no"
+      }
+     ]
+    },
+    "testo": "Domenica 20/09: Lungo corsa 85'"
+   }
+  ]
+ },
+ {
+  "nome": "recupero post gara",
+  "testo": "🗓️ Piano settimanale — recupero post-RACE_A (Gara passata)\nDistanza obiettivo: olimpico · fase recupero\nVolume cardio: 4h35 (target 3.0h, fattore biometrico 1.0)\nRipartizione: nuoto 21% · bici 38% · corsa 40%\nAlta intensita': 0' su 215' bici+corsa (0.0%, tetto 10%)\nBanda biometrica: VERDE\nHRV media 7gg 65.3ms su baseline 65.0ms (range 63.0-66.9ms), stabile\nCTL 69.8 · ATL 75 · TSB -5.2 · rampa 7gg +1.4\n\nLunedi 14/09: riposo\nMartedi 15/09: Nuoto chiave progressivo 60'\nMercoledi 16/09: Bici chiave 45'\nGiovedi 17/09: riposo\nVenerdi 18/09: Corsa qualita' 45'\nSabato 19/09: Lungo bici 60' + Brick — corsa a seguire 15'\nDomenica 20/09: Lungo corsa 50'",
+  "righe": [
+   {
+    "tipo": "notifica_riga",
+    "codice": "nr_intestazione_recupero",
+    "valori": {
+     "categoria": "RACE_A",
+     "gara": "Gara passata"
+    },
+    "testo": "🗓️ Piano settimanale — recupero post-RACE_A (Gara passata)"
+   },
+   {
+    "tipo": "notifica_riga",
+    "codice": "nr_distanza",
+    "valori": {
+     "distanza": "olimpico",
+     "fase": "recupero",
+     "tipo_settimana": "normale"
+    },
+    "testo": "Distanza obiettivo: olimpico · fase recupero"
+   },
+   {
+    "tipo": "notifica_riga",
+    "codice": "nr_volume",
+    "valori": {
+     "ore": "4",
+     "minuti": "35",
+     "target": "3.0",
+     "fattore": "1.0"
+    },
+    "testo": "Volume cardio: 4h35 (target 3.0h, fattore biometrico 1.0)"
+   },
+   {
+    "tipo": "notifica_riga",
+    "codice": "nr_ripartizione",
+    "valori": {
+     "nuoto": "21",
+     "bici": "38",
+     "corsa": "40"
+    },
+    "testo": "Ripartizione: nuoto 21% · bici 38% · corsa 40%"
+   },
+   {
+    "tipo": "notifica_riga",
+    "codice": "nr_alta_intensita",
+    "valori": {
+     "min": "0",
+     "tot": "215",
+     "pct": "0.0",
+     "tetto": "10"
+    },
+    "testo": "Alta intensita': 0' su 215' bici+corsa (0.0%, tetto 10%)"
+   },
+   {
+    "tipo": "notifica_riga",
+    "codice": "nr_banda",
+    "valori": {
+     "banda": "verde"
+    },
+    "testo": "Banda biometrica: VERDE"
+   },
+   {
+    "tipo": "notifica_riga",
+    "codice": "nr_hrv",
+    "valori": {
+     "media": "65.3",
+     "baseline": "65.0",
+     "min": "63.0",
+     "max": "66.9",
+     "direzione": "stabile"
+    },
+    "testo": "HRV media 7gg 65.3ms su baseline 65.0ms (range 63.0-66.9ms), stabile"
+   },
+   {
+    "tipo": "notifica_riga",
+    "codice": "nr_forma",
+    "valori": {
+     "ctl": "69.8",
+     "atl": "75",
+     "tsb": "-5.2",
+     "rampa": "+1.4"
+    },
+    "testo": "CTL 69.8 · ATL 75 · TSB -5.2 · rampa 7gg +1.4"
+   },
+   {
+    "tipo": "notifica_riga",
+    "codice": "nr_vuota",
+    "valori": {},
+    "testo": ""
+   },
+   {
+    "tipo": "notifica_riga",
+    "codice": "nr_giorno_riposo",
+    "valori": {
+     "giorno": "lun",
+     "data": "14/09"
+    },
+    "testo": "Lunedi 14/09: riposo"
+   },
+   {
+    "tipo": "notifica_riga",
+    "codice": "nr_giorno_sedute",
+    "valori": {
+     "giorno": "mar",
+     "data": "15/09",
+     "sedute": [
+      {
+       "chiave": "nuoto_chiave",
+       "minuti": "60",
+       "aerobica": "no"
+      }
+     ]
+    },
+    "testo": "Martedi 15/09: Nuoto chiave progressivo 60'"
+   },
+   {
+    "tipo": "notifica_riga",
+    "codice": "nr_giorno_sedute",
+    "valori": {
+     "giorno": "mer",
+     "data": "16/09",
+     "sedute": [
+      {
+       "chiave": "bici_chiave",
+       "minuti": "45",
+       "aerobica": "no"
+      }
+     ]
+    },
+    "testo": "Mercoledi 16/09: Bici chiave 45'"
+   },
+   {
+    "tipo": "notifica_riga",
+    "codice": "nr_giorno_riposo",
+    "valori": {
+     "giorno": "gio",
+     "data": "17/09"
+    },
+    "testo": "Giovedi 17/09: riposo"
+   },
+   {
+    "tipo": "notifica_riga",
+    "codice": "nr_giorno_sedute",
+    "valori": {
+     "giorno": "ven",
+     "data": "18/09",
+     "sedute": [
+      {
+       "chiave": "corsa_chiave",
+       "minuti": "45",
+       "aerobica": "no"
+      }
+     ]
+    },
+    "testo": "Venerdi 18/09: Corsa qualita' 45'"
+   },
+   {
+    "tipo": "notifica_riga",
+    "codice": "nr_giorno_sedute",
+    "valori": {
+     "giorno": "sab",
+     "data": "19/09",
+     "sedute": [
+      {
+       "chiave": "lungo_bici",
+       "minuti": "60",
+       "aerobica": "no"
+      },
+      {
+       "chiave": "brick_corsa",
+       "minuti": "15",
+       "aerobica": "no"
+      }
+     ]
+    },
+    "testo": "Sabato 19/09: Lungo bici 60' + Brick — corsa a seguire 15'"
+   },
+   {
+    "tipo": "notifica_riga",
+    "codice": "nr_giorno_sedute",
+    "valori": {
+     "giorno": "dom",
+     "data": "20/09",
+     "sedute": [
+      {
+       "chiave": "lungo_corsa",
+       "minuti": "50",
+       "aerobica": "no"
+      }
+     ]
+    },
+    "testo": "Domenica 20/09: Lungo corsa 50'"
+   }
+  ]
+ },
+ {
+  "nome": "rimodulazione",
+  "testo": "🗓️ Piano settimanale — rimodulazione del 2026-10-14, banda ROSSO: Corsa qualita' rimossa — la curva biometrica prescrive riposo; Forza rimossa — la curva biometrica prescrive riposo; Bici chiave rimossa — la curva biometrica prescrive riposo; brick alleggerito: corsa di qualita' di ieri oltre il 125% del TSS pianificato; Corsa X rimossa — disponibilita' del giorno; Corsa X accorciata a 30' — disponibilita' del giorno; companion sostituita con Mobilita' anca (prevenzione anca)\nMotivi: HRV: media 7gg oltre 1 SD sotto il normal range (-7.22); HRV sotto il normal range da 7gg; banda rossa persistente: la curva biometrica prescrive recupero",
+  "righe": [
+   {
+    "tipo": "notifica_riga",
+    "codice": "nr_rimodulazione",
+    "valori": {
+     "data": "2026-10-14",
+     "banda": "rosso",
+     "azioni": [
+      {
+       "codice": "nr_az_rimossa",
+       "valori": {
+        "chiave": "corsa_chiave",
+        "motivo": {
+         "tipo": "motivo",
+         "codice": "rm_riposo_biometrico",
+         "valori": {},
+         "testo": "la curva biometrica prescrive riposo"
+        }
+       },
+       "testo": "Corsa qualita' rimossa — la curva biometrica prescrive riposo"
+      },
+      {
+       "codice": "nr_az_rimossa",
+       "valori": {
+        "chiave": "forza",
+        "motivo": {
+         "tipo": "motivo",
+         "codice": "rm_riposo_biometrico",
+         "valori": {},
+         "testo": "la curva biometrica prescrive riposo"
+        }
+       },
+       "testo": "Forza rimossa — la curva biometrica prescrive riposo"
+      },
+      {
+       "codice": "nr_az_rimossa",
+       "valori": {
+        "chiave": "bici_chiave",
+        "motivo": {
+         "tipo": "motivo",
+         "codice": "rm_riposo_biometrico",
+         "valori": {},
+         "testo": "la curva biometrica prescrive riposo"
+        }
+       },
+       "testo": "Bici chiave rimossa — la curva biometrica prescrive riposo"
+      },
+      {
+       "codice": "nr_az_brick_alleggerito",
+       "valori": {},
+       "testo": "brick alleggerito: corsa di qualita' di ieri oltre il 125% del TSS pianificato"
+      },
+      {
+       "codice": "nr_az_rimossa_disponibilita",
+       "valori": {
+        "chiave": "corsa_supporto",
+        "nome": "Corsa X"
+       },
+       "testo": "Corsa X rimossa — disponibilita' del giorno"
+      },
+      {
+       "codice": "nr_az_accorciata_disponibilita",
+       "valori": {
+        "chiave": "corsa_supporto",
+        "nome": "Corsa X",
+        "minuti": "30"
+       },
+       "testo": "Corsa X accorciata a 30' — disponibilita' del giorno"
+      },
+      {
+       "codice": "nr_az_companion_prevenzione",
+       "valori": {
+        "scheda": "Mobilita' anca",
+        "zona": "anca"
+       },
+       "testo": "companion sostituita con Mobilita' anca (prevenzione anca)"
+      }
+     ]
+    },
+    "testo": "🗓️ Piano settimanale — rimodulazione del 2026-10-14, banda ROSSO: Corsa qualita' rimossa — la curva biometrica prescrive riposo; Forza rimossa — la curva biometrica prescrive riposo; Bici chiave rimossa — la curva biometrica prescrive riposo; brick alleggerito: corsa di qualita' di ieri oltre il 125% del TSS pianificato; Corsa X rimossa — disponibilita' del giorno; Corsa X accorciata a 30' — disponibilita' del giorno; companion sostituita con Mobilita' anca (prevenzione anca)"
+   },
+   {
+    "tipo": "notifica_riga",
+    "codice": "nr_motivi",
+    "valori": {
+     "messaggi": [
+      {
+       "tipo": "motivo",
+       "codice": "hrv_sotto_range_forte",
+       "valori": {
+        "z": "-7.22"
+       },
+       "testo": "HRV: media 7gg oltre 1 SD sotto il normal range (-7.22)"
+      },
+      {
+       "tipo": "motivo",
+       "codice": "hrv_sotto_range_persistente",
+       "valori": {
+        "giorni": "7"
+       },
+       "testo": "HRV sotto il normal range da 7gg"
+      },
+      {
+       "tipo": "motivo",
+       "codice": "banda_rossa_persistente",
+       "valori": {},
+       "testo": "banda rossa persistente: la curva biometrica prescrive recupero"
+      }
+     ]
+    },
+    "testo": "Motivi: HRV: media 7gg oltre 1 SD sotto il normal range (-7.22); HRV sotto il normal range da 7gg; banda rossa persistente: la curva biometrica prescrive recupero"
+   }
+  ]
+ }
+]

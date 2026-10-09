@@ -50,7 +50,7 @@ from marchio import NOME_APP
 import campi
 import messaggi   # 07/10/2026 (punto 13a): codici dei messaggi per l'app
 
-VERSIONE = "2026.10.09-lingue13d2"   # anche nel LEGGIMI del pacchetto
+VERSIONE = "2026.10.09-lingue13d3"   # anche nel LEGGIMI del pacchetto
 import contextlib, importlib, io, json, os, re, sys, traceback
 
 _VARIABILI_ESTERNE = ("GH_TOKEN", "GITHUB_REPOSITORY", "TELEGRAM_TOKEN", "TELEGRAM_CHAT_ID")
@@ -976,6 +976,9 @@ def esegui_app(config_json):
                     rie["avvisi"] = "\n".join(x for x in [rie.get("avvisi") or ""] + righe if x)
                 # 07/10/2026 (punto 13a): messaggi con codice e valori, per la traduzione
                 rie["messaggi"] = messaggi.messaggi_riepilogo(rie, out["notifiche"])
+                rie["notifiche_righe"] = [cs.RIGHE_NOTIFICHE.get(n) or
+                                          [dict(messaggi.codifica(n, "notifica"), tipo="notifica_riga")]
+                                          for n in out["notifiche"]]
                 with open(percorso + ".tmp", "w", encoding="utf-8") as f:
                     f.write(json.dumps(rie, ensure_ascii=False))
                 os.replace(percorso + ".tmp", percorso)
@@ -996,6 +999,10 @@ def esegui_app(config_json):
         except OSError:
             pass
     out["messaggi"] = [messaggi.codifica(n, "notifica") for n in out["notifiche"]]   # punto 13a
+    # 13d ter: righe codificate di ogni notifica, in ordine (una riga sola per le notifiche brevi)
+    righe_cs = getattr(sys.modules.get("coach_settimanale"), "RIGHE_NOTIFICHE", {}) or {}
+    out["notifiche_righe"] = [righe_cs.get(n) or [dict(messaggi.codifica(n, "notifica"), tipo="notifica_riga")]
+                              for n in out["notifiche"]]
     out["versione"] = VERSIONE
     return json.dumps(out, ensure_ascii=False)
 

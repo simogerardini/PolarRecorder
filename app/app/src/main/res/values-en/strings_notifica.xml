@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Inglese: DA RIVEDERE da un madrelingua (closed testing). Traduzione iniziale della Parte 3, ottobre 2026. -->
+<!-- 13d ter: righe delle notifiche del coach (RigheNotifica.kt). %%: percento letterale nelle stringhe con argomenti. -->
+<resources>
+    <string name="nr_int_continuo_carico" formatted="true">🗓️ Weekly plan — no race — continuous cycle, block %1$s, load %2$s/4</string>
+    <string name="nr_int_continuo_scarico" formatted="true">🗓️ Weekly plan — no race — continuous cycle, block %1$s, recovery week</string>
+    <string name="nr_int_fase" formatted="true">🗓️ Weekly plan — %1$s %2$s/%3$s%4$s — %5$s weeks to %6$s</string>
+    <string name="nr_frammento_scarico">" (recovery week)"</string>
+    <string name="nr_int_taper" formatted="true">🗓️ Weekly plan — taper, %1$s weeks to the race</string>
+    <string name="nr_int_gara" formatted="true">🗓️ Weekly plan — race week — %1$s</string>
+    <string name="nr_int_recupero" formatted="true">🗓️ Weekly plan — recovery after %1$s (%2$s)</string>
+    <string name="nr_distanza" formatted="true">Target distance: %1$s · phase %2$s%3$s</string>
+    <string name="nr_frammento_scarico_maiusc">" · RECOVERY WEEK"</string>
+    <string name="nd_olimpico">Olympic</string>
+    <string name="nd_70_3">70.3</string>
+    <string name="nd_full">full distance</string>
+    <string name="nr_volume" formatted="true">Cardio volume: %1$sh%2$s (target %3$sh, biometric factor %4$s)</string>
+    <string name="nr_ripartizione" formatted="true">Split: swim %1$s%% · bike %2$s%% · run %3$s%%</string>
+    <string name="nr_alta_intensita" formatted="true">High intensity: %1$s\' of %2$s\' bike+run (%3$s%%, cap %4$s%%)</string>
+    <string name="nr_banda" formatted="true">Biometric band: %1$s</string>
+    <string name="nr_hrv" formatted="true">7-day HRV %1$s ms vs baseline %2$s ms (range %3$s-%4$s ms), %5$s</string>
+    <string name="nr_forma" formatted="true">CTL %1$s · ATL %2$s · TSB %3$s</string>
+    <string name="nr_forma_rampa" formatted="true">CTL %1$s · ATL %2$s · TSB %3$s · 7-day ramp %4$s</string>
+    <string name="nr_motivi" formatted="true">Reasons: %1$s</string>
+    <string name="nr_riposo_consigliato" formatted="true">REST recommended: %1$s — your biometrics ask for it, not the calendar.</string>
+    <string name="nr_giorno_riposo" formatted="true">%1$s %2$s: rest</string>
+    <string name="nr_giorno_sedute" formatted="true">%1$s %2$s: %3$s</string>
+    <string name="nr_seduta" formatted="true">%1$s %2$s\'</string>
+    <string name="nr_frammento_aerobica">" [aerobic]"</string>
+    <string name="nr_rimodulazione" formatted="true">🗓️ Weekly plan — adjusted on %1$s, band %2$s: %3$s</string>
+    <string name="nr_az_rimossa" formatted="true">%1$s removed — %2$s</string>
+    <string name="nr_az_resa_aerobica" formatted="true">%1$s made aerobic — %2$s</string>
+    <string name="nr_az_rimossa_disponibilita" formatted="true">%1$s removed — time available that day</string>
+    <string name="nr_az_accorciata_disponibilita" formatted="true">%1$s shortened to %2$s\' — time available that day</string>
+    <string name="ng_lun">Monday</string>
+    <string name="ng_mar">Tuesday</string>
+    <string name="ng_mer">Wednesday</string>
+    <string name="ng_gio">Thursday</string>
+    <string name="ng_ven">Friday</string>
+    <string name="ng_sab">Saturday</string>
+    <string name="ng_dom">Sunday</string>
+    <string name="ns_nuoto_chiave">Key progressive swim</string>
+    <string name="ns_nuoto_supporto">Endurance and pace swim</string>
+    <string name="ns_nuoto_rigenerante">Recovery swim</string>
+    <string name="ns_bici_chiave">Key ride</string>
+    <string name="ns_bici_supporto">Support ride + opener</string>
+    <string name="ns_corsa_supporto">Support run</string>
+    <string name="ns_corsa_chiave">Quality run</string>
+    <string name="ns_lungo_corsa">Long run</string>
+    <string name="ns_brick_bici">Brick — bike</string>
+    <string name="ns_brick_corsa">Brick — run off the bike</string>
+    <string name="ns_lungo_bici">Long ride</string>
+    <string name="ns_forza">Strength</string>
+    <string name="ns_mobilita">Mobility and core</string>
+    <string name="ns_gara_richiami">Race-pace openers</string>
+    <string name="ns_gara_nuoto">Pre-race swim</string>
+    <string name="ns_gara_bici_facile">Easy spin</string>
+    <string name="ns_gara_attivazione">Pre-race activation</string>
+</resources>

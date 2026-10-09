@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Cinese semplificato: DA RIVEDERE da un madrelingua (closed testing). Traduzione iniziale della Parte 3, ottobre 2026. -->
+<!-- 13d ter: righe delle notifiche del coach (RigheNotifica.kt). %%: percento letterale nelle stringhe con argomenti. -->
+<resources>
+    <string name="nr_int_continuo_carico" formatted="true">🗓️ 周计划 — 无比赛 — 持续周期，%1$s 区块，负荷周 %2$s/4</string>
+    <string name="nr_int_continuo_scarico" formatted="true">🗓️ 周计划 — 无比赛 — 持续周期，%1$s 区块，减量周</string>
+    <string name="nr_int_fase" formatted="true">🗓️ 周计划 — %1$s %2$s/%3$s%4$s — 距 %6$s 还有 %5$s 周</string>
+    <string name="nr_frammento_scarico">（减量周）</string>
+    <string name="nr_int_taper" formatted="true">🗓️ 周计划 — 减量期，距比赛 %1$s 周</string>
+    <string name="nr_int_gara" formatted="true">🗓️ 周计划 — 比赛周 — %1$s</string>
+    <string name="nr_int_recupero" formatted="true">🗓️ 周计划 — %1$s 赛后恢复（%2$s）</string>
+    <string name="nr_distanza" formatted="true">目标距离：%1$s · 阶段 %2$s%3$s</string>
+    <string name="nr_frammento_scarico_maiusc">" · 减量周"</string>
+    <string name="nd_olimpico">标准距离</string>
+    <string name="nd_70_3">70.3</string>
+    <string name="nd_full">全程</string>
+    <string name="nr_volume" formatted="true">有氧训练量：%1$sh%2$s（目标 %3$s 小时，生理系数 %4$s）</string>
+    <string name="nr_ripartizione" formatted="true">分配：游泳 %1$s%% · 骑行 %2$s%% · 跑步 %3$s%%</string>
+    <string name="nr_alta_intensita" formatted="true">高强度：骑行+跑步 %2$s 分钟中 %1$s 分钟（%3$s%%，上限 %4$s%%）</string>
+    <string name="nr_banda" formatted="true">生理区间：%1$s</string>
+    <string name="nr_hrv" formatted="true">7日 HRV %1$s ms，基线 %2$s ms（范围 %3$s-%4$s ms），%5$s</string>
+    <string name="nr_forma" formatted="true">CTL %1$s · ATL %2$s · TSB %3$s</string>
+    <string name="nr_forma_rampa" formatted="true">CTL %1$s · ATL %2$s · TSB %3$s · 7日增幅 %4$s</string>
+    <string name="nr_motivi" formatted="true">原因：%1$s</string>
+    <string name="nr_riposo_consigliato" formatted="true">建议休息：%1$s — 这是生理指标的要求，而非日历安排。</string>
+    <string name="nr_giorno_riposo" formatted="true">%1$s %2$s：休息</string>
+    <string name="nr_giorno_sedute" formatted="true">%1$s %2$s：%3$s</string>
+    <string name="nr_seduta" formatted="true">%1$s %2$s 分钟</string>
+    <string name="nr_frammento_aerobica">［有氧］</string>
+    <string name="nr_rimodulazione" formatted="true">🗓️ 周计划 — %1$s 调整，区间 %2$s：%3$s</string>
+    <string name="nr_az_rimossa" formatted="true">%1$s 已取消 — %2$s</string>
+    <string name="nr_az_resa_aerobica" formatted="true">%1$s 改为有氧 — %2$s</string>
+    <string name="nr_az_rimossa_disponibilita" formatted="true">%1$s 已取消 — 当天可用时间</string>
+    <string name="nr_az_accorciata_disponibilita" formatted="true">%1$s 缩短至 %2$s 分钟 — 当天可用时间</string>
+    <string name="ng_lun">周一</string>
+    <string name="ng_mar">周二</string>
+    <string name="ng_mer">周三</string>
+    <string name="ng_gio">周四</string>
+    <string name="ng_ven">周五</string>
+    <string name="ng_sab">周六</string>
+    <string name="ng_dom">周日</string>
+    <string name="ns_nuoto_chiave">游泳关键课（渐进）</string>
+    <string name="ns_nuoto_supporto">游泳耐力与节奏</string>
+    <string name="ns_nuoto_rigenerante">恢复游</string>
+    <string name="ns_bici_chiave">骑行关键课</string>
+    <string name="ns_bici_supporto">骑行辅助课 + 激活</string>
+    <string name="ns_corsa_supporto">跑步辅助课</string>
+    <string name="ns_corsa_chiave">跑步强度课</string>
+    <string name="ns_lungo_corsa">长距离跑</string>
+    <string name="ns_brick_bici">转项训练 — 骑行</string>
+    <string name="ns_brick_corsa">转项训练 — 骑后跑</string>
+    <string name="ns_lungo_bici">长距离骑行</string>
+    <string name="ns_forza">力量训练</string>
+    <string name="ns_mobilita">灵活性与核心</string>
+    <string name="ns_gara_richiami">比赛配速激活课</string>
+    <string name="ns_gara_nuoto">赛前游泳</string>
+    <string name="ns_gara_bici_facile">轻松骑行</string>
+    <string name="ns_gara_attivazione">赛前激活</string>
+</resources>

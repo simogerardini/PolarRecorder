@@ -3049,44 +3049,121 @@ def intensita_settimana(sedute, ctx=None, pos=None):
                        "sopra la soglia")}
 
 
-def riepilogo(pos, ore_target, mod, sedute, baseline, forma, giorni, ctx=None):
+# 13d ter (09/10/2026, richiesta della Parte 3): ogni riga delle notifiche del coach ha un
+# codice e i suoi valori, con le parole di elenco chiuso come codici (fase, blocco, tipo di
+# settimana, banda, direzione, giorno, sedute). RIGHE_NOTIFICHE[testo] = righe in ordine;
+# il cervello le restituisce accanto a ogni notifica (notifiche_righe).
+RIGHE_NOTIFICHE = {}
+GIORNI_CODICE = ["lun", "mar", "mer", "gio", "ven", "sab", "dom"]
+_DIREZIONE_CODICE = {"in salita": "in_salita", "in calo": "in_calo", "stabile": "stabile",
+                     "non determinabile": "non_determinabile"}
+
+
+def _riga(testo, codice, **valori):
+    return {"tipo": "notifica_riga", "codice": codice, "valori": valori, "testo": testo}
+
+
+def _intestazione(pos):
+    testo = f"{MARKER_NOTA} — {pos['etichetta']}"
+    f = pos.get("fase")
+    if f == "senza_gara":
+        return _riga(testo, "nr_intestazione_continuo", blocco=pos.get("blocco"),
+                     tipo_settimana="scarico" if pos.get("scarico") else "carico",
+                     carico=None if pos.get("scarico") else str((pos.get("idx_fase") or 0) + 1))
+    if f == "recupero":
+        post = pos.get("post_gara") or {}
+        return _riga(testo, "nr_intestazione_recupero", categoria=post.get("category"), gara=post.get("name"))
+    if f == "gara":
+        return _riga(testo, "nr_intestazione_gara", gara=(pos.get("gara") or {}).get("name"))
+    if f == "taper":
+        return _riga(testo, "nr_intestazione_taper", settimane=str(pos.get("settimane_alla_gara")))
+    return _riga(testo, "nr_intestazione_fase", fase=f, n=str((pos.get("idx_fase") or 0) + 1),
+                 tot=str(pos.get("len_fase")), scarico="si" if pos.get("scarico") else "no",
+                 settimane=str(pos.get("settimane_alla_gara")), gara=(pos.get("gara") or {}).get("name"))
+
+
+def riepilogo_righe(pos, ore_target, mod, sedute, baseline, forma, giorni, ctx=None):
     q = quote_effettive(sedute)
     cardio = sum(s["durata"] for s in sedute if s["famiglia"] != "forza")
     it = intensita_settimana(sedute, ctx, pos)
     hi, vol_bc = it["alta_min"], it["base_min"] or 1
-    r = [f"{MARKER_NOTA} — {pos['etichetta']}",
-         f"Distanza obiettivo: {pos['distanza']} · fase {pos['fase']}"
-         + (" · SCARICO" if pos.get("scarico") else ""),
-         f"Volume cardio: {cardio//60}h{cardio%60:02d} (target {ore_target}h, "
-         f"fattore biometrico {mod['fattore_volume']})",
-         f"Ripartizione: nuoto {int(q['nuoto']*100)}% · bici {int(q['bici']*100)}% · "
-         f"corsa {int(q['corsa']*100)}%",
-         f"Alta intensita': {hi}' su {vol_bc}' bici+corsa ({hi/vol_bc*100:.1f}%, tetto {it['tetto_pct']}%)",
-         f"Banda biometrica: {mod['banda'].upper()}"]
+    pct = f"{hi/vol_bc*100:.1f}"
+    r = [_intestazione(pos),
+         _riga(f"Distanza obiettivo: {pos['distanza']} · fase {pos['fase']}" + (" · SCARICO" if pos.get("scarico") else ""),
+               "nr_distanza", distanza=pos["distanza"], fase=pos["fase"],
+               tipo_settimana="scarico" if pos.get("scarico") else "normale"),
+         _riga(f"Volume cardio: {cardio//60}h{cardio%60:02d} (target {ore_target}h, "
+               f"fattore biometrico {mod['fattore_volume']})",
+               "nr_volume", ore=str(cardio // 60), minuti=f"{cardio%60:02d}", target=str(ore_target),
+               fattore=str(mod["fattore_volume"])),
+         _riga(f"Ripartizione: nuoto {int(q['nuoto']*100)}% · bici {int(q['bici']*100)}% · "
+               f"corsa {int(q['corsa']*100)}%", "nr_ripartizione", nuoto=str(int(q["nuoto"] * 100)),
+               bici=str(int(q["bici"] * 100)), corsa=str(int(q["corsa"] * 100))),
+         _riga(f"Alta intensita': {hi}' su {vol_bc}' bici+corsa ({pct}%, tetto {it['tetto_pct']}%)",
+               "nr_alta_intensita", min=str(hi), tot=str(vol_bc), pct=pct, tetto=str(it["tetto_pct"])),
+         _riga(f"Banda biometrica: {mod['banda'].upper()}", "nr_banda", banda=mod["banda"])]
     if baseline.get("ok"):
         nr = baseline["normal_range_ms"]
-        r.append(f"HRV media 7gg {baseline['rolling7_hrv']}ms su baseline "
-                 f"{baseline['baseline_hrv']}ms (range {nr[0]}-{nr[1]}ms), "
-                 f"{baseline['direzione_7v7']}")
+        r.append(_riga(f"HRV media 7gg {baseline['rolling7_hrv']}ms su baseline "
+                       f"{baseline['baseline_hrv']}ms (range {nr[0]}-{nr[1]}ms), {baseline['direzione_7v7']}",
+                       "nr_hrv", media=str(baseline["rolling7_hrv"]), baseline=str(baseline["baseline_hrv"]),
+                       min=str(nr[0]), max=str(nr[1]),
+                       direzione=_DIREZIONE_CODICE.get(baseline["direzione_7v7"], baseline["direzione_7v7"])))
     if forma.get("ok"):
-        r.append(f"CTL {forma['ctl']} · ATL {forma['atl']} · TSB {forma['tsb']}"
-                 + (f" · rampa 7gg {forma['rampa_7gg']:+}" if forma.get("rampa_7gg") is not None else ""))
+        rampa = forma.get("rampa_7gg")
+        r.append(_riga(f"CTL {forma['ctl']} · ATL {forma['atl']} · TSB {forma['tsb']}"
+                       + (f" · rampa 7gg {rampa:+}" if rampa is not None else ""),
+                       "nr_forma", ctl=str(forma["ctl"]), atl=str(forma["atl"]), tsb=str(forma["tsb"]),
+                       rampa=(f"{rampa:+}" if rampa is not None else None)))
     if mod["motivi"]:
-        r.append("Motivi della modulazione: " + "; ".join(mod["motivi"]))
+        r.append(_riga("Motivi della modulazione: " + "; ".join(mod["motivi"]), "nr_motivi",
+                       messaggi=[messaggi.codifica(m, "motivo") for m in mod["motivi"]]))
     if mod.get("giorno_riposo") is not None:
-        r.append(f"RIPOSO consigliato: {GIORNI_IT[mod['giorno_riposo']]} — "
-                 f"lo chiedono i biometrici, non il calendario.")
-    r.append("")
+        r.append(_riga(f"RIPOSO consigliato: {GIORNI_IT[mod['giorno_riposo']]} — "
+                       f"lo chiedono i biometrici, non il calendario.",
+                       "nr_riposo_consigliato", giorno=GIORNI_CODICE[mod["giorno_riposo"]]))
+    r.append(_riga("", "nr_vuota"))
     for g in range(7):
-        voci = [s for s in sedute if s["giorno"] == g]
+        voci = sorted((s for s in sedute if s["giorno"] == g), key=lambda x: x["slot"])
+        data = f"{giorni[g][8:10]}/{giorni[g][5:7]}"
         if not voci:
-            r.append(f"{GIORNI_IT[g]} {giorni[g][8:10]}/{giorni[g][5:7]}: riposo")
+            r.append(_riga(f"{GIORNI_IT[g]} {data}: riposo", "nr_giorno_riposo",
+                           giorno=GIORNI_CODICE[g], data=data))
             continue
-        dettagli = " + ".join(f"{NOMI[s['key']]} {s['durata']}'"
-                              + (" [aerobica]" if s.get("declassata") else "")
-                              for s in sorted(voci, key=lambda x: x["slot"]))
-        r.append(f"{GIORNI_IT[g]} {giorni[g][8:10]}/{giorni[g][5:7]}: {dettagli}")
-    return "\n".join(r)
+        dettagli = " + ".join(f"{NOMI[s['key']]} {s['durata']}'" + (" [aerobica]" if s.get("declassata") else "")
+                              for s in voci)
+        r.append(_riga(f"{GIORNI_IT[g]} {data}: {dettagli}", "nr_giorno_sedute", giorno=GIORNI_CODICE[g],
+                       data=data, sedute=[{"chiave": s["key"], "minuti": str(s["durata"]),
+                                           "aerobica": "si" if s.get("declassata") else "no"} for s in voci]))
+    for x in r:
+        x["valori"] = {k: v for k, v in x["valori"].items() if v is not None}
+    return r
+
+
+def riepilogo(pos, ore_target, mod, sedute, baseline, forma, giorni, ctx=None):
+    righe = riepilogo_righe(pos, ore_target, mod, sedute, baseline, forma, giorni, ctx)
+    testo = "\n".join(x["testo"] for x in righe)
+    RIGHE_NOTIFICHE[testo] = righe
+    return testo
+
+
+def nota_rimodulazione(oggi, mod, azioni):
+    """Notifica della rimodulazione del mattino. azioni = [(testo, riga codificata)]."""
+    prima = (f"{MARKER_NOTA} — rimodulazione del {oggi}, banda {mod['banda'].upper()}: "
+             + "; ".join(t for t, _ in azioni))
+    righe = [_riga(prima, "nr_rimodulazione", data=oggi, banda=mod["banda"], azioni=[c for _, c in azioni])]
+    testo = prima
+    if mod["motivi"]:
+        riga = f"Motivi: {'; '.join(mod['motivi'])}"
+        testo += "\n" + riga
+        righe.append(_riga(riga, "nr_motivi", messaggi=[messaggi.codifica(m, "motivo") for m in mod["motivi"]]))
+    RIGHE_NOTIFICHE[testo] = righe
+    return testo
+
+
+def _az(testo, codice, **valori):
+    """Azione della rimodulazione: (testo, codice e valori) per nota_rimodulazione."""
+    return testo, {"codice": codice, "valori": {k: v for k, v in valori.items() if v is not None}, "testo": testo}
 
 
 def scrivi_nota(testo, data_str, esistenti, dry=False):
@@ -3502,7 +3579,8 @@ def esegui_giornaliero(dry=False, force=False, pre_lock=None):
                 scrivi_evento(p, esistente, dry)
             coach = [e for e in coach if not (e.get("external_id") or "").startswith(
                 ("sw:brick_bici:", "sw:brick_corsa:"))]
-            azioni.append("brick alleggerito: corsa di qualita' di ieri oltre il 125% del TSS pianificato")
+            azioni.append(_az("brick alleggerito: corsa di qualita' di ieri oltre il 125% del TSS pianificato",
+                              "nr_az_brick_alleggerito"))
     eff_tag = effetti_tag(oggi, oggi, TAG_GIORNI, TAG_SEDUTE, activities)
     meteo_oggi = giorno_caldo(oggi)
     # 08/10/2026 ("+" sul calendario): minuti propri per oggi -> si applicano per primi
@@ -3520,13 +3598,16 @@ def esegui_giornaliero(dry=False, force=False, pre_lock=None):
             nome = ev.get("name") or "seduta"
             if azione == "togli":
                 cancella_evento(ev, dry)
-                azioni.append(f"{nome} rimossa — disponibilita' del giorno")
+                azioni.append(_az(f"{nome} rimossa — disponibilita' del giorno", "nr_az_rimossa_disponibilita",
+                                  chiave=(ev.get("external_id") or "::").split(":")[1] or None, nome=nome))
             else:
                 nuovo = {k: ev[k] for k in ("category", "start_date_local", "type", "name",
                                             "description", "external_id") if k in ev}
                 nuovo["moving_time"] = minuti * 60
                 scrivi_evento(nuovo, ev, dry)
-                azioni.append(f"{nome} accorciata a {minuti}' — disponibilita' del giorno")
+                azioni.append(_az(f"{nome} accorciata a {minuti}' — disponibilita' del giorno",
+                                  "nr_az_accorciata_disponibilita", minuti=str(minuti),
+                                  chiave=(ev.get("external_id") or "::").split(":")[1] or None, nome=nome))
             continue
         sch = palestra.scheda_da_nome(ev.get("name"))
         if (sch and eff_tag["prevenzione"] and not eff_tag["riposo"]
@@ -3539,7 +3620,8 @@ def esegui_giornaliero(dry=False, force=False, pre_lock=None):
                 p["external_id"] = ev.get("external_id")
                 scrivi_evento(p, ev, dry)
                 m = f"companion sostituita con {prev['titolo']} (prevenzione {eff_tag['prevenzione']})"
-                azioni.append(m)
+                azioni.append(_az(m, "nr_az_companion_prevenzione", scheda=prev["titolo"],
+                                  zona=eff_tag["prevenzione"]))
                 if m not in _MOTIVI_TAG:
                     _MOTIVI_TAG.append(m)
             continue
@@ -3557,7 +3639,7 @@ def esegui_giornaliero(dry=False, force=False, pre_lock=None):
             cancella_evento(ev, dry)
             for p in payload_eventi(s, oggi):
                 scrivi_evento(p, None, dry)
-            azioni.append(motivo)
+            azioni.append((motivo, {k: v for k, v in messaggi.codifica(motivo).items() if k != 'tipo'}))
             if motivo not in _MOTIVI_CALDO:
                 _MOTIVI_CALDO.append(motivo)
             continue
@@ -3568,7 +3650,7 @@ def esegui_giornaliero(dry=False, force=False, pre_lock=None):
             scrivi_evento({k: nuovo[k] for k in ("category", "start_date_local", "type", "name",
                                                  "description", "moving_time", "external_id")
                            if k in nuovo}, ev, dry)
-            azioni.append(motivo)
+            azioni.append((motivo, {k: v for k, v in messaggi.codifica(motivo).items() if k != 'tipo'}))
             if motivo not in _MOTIVI_CALDO:
                 _MOTIVI_CALDO.append(motivo)
             continue
@@ -3589,7 +3671,8 @@ def esegui_giornaliero(dry=False, force=False, pre_lock=None):
         if azione == "togli":
             print(f"    − {ev.get('name')}: rimossa ({motivo})")
             cancella_evento(ev, dry)
-            azioni.append(f"{NOMI.get(key, key)} rimossa — {motivo}")
+            azioni.append(_az(f"{NOMI.get(key, key)} rimossa — {motivo}", "nr_az_rimossa", chiave=key,
+                              motivo=messaggi.codifica(motivo, "motivo")))
             continue
         durata = int((ev.get("moving_time") or 0) / 60) or CATALOGO[key]["min"]
         if durata_max:
@@ -3601,14 +3684,11 @@ def esegui_giornaliero(dry=False, force=False, pre_lock=None):
              "giorno": _dt(oggi).weekday(), "slot": 1, "note": [], "companion": False}
         componi(s, ctx)
         scrivi_evento(payload_evento(s, oggi), ev, dry)
-        azioni.append(f"{NOMI.get(key, key)} convertita in aerobica — {motivo}")
+        azioni.append(_az(f"{NOMI.get(key, key)} convertita in aerobica — {motivo}", "nr_az_resa_aerobica",
+                          chiave=key, motivo=messaggi.codifica(motivo, "motivo")))
 
     if azioni:
-        nota = (f"{MARKER_NOTA} — rimodulazione del {oggi}, banda "
-                f"{mod['banda'].upper()}: " + "; ".join(azioni))
-        if mod["motivi"]:
-            nota += f"\nMotivi: {'; '.join(mod['motivi'])}"
-        telegram(nota)
+        telegram(nota_rimodulazione(oggi, mod, azioni))   # 13d ter: righe codificate
 
     return "fatto"
 

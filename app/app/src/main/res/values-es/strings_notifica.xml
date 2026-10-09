@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Spagnolo: DA RIVEDERE da un madrelingua (closed testing). Traduzione iniziale della Parte 3, ottobre 2026. -->
+<!-- 13d ter: righe delle notifiche del coach (RigheNotifica.kt). %%: percento letterale nelle stringhe con argomenti. -->
+<resources>
+    <string name="nr_int_continuo_carico" formatted="true">🗓️ Plan semanal — sin carrera — ciclo continuo, bloque %1$s, carga %2$s/4</string>
+    <string name="nr_int_continuo_scarico" formatted="true">🗓️ Plan semanal — sin carrera — ciclo continuo, bloque %1$s, descarga</string>
+    <string name="nr_int_fase" formatted="true">🗓️ Plan semanal — %1$s %2$s/%3$s%4$s — %5$s semanas para %6$s</string>
+    <string name="nr_frammento_scarico">" (descarga)"</string>
+    <string name="nr_int_taper" formatted="true">🗓️ Plan semanal — puesta a punto, %1$s semanas para la carrera</string>
+    <string name="nr_int_gara" formatted="true">🗓️ Plan semanal — semana de carrera — %1$s</string>
+    <string name="nr_int_recupero" formatted="true">🗓️ Plan semanal — recuperación tras %1$s (%2$s)</string>
+    <string name="nr_distanza" formatted="true">Distancia objetivo: %1$s · fase %2$s%3$s</string>
+    <string name="nr_frammento_scarico_maiusc">" · DESCARGA"</string>
+    <string name="nd_olimpico">olímpico</string>
+    <string name="nd_70_3">70.3</string>
+    <string name="nd_full">distancia completa</string>
+    <string name="nr_volume" formatted="true">Volumen cardio: %1$sh%2$s (objetivo %3$s h, factor biométrico %4$s)</string>
+    <string name="nr_ripartizione" formatted="true">Reparto: natación %1$s%% · bici %2$s%% · carrera %3$s%%</string>
+    <string name="nr_alta_intensita" formatted="true">Alta intensidad: %1$s\' de %2$s\' bici+carrera (%3$s%%, tope %4$s%%)</string>
+    <string name="nr_banda" formatted="true">Banda biométrica: %1$s</string>
+    <string name="nr_hrv" formatted="true">HRV media 7 días %1$s ms sobre línea base %2$s ms (rango %3$s-%4$s ms), %5$s</string>
+    <string name="nr_forma" formatted="true">CTL %1$s · ATL %2$s · TSB %3$s</string>
+    <string name="nr_forma_rampa" formatted="true">CTL %1$s · ATL %2$s · TSB %3$s · rampa 7 días %4$s</string>
+    <string name="nr_motivi" formatted="true">Motivos: %1$s</string>
+    <string name="nr_riposo_consigliato" formatted="true">DESCANSO recomendado: %1$s — lo piden los datos biométricos, no el calendario.</string>
+    <string name="nr_giorno_riposo" formatted="true">%1$s %2$s: descanso</string>
+    <string name="nr_giorno_sedute" formatted="true">%1$s %2$s: %3$s</string>
+    <string name="nr_seduta" formatted="true">%1$s %2$s\'</string>
+    <string name="nr_frammento_aerobica">" [aeróbica]"</string>
+    <string name="nr_rimodulazione" formatted="true">🗓️ Plan semanal — ajuste del %1$s, banda %2$s: %3$s</string>
+    <string name="nr_az_rimossa" formatted="true">%1$s eliminada — %2$s</string>
+    <string name="nr_az_resa_aerobica" formatted="true">%1$s convertida en aeróbica — %2$s</string>
+    <string name="nr_az_rimossa_disponibilita" formatted="true">%1$s eliminada — disponibilidad del día</string>
+    <string name="nr_az_accorciata_disponibilita" formatted="true">%1$s acortada a %2$s\' — disponibilidad del día</string>
+    <string name="ng_lun">Lunes</string>
+    <string name="ng_mar">Martes</string>
+    <string name="ng_mer">Miércoles</string>
+    <string name="ng_gio">Jueves</string>
+    <string name="ng_ven">Viernes</string>
+    <string name="ng_sab">Sábado</string>
+    <string name="ng_dom">Domingo</string>
+    <string name="ns_nuoto_chiave">Natación clave progresiva</string>
+    <string name="ns_nuoto_supporto">Natación de resistencia y ritmo</string>
+    <string name="ns_nuoto_rigenerante">Natación regenerativa</string>
+    <string name="ns_bici_chiave">Bici clave</string>
+    <string name="ns_bici_supporto">Bici de apoyo + activación</string>
+    <string name="ns_corsa_supporto">Carrera de apoyo</string>
+    <string name="ns_corsa_chiave">Carrera de calidad</string>
+    <string name="ns_lungo_corsa">Tirada larga</string>
+    <string name="ns_brick_bici">Brick — bici</string>
+    <string name="ns_brick_corsa">Brick — carrera a continuación</string>
+    <string name="ns_lungo_bici">Salida larga en bici</string>
+    <string name="ns_forza">Fuerza</string>
+    <string name="ns_mobilita">Movilidad y core</string>
+    <string name="ns_gara_richiami">Estímulos a ritmo de carrera</string>
+    <string name="ns_gara_nuoto">Natación precarrera</string>
+    <string name="ns_gara_bici_facile">Bici suave</string>
+    <string name="ns_gara_attivazione">Activación precarrera</string>
+</resources>

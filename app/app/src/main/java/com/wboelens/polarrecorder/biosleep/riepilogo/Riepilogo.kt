@@ -230,6 +230,7 @@ object RiepilogoParser {
         }
     // punto 13a/13d: testi del riepilogo -> codice e valori, per tradurli nelle schermate
     Messaggi.registra(Messaggi.leggi(j.get("messaggi")?.takeIf { it.isJsonArray }?.asJsonArray))
+    RigheNotifica.registra(j)
     return Riepilogo(
         versione = int(j, "v"),
         data = data,

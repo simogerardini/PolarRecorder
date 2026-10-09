@@ -117,6 +117,10 @@ object Messaggi {
           "regola_intensita_8020" to listOf(),
           "regola_intensita_gara" to listOf(),
           "oggi_riposo" to listOf(),
+          // 13d ter: motivi delle azioni di rimodulazione
+          "rm_riposo_biometrico" to listOf(),
+          "rm_banda_rossa_forza" to listOf(),
+          "rm_banda" to listOf("banda"),
           "piano_rimodulato" to listOf("data", "banda"),
           "piano_settimanale" to listOf(),
       )

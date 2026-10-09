@@ -1,5 +1,6 @@
 package com.wboelens.polarrecorder.biosleep.cervello
 
+import com.wboelens.polarrecorder.biosleep.riepilogo.RigheNotifica
 import com.wboelens.polarrecorder.biosleep.training.Formato
 import com.wboelens.polarrecorder.biosleep.riepilogo.TraduzioneMessaggi
 import com.wboelens.polarrecorder.biosleep.lingua.TestiSistema
@@ -269,6 +270,14 @@ object NotificheCoach {
 
   /** Un elemento di "notifiche" del cervello (gli avvisi che prima andavano su Telegram). */
   fun testo(context: Context, testo: String, riepilogo: Riepilogo? = null) {
+    // 13d ter: notifica ricostruita riga per riga dai codici del cervello, nella lingua dell'app
+    if (Lingua.effettiva(context) != "it") {
+      RigheNotifica.testo(context, testo)?.let { t ->
+        val r = t.lines()
+        mostra(context, testo.hashCode(), r.first(), r.drop(1).joinToString("\n").trim().ifEmpty { r.first() }, riepilogo?.data)
+        return
+      }
+    }
     // Resoconto settimanale: testo libero italiano del cervello (righe senza codice). In un'altra
     // lingua lo si ricompone dal riepilogo strutturato; in italiano resta quello completo.
     if (riepilogo != null && Lingua.effettiva(context) != "it" && testo.trimStart().startsWith("\uD83D\uDDD3")) {

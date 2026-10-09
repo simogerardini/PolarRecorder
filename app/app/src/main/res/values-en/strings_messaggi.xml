@@ -95,6 +95,9 @@
     <string name="msg_oggi_riposo">Rest</string>
     <string name="msg_frammento_nota_sat">" NOTE: 7-day average more than +1 SD above baseline: if it coincides with low resting HR and heavy legs, read it as possible parasympathetic saturation (overreaching), not as guaranteed freshness."</string>
     <string name="msg_frammento_nota_cv">" NOTE: day-to-day HRV variability has almost vanished. In a trained athlete a collapsing CV is not stability but one of the markers of non-functional overreaching (Plews 2013): do not increase the load this week even if the band is green."</string>
+    <string name="msg_rm_riposo_biometrico">the biometric curve calls for rest</string>
+    <string name="msg_rm_banda_rossa_forza">red band: recovery, no strength circuit</string>
+    <string name="msg_rm_banda" formatted="true">%1$s band</string>
     <string name="msg_frammento_caldo_tag">" (tag)"</string>
     <string name="msg_frammento_caldo_meteo" formatted="true">: %1$s °C, humidity %2$s%%</string>
     <string name="msg_frammento_alle" formatted="true">" at %1$s"</string>

@@ -138,6 +138,44 @@ _SOLO_CAMPO = tuple(p for v in TIPI_CAMPO.values() for p in v if p.endswith("_")
                                                                                      "motivo_calibrazione_segue_piano")
 
 
+# motivi della rimodulazione del mattino (coach_settimanale.rimodula_seduta)
+CATALOGO += [
+    ("rm_riposo_biometrico", r"la curva biometrica prescrive riposo"),
+    ("rm_banda_rossa_forza", r"banda rossa: recupero, niente circuito di forza"),
+    ("rm_banda", r"banda (?P<banda>verde|giallo|rosso|grigio)"),
+]
+
+# ── righe delle notifiche del coach (13d ter, 09/10/2026): codificate DOVE NASCONO
+# (coach_settimanale.riepilogo_righe e nota_rimodulazione), non riconosciute dal testo.
+# Elenco per l'app e per i test: codice -> valori (le parole di elenco chiuso sono codici).
+RIGHE_NOTIFICA = {
+    "nr_intestazione_continuo": "blocco (A|B), tipo_settimana (carico|scarico), carico (1-4, solo carico)",
+    "nr_intestazione_fase": "fase (base|build|peak), n, tot, scarico (si|no), settimane, gara (nome)",
+    "nr_intestazione_taper": "settimane",
+    "nr_intestazione_gara": "gara (nome)",
+    "nr_intestazione_recupero": "categoria (RACE_A|RACE_B|RACE_C), gara (nome)",
+    "nr_distanza": "distanza (olimpico|70.3|full), fase (codice fase), tipo_settimana (normale|scarico)",
+    "nr_volume": "ore, minuti, target (ore), fattore",
+    "nr_ripartizione": "nuoto, bici, corsa (percentuali)",
+    "nr_alta_intensita": "min, tot, pct, tetto",
+    "nr_banda": "banda (verde|giallo|rosso|grigio)",
+    "nr_hrv": "media, baseline, min, max (ms), direzione (in_salita|in_calo|stabile|non_determinabile)",
+    "nr_forma": "ctl, atl, tsb, rampa (facoltativa, con segno)",
+    "nr_motivi": "messaggi (motivi codificati, in ordine)",
+    "nr_riposo_consigliato": "giorno (lun..dom)",
+    "nr_vuota": "(riga vuota)",
+    "nr_giorno_riposo": "giorno (lun..dom), data (gg/mm)",
+    "nr_giorno_sedute": "giorno, data, sedute [{chiave (seduta del coach), minuti, aerobica (si|no)}]",
+    "nr_rimodulazione": "data, banda, azioni [{codice, valori, testo}] (codici nr_az_* o del CATALOGO)",
+    "nr_az_brick_alleggerito": "(nessuno)",
+    "nr_az_rimossa": "chiave (seduta del coach), motivo {codice, valori, testo}",
+    "nr_az_resa_aerobica": "chiave (seduta del coach), motivo {codice, valori, testo}",
+    "nr_az_rimossa_disponibilita": "chiave, nome (nome dell'evento)",
+    "nr_az_accorciata_disponibilita": "chiave, nome, minuti",
+    "nr_az_companion_prevenzione": "scheda (titolo), zona",
+}
+
+
 # notifiche (testi lunghi, multiriga): riconosciute dall'inizio
 NOTIFICHE = [
     ("piano_rimodulato", r"🗓️ Piano settimanale — rimodulazione del " + _D + r", banda (?P<banda>\w+):"),

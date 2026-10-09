@@ -95,6 +95,9 @@
     <string name="msg_oggi_riposo">休息</string>
     <string name="msg_frammento_nota_sat">" 注意：7日均值高于基线超过 +1 个标准差：如果同时出现静息心率偏低和腿部沉重，可能是副交感神经饱和（过度训练），而不一定代表状态良好。"</string>
     <string name="msg_frammento_nota_cv">" 注意：HRV 的日间变异几乎消失。对训练有素的运动员而言，CV 骤降并非稳定，而是非功能性过度训练的标志之一（Plews 2013）：即使区间为绿色，本周也不要增加负荷。"</string>
+    <string name="msg_rm_riposo_biometrico">生理指标曲线建议休息</string>
+    <string name="msg_rm_banda_rossa_forza">红色区间：恢复，不做力量循环</string>
+    <string name="msg_rm_banda" formatted="true">%1$s区间</string>
     <string name="msg_frammento_caldo_tag">（标签）</string>
     <string name="msg_frammento_caldo_meteo" formatted="true">：%1$s °C，湿度 %2$s%%</string>
     <string name="msg_frammento_alle" formatted="true">（%1$s 时）</string>

@@ -95,6 +95,9 @@
     <string name="msg_oggi_riposo">Descanso</string>
     <string name="msg_frammento_nota_sat">" NOTA: media de 7 días más de +1 DE por encima de la línea base: si coincide con FC en reposo baja y piernas pesadas, interprétala como posible saturación parasimpática (overreaching), no como frescura garantizada."</string>
     <string name="msg_frammento_nota_cv">" NOTA: la variabilidad diaria de la HRV casi ha desaparecido. En un atleta entrenado, un CV que se desploma no es estabilidad sino uno de los marcadores de overreaching no funcional (Plews 2013): no aumentes la carga esta semana aunque la banda esté verde."</string>
+    <string name="msg_rm_riposo_biometrico">la curva biométrica indica descanso</string>
+    <string name="msg_rm_banda_rossa_forza">banda roja: recuperación, sin circuito de fuerza</string>
+    <string name="msg_rm_banda" formatted="true">banda %1$s</string>
     <string name="msg_frammento_caldo_tag">" (etiqueta)"</string>
     <string name="msg_frammento_caldo_meteo" formatted="true">: %1$s °C, humedad %2$s%%</string>
     <string name="msg_frammento_alle" formatted="true">" a las %1$s"</string>
