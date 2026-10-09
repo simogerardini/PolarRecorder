@@ -1,5 +1,6 @@
 package com.wboelens.polarrecorder.biosleep.ui.allenamento
 
+import com.wboelens.polarrecorder.biosleep.riepilogo.TraduzioneMessaggi
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
@@ -150,10 +151,12 @@ private fun RigaConTag(
     puntato: Boolean = false,
 ) {
   val pulito = testo.replace(PREFISSO_TAG, "").trim()
+  // le icone si scelgono sul testo del cervello; si mostra quello tradotto per codice
+  val mostrato = TraduzioneMessaggi.testo(LocalContext.current, testo).let { if (it == testo) pulito else it }
   val caldo = pulito.startsWith("caldo del", ignoreCase = true)
   val detp = pulito.startsWith("DETP", ignoreCase = true)
   if (!daTag && !caldo && !detp) {
-    Text(if (puntato) "• $pulito" else pulito, style = stile, color = colore)
+    Text(if (puntato) "• $mostrato" else mostrato, style = stile, color = colore)
     return
   }
   Row(verticalAlignment = Alignment.Top) {
@@ -164,7 +167,7 @@ private fun RigaConTag(
     } else {
       Icon(Icons.Filled.Sell, "Tag", Modifier.padding(top = 2.dp, end = 6.dp).size(16.dp), tint = colore)
     }
-    Text(pulito.replaceFirstChar { it.uppercase() }, style = stile, color = colore)
+    Text(mostrato.replaceFirstChar { it.uppercase() }, style = stile, color = colore)
   }
 }
 
@@ -226,7 +229,7 @@ fun RiepilogoScreen(data: String, onBack: () -> Unit, onApriSeduta: (String) -> 
           for (riga in righe) {
             Row(verticalAlignment = Alignment.Top) {
               Icon(Icons.Filled.Update, "Aggiornata", Modifier.padding(top = 2.dp, end = 6.dp).size(16.dp), tint = MaterialTheme.colorScheme.primary)
-              Text(riga.replaceFirstChar { it.uppercase() }, style = MaterialTheme.typography.bodyMedium)
+              Text(TraduzioneMessaggi.testo(LocalContext.current, riga).replaceFirstChar { it.uppercase() }, style = MaterialTheme.typography.bodyMedium)
             }
           }
         }
@@ -410,7 +413,7 @@ private fun Forma(f: FormaCoach, giorno: LocalDate, storico: List<Pair<LocalDate
             .padding(10.dp),
         verticalArrangement = Arrangement.spacedBy(4.dp)) {
           Text("Fuori dalla fascia attesa", style = MaterialTheme.typography.titleSmall, color = MaterialTheme.colorScheme.onErrorContainer, fontWeight = FontWeight.Bold)
-          for (riga in fuoriFascia) Text(riga, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onErrorContainer)
+          for (riga in fuoriFascia) Text(TraduzioneMessaggi.testo(LocalContext.current, riga), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onErrorContainer)
         }
   }
   Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {

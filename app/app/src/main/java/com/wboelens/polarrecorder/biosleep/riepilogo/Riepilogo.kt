@@ -228,6 +228,8 @@ object RiepilogoParser {
               descrizione = descrizioneLeggibile(str(s, "descrizione")),
           )
         }
+    // punto 13a/13d: testi del riepilogo -> codice e valori, per tradurli nelle schermate
+    Messaggi.registra(Messaggi.leggi(j.get("messaggi")?.takeIf { it.isJsonArray }?.asJsonArray))
     return Riepilogo(
         versione = int(j, "v"),
         data = data,

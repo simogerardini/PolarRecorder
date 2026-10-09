@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Cinese semplificato: DA RIVEDERE da un madrelingua (closed testing). Traduzione iniziale della Parte 3, ottobre 2026. -->
+<!-- Messaggi del cervello per codice (python/messaggi.py). %1$s, %2$s...: valori nell'ordine di Messaggi.ORDINE. -->
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="msg_hrv_sotto_range_forte" formatted="true">HRV：7日均值低于正常范围超过 1 个标准差（%1$s）</string>
+    <string name="msg_hrv_sotto_range" formatted="true">HRV：7日均值低于正常范围（%1$s 个标准差）</string>
+    <string name="msg_hrv_sotto_range_persistente" formatted="true">HRV 已连续 %1$s 天低于正常范围</string>
+    <string name="msg_banda_rossa_persistente">持续红色区间：生理指标曲线建议恢复</string>
+    <string name="msg_sonno_medio_basso" formatted="true">7日平均睡眠 %1$s 小时</string>
+    <string name="msg_temperatura_alta" formatted="true">体温偏高 +%1$s°C（可能有炎症）</string>
+    <string name="msg_readiness_bassa" formatted="true">平均准备度 %1$s</string>
+    <string name="msg_fc_riposo_alta" formatted="true">静息心率高于基线 %1$s 次/分</string>
+    <string name="msg_rampa_ctl_alta" formatted="true">CTL 增幅 +%1$s/7天</string>
+    <string name="msg_tsb_basso" formatted="true">TSB %1$s</string>
+    <string name="msg_baseline_poche_notti" formatted="true">仅有 %1$s 天的 HRV 数据：可靠基线约需 14 天以上。不要仅凭今天的数据做出重大决定。</string>
+    <string name="msg_baseline_date_illeggibili">Oura 数据日期无法读取：无法计算基线。</string>
+    <string name="msg_baseline_non_disponibile">生理指标基线不可用</string>
+    <string name="msg_dato_biometrico_vecchio" formatted="true">最近的生理数据来自 %1$s 天前</string>
+    <string name="msg_settimana_senza_spazio" formatted="true">%1$s：标准周中没有空位</string>
+    <string name="msg_ripianificata_per_assenza" formatted="true">本周已从今天起重新规划：日历中自 %1$s 起有缺席</string>
+    <string name="msg_forza_tolta_tempo" formatted="true">%1$s 的力量训练已取消：可用时间不足 30 分钟，没有 20 分钟以内的力量课</string>
+    <string name="msg_forza_tolta_profilo" formatted="true">%1$s 的力量训练已取消：没有与资料中的器械和水平匹配的训练</string>
+    <string name="msg_companion_prevenzione" formatted="true">辅助训练已替换为 %1$s（%2$s 预防）</string>
+    <string name="msg_tag_malattia_riposo" formatted="true">%1$s 的生病标签：休息</string>
+    <string name="msg_tag_malattia_leggero" formatted="true">生病标签：%1$s 仅做轻度活动</string>
+    <string name="msg_tag_infortunio" formatted="true">受伤标签（%1$s）：%2$s 不进行 %3$s</string>
+    <string name="msg_tag_viaggio" formatted="true">%1$s 的出行标签：不安排强度课和力量训练，最多 45 分钟</string>
+    <string name="msg_tag_dolore_muscolare" formatted="true">%1$s 的肌肉酸痛标签：不安排强度课</string>
+    <string name="msg_tag_dolore_seduta" formatted="true">%2$s 训练中的疼痛标签（%1$s）：%3$s %4$s；加入预防辅助训练</string>
+    <string name="msg_tag_fatica_seduta" formatted="true">%1$s 训练的疲劳标签：%3$s 的 %2$s 改为有氧</string>
+    <string name="msg_tag_fatica" formatted="true">%1$s 训练的疲劳标签</string>
+    <string name="msg_tag_sconosciuti" formatted="true">已忽略未知标签：%1$s</string>
+    <string name="msg_caldo_corsa_convertita" formatted="true">%1$s 高温%2$s：轻松跑改为室内骑行 %3$s 分钟（x%4$s）</string>
+    <string name="msg_caldo_corsa_accorciata" formatted="true">%1$s 高温%2$s：%3$s缩短至 %4$s 分钟 — 选择较凉爽的时段，注意补水和电解质</string>
+    <string name="msg_detp_sospeso" formatted="true">DETP：热适应训练暂停，生理区间 %1$s</string>
+    <string name="msg_detp_gara_calda" formatted="true">DETP：为 %2$s 的高温比赛安排 %1$s 次热适应训练</string>
+    <string name="msg_detp_sweat_test" formatted="true">DETP：%1$s 进行出汗测试</string>
+    <string name="msg_detp_heat_block" formatted="true">DETP：%1$s 进行热适应训练</string>
+    <string name="msg_sweat_test_programmato" formatted="true">CORE 出汗测试安排在 %1$s</string>
+    <string name="msg_lthr_aggiornata" formatted="true">%1$s LTHR %2$s -> %3$s，已根据实际训练在 Intervals.icu 更新</string>
+    <string name="msg_ftp_aggiornata" formatted="true">骑行 FTP %1$s -> %2$s W，已在 Intervals.icu 更新</string>
+    <string name="msg_cp_aggiornata" formatted="true">跑步 CP %1$s -> %2$s W，已在 Intervals.icu 更新</string>
+    <string name="msg_test_programmato" formatted="true">%1$s 安排测试：%2$s</string>
+    <string name="msg_css_tempi_richiesti">CSS 测试已完成：请在应用中输入 400 米和 200 米成绩</string>
+    <string name="msg_passo_soglia_aggiornato" formatted="true">跑步阈值配速 %1$s（来自 %2$s 的测试），已在 Intervals.icu 更新</string>
+    <string name="msg_passo_soglia_da_confermare" formatted="true">%1$s 的跑步测试：配速 %2$s 与当前 %3$s 相差过大（超过 15%%）：未写入，请在 Intervals.icu 自行确认</string>
+    <string name="msg_passo_soglia_non_misurabile" formatted="true">%1$s 的跑步测试：无法测量配速，阈值配速不变</string>
+    <string name="msg_passo_soglia_scrittura_fallita" formatted="true">%1$s 的跑步测试：阈值配速写入失败</string>
+    <string name="msg_test_corsa_non_trovato" formatted="true">在活动中未找到 %1$s 的跑步测试：阈值配速不变</string>
+    <string name="msg_soglie_da_completare" formatted="true">需在 Intervals.icu 补全的阈值：%1$s</string>
+    <string name="msg_settimana_tipo_non_valida" formatted="true">标准周无效，使用默认设置：%1$s</string>
+    <string name="msg_fuso_non_valido" formatted="true">时区无效（%1$s）：使用 Europe/Rome</string>
+    <string name="msg_tsb_fuori_fascia" formatted="true">预计周日 TSB 为 %1$s，超出预期范围 %2$s/%3$s</string>
+    <string name="msg_sedute_non_scritte" formatted="true">%1$s 次训练未写入日历</string>
+    <string name="msg_seduta_non_scritta" formatted="true">%1$s — %2$s：%3$s</string>
+    <string name="msg_disponibilita_data_zero" formatted="true">%1$s：不可用</string>
+    <string name="msg_disponibilita_data_ridotta" formatted="true">%1$s：仅有 %2$s 分钟</string>
+    <string name="msg_brick_alleggerito" formatted="true">Brick 训练已减量：昨天的强度跑超过计划 TSS 的 125%%</string>
+    <string name="msg_seduta_accorciata_disponibilita" formatted="true">%1$s 缩短至 %2$s 分钟 — 当天可用时间</string>
+    <string name="msg_seduta_rimossa" formatted="true">%1$s 已取消 — %2$s</string>
+    <string name="msg_seduta_resa_aerobica" formatted="true">%1$s 改为有氧 — %2$s</string>
+    <string name="msg_piano_rimodulato" formatted="true">🗓️ 周计划 — %1$s 调整，区间 %2$s：</string>
+    <string name="msg_piano_settimanale">🗓️ 周计划</string>
+    <string name="msg_frammento_caldo_tag">（标签）</string>
+    <string name="msg_frammento_caldo_meteo" formatted="true">：%1$s °C，湿度 %2$s%%</string>
+    <string name="msg_frammento_alle" formatted="true">（%1$s 时）</string>
+    <string name="msg_frammento_seduta" formatted="true">"%1$s "</string>
+    <string name="msg_frammento_senza" formatted="true">不进行 %1$s</string>
+    <string name="voc_verde">绿色</string>
+    <string name="voc_giallo">黄色</string>
+    <string name="voc_gialla">黄色</string>
+    <string name="voc_arancio">橙色</string>
+    <string name="voc_arancione">橙色</string>
+    <string name="voc_rosso">红色</string>
+    <string name="voc_rossa">红色</string>
+    <string name="voc_grigio">灰色</string>
+    <string name="voc_grigia">灰色</string>
+    <string name="voc_ginocchio">膝盖</string>
+    <string name="voc_caviglia">脚踝</string>
+    <string name="voc_piede">脚</string>
+    <string name="voc_polpaccio">小腿</string>
+    <string name="voc_anca">髋部</string>
+    <string name="voc_schiena">背部</string>
+    <string name="voc_spalla">肩部</string>
+    <string name="voc_corsa">跑步</string>
+    <string name="voc_bici">骑行</string>
+    <string name="voc_nuoto">游泳</string>
+</resources>

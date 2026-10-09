@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Messaggi del cervello per codice (python/messaggi.py). %1$s, %2$s...: valori nell'ordine di Messaggi.ORDINE. -->
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="msg_hrv_sotto_range_forte" formatted="true">HRV: media 7gg oltre 1 SD sotto il normal range (%1$s)</string>
+    <string name="msg_hrv_sotto_range" formatted="true">HRV: media 7gg sotto il normal range (%1$s SD)</string>
+    <string name="msg_hrv_sotto_range_persistente" formatted="true">HRV sotto il normal range da %1$sgg</string>
+    <string name="msg_banda_rossa_persistente">banda rossa persistente: la curva biometrica prescrive recupero</string>
+    <string name="msg_sonno_medio_basso" formatted="true">sonno medio 7gg %1$sh</string>
+    <string name="msg_temperatura_alta" formatted="true">deviazione temperatura +%1$s°C (possibile infiammazione)</string>
+    <string name="msg_readiness_bassa" formatted="true">readiness media %1$s</string>
+    <string name="msg_fc_riposo_alta" formatted="true">FC a riposo +%1$s bpm sulla baseline</string>
+    <string name="msg_rampa_ctl_alta" formatted="true">rampa CTL +%1$s/7gg</string>
+    <string name="msg_tsb_basso" formatted="true">TSB %1$s</string>
+    <string name="msg_baseline_poche_notti" formatted="true">Solo %1$s giorni di HRV disponibili: servono ~14+ giorni per una baseline affidabile. Non prendere decisioni drastiche sul solo dato di oggi.</string>
+    <string name="msg_baseline_date_illeggibili">Date dei dati Oura illeggibili: baseline non calcolabile.</string>
+    <string name="msg_baseline_non_disponibile">baseline biometrica non disponibile</string>
+    <string name="msg_dato_biometrico_vecchio" formatted="true">ultimo dato biometrico di %1$s giorni fa</string>
+    <string name="msg_settimana_senza_spazio" formatted="true">%1$s: non c\'è spazio nella settimana tipo</string>
+    <string name="msg_ripianificata_per_assenza" formatted="true">settimana ripianificata da oggi: assenza a calendario dal %1$s</string>
+    <string name="msg_forza_tolta_tempo" formatted="true">forza del %1$s tolta: meno di 30\' disponibili: nessuna scheda di forza fino a 20\'</string>
+    <string name="msg_forza_tolta_profilo" formatted="true">forza del %1$s tolta: nessuna scheda compatibile con attrezzatura e livello del profilo</string>
+    <string name="msg_companion_prevenzione" formatted="true">companion sostituita con %1$s (prevenzione %2$s)</string>
+    <string name="msg_tag_malattia_riposo" formatted="true">tag malattia del %1$s: riposo</string>
+    <string name="msg_tag_malattia_leggero" formatted="true">tag malattia: %1$s solo attività leggera</string>
+    <string name="msg_tag_infortunio" formatted="true">tag infortunio %1$s: %2$s senza %3$s</string>
+    <string name="msg_tag_viaggio" formatted="true">tag viaggio del %1$s: niente qualità né forza, max 45\'</string>
+    <string name="msg_tag_dolore_muscolare" formatted="true">tag dolore muscolare del %1$s: niente qualità</string>
+    <string name="msg_tag_dolore_seduta" formatted="true">tag dolore %1$s nella seduta del %2$s: %3$s %4$s; companion di prevenzione</string>
+    <string name="msg_tag_fatica_seduta" formatted="true">tag di fatica sulla seduta del %1$s: %2$s del %3$s resa aerobica</string>
+    <string name="msg_tag_fatica" formatted="true">tag di fatica sulla seduta del %1$s</string>
+    <string name="msg_tag_sconosciuti" formatted="true">tag sconosciuti ignorati: %1$s</string>
+    <string name="msg_caldo_corsa_convertita" formatted="true">caldo del %1$s%2$s: corsa facile convertita in bici indoor %3$s\' (x%4$s)</string>
+    <string name="msg_caldo_corsa_accorciata" formatted="true">caldo del %1$s%2$s: %3$saccorciata a %4$s\' — esci nelle ore più fresche, idratazione ed elettroliti</string>
+    <string name="msg_detp_sospeso" formatted="true">DETP: heat block sospeso, banda biometrica %1$s</string>
+    <string name="msg_detp_gara_calda" formatted="true">DETP: %1$s heat block per la gara calda del %2$s</string>
+    <string name="msg_detp_sweat_test" formatted="true">DETP: sweat test il %1$s</string>
+    <string name="msg_detp_heat_block" formatted="true">DETP: heat block il %1$s</string>
+    <string name="msg_sweat_test_programmato" formatted="true">sweat test CORE in programma il %1$s</string>
+    <string name="msg_lthr_aggiornata" formatted="true">LTHR %1$s %2$s -> %3$s aggiornata su Intervals.icu dagli sforzi reali</string>
+    <string name="msg_ftp_aggiornata" formatted="true">FTP bici %1$s -> %2$s W aggiornata su Intervals.icu</string>
+    <string name="msg_cp_aggiornata" formatted="true">CP corsa %1$s -> %2$s W aggiornata su Intervals.icu</string>
+    <string name="msg_test_programmato" formatted="true">test in programma il %1$s: %2$s</string>
+    <string name="msg_css_tempi_richiesti">test CSS svolto: inserisci nell\'app i tempi dei 400 e dei 200 metri</string>
+    <string name="msg_passo_soglia_aggiornato" formatted="true">passo soglia corsa %1$s dal test del %2$s, aggiornato su Intervals.icu</string>
+    <string name="msg_passo_soglia_da_confermare" formatted="true">test di corsa del %1$s: passo %2$s troppo diverso dall\'attuale %3$s (oltre il 15%%): non scritto, conferma tu il valore su Intervals.icu</string>
+    <string name="msg_passo_soglia_non_misurabile" formatted="true">test di corsa del %1$s: passo non misurabile, passo soglia invariato</string>
+    <string name="msg_passo_soglia_scrittura_fallita" formatted="true">test di corsa del %1$s: scrittura del passo soglia non riuscita</string>
+    <string name="msg_test_corsa_non_trovato" formatted="true">test di corsa del %1$s non trovato tra le attività: passo soglia invariato</string>
+    <string name="msg_soglie_da_completare" formatted="true">soglie da completare su Intervals.icu: %1$s</string>
+    <string name="msg_settimana_tipo_non_valida" formatted="true">settimana tipo non valida, uso quella predefinita: %1$s</string>
+    <string name="msg_fuso_non_valido" formatted="true">fuso orario non valido (%1$s): uso Europe/Rome</string>
+    <string name="msg_tsb_fuori_fascia" formatted="true">TSB previsto a domenica %1$s fuori dalla fascia attesa %2$s/%3$s</string>
+    <string name="msg_sedute_non_scritte" formatted="true">%1$s sedute non scritte a calendario</string>
+    <string name="msg_seduta_non_scritta" formatted="true">%1$s — %2$s: %3$s</string>
+    <string name="msg_disponibilita_data_zero" formatted="true">%1$s: non disponibile</string>
+    <string name="msg_disponibilita_data_ridotta" formatted="true">%1$s: solo %2$s\' disponibili</string>
+    <string name="msg_brick_alleggerito" formatted="true">brick alleggerito: corsa di qualità di ieri oltre il 125%% del TSS pianificato</string>
+    <string name="msg_seduta_accorciata_disponibilita" formatted="true">%1$s accorciata a %2$s\' — disponibilità del giorno</string>
+    <string name="msg_seduta_rimossa" formatted="true">%1$s rimossa — %2$s</string>
+    <string name="msg_seduta_resa_aerobica" formatted="true">%1$s convertita in aerobica — %2$s</string>
+    <string name="msg_piano_rimodulato" formatted="true">🗓️ Piano settimanale — rimodulazione del %1$s, banda %2$s:</string>
+    <string name="msg_piano_settimanale">🗓️ Piano settimanale</string>
+    <string name="msg_frammento_caldo_tag">" (tag)"</string>
+    <string name="msg_frammento_caldo_meteo" formatted="true">: %1$s °C, umidità %2$s%%</string>
+    <string name="msg_frammento_alle" formatted="true">" alle %1$s"</string>
+    <string name="msg_frammento_seduta" formatted="true">"%1$s "</string>
+    <string name="msg_frammento_senza" formatted="true">senza %1$s</string>
+    <string name="voc_verde">verde</string>
+    <string name="voc_giallo">giallo</string>
+    <string name="voc_gialla">gialla</string>
+    <string name="voc_arancio">arancio</string>
+    <string name="voc_arancione">arancione</string>
+    <string name="voc_rosso">rosso</string>
+    <string name="voc_rossa">rossa</string>
+    <string name="voc_grigio">grigio</string>
+    <string name="voc_grigia">grigia</string>
+    <string name="voc_ginocchio">ginocchio</string>
+    <string name="voc_caviglia">caviglia</string>
+    <string name="voc_piede">piede</string>
+    <string name="voc_polpaccio">polpaccio</string>
+    <string name="voc_anca">anca</string>
+    <string name="voc_schiena">schiena</string>
+    <string name="voc_spalla">spalla</string>
+    <string name="voc_corsa">corsa</string>
+    <string name="voc_bici">bici</string>
+    <string name="voc_nuoto">nuoto</string>
+</resources>
