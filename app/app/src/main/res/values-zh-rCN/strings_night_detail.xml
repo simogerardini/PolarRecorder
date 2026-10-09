@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Cinese semplificato: DA RIVEDERE da un madrelingua (closed testing). Traduzione iniziale della Parte 3, ottobre 2026. -->
+<resources>
+    <string name="night_detail_eliminare_questa_notte">删除这一晚？</string>
+    <string name="night_detail_riepilogo_grafici_e_battiti">摘要、图表和记录的心跳将被永久删除。</string>
+    <string name="night_detail_elimina">删除</string>
+    <string name="night_detail_annulla">取消</string>
+    <string name="night_detail_fc_minima">最低心率</string>
+    <string name="night_detail_fc_a_riposo">静息心率</string>
+    <string name="night_detail_fc_media">平均心率</string>
+    <string name="night_detail_rmssd">rMSSD</string>
+    <string name="night_detail_sdnn">SDNN</string>
+    <string name="night_detail_pnn50">pNN50</string>
+    <string name="night_detail_l_hrv_di_questa">这一晚的 HRV 未计算，也不会发送到 Intervals.icu。</string>
+    <string name="night_detail_frequenza_cardiaca_media_5">心率（5 分钟平均）</string>
+    <string name="night_detail_rmssd_5_minuti">rMSSD（5 分钟）</string>
+    <string name="night_detail_qualita_del_segnale">信号质量</string>
+    <string name="night_detail_affidabilita_notte_coperta_da" formatted="true">可靠性 %1$s %%（有效心跳覆盖的夜间比例）· %2$s 次心跳 · 良好 %3$s %% · 已校正 %4$s %% · 已丢弃 %5$s %% · 中断 %6$s 次 · 有效窗口 %7$s/%8$s</string>
+    <string name="night_detail_intervals_icu">Intervals.icu</string>
+    <string name="night_detail_fasi_del_sonno">睡眠阶段</string>
+    <string name="night_detail_non_disponibili_per_questa">这一晚不可用（记录过短或信号不足）。</string>
+    <string name="night_detail_sonno_effettivo">实际睡眠</string>
+    <string name="night_detail_efficienza">效率</string>
+    <string name="night_detail_profondo">深睡</string>
+    <string name="night_detail_rem">REM</string>
+    <string name="night_detail_leggero">浅睡</string>
+    <string name="night_detail_veglia_notturna">夜间清醒</string>
+    <string name="night_detail_frequenza_cardiaca">心率</string>
+    <string name="night_detail_media_della_notte_bpm" formatted="true">夜间平均 %1$s 次/分 · 每 5 分钟一个值</string>
+    <string name="night_detail_variabilita_cardiaca_hrv">心率变异性（HRV）</string>
+    <string name="night_detail_pnn50_rmssd_ogni_5" formatted="true">pNN50 %1$s %% · 每 5 分钟的 rMSSD</string>
+    <string name="night_detail_registrazione">记录</string>
+    <string name="night_detail_affidabilita_battiti_scartati_interruzioni" formatted="true">可靠性 %1$s %% · %2$s 次心跳 · 已丢弃 %3$s %% · 中断 %4$s 次 · 有效窗口 %5$s/%6$s</string>
+    <string name="night_detail_invia_ora">立即发送</string>
+</resources>

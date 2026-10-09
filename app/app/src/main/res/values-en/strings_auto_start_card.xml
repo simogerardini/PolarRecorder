@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Inglese: DA RIVEDERE da un madrelingua (closed testing). Traduzione iniziale della Parte 3, ottobre 2026. -->
+<resources>
+    <string name="auto_start_card_avvio_automatico">Automatic start</string>
+    <string name="auto_start_card_associa_la_fascia">Pair the strap</string>
+    <string name="auto_start_card_rimuovi_associazione">Remove pairing</string>
+</resources>

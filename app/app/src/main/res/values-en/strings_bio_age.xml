@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Inglese: DA RIVEDERE da un madrelingua (closed testing). Traduzione iniziale della Parte 3, ottobre 2026. -->
+<resources>
+    <string name="bio_age_eta" formatted="true">%1$s Age</string>
+    <string name="bio_age_impossibile_leggere_le_attivita" formatted="true">Unable to read activities from Intervals.icu (%1$s)</string>
+    <string name="bio_age_fitness_e_allenamento_non">Fitness and training are not calculated until reading succeeds. If the error is 401 or 403, reconnect Intervals.icu from Settings.</string>
+    <string name="bio_age_riprova">Try again</string>
+    <string name="bio_age_modifica_data_di_nascita">Edit date of birth and sex</string>
+    <string name="bio_age_cosa_la_determina">What determines it</string>
+    <string name="bio_age_ritmo_d_invecchiamento">Pace of ageing</string>
+    <string name="bio_age_in_calibrazione">Calibrating</string>
+    <string name="bio_age_notti_degli_ultimi_28">Nights in the last 28 days</string>
+    <string name="bio_age_registrate_valide_escluse_per" formatted="true">%1$s recorded · %2$s valid · %3$s excluded for reliability below 80%% · %4$s excluded for missing sleep stages</string>
+    <string name="bio_age_servono_notti_valide_con" formatted="true">%1$s valid nights are needed: with fewer nights the age would change too much from one day to the next.</string>
+    <string name="bio_age_anteprima_non_ancora_un">Preview (not an age yet)</string>
+    <string name="bio_age_nessuna_componente_ancora_calcolabile">No component can be calculated yet.</string>
+    <string name="bio_age_sonno_compare_da_3">Sleep: appears from 3 valid nights.</string>
+    <string name="bio_age_il_tuo_profilo">Your profile</string>
+    <string name="bio_age_servono_per_confrontarti_con">Used to compare you with typical values for your age and sex. They stay on your phone.</string>
+    <string name="bio_age_data_di_nascita_aaaa">Date of birth (YYYY-MM-DD)</string>
+    <string name="bio_age_uomo">Man</string>
+    <string name="bio_age_donna">Woman</string>
+    <string name="bio_age_salva">Save</string>
+    <string name="bio_age_come_e_calcolata_ogni">How it is calculated: each component is compared with a typical person of your age and sex and converted into years using the mortality risks published in studies of hundreds of thousands of people (VO2max: Kodama 2009; training: Arem 2015; sleep duration: Cappuccio 2010; regularity: Windred 2024), assuming that the risk doubles every ~8 years. The range accounts for measurement error and study uncertainty. Resting HR and HRV are not included: published references are measured while awake and are not comparable with night values. It is a statistical wellbeing estimate, not a medical assessment.</string>
+</resources>

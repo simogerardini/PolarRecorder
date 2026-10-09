@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Spagnolo: DA RIVEDERE da un madrelingua (closed testing). Traduzione iniziale della Parte 3, ottobre 2026. -->
+<resources>
+    <string name="night_detail_eliminare_questa_notte">¿Eliminar esta noche?</string>
+    <string name="night_detail_riepilogo_grafici_e_battiti">El resumen, los gráficos y los latidos registrados se borrarán definitivamente.</string>
+    <string name="night_detail_elimina">Eliminar</string>
+    <string name="night_detail_annulla">Cancelar</string>
+    <string name="night_detail_fc_minima">FC mínima</string>
+    <string name="night_detail_fc_a_riposo">FC en reposo</string>
+    <string name="night_detail_fc_media">FC media</string>
+    <string name="night_detail_rmssd">rMSSD</string>
+    <string name="night_detail_sdnn">SDNN</string>
+    <string name="night_detail_pnn50">pNN50</string>
+    <string name="night_detail_l_hrv_di_questa">La HRV de esta noche no se calcula y no se envía a Intervals.icu.</string>
+    <string name="night_detail_frequenza_cardiaca_media_5">Frecuencia cardíaca (media de 5 minutos)</string>
+    <string name="night_detail_rmssd_5_minuti">rMSSD (5 minutos)</string>
+    <string name="night_detail_qualita_del_segnale">Calidad de la señal</string>
+    <string name="night_detail_affidabilita_notte_coperta_da" formatted="true">Fiabilidad %1$s %% (noche cubierta por latidos válidos) · %2$s latidos · buenos %3$s %% · corregidos %4$s %% · descartados %5$s %% · interrupciones %6$s · ventanas válidas %7$s/%8$s</string>
+    <string name="night_detail_intervals_icu">Intervals.icu</string>
+    <string name="night_detail_fasi_del_sonno">Fases del sueño</string>
+    <string name="night_detail_non_disponibili_per_questa">No disponibles para esta noche (registro demasiado corto o señal insuficiente).</string>
+    <string name="night_detail_sonno_effettivo">Sueño efectivo</string>
+    <string name="night_detail_efficienza">Eficiencia</string>
+    <string name="night_detail_profondo">Profundo</string>
+    <string name="night_detail_rem">REM</string>
+    <string name="night_detail_leggero">Ligero</string>
+    <string name="night_detail_veglia_notturna">Vigilia nocturna</string>
+    <string name="night_detail_frequenza_cardiaca">Frecuencia cardíaca</string>
+    <string name="night_detail_media_della_notte_bpm" formatted="true">Media de la noche %1$s ppm · valores cada 5 minutos</string>
+    <string name="night_detail_variabilita_cardiaca_hrv">Variabilidad cardíaca (HRV)</string>
+    <string name="night_detail_pnn50_rmssd_ogni_5" formatted="true">pNN50 %1$s %% · rMSSD cada 5 minutos</string>
+    <string name="night_detail_registrazione">Registro</string>
+    <string name="night_detail_affidabilita_battiti_scartati_interruzioni" formatted="true">Fiabilidad %1$s %% · %2$s latidos · descartados %3$s %% · interrupciones %4$s · ventanas válidas %5$s/%6$s</string>
+    <string name="night_detail_invia_ora">Enviar ahora</string>
+</resources>

@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Spagnolo: DA RIVEDERE da un madrelingua (closed testing). Traduzione iniziale della Parte 3, ottobre 2026. -->
+<resources>
+    <string name="nights_le_mie_notti">Mis noches</string>
+    <string name="nights_analisi_della_notte_in">Analizando la noche…</string>
+    <string name="nights_abitudini_apprese">Hábitos aprendidos</string>
+    <string name="nights_a_letto_di_solito" formatted="true">Normalmente en la cama entre las %1$s y las %2$s · parada automática desde las %3$s</string>
+    <string name="nights_apprendimento_abitudini_di_notti" formatted="true">Aprendiendo hábitos: %1$s de %2$s noches</string>
+    <string name="nights_contano_le_notti_di">Cuentan las noches de al menos 4 horas de los últimos 28 días. Mientras tanto, inicia la noche con \"Iniciar noche\": la parada de la mañana ya es automática.</string>
+</resources>

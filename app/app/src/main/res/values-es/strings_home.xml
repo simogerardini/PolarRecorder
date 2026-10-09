@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Spagnolo: DA RIVEDERE da un madrelingua (closed testing). Traduzione iniziale della Parte 3, ottobre 2026. -->
+<resources>
+    <string name="home_collega_la_tua_fascia">Conecta tu banda</string>
+    <string name="home_1_bagna_gli_elettrodi" formatted="true">1. Moja los electrodos y ponte la banda: se enciende sola.\n2. Cuando aparezca aquí abajo, pulsa Conectar.\n%1$s lo configura todo solo: latido e intervalos RR, y con la Polar H10 también movimiento y respiración. También funcionan bandas cardíacas de otras marcas (Garmin, Wahoo, Coospo…): con ellas no hay acelerómetro, y los RR se verifican en los primeros minutos de registro.</string>
+    <string name="home_ricerca_della_fascia">Buscando la banda…</string>
+    <string name="home_connetti">Conectar</string>
+    <string name="home_pronta_per_la_notte">Lista para la noche</string>
+    <string name="home_invia_rapporto_fascia">Enviar informe de la banda</string>
+    <string name="home_avvio_non_riuscito" formatted="true">No se pudo iniciar: %1$s</string>
+    <string name="home_le_mie_notti">Mis noches</string>
+    <string name="home_cambia_fascia">Cambiar banda</string>
+    <string name="home_cambiare_fascia">¿Cambiar de banda?</string>
+    <string name="home_le_notti_registrate_restano">Las noches registradas se conservan. Luego conectarás la nueva banda.</string>
+    <string name="home_cambia">Cambiar</string>
+    <string name="home_annulla">Cancelar</string>
+    <string name="home_notte_in_corso">Noche en curso</string>
+    <string name="home_da_iniziata_alle" formatted="true">Desde hace %1$s · iniciada a las %2$s</string>
+    <string name="home_mostra_il_fiore">Mostrar la flor</string>
+    <string name="home_termina_notte">Terminar noche</string>
+    <string name="home_terminare_la_notte">¿Terminar la noche?</string>
+    <string name="home_la_registrazione_si_ferma">El registro se detiene y la noche se analiza.</string>
+    <string name="home_termina">Terminar</string>
+    <string name="home_continua">Continuar</string>
+</resources>

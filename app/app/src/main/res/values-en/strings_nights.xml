@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Inglese: DA RIVEDERE da un madrelingua (closed testing). Traduzione iniziale della Parte 3, ottobre 2026. -->
+<resources>
+    <string name="nights_le_mie_notti">My nights</string>
+    <string name="nights_analisi_della_notte_in">Analysing the night…</string>
+    <string name="nights_abitudini_apprese">Learned habits</string>
+    <string name="nights_a_letto_di_solito" formatted="true">Usually in bed between %1$s and %2$s · automatic stop from %3$s</string>
+    <string name="nights_apprendimento_abitudini_di_notti" formatted="true">Learning habits: %1$s of %2$s nights</string>
+    <string name="nights_contano_le_notti_di">Nights of at least 4 hours in the last 28 days count. Meanwhile start the night with \"Start night\": the morning stop is already automatic.</string>
+</resources>

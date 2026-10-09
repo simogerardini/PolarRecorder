@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Cinese semplificato: DA RIVEDERE da un madrelingua (closed testing). Traduzione iniziale della Parte 3, ottobre 2026. -->
+<resources>
+    <string name="auto_start_card_avvio_automatico">自动开始</string>
+    <string name="auto_start_card_associa_la_fascia">配对心率带</string>
+    <string name="auto_start_card_rimuovi_associazione">取消配对</string>
+</resources>

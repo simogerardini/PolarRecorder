@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Inglese: DA RIVEDERE da un madrelingua (closed testing). Traduzione iniziale della Parte 3, ottobre 2026. -->
+<resources>
+    <string name="home_collega_la_tua_fascia">Connect your strap</string>
+    <string name="home_1_bagna_gli_elettrodi" formatted="true">1. Wet the electrodes and put on the strap: it turns on by itself.\n2. When it appears below, tap Connect.\n%1$s sets everything up by itself: heartbeat and RR intervals, and with the Polar H10 also movement and breathing. Heart rate straps from other brands work too (Garmin, Wahoo, Coospo…): with these there is no accelerometer, and RR intervals are checked in the first minutes of recording.</string>
+    <string name="home_ricerca_della_fascia">Looking for the strap…</string>
+    <string name="home_connetti">Connect</string>
+    <string name="home_pronta_per_la_notte">Ready for the night</string>
+    <string name="home_invia_rapporto_fascia">Send strap report</string>
+    <string name="home_avvio_non_riuscito" formatted="true">Start failed: %1$s</string>
+    <string name="home_le_mie_notti">My nights</string>
+    <string name="home_cambia_fascia">Change strap</string>
+    <string name="home_cambiare_fascia">Change strap?</string>
+    <string name="home_le_notti_registrate_restano">Your recorded nights are kept. Then you will connect the new strap.</string>
+    <string name="home_cambia">Change</string>
+    <string name="home_annulla">Cancel</string>
+    <string name="home_notte_in_corso">Night in progress</string>
+    <string name="home_da_iniziata_alle" formatted="true">For %1$s · started at %2$s</string>
+    <string name="home_mostra_il_fiore">Show the flower</string>
+    <string name="home_termina_notte">End night</string>
+    <string name="home_terminare_la_notte">End the night?</string>
+    <string name="home_la_registrazione_si_ferma">Recording stops and the night is analysed.</string>
+    <string name="home_termina">End</string>
+    <string name="home_continua">Continue</string>
+</resources>

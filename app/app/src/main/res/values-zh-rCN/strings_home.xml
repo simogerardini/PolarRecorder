@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Cinese semplificato: DA RIVEDERE da un madrelingua (closed testing). Traduzione iniziale della Parte 3, ottobre 2026. -->
+<resources>
+    <string name="home_collega_la_tua_fascia">连接心率带</string>
+    <string name="home_1_bagna_gli_elettrodi" formatted="true">1. 润湿电极并佩戴心率带：它会自动开启。\n2. 当它出现在下方时，点按“连接”。\n%1$s 会自动完成全部设置：心跳和 RR 间期，使用 Polar H10 时还包括动作和呼吸。其他品牌的心率带（Garmin、Wahoo、Coospo…）也可使用：这些设备没有加速度计，RR 间期会在记录的最初几分钟内进行校验。</string>
+    <string name="home_ricerca_della_fascia">正在搜索心率带…</string>
+    <string name="home_connetti">连接</string>
+    <string name="home_pronta_per_la_notte">准备好记录夜间</string>
+    <string name="home_invia_rapporto_fascia">发送心率带报告</string>
+    <string name="home_avvio_non_riuscito" formatted="true">启动失败：%1$s</string>
+    <string name="home_le_mie_notti">我的夜间记录</string>
+    <string name="home_cambia_fascia">更换心率带</string>
+    <string name="home_cambiare_fascia">更换心率带？</string>
+    <string name="home_le_notti_registrate_restano">已记录的夜间数据会保留。之后再连接新的心率带。</string>
+    <string name="home_cambia">更换</string>
+    <string name="home_annulla">取消</string>
+    <string name="home_notte_in_corso">正在记录夜间</string>
+    <string name="home_da_iniziata_alle" formatted="true">已持续 %1$s · %2$s 开始</string>
+    <string name="home_mostra_il_fiore">显示花朵</string>
+    <string name="home_termina_notte">结束夜间记录</string>
+    <string name="home_terminare_la_notte">结束夜间记录？</string>
+    <string name="home_la_registrazione_si_ferma">记录将停止，并开始分析这一晚。</string>
+    <string name="home_termina">结束</string>
+    <string name="home_continua">继续</string>
+</resources>

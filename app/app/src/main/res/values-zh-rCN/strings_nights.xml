@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Cinese semplificato: DA RIVEDERE da un madrelingua (closed testing). Traduzione iniziale della Parte 3, ottobre 2026. -->
+<resources>
+    <string name="nights_le_mie_notti">我的夜间记录</string>
+    <string name="nights_analisi_della_notte_in">正在分析这一晚…</string>
+    <string name="nights_abitudini_apprese">已学习的作息习惯</string>
+    <string name="nights_a_letto_di_solito" formatted="true">通常 %1$s 至 %2$s 上床 · %3$s 起自动停止</string>
+    <string name="nights_apprendimento_abitudini_di_notti" formatted="true">正在学习作息：%1$s/%2$s 晚</string>
+    <string name="nights_contano_le_notti_di">仅统计最近 28 天内至少 4 小时的夜间记录。在此期间请用“开始夜间记录”启动：早上会自动停止。</string>
+</resources>
