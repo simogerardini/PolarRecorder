@@ -46,6 +46,7 @@ import com.wboelens.polarrecorder.biosleep.NightListItem
 import com.wboelens.polarrecorder.biosleep.SleepDb
 import com.wboelens.polarrecorder.biosleep.WindowMetrics
 import com.wboelens.polarrecorder.biosleep.intervals.IntervalsSync
+import com.wboelens.polarrecorder.biosleep.ui.allenamento.Sezione
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -240,9 +241,9 @@ private fun NightContent(
 }
 
 @Composable
-private fun SleepStagesSection(night: NightListItem) {
+private fun SleepStagesSection(night: NightListItem, titolo: Boolean = true) {
   val st = night.stages
-  Text("Fasi del sonno", style = MaterialTheme.typography.titleSmall)
+  if (titolo) Text("Fasi del sonno", style = MaterialTheme.typography.titleSmall)
   if (st == null || st.tstMin == 0) {
     Text(
         "Non disponibili per questa notte (registrazione troppo breve o segnale insufficiente).",
@@ -320,6 +321,108 @@ private fun MetricCard(m: Metric, modifier: Modifier) {
             style = MaterialTheme.typography.bodySmall,
             modifier = Modifier.padding(bottom = 4.dp),
         )
+      }
+    }
+  }
+}
+
+// --- Riepilogo della notte per la schermata Sonno (stile Oura) --------------------------------
+
+/**
+ * Riepilogo completo di una notte, nell'ordine di Oura: orari, fasi del sonno, frequenza
+ * cardiaca, HRV, qualita' del segnale e invio a Intervals.icu. Senza scorrimento proprio: si
+ * inserisce in una schermata che scorre (la schermata Sonno). Il dettaglio in "Le mie notti"
+ * resta com'e'.
+ */
+@Composable
+fun RiepilogoNotte(sessionId: Long) {
+  val context = LocalContext.current
+  val scope = rememberCoroutineScope()
+  var syncing by remember { mutableStateOf(false) }
+  var reloadKey by remember { mutableIntStateOf(0) }
+  val state by
+      produceState<LoadState<NightDetail>>(LoadState.Loading, sessionId, reloadKey) {
+        value =
+            try {
+              withContext(Dispatchers.IO) {
+                val db = SleepDb.get(context)
+                db.loadNight(sessionId)?.let { LoadState.Ready(NightDetail(it, db.loadWindows(sessionId))) }
+                    ?: LoadState.Error("Notte non trovata")
+              }
+            } catch (e: SQLException) {
+              LoadState.Error(e.message ?: "Errore del database")
+            }
+      }
+  when (val st = state) {
+    is LoadState.Loading -> Box(Modifier.fillMaxWidth().padding(24.dp), contentAlignment = Alignment.Center) { CircularProgressIndicator() }
+    is LoadState.Error -> Text(st.message, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.error)
+    is LoadState.Ready -> {
+      val night = st.data.night
+      val s = night.summary
+      val w = st.data.windows
+      val soloFc = night.stages?.mode?.startsWith("FC") == true
+
+      Sezione("Fasi del sonno") {
+        Text(nightTimes(s.startMs, s.endMs), style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
+        SleepStagesSection(night, titolo = false)
+      }
+
+      Sezione("Frequenza cardiaca") {
+        MetricRow(Metric("FC a riposo", fmt(s.restingHr), "bpm"), Metric("FC minima", fmt(s.hrMin), "bpm"))
+        Text("Media della notte ${fmt(s.hrAvg)} bpm · valori ogni 5 minuti", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+        TimeLineChart(times = w.map { it.startMs }, values = w.map { it.hr }, lineColor = HR_COLOR, modifier = Modifier.fillMaxWidth().height(160.dp))
+      }
+
+      Sezione("Variabilità cardiaca (HRV)") {
+        if (soloFc) {
+          AvvisoSenzaHrv()
+          Text(
+              "L'HRV di questa notte non è calcolata e non viene inviata a Intervals.icu.",
+              style = MaterialTheme.typography.bodySmall,
+              color = MaterialTheme.colorScheme.onSurfaceVariant)
+        } else {
+          MetricRow(Metric("rMSSD", fmt(s.rmssd, 1), "ms"), Metric("SDNN", fmt(s.sdnn, 1), "ms"))
+          Text("pNN50 ${fmt(s.pnn50, 1)} % · rMSSD ogni 5 minuti", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+          TimeLineChart(times = w.map { it.startMs }, values = w.map { it.rmssd }, lineColor = RMSSD_COLOR, modifier = Modifier.fillMaxWidth().height(160.dp))
+        }
+      }
+
+      Sezione("Registrazione") {
+        Text(
+            "Affidabilità ${fmt(s.qualityPct, 1)} % · ${s.beats} battiti · scartati ${fmt(s.pctDropped, 1)} % · " +
+                "interruzioni ${s.gaps} · finestre valide ${s.windowsOk}/${s.windowsTotal}",
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant)
+        Text(
+            when {
+              night.syncedAt != null -> "Intervals.icu: ✓ inviata il ${dateTimeLabel(night.syncedAt)}"
+              night.syncStatus != null -> "Intervals.icu: non inviata (${night.syncStatus})"
+              else -> "Intervals.icu: non ancora inviata"
+            },
+            style = MaterialTheme.typography.bodySmall,
+            color =
+                if (night.syncedAt == null && night.syncStatus != null) MaterialTheme.colorScheme.error
+                else MaterialTheme.colorScheme.onSurfaceVariant)
+        if (night.syncedAt == null) {
+          Row(verticalAlignment = Alignment.CenterVertically) {
+            Button(
+                onClick = {
+                  syncing = true
+                  scope.launch {
+                    withContext(Dispatchers.IO) { IntervalsSync.syncNight(context, sessionId) }
+                    syncing = false
+                    reloadKey++
+                  }
+                },
+                enabled = !syncing) {
+                  Text("Invia ora")
+                }
+            if (syncing) {
+              Spacer(Modifier.width(12.dp))
+              CircularProgressIndicator(Modifier.size(24.dp))
+            }
+          }
+        }
       }
     }
   }

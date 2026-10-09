@@ -143,6 +143,14 @@ private fun Mini(titolo: String, valore: String, nota: String?) {
 @Composable
 fun SonnoScreen(onBack: () -> Unit) {
   val s = rememberStatoSonno()
+  val context = LocalContext.current.applicationContext
+  // l'ultima notte registrata: il suo riepilogo completo sotto il punteggio, come in Oura
+  val ultimaNotte by
+      produceState<Long?>(null, s) {
+        value = withContext(Dispatchers.IO) {
+          runCatching { SleepDb.get(context).listNights().maxByOrNull { it.summary.endMs }?.sessionId }.getOrNull()
+        }
+      }
   Scaffold(
       topBar = {
         TopAppBar(
@@ -159,6 +167,9 @@ fun SonnoScreen(onBack: () -> Unit) {
         verticalArrangement = Arrangement.spacedBy(16.dp),
     ) {
       Sezione("Punteggio del sonno") { Punteggio(s) }
+      // la notte: fasi, frequenza cardiaca, HRV, registrazione
+      ultimaNotte?.let { RiepilogoNotte(it) }
+      // le tendenze di piu' notti
       Sezione("Deficit di sonno") { Deficit(s) }
       Sezione("Orologio biologico") { Orologio(s) }
       Sezione("Cronotipo") { Cronotipo(s) }

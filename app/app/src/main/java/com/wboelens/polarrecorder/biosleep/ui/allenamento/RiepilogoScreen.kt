@@ -1,5 +1,6 @@
 package com.wboelens.polarrecorder.biosleep.ui.allenamento
 
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -312,12 +313,20 @@ private fun Biometria(b: BiometriaCoach) {
     b.nota?.let { Text(it, style = nota, color = grigio) }
     return
   }
-  Row(verticalAlignment = Alignment.CenterVertically) {
-    Box(Modifier.size(14.dp).background(ColoriBio.daNome(b.banda), CircleShape))
-    Spacer(Modifier.width(8.dp))
-    Text(
-        listOfNotNull(b.banda?.replaceFirstChar { it.uppercase() }, b.azione).joinToString(" — "),
-        fontWeight = FontWeight.Bold)
+  // "Procedi con la seduta pianificata (media 7gg dentro il normal range 54.0-59.4ms)."
+  // -> titolo corto sulla riga del pallino, dettaglio tra parentesi sotto, piu' piccolo e giustificato
+  val (azione, dettaglio) = dividiAzione(b.azione)
+  Row(verticalAlignment = Alignment.Top) {
+    Box(Modifier.padding(top = 5.dp).size(12.dp).background(ColoriBio.daNome(b.banda), CircleShape))
+    Spacer(Modifier.width(10.dp))
+    Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(2.dp)) {
+      Text(
+          listOfNotNull(b.banda?.replaceFirstChar { it.uppercase() }, azione).joinToString(" · "),
+          style = MaterialTheme.typography.titleMedium)
+      dettaglio?.let {
+        Text(it, style = MaterialTheme.typography.bodyMedium, color = grigio, textAlign = TextAlign.Justify)
+      }
+    }
   }
   b.nota?.let { Text(it, style = nota, color = grigio) }
   if (b.hrv7gg != null) {
@@ -342,6 +351,22 @@ private fun Biometria(b: BiometriaCoach) {
         style = MaterialTheme.typography.bodyMedium,
         color = if (b.fcAllarme == true) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.onSurface)
   }
+}
+
+/**
+ * Azione della banda dal cervello: parte principale e dettaglio tra parentesi, con i decimali
+ * all'italiana ("54.0-59.4ms" -> "54,0–59,4 ms").
+ */
+internal fun dividiAzione(azione: String?): Pair<String?, String?> {
+  if (azione == null) return null to null
+  val t = azione.trim().removeSuffix(".")
+  val i = t.indexOf(" (")
+  val principale = if (i > 0) t.substring(0, i).trim() else t
+  val dettaglio =
+      if (i > 0) t.substring(i + 2).removeSuffix(")").trim().replaceFirstChar { it.uppercase() } else null
+  fun italiano(s: String) =
+      s.replace(Regex("""(\d)\.(\d)"""), "$1,$2").replace(Regex("""(\d)-(\d)"""), "$1–$2").replace(Regex("""(\d)ms\b"""), "$1 ms")
+  return italiano(principale) to dettaglio?.let { italiano(it) }
 }
 
 /** Barra orizzontale: il range normale evidenziato e un marcatore sul valore. */
