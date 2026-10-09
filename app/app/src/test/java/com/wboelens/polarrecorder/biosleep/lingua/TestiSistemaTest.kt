@@ -22,7 +22,8 @@ class TestiSistemaTest {
 
   private fun traduttore(cartella: String): (String) -> String {
     val s = stringhe(cartella)
-    return { t -> TestiSistema.traduci(t) { nome, args -> s[nome]?.let { String.format(it, *args) } } }
+    // come Android in TestiSistema: senza argomenti la stringa non si formatta
+    return { t -> TestiSistema.traduci(t) { nome, args -> s[nome]?.let { if (args.isEmpty()) it else String.format(it, *args) } } }
   }
 
   @Test
@@ -64,5 +65,31 @@ class TestiSistemaTest {
     assertEquals("1. Turn on Autostart for NoctaliX.", en("1. Attiva l'Avvio automatico per NoctaliX."))
     assertEquals("Pairing failed: cancelled", en("Associazione non riuscita: annullata"))
     assertEquals("frase che nessuno conosce", en("frase che nessuno conosce"))
+  }
+
+  @Test
+  fun frasiCompostEESpazi() {
+    val en = traduttore("values-en")
+    assertEquals("Run · 48' · 47 TSS", en("Corsa · 48' · 47 TSS"))
+    assertEquals("  No tags for today", en("  Nessun tag per oggi"))
+    assertEquals("Grey zone for 12 days", en("Zona Grigia da 12 giorni"))
+    assertEquals("Hours: 2h54 of 6h35 · cap 10h00 · 3h42 left in 3 days", en("Ore: 2h54 di 6h35 · tetto 10h00 · restano 3h42 in 3 gg"))
+    assertEquals("Gym: 7 days 32' · 28 days 2h56", en("Palestra: 7 gg 32' · 28 gg 2h56"))
+    assertEquals("done 82%", en("svolta 82%"))
+    assertEquals("Strap battery: 100% · read on 9 Oct 06:55", en("Batteria fascia: 100% · letta il 9 Oct 06:55"))
+  }
+
+  @Test
+  fun ogniStringaSiFormattaSenzaErrori() {
+    // un "%" letterale in una stringa con argomenti va scritto "%%": altrimenti l'app si chiude
+    for (l in listOf("values", "values-en", "values-es", "values-zh-rCN")) {
+      for ((k, t) in stringhe(l)) {
+        val n = Regex("%(\\d+)\\${'$'}s").findAll(t).map { it.groupValues[1].toInt() }.maxOrNull() ?: 0
+        if (n > 0) String.format(t, *Array(n) { "x" }) // lancia se il formato e' sbagliato
+      }
+    }
+    val en = traduttore("values-en")
+    assertEquals("80/20 polarisation: at most 20% of cycling and running time above threshold",
+        en("Polarizzazione 80/20: al massimo il 20% del tempo di bici e corsa sopra la soglia"))
   }
 }

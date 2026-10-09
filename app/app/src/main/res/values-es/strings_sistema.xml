@@ -177,4 +177,247 @@
     <string name="sis_campi_pronti_creati" formatted="true">Campos %1$s listos: %2$s (%3$s creados ahora)</string>
     <string name="sis_campi_non_preparati" formatted="true">Campos %1$s no preparados: %2$s</string>
     <string name="sis_errore">error</string>
+    <string name="sis_oggi">Hoy</string>
+    <string name="sis_calendario">Calendario</string>
+    <string name="sis_grafici">Gráficos</string>
+    <string name="sis_impostazioni">Ajustes</string>
+    <string name="sis_aggiorna_da_intervals">Actualizar desde Intervals.icu</string>
+    <string name="sis_aggiungi">Añadir</string>
+    <string name="sis_oggi_data" formatted="true">Hoy · %1$s</string>
+    <string name="sis_coach_ora" formatted="true">Coach · %1$s</string>
+    <string name="sis_non_valutabile">No evaluable</string>
+    <string name="sis_media7_ms" formatted="true">Media 7 días %1$s ms</string>
+    <string name="sis_range_ms" formatted="true">rango %1$s–%2$s ms</string>
+    <string name="sis_ultima_notte_giorno" formatted="true">Última noche registrada: hace %1$s día</string>
+    <string name="sis_ultima_notte_giorni" formatted="true">Última noche registrada: hace %1$s días</string>
+    <string name="sis_hrv_stanotte">HRV de anoche</string>
+    <string name="sis_fc_riposo_stanotte">FC en reposo anoche</string>
+    <string name="sis_sonno_stanotte">Sueño de anoche</string>
+    <string name="sis_media7" formatted="true">media 7 días %1$s</string>
+    <string name="sis_abituale" formatted="true">habitual %1$s</string>
+    <string name="sis_svolta_pct" formatted="true">hecha %1$s%%</string>
+    <string name="sis_svolta">hecha</string>
+    <string name="sis_non_svolta">no hecha</string>
+    <string name="sis_da_fare">pendiente</string>
+    <string name="sis_pianificata">planificada</string>
+    <string name="sis_non_pianificata">no planificada</string>
+    <string name="sis_forma_fisica">Forma física</string>
+    <string name="sis_stanchezza">Fatiga</string>
+    <string name="sis_forma">Forma</string>
+    <string name="sis_zona_giorno" formatted="true">Zona %1$s desde hace %2$s día</string>
+    <string name="sis_zona_giorni" formatted="true">Zona %1$s desde hace %2$s días</string>
+    <string name="sis_range_normale">rango normal</string>
+    <string name="sis_durata">Duración</string>
+    <string name="sis_distanza">Distancia</string>
+    <string name="sis_multisport">Multideporte</string>
+    <string name="sis_transizione">Transición</string>
+    <string name="sis_altro">Otro</string>
+    <string name="sis_corsa">Carrera</string>
+    <string name="sis_bici">Bici</string>
+    <string name="sis_nuoto">Natación</string>
+    <string name="sis_palestra">Gimnasio</string>
+    <string name="sis_seduta">Sesión</string>
+    <string name="sis_z_fresco">Fresco</string>
+    <string name="sis_z_grigia">Gris</string>
+    <string name="sis_z_ottimale">Óptima</string>
+    <string name="sis_z_alto_rischio">Riesgo alto</string>
+    <string name="sis_pausa_sparita">La pausa ya no está en Intervals.icu: calendario actualizado</string>
+    <string name="sis_varra_prossima">Se aplicará en la próxima planificación</string>
+    <string name="sis_ripianificazione_in_corso">Replanificación en curso: el resumen llegará con la notificación del coach</string>
+    <string name="sis_fino_al" formatted="true">hasta el %1$s</string>
+    <string name="sis_da_intervals" formatted="true">%1$s (de Intervals.icu)</string>
+    <string name="sis_ferie">Vacaciones</string>
+    <string name="sis_malattia">Enfermedad</string>
+    <string name="sis_infortunio">Lesión</string>
+    <string name="sis_pianificato">Planificado</string>
+    <string name="sis_svolto">Hecho</string>
+    <string name="sis_analisi_seduta">Análisis de la sesión</string>
+    <string name="sis_ctl_forma_fisica">CTL forma física</string>
+    <string name="sis_atl_stanchezza">ATL fatiga</string>
+    <string name="sis_media_7gg">media 7 días</string>
+    <string name="sis_range_media7">El rango se compara con la media de 7 días, no con una sola noche.</string>
+    <string name="sis_range_dopo14">El rango aparece tras 14 noches válidas.</string>
+    <string name="sis_oggi_tsb_giorno" formatted="true">Hoy TSB %1$s · zona %2$s desde hace %3$s día</string>
+    <string name="sis_oggi_tsb_giorni" formatted="true">Hoy TSB %1$s · zona %2$s desde hace %3$s días</string>
+    <string name="sis_oltre" formatted="true">más de %1$s</string>
+    <string name="sis_da_a" formatted="true">de %1$s a %2$s</string>
+    <string name="sis_sotto" formatted="true">menos de %1$s</string>
+    <string name="sis_piano_della_settimana">Plan de la semana</string>
+    <string name="sis_gara_nome" formatted="true">carrera: %1$s</string>
+    <string name="sis_obiettivo_settimana" formatted="true">objetivo semanal %1$s</string>
+    <string name="sis_ore_ora" formatted="true">a las %1$s</string>
+    <string name="sis_senza_gara">sin carrera</string>
+    <string name="sis_hrv7" formatted="true">HRV 7 días %1$s ms</string>
+    <string name="sis_fc7" formatted="true">FC en reposo 7 días %1$s ppm</string>
+    <string name="sis_baseline" formatted="true">línea base %1$s</string>
+    <string name="sis_andamento" formatted="true">tendencia %1$s</string>
+    <string name="sis_stabile">estable</string>
+    <string name="sis_in_calo">a la baja</string>
+    <string name="sis_in_aumento">en aumento</string>
+    <string name="sis_in_crescita">en aumento</string>
+    <string name="sis_sotto_range_gg" formatted="true">bajo el rango desde hace %1$s días</string>
+    <string name="sis_ultima_notte_gg" formatted="true">última noche hace %1$s días</string>
+    <string name="sis_b_verde">Verde</string>
+    <string name="sis_b_gialla">Amarilla</string>
+    <string name="sis_b_arancione">Naranja</string>
+    <string name="sis_b_rossa">Roja</string>
+    <string name="sis_b_grigio">Gris</string>
+    <string name="sis_zona_x" formatted="true">zona %1$s</string>
+    <string name="sis_attesa_fase" formatted="true">esperada en esta fase: %1$s</string>
+    <string name="sis_obiettivo_domenica" formatted="true">Objetivo para el domingo: TSB %1$s</string>
+    <string name="sis_obiettivo_domenica_fascia" formatted="true">Objetivo para el domingo: TSB %1$s (rango esperado %2$s / %3$s)</string>
+    <string name="sis_rampa" formatted="true">Rampa CTL %1$s/sem</string>
+    <string name="sis_rampa_max" formatted="true">Rampa CTL %1$s/sem (máx. %2$s)</string>
+    <string name="sis_linea_14">línea: últimos 14 días</string>
+    <string name="sis_tratteggio">discontinua: previsión del coach</string>
+    <string name="sis_riquadro">recuadro: rango esperado el domingo</string>
+    <string name="sis_g7">7 días</string>
+    <string name="sis_g28">28 días</string>
+    <string name="sis_g7_val" formatted="true">7 días %1$s</string>
+    <string name="sis_g28_val" formatted="true">28 días %1$s</string>
+    <string name="sis_palestra_val" formatted="true">Gimnasio: %1$s</string>
+    <string name="sis_resto_aerobico">El resto del volumen es aeróbico suave. La línea es el tope que el coach no supera.</string>
+    <string name="sis_polarizzazione">Polarización 80/20: como máximo el 20% del tiempo de bici y carrera por encima del umbral</string>
+    <string name="sis_ore_di" formatted="true">Horas: %1$s de %2$s</string>
+    <string name="sis_tetto" formatted="true">tope %1$s</string>
+    <string name="sis_restano" formatted="true">quedan %1$s</string>
+    <string name="sis_restano_gg" formatted="true">quedan %1$s en %2$s días</string>
+    <string name="sis_tss_fatti" formatted="true">TSS: %1$s hechos</string>
+    <string name="sis_tss_fatti_di" formatted="true">TSS: %1$s hechos de %2$s</string>
+    <string name="sis_tss_calendario" formatted="true">%1$s con las sesiones del calendario</string>
+    <string name="sis_qualita">calidad</string>
+    <string name="sis_alleggerita">aligerada</string>
+    <string name="sis_dettp">DETP</string>
+    <string name="sis_caldo">Calor</string>
+    <string name="sis_tag">Etiqueta</string>
+    <string name="sis_aggiornata">Actualizada</string>
+    <string name="sis_carico_tss">Carga (TSS)</string>
+    <string name="sis_intensita">Intensidad</string>
+    <string name="sis_velocita">Velocidad</string>
+    <string name="sis_passo">Ritmo</string>
+    <string name="sis_potenza_norm">Potencia norm.</string>
+    <string name="sis_potenza_media">Potencia media</string>
+    <string name="sis_fc_max">FC máx.</string>
+    <string name="sis_cadenza">Cadencia</string>
+    <string name="sis_dislivello">Desnivel</string>
+    <string name="sis_calorie">Calorías</string>
+    <string name="sis_disaccoppiamento">Desacoplamiento</string>
+    <string name="sis_fattore_efficienza">Factor de eficiencia</string>
+    <string name="sis_fatica_percepita">Esfuerzo percibido</string>
+    <string name="sis_aderenza_piano">Adherencia al plan</string>
+    <string name="sis_vasca">Piscina</string>
+    <string name="sis_tr_fc">Frecuencia cardíaca (ppm)</string>
+    <string name="sis_tr_potenza">Potencia (W)</string>
+    <string name="sis_tr_velocita">Velocidad (km/h)</string>
+    <string name="sis_tr_passo100">Ritmo (/100m)</string>
+    <string name="sis_tr_passokm">Ritmo (/km)</string>
+    <string name="sis_tr_altitudine">Altitud (m)</string>
+    <string name="sis_tr_fc_breve" formatted="true">FC %1$s</string>
+    <string name="sis_tr_pot_breve" formatted="true">Pot. %1$s</string>
+    <string name="sis_tr_vel_breve" formatted="true">Vel. %1$s</string>
+    <string name="sis_tr_passo_breve" formatted="true">Ritmo %1$s</string>
+    <string name="sis_tr_cad_breve" formatted="true">Cad. %1$s</string>
+    <string name="sis_tr_alt_breve" formatted="true">Alt. %1$s</string>
+    <string name="sis_tocca_grafico">Toca o arrastra un gráfico para leer los valores en ese punto</string>
+    <string name="sis_lavoro">Trabajo</string>
+    <string name="sis_recupero">Recuperación</string>
+    <string name="sis_fc_soglia_pct" formatted="true">%1$s FC umbral</string>
+    <string name="sis_fc_max_pct" formatted="true">%1$s FC máx.</string>
+    <string name="sis_passo_pct" formatted="true">%1$s ritmo</string>
+    <string name="sis_rampa_step" formatted="true">rampa %1$s</string>
+    <string name="sis_dal_al" formatted="true">Del %1$s al %2$s</string>
+    <string name="sis_ferie_malattia">Vacaciones / Enfermedad / Lesión</string>
+    <string name="sis_tag_del_giorno">Etiquetas del día</string>
+    <string name="sis_gara">Carrera</string>
+    <string name="sis_tempo_disponibile">Tiempo disponible</string>
+    <string name="sis_valori_non_validi">Valores no válidos</string>
+    <string name="sis_non_riuscito" formatted="true">No se pudo: %1$s. Inténtalo de nuevo.</string>
+    <string name="sis_dal">Desde</string>
+    <string name="sis_al">Hasta</string>
+    <string name="sis_non_disponibile">No disponible</string>
+    <string name="sis_lingua_app_sedute">Idioma de la app y de las sesiones que el coach escribe en el calendario y el reloj.</string>
+    <string name="sis_lingua_sedute">Idioma de las sesiones que el coach escribe en el calendario y el reloj. La app sigue el idioma del teléfono.</string>
+    <string name="sis_informativa">Política de privacidad</string>
+    <string name="sis_licenza_non_trovata" formatted="true">Texto de la licencia no encontrado (%1$s).</string>
+    <string name="sis_scelti" formatted="true">Elegidas: %1$s</string>
+    <string name="sis_nessun_tag_oggi">Ninguna etiqueta para hoy</string>
+    <string name="sis_aggiungi_tag_btn">Añadir etiquetas</string>
+    <string name="sis_modifica">Editar</string>
+    <string name="sis_giorno_prima">Día anterior</string>
+    <string name="sis_giorno_dopo">Día siguiente</string>
+    <string name="sis_coach_aspetta" formatted="true">El coach espera tus etiquetas hasta las %1$s: empieza en cuanto guardes.</string>
+    <string name="sis_coach_partito">El coach de hoy ya se ha ejecutado: estas etiquetas valen desde la próxima ejecución.</string>
+    <string name="sis_coach_prossimo">El coach las usará en la próxima ejecución.</string>
+    <string name="sis_sera">Noche anterior</string>
+    <string name="sis_salute_contesto">Salud y contexto</string>
+    <string name="sis_corpo">Cuerpo</string>
+    <string name="sis_t_alcol">Alcohol</string>
+    <string name="sis_t_cena">Cena tardía</string>
+    <string name="sis_t_caffeina">Cafeína tarde</string>
+    <string name="sis_t_stress">Estrés</string>
+    <string name="sis_t_viaggio">Viaje</string>
+    <string name="sis_t_sonno">Sueño alterado</string>
+    <string name="sis_t_altitudine">Altitud</string>
+    <string name="sis_t_dolore">Dolor muscular</string>
+    <string name="sis_t_fatica">Fatiga alta</string>
+    <string name="sis_t_gambe">Piernas pesadas</string>
+    <string name="sis_t_malessere">Malestar</string>
+    <string name="sis_zc_ginocchio">Rodilla</string>
+    <string name="sis_zc_caviglia">Tobillo</string>
+    <string name="sis_zc_piede">Pie</string>
+    <string name="sis_zc_polpaccio">Gemelo</string>
+    <string name="sis_zc_anca">Cadera</string>
+    <string name="sis_zc_schiena">Espalda</string>
+    <string name="sis_zc_spalla">Hombro</string>
+    <string name="sis_salvato_parte">Guardado: el coach empieza ahora</string>
+    <string name="sis_salvato">Guardado</string>
+    <string name="sis_batt_al_collegamento">Batería de la banda: se lee al conectar</string>
+    <string name="sis_batt_livello" formatted="true">Batería de la banda: %1$s%%</string>
+    <string name="sis_pila">Podría apagarse durante la noche: cambia la pila (CR2025).</string>
+    <string name="sis_chiudi">Cerrar</string>
+    <string name="sis_collegamento_breve">Conectando con la banda…</string>
+    <string name="sis_lettura_battito">Leyendo el latido…</string>
+    <string name="sis_attesa_battito">Esperando el latido: ¿llevas puesta la banda?</string>
+    <string name="sis_fiore_guida">Inspira mientras se abre, espira mientras se cierra</string>
+    <string name="sis_fiore_seguira">La flor seguirá tu respiración en cuanto la banda esté conectada</string>
+    <string name="sis_fiore_senza_rr">Esta banda no mide los intervalos RR: la flor te guía</string>
+    <string name="sis_fiore_dal_battito">La flor sigue tu respiración, leída del latido</string>
+    <string name="sis_fiore_attesa_respiro">Esperando la respiración de la banda</string>
+    <string name="sis_fiore_taratura">La flor sigue tu respiración · calibrando</string>
+    <string name="sis_fiore_segue">La flor sigue tu respiración</string>
+    <string name="sis_segui_respiro">Sigue mi respiración</string>
+    <string name="sis_guidami">Guíame</string>
+    <string name="sis_notte_in_corso_da" formatted="true">Noche en curso desde hace %1$s</string>
+    <string name="sis_notte_min">noche</string>
+    <string name="sis_ottimo">Excelente</string>
+    <string name="sis_buono">Bueno</string>
+    <string name="sis_da_curare">A mejorar</string>
+    <string name="sis_c_efficienza">Eficiencia</string>
+    <string name="sis_c_profondo">Sueño profundo</string>
+    <string name="sis_c_rem">Sueño REM</string>
+    <string name="sis_c_continuita">Continuidad</string>
+    <string name="sis_c_latenza">Latencia</string>
+    <string name="sis_c_orario">Horario</string>
+    <string name="sis_l_nessuno">NINGUNO</string>
+    <string name="sis_l_basso">BAJO</string>
+    <string name="sis_l_moderato">MODERADO</string>
+    <string name="sis_l_alto">ALTO</string>
+    <string name="sis_l_nessuno_m">Ninguno</string>
+    <string name="sis_l_basso_m">Bajo</string>
+    <string name="sis_l_moderato_m">Moderado</string>
+    <string name="sis_l_alto_m">Alto</string>
+    <string name="sis_a_in_linea">En línea</string>
+    <string name="sis_a_anticipo">Adelantado</string>
+    <string name="sis_a_ritardo">Retrasado</string>
+    <string name="sis_cr_molto_matt">Claramente matutino</string>
+    <string name="sis_cr_matt">Matutino</string>
+    <string name="sis_cr_intermedio">Intermedio</string>
+    <string name="sis_cr_serale">Vespertino</string>
+    <string name="sis_cr_molto_serale">Claramente vespertino</string>
+    <string name="sis_sc_in_linea">en línea con tu cronotipo</string>
+    <string name="sis_sc_dopo" formatted="true">%1$s más tarde que tu cronotipo</string>
+    <string name="sis_sc_prima" formatted="true">%1$s antes que tu cronotipo</string>
+    <string name="sis_linea_appreso" formatted="true">Línea: necesidad %1$s (aprendida de tus noches). Barras grises: noches no registradas, no cuentan. Una noche más larga que la necesidad reduce el déficit.</string>
+    <string name="sis_linea_8h" formatted="true">Línea: necesidad %1$s (8 h mientras haya menos de 14 noches: %2$s/14). Barras grises: noches no registradas, no cuentan. Una noche más larga que la necesidad reduce el déficit.</string>
+    <string name="sis_notti_n_su" formatted="true">%1$s/%2$s noches</string>
 </resources>

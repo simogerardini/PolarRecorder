@@ -1,5 +1,7 @@
 package com.wboelens.polarrecorder.biosleep.ui
 
+import com.wboelens.polarrecorder.biosleep.lingua.tr
+import com.wboelens.polarrecorder.biosleep.ui.allenamento.DateIt
 import android.content.Context
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.FastOutSlowInEasing
@@ -117,14 +119,14 @@ fun RigaBatteria(livello: Int?, dettaglio: String? = null, colore: Color = Mater
       if (livello != null) Icon(iconaBatteria(livello), null, Modifier.size(18.dp), tint = c)
       Spacer(Modifier.width(6.dp))
       Text(
-          if (livello == null) "Batteria fascia: si legge al collegamento"
-          else "Batteria fascia: $livello%" + (dettaglio?.let { " · $it" } ?: ""),
+          tr(if (livello == null) "Batteria fascia: si legge al collegamento"
+          else "Batteria fascia: $livello%" + (dettaglio?.let { " · $it" } ?: "")),
           style = MaterialTheme.typography.bodySmall,
           color = c)
     }
     if (bassa) {
       Text(
-          "Potrebbe spegnersi durante la notte: sostituisci la pila (CR2025).",
+          tr("Potrebbe spegnersi durante la notte: sostituisci la pila (CR2025)."),
           style = MaterialTheme.typography.bodySmall,
           color = c)
     }
@@ -132,7 +134,7 @@ fun RigaBatteria(livello: Int?, dettaglio: String? = null, colore: Color = Mater
 }
 
 fun quandoLetta(ms: Long): String =
-    Instant.ofEpochMilli(ms).atZone(ZoneId.systemDefault()).format(DateTimeFormatter.ofPattern("d MMM HH:mm", Locale.ITALIAN))
+    Instant.ofEpochMilli(ms).atZone(ZoneId.systemDefault()).let { DateIt.asse(it.toLocalDate()) + " " + it.format(DateTimeFormatter.ofPattern("HH:mm")) }
 
 // --- Fiore che respira -----------------------------------------------------------------------------
 
@@ -248,7 +250,7 @@ fun FioreNotte(
   Dialog(onDismissRequest = onChiudi, properties = DialogProperties(usePlatformDefaultWidth = false)) {
     Box(Modifier.fillMaxSize().background(SFONDO)) {
       IconButton(onClick = onChiudi, modifier = Modifier.align(Alignment.TopEnd).padding(8.dp)) {
-        Icon(Icons.Filled.Close, "Chiudi", tint = TESTO)
+        Icon(Icons.Filled.Close, tr("Chiudi"), tint = TESTO)
       }
       Column(
           Modifier.align(Alignment.Center).padding(24.dp),
@@ -268,16 +270,16 @@ fun FioreNotte(
           }
         }
         Text(
-            when {
+            tr(when {
               !inRegistrazione -> "Collegamento alla fascia…"
               conBattito -> bpm?.let { "$it bpm" } ?: "Lettura del battito…"
               else -> "In attesa del battito: la fascia è indossata?"
-            },
+            }),
             color = TESTO,
             fontSize = 22.sp,
             fontWeight = FontWeight.Light)
         Text(
-            when {
+            tr(when {
               modo == ModoFiore.GUIDA -> "Inspira mentre si apre, espira mentre si chiude"
               !inRegistrazione -> "Il fiore seguirà il tuo respiro appena la fascia è collegata"
               senzaRr -> "Questa fascia non misura gli intervalli RR: il fiore ti guida"
@@ -285,7 +287,7 @@ fun FioreNotte(
               !conRespiro -> "In attesa del respiro dalla fascia"
               !tarato -> "Il fiore segue il tuo respiro · taratura in corso"
               else -> "Il fiore segue il tuo respiro"
-            },
+            }),
             color = TESTO.copy(alpha = 0.7f),
             style = MaterialTheme.typography.bodySmall)
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
@@ -293,7 +295,7 @@ fun FioreNotte(
             FilterChip(
                 selected = modo == m,
                 onClick = { modo = m },
-                label = { Text(etichetta) },
+                label = { Text(tr(etichetta)) },
                 colors =
                     FilterChipDefaults.filterChipColors(
                         labelColor = TESTO.copy(alpha = 0.7f),
@@ -305,7 +307,7 @@ fun FioreNotte(
         if (inizioMs != null && inRegistrazione) {
           val min = ((adesso - inizioMs) / 60_000).toInt()
           Text(
-              "Notte in corso da ${min / 60}h${"%02d".format(min % 60)}",
+              tr("Notte in corso da ${min / 60}h${"%02d".format(min % 60)}"),
               color = TESTO.copy(alpha = 0.7f),
               style = MaterialTheme.typography.bodySmall)
         }

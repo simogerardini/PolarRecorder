@@ -1,5 +1,6 @@
 package com.wboelens.polarrecorder.biosleep.ui
 
+import com.wboelens.polarrecorder.biosleep.lingua.tr
 import com.wboelens.polarrecorder.R
 import androidx.compose.ui.res.stringResource
 import androidx.compose.foundation.layout.Arrangement
@@ -65,7 +66,7 @@ fun ChipTag(chiavi: List<String>, scelti: Set<String>, etichetta: (String) -> St
       FilterChip(
           selected = k in scelti,
           onClick = { onCambia(if (k in scelti) scelti - k else scelti + k) },
-          label = { Text(etichetta(k)) })
+          label = { Text(tr(etichetta(k))) })
     }
   }
 }
@@ -102,12 +103,12 @@ fun TagSera() {
               val nuovi = if (k in scelti) scelti - k else scelti + k
               scope.launch(Dispatchers.IO) { TagDb.get(context).impostaGiorno(data, nuovi) }
             },
-            label = { Text(Vocabolario.etichetta(k)) })
+            label = { Text(tr(Vocabolario.etichetta(k))) })
       }
     }
     if (scelti.isNotEmpty()) {
       Text(
-          "Scelti: " + ordine.filter { it in scelti }.joinToString(" · ") { Vocabolario.etichetta(it) },
+          tr("Scelti: " + ordine.filter { it in scelti }.joinToString(" · ") { Vocabolario.etichetta(it) }),
           style = MaterialTheme.typography.bodySmall,
           color = MaterialTheme.colorScheme.onSurfaceVariant)
     }
@@ -122,10 +123,10 @@ fun RigaTagOggi(onApri: (String) -> Unit) {
   Row(verticalAlignment = Alignment.CenterVertically) {
     Icon(Icons.Filled.Sell, null, Modifier.size(18.dp), tint = MaterialTheme.colorScheme.onSurfaceVariant)
     Text(
-        if (scelti.isEmpty()) "  Nessun tag per oggi" else "  " + scelti.joinToString(" · ") { Vocabolario.etichetta(it) },
+        tr(if (scelti.isEmpty()) "  Nessun tag per oggi" else "  " + scelti.joinToString(" · ") { Vocabolario.etichetta(it) }),
         Modifier.weight(1f),
         style = MaterialTheme.typography.bodySmall)
-    androidx.compose.material3.TextButton(onClick = { onApri(oggi) }) { Text(if (scelti.isEmpty()) "Aggiungi tag" else "Modifica") }
+    androidx.compose.material3.TextButton(onClick = { onApri(oggi) }) { Text(tr(if (scelti.isEmpty()) "Aggiungi tag" else "Modifica")) }
   }
 }
 
@@ -167,7 +168,7 @@ fun TagScreen(dataIniziale: String, onBack: () -> Unit) {
       topBar = {
         TopAppBar(
             title = { Text(stringResource(R.string.tag_tag)) },
-            navigationIcon = { IconButton(onClick = onBack) { Icon(Icons.AutoMirrored.Filled.ArrowBack, "Indietro") } })
+            navigationIcon = { IconButton(onClick = onBack) { Icon(Icons.AutoMirrored.Filled.ArrowBack, tr("Indietro")) } })
       },
   ) { padding ->
     val s = scelti
@@ -176,13 +177,13 @@ fun TagScreen(dataIniziale: String, onBack: () -> Unit) {
         verticalArrangement = Arrangement.spacedBy(14.dp),
     ) {
       Row(verticalAlignment = Alignment.CenterVertically) {
-        IconButton(onClick = { data = data.minusDays(1) }) { Icon(Icons.AutoMirrored.Filled.KeyboardArrowLeft, "Giorno prima") }
+        IconButton(onClick = { data = data.minusDays(1) }) { Icon(Icons.AutoMirrored.Filled.KeyboardArrowLeft, tr("Giorno prima")) }
         Text(
-            (if (data == oggi) "Oggi · " else "") + DateIt.lunga(data),
+            tr((if (data == oggi) "Oggi · " else "") + DateIt.lunga(data)),
             Modifier.weight(1f),
             style = MaterialTheme.typography.titleMedium)
         IconButton(onClick = { data = data.plusDays(1) }, enabled = data < oggi.plusDays(14)) {
-          Icon(Icons.AutoMirrored.Filled.KeyboardArrowRight, "Giorno dopo")
+          Icon(Icons.AutoMirrored.Filled.KeyboardArrowRight, tr("Giorno dopo"))
         }
       }
       // A che punto e' il coach di oggi: decide se i tag pesano gia' sulla seduta di oggi
@@ -194,7 +195,7 @@ fun TagScreen(dataIniziale: String, onBack: () -> Unit) {
               stato.fatto(oggi.toString()) -> "Il coach di oggi è già partito: questi tag valgono dal prossimo run."
               else -> "Il coach li userà al prossimo run."
             }
-        Text(testo, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+        Text(tr(testo), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
       }
       if (s == null) return@Column
       val cambia = { n: Set<String> ->
@@ -229,7 +230,7 @@ fun TagScreen(dataIniziale: String, onBack: () -> Unit) {
       ) {
         Text(stringResource(R.string.tag_salva))
       }
-      esito?.let { Text(it, color = MaterialTheme.colorScheme.primary) }
+      esito?.let { Text(tr(it), color = MaterialTheme.colorScheme.primary) }
     }
   }
 }
@@ -237,7 +238,7 @@ fun TagScreen(dataIniziale: String, onBack: () -> Unit) {
 @Composable
 private fun Gruppo(titolo: String, contenuto: @Composable () -> Unit) {
   Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
-    Text(titolo, style = MaterialTheme.typography.titleSmall)
+    Text(tr(titolo), style = MaterialTheme.typography.titleSmall)
     contenuto()
   }
 }

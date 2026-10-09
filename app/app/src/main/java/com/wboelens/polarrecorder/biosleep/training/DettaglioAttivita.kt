@@ -233,7 +233,7 @@ object Ritmo {
     return if (conUnita) testo + (if (nuoto) " /100m" else " /km") else testo
   }
 
-  fun kmh(metriAlSecondo: Double): String = String.format(Locale.ITALY, "%.1f km/h", metriAlSecondo * 3.6)
+  fun kmh(metriAlSecondo: Double): String = String.format(Locale.getDefault(), "%.1f km/h", metriAlSecondo * 3.6)
 
   /** Il formato giusto per lo sport. */
   fun perSport(v: Double, sport: Sport): String =

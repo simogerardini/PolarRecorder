@@ -1,5 +1,6 @@
 package com.wboelens.polarrecorder.biosleep.ui.allenamento
 
+import com.wboelens.polarrecorder.biosleep.lingua.tr
 import com.wboelens.polarrecorder.R
 import androidx.compose.ui.res.stringResource
 import androidx.compose.foundation.Canvas
@@ -81,8 +82,8 @@ fun AttivitaScreen(id: String, onBack: () -> Unit) {
   Scaffold(
       topBar = {
         TopAppBar(
-            title = { Text((e as? EsitoDettaglio.Pronto)?.attivita?.nome ?: "Seduta", maxLines = 1) },
-            navigationIcon = { IconButton(onClick = onBack) { Icon(Icons.AutoMirrored.Filled.ArrowBack, "Indietro") } })
+            title = { Text(tr((e as? EsitoDettaglio.Pronto)?.attivita?.nome ?: "Seduta"), maxLines = 1) },
+            navigationIcon = { IconButton(onClick = onBack) { Icon(Icons.AutoMirrored.Filled.ArrowBack, tr("Indietro")) } })
       },
   ) { padding ->
     when (e) {
@@ -110,10 +111,10 @@ fun AttivitaScreen(id: String, onBack: () -> Unit) {
 
 @Composable
 private fun Intestazione(a: DettaglioAttivita) {
-  val quando = a.inizio?.format(DateTimeFormatter.ofPattern("EEEE d MMMM · HH:mm", Locale.ITALIAN))?.replaceFirstChar { it.uppercase() }
+  val quando = a.inizio?.let { DateIt.lunga(it.toLocalDate()) + " · " + it.format(DateTimeFormatter.ofPattern("HH:mm")) }
   Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
-    Text(listOfNotNull(quando, a.sport.etichetta).joinToString(" · "), style = MaterialTheme.typography.bodyMedium)
-    a.dispositivo?.let { Text(it, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant) }
+    Text(tr(listOfNotNull(quando, a.sport.etichetta).joinToString(" · ")), style = MaterialTheme.typography.bodyMedium)
+    a.dispositivo?.let { Text(tr(it), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant) }
   }
 }
 
@@ -145,8 +146,8 @@ private fun Numeri(a: DettaglioAttivita) {
     Row(Modifier.fillMaxWidth()) {
       for ((titolo, valore) in riga) {
         Column(Modifier.weight(1f)) {
-          Text(valore, style = MaterialTheme.typography.titleMedium)
-          Text(titolo, style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+          Text(tr(valore), style = MaterialTheme.typography.titleMedium)
+          Text(tr(titolo), style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
         }
       }
       repeat(3 - riga.size) { Box(Modifier.weight(1f)) }
@@ -191,16 +192,16 @@ private fun Grafici(a: DettaglioAttivita, f: Flussi) {
   var cursore by remember(f) { mutableStateOf<Int?>(null) }
   val i = cursore
   Text(
-      if (i == null) "Tocca o trascina un grafico per leggere i valori in quel punto"
+      tr(if (i == null) "Tocca o trascina un grafico per leggere i valori in quel punto"
       else "${tempo(f.tempoS[i])} · " +
           presenti.mapNotNull { t -> f.serie[t.tipo]?.getOrNull(i)?.takeIf { it > 0 }?.let { "${t.breve} ${t.formato(it)}" } }
-              .joinToString(" · "),
+              .joinToString(" · ")),
       style = MaterialTheme.typography.bodySmall,
       fontWeight = if (i == null) FontWeight.Normal else FontWeight.SemiBold,
       color = if (i == null) MaterialTheme.colorScheme.onSurfaceVariant else MaterialTheme.colorScheme.onSurface)
   for (t in presenti) {
     val valori = f.serie[t.tipo] ?: continue
-    Text(t.titolo, style = MaterialTheme.typography.labelLarge)
+    Text(tr(t.titolo), style = MaterialTheme.typography.labelLarge)
     GraficoTempo(f.tempoS, valori, t.colore, t.formato, t.asse, lavoro, cursore) { cursore = it }
   }
   if (lavoro.isNotEmpty()) {
@@ -309,19 +310,19 @@ private fun Zone(zone: List<TempoZona>) {
   val totale = zone.sumOf { it.secondi }.coerceAtLeast(1)
   zone.forEachIndexed { i, z ->
     Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
-      Text(z.nome, Modifier.width(28.dp), style = MaterialTheme.typography.labelMedium, fontWeight = FontWeight.Bold)
+      Text(tr(z.nome), Modifier.width(28.dp), style = MaterialTheme.typography.labelMedium, fontWeight = FontWeight.Bold)
       Box(Modifier.weight(1f).height(14.dp)) {
         Box(
             Modifier.fillMaxWidth(z.secondi.toFloat() / totale).height(14.dp)
                 .background(coloreZona(i), RoundedCornerShape(3.dp)))
       }
       Text(
-          " ${tempo(z.secondi)} · ${z.secondi * 100 / totale}%",
+          tr(" ${tempo(z.secondi)} · ${z.secondi * 100 / totale}%"),
           Modifier.width(92.dp),
           style = MaterialTheme.typography.labelSmall)
     }
     z.intervallo?.let {
-      Text(it, Modifier.padding(start = 28.dp), style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+      Text(tr(it), Modifier.padding(start = 28.dp), style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
     }
   }
 }
@@ -342,10 +343,10 @@ private fun Intervalli(a: DettaglioAttivita) {
       Box(Modifier.width(6.dp).height(32.dp).background(coloreZona((v.zona ?: 1) - 1), RoundedCornerShape(2.dp)))
       Column(Modifier.padding(start = 10.dp).weight(1f)) {
         Text(
-            "${i + 1}. " + (if (v.lavoro) "Lavoro" else "Recupero") + (v.zona?.let { " · Z$it" } ?: ""),
+            tr("${i + 1}. " + (if (v.lavoro) "Lavoro" else "Recupero") + (v.zona?.let { " · Z$it" } ?: "")),
             style = MaterialTheme.typography.bodyMedium,
             fontWeight = if (v.lavoro) FontWeight.SemiBold else FontWeight.Normal)
-        Text(dati.joinToString(" · "), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+        Text(tr(dati.joinToString(" · ")), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
       }
     }
   }

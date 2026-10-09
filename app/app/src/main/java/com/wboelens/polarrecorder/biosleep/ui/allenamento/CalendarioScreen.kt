@@ -1,5 +1,6 @@
 package com.wboelens.polarrecorder.biosleep.ui.allenamento
 
+import com.wboelens.polarrecorder.biosleep.lingua.tr
 import com.wboelens.polarrecorder.R
 import androidx.compose.ui.res.stringResource
 import androidx.compose.foundation.background
@@ -189,7 +190,7 @@ fun CalendarioScreen(
       item {
         Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
           StatoAggiornamento()
-          messaggio?.let { Text(it, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.primary) }
+          messaggio?.let { Text(tr(it), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.primary) }
           RigaForma(dati.forma)
         }
       }
@@ -275,14 +276,14 @@ private fun Giorno(
     }
     Row(verticalAlignment = Alignment.CenterVertically) {
       Text(
-          (if (oggi) "Oggi · " else "") + DateIt.breve(g.data),
+          tr((if (oggi) "Oggi · " else "") + DateIt.breve(g.data)),
           style = MaterialTheme.typography.titleSmall,
           fontWeight = if (oggi) FontWeight.Bold else FontWeight.Normal,
           color = if (oggi) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface)
       // tempo disponibile per questa data: "30'" o "—" (non disponibile)
       PianoCalendario.badge(tempo)?.let {
         Text(
-            it,
+            tr(it),
             Modifier.padding(start = 8.dp).background(MaterialTheme.colorScheme.surfaceVariant, MaterialTheme.shapes.extraSmall)
                 .padding(horizontal = 6.dp, vertical = 1.dp),
             style = MaterialTheme.typography.labelMedium,
@@ -291,18 +292,18 @@ private fun Giorno(
       Box(Modifier.weight(1f))
       // il "+" solo da oggi in poi: il passato non si pianifica
       if (!g.data.isBefore(dati.oggi)) {
-        IconButton(onClick = onPiu, modifier = Modifier.size(32.dp)) { Icon(Icons.Filled.Add, "Aggiungi", tint = MaterialTheme.colorScheme.primary) }
+        IconButton(onClick = onPiu, modifier = Modifier.size(32.dp)) { Icon(Icons.Filled.Add, tr("Aggiungi"), tint = MaterialTheme.colorScheme.primary) }
       }
     }
     if (pausa != null && fascia != null && (g.data == pausa.dal || g.data == dati.oggi)) {
       Text(
-          Pause.etichetta(pausa.tipo) + (if (pausa.nota.isNotBlank()) " · ${pausa.nota}" else "") +
-              " · fino al ${DateIt.breve(pausa.al)}" + (if (!pausa.dallApp) " (da Intervals.icu)" else ""),
+          tr(Pause.etichetta(pausa.tipo) + (if (pausa.nota.isNotBlank()) " · ${pausa.nota}" else "") +
+              " · fino al ${DateIt.breve(pausa.al)}" + (if (!pausa.dallApp) " (da Intervals.icu)" else "")),
           Modifier.clickable { onPausa(pausa) },
           style = MaterialTheme.typography.labelMedium,
           color = fascia)
     }
-    for (n in g.note) Text(n.nome, style = MaterialTheme.typography.bodySmall)
+    for (n in g.note) Text(tr(n.nome), style = MaterialTheme.typography.bodySmall)
     for (s in g.pianificate) CardSeduta(s, onClick = { onApri(Dettaglio.Pianificata(s)) })
     for (a in g.nonPianificate) CardAttivita(a, onClick = { onApri(Dettaglio.Libera(a)) })
   }
@@ -317,23 +318,23 @@ private fun SchedaDettaglio(det: Dettaglio, onApriAttivita: (String) -> Unit) {
     when (det) {
       is Dettaglio.Pianificata -> {
         val e = det.s.evento
-        Text(e.nome, style = MaterialTheme.typography.titleLarge)
-        Text("${DateIt.lunga(e.data)} · ${e.sport.etichetta}", color = MaterialTheme.colorScheme.onSurfaceVariant)
+        Text(tr(e.nome), style = MaterialTheme.typography.titleLarge)
+        Text(tr("${DateIt.lunga(e.data)} · ${e.sport.etichetta}"), color = MaterialTheme.colorScheme.onSurfaceVariant)
         Blocco("Pianificato", e.durataS, e.tss, e.distanzaM, null)
         val segmenti = remember(e.id) { Struttura.segmenti(e.passi) }
         GraficoSeduta(segmenti, ColoriBio.sport(e.sport), Modifier.fillMaxWidth().height(80.dp))
         val righe = remember(e.id) { Struttura.righe(e.passi) }
         for (r in righe) {
           Text(
-              r.testo,
+              tr(r.testo),
               style = MaterialTheme.typography.bodyMedium,
               fontWeight = if (r.livello == 0 && r.testo.endsWith("x")) FontWeight.Bold else FontWeight.Normal,
               modifier = Modifier.padding(start = (16 * r.livello).dp))
         }
-        if (righe.isEmpty() && !e.descrizione.isNullOrBlank()) Text(e.descrizione, style = MaterialTheme.typography.bodyMedium)
+        if (righe.isEmpty() && !e.descrizione.isNullOrBlank()) Text(tr(e.descrizione), style = MaterialTheme.typography.bodyMedium)
         if (e.specchio) {
           // Seduta su Garmin Connect (multisport): le parti, la guida strutturata e' sull'orologio
-          for (p in e.parti) Text("${p.sport.etichetta} · ${Formato.durata(p.minuti * 60)}", style = MaterialTheme.typography.bodyMedium)
+          for (p in e.parti) Text(tr("${p.sport.etichetta} · ${Formato.durata(p.minuti * 60)}"), style = MaterialTheme.typography.bodyMedium)
           Text(
               stringResource(R.string.calendario_seduta_su_garmin_connect),
               style = MaterialTheme.typography.bodySmall,
@@ -346,7 +347,7 @@ private fun SchedaDettaglio(det: Dettaglio, onApriAttivita: (String) -> Unit) {
             // analisi della seduta svolta (per il multisport: una per parte)
             for (a in det.s.svolte) {
               TextButton(onClick = { onApriAttivita(a.id) }) {
-                Text("Analisi della seduta" + if (det.s.svolte.size > 1) " · ${a.sport.etichetta}" else "")
+                Text(tr("Analisi della seduta" + if (det.s.svolte.size > 1) " · ${a.sport.etichetta}" else ""))
               }
             }
             // tag per il coach: per il multisport sulla prima parte svolta
@@ -359,8 +360,8 @@ private fun SchedaDettaglio(det: Dettaglio, onApriAttivita: (String) -> Unit) {
       }
       is Dettaglio.Libera -> {
         val a = det.a
-        Text(a.nome, style = MaterialTheme.typography.titleLarge)
-        Text(stringResource(R.string.calendario_non_pianificata, (DateIt.lunga(a.data)).toString(), a.sport.etichetta.toString()), color = MaterialTheme.colorScheme.onSurfaceVariant)
+        Text(tr(a.nome), style = MaterialTheme.typography.titleLarge)
+        Text(stringResource(R.string.calendario_non_pianificata, (DateIt.lunga(a.data)).toString(), tr(a.sport.etichetta)), color = MaterialTheme.colorScheme.onSurfaceVariant)
         TextButton(onClick = { onApriAttivita(a.id) }) { Text(stringResource(R.string.calendario_analisi_della_seduta)) }
         TagSeduta(a.id, a.data.toString())
         Blocco("Svolto", a.durataS, a.tss, a.distanzaM, null)
@@ -372,7 +373,7 @@ private fun SchedaDettaglio(det: Dettaglio, onApriAttivita: (String) -> Unit) {
 @Composable
 private fun Blocco(titolo: String, durataS: Int?, tss: Int?, distanzaM: Double?, compliance: Double?) {
   Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
-    Text(titolo, style = MaterialTheme.typography.labelLarge, color = MaterialTheme.colorScheme.onSurfaceVariant)
+    Text(tr(titolo), style = MaterialTheme.typography.labelLarge, color = MaterialTheme.colorScheme.onSurfaceVariant)
     Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
       Cifra(stringResource(R.string.calendario_durata), Formato.durata(durataS))
       Cifra(stringResource(R.string.calendario_tss), tss?.toString() ?: "—")
@@ -385,7 +386,7 @@ private fun Blocco(titolo: String, durataS: Int?, tss: Int?, distanzaM: Double?,
 @Composable
 private fun Cifra(etichetta: String, valore: String, colore: androidx.compose.ui.graphics.Color = MaterialTheme.colorScheme.onSurface) {
   Column(horizontalAlignment = Alignment.CenterHorizontally) {
-    Text(valore, style = MaterialTheme.typography.titleMedium, color = colore)
-    Text(etichetta, style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+    Text(tr(valore), style = MaterialTheme.typography.titleMedium, color = colore)
+    Text(tr(etichetta), style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
   }
 }

@@ -1,5 +1,6 @@
 package com.wboelens.polarrecorder.biosleep.ui.allenamento
 
+import com.wboelens.polarrecorder.biosleep.lingua.tr
 import com.wboelens.polarrecorder.R
 import androidx.compose.ui.res.stringResource
 import com.wboelens.polarrecorder.biosleep.intervals.CampiWellness
@@ -169,8 +170,8 @@ private fun FormaZone(d: DatiGrafici) {
     Row(verticalAlignment = Alignment.CenterVertically) {
       Box(Modifier.size(12.dp).background(ColoriBio.daNome(f.colore), CircleShape))
       Text(
-          "  Oggi TSB ${Formato.conSegno(f.tsb)} · zona ${f.zona} da ${f.giorniInZona} " +
-              if (f.giorniInZona == 1) "giorno" else "giorni",
+          tr("  Oggi TSB ${Formato.conSegno(f.tsb)} · zona ${f.zona} da ${f.giorniInZona} " +
+              if (f.giorniInZona == 1) "giorno" else "giorni"),
           style = MaterialTheme.typography.bodyMedium,
           fontWeight = FontWeight.SemiBold)
     }
@@ -199,12 +200,12 @@ private fun FormaZone(d: DatiGrafici) {
 private fun VoceZona(colore: String, nome: String, intervallo: String) {
   Row(verticalAlignment = Alignment.CenterVertically) {
     Box(Modifier.size(10.dp).background(ColoriBio.daNome(colore).copy(alpha = 0.5f), CircleShape))
-    Text("  $nome", style = MaterialTheme.typography.labelMedium, modifier = Modifier.width(110.dp))
-    Text(intervallo, style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+    Text(tr("  $nome"), style = MaterialTheme.typography.labelMedium, modifier = Modifier.width(110.dp))
+    Text(tr(intervallo), style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
   }
 }
 
 @Composable
 private fun Nota(testo: String) {
-  Text(testo, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+  Text(tr(testo), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
 }

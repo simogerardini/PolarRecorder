@@ -1,5 +1,6 @@
 package com.wboelens.polarrecorder.biosleep.ui.allenamento
 
+import com.wboelens.polarrecorder.biosleep.lingua.tr
 import com.wboelens.polarrecorder.R
 import androidx.compose.ui.res.stringResource
 import androidx.compose.foundation.clickable
@@ -87,7 +88,7 @@ sealed interface ModuloCalendario {
 fun MenuPiu(dal: LocalDate, al: LocalDate, onScegli: (ModuloCalendario?) -> Unit, onTag: (LocalDate) -> Unit) {
   Column(Modifier.fillMaxWidth().padding(start = 20.dp, end = 20.dp, bottom = 32.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
     Text(
-        if (dal == al) DateIt.lunga(dal) else "Dal ${DateIt.breve(dal)} al ${DateIt.breve(al)}",
+        tr(if (dal == al) DateIt.lunga(dal) else "Dal ${DateIt.breve(dal)} al ${DateIt.breve(al)}"),
         style = MaterialTheme.typography.titleMedium,
         modifier = Modifier.padding(bottom = 8.dp))
     VocePiu(Icons.Filled.Weekend, "Ferie / Malattia / Infortunio") { onScegli(ModuloCalendario.NuovaPausa(dal, al)) }
@@ -101,7 +102,7 @@ fun MenuPiu(dal: LocalDate, al: LocalDate, onScegli: (ModuloCalendario?) -> Unit
 private fun VocePiu(icona: ImageVector, testo: String, onClick: () -> Unit) {
   Row(Modifier.fillMaxWidth().clickable(onClick = onClick).padding(vertical = 14.dp), verticalAlignment = Alignment.CenterVertically) {
     Icon(icona, null, Modifier.padding(end = 16.dp), tint = MaterialTheme.colorScheme.primary)
-    Text(testo, style = MaterialTheme.typography.bodyLarge)
+    Text(tr(testo), style = MaterialTheme.typography.bodyLarge)
   }
 }
 
@@ -115,8 +116,8 @@ private fun daUtc(ms: Long) = Instant.ofEpochMilli(ms).atZone(ZoneOffset.UTC).to
 private fun CampoData(etichetta: String, data: LocalDate, modifier: Modifier, onCambia: (LocalDate) -> Unit) {
   var aperto by remember { mutableStateOf(false) }
   Column(modifier) {
-    Text(etichetta, style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
-    OutlinedButton(onClick = { aperto = true }, modifier = Modifier.fillMaxWidth()) { Text(DateIt.breve(data)) }
+    Text(tr(etichetta), style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
+    OutlinedButton(onClick = { aperto = true }, modifier = Modifier.fillMaxWidth()) { Text(tr(DateIt.breve(data))) }
   }
   if (aperto) {
     val stato = rememberDatePickerState(initialSelectedDateMillis = utc(data))
@@ -177,7 +178,7 @@ fun ModuloPausa(
 
   AlertDialog(
       onDismissRequest = { if (!inCorso) onChiudi() },
-      title = { Text(if (esistente == null) "Ferie / Malattia / Infortunio" else Pause.etichetta(esistente.tipo)) },
+      title = { Text(tr(if (esistente == null) "Ferie / Malattia / Infortunio" else Pause.etichetta(esistente.tipo))) },
       text = {
         Column(Modifier.verticalScroll(rememberScrollState()), verticalArrangement = Arrangement.spacedBy(10.dp)) {
           if (soloElimina) {
@@ -191,7 +192,7 @@ fun ModuloPausa(
               CampoData("Al", al, Modifier.weight(1f)) { al = it }
             }
             FlowRow(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
-              for ((k, etichetta) in Pause.TIPI) FilterChip(selected = tipo == k, onClick = { tipo = k }, label = { Text(etichetta) })
+              for ((k, etichetta) in Pause.TIPI) FilterChip(selected = tipo == k, onClick = { tipo = k }, label = { Text(tr(etichetta)) })
             }
             OutlinedTextField(
                 value = nota, onValueChange = { nota = it.take(80) }, label = { Text(stringResource(R.string.piu_calendario_nota_facoltativa)) },
@@ -201,7 +202,7 @@ fun ModuloPausa(
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant)
           }
-          errore?.let { Text(it, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.error) }
+          errore?.let { Text(tr(it), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.error) }
           if (permesso) {
             Text(stringResource(R.string.piu_calendario_il_collegamento_non_permette), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.error)
             Button(onClick = { OAuthIntervals.avvia(context) }) { Text(stringResource(R.string.piu_calendario_ricollega_intervals_icu)) }
@@ -242,10 +243,10 @@ fun ModuloTempo(data: LocalDate, attuale: Int?, onChiudi: () -> Unit, onFatto: (
       title = { Text(stringResource(R.string.piu_calendario_tempo_disponibile)) },
       text = {
         Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
-          Text(DateIt.lunga(data), style = MaterialTheme.typography.bodyMedium)
+          Text(tr(DateIt.lunga(data)), style = MaterialTheme.typography.bodyMedium)
           FlowRow(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
             for (m in PianoCalendario.SCORCIATOIE) {
-              FilterChip(selected = minuti == m, onClick = { testo = m.toString() }, label = { Text(if (m == 0) "Non disponibile" else "$m'") })
+              FilterChip(selected = minuti == m, onClick = { testo = m.toString() }, label = { Text(tr(if (m == 0) "Non disponibile" else "$m'")) })
             }
           }
           OutlinedTextField(

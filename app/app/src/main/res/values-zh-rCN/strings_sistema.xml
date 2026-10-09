@@ -177,4 +177,247 @@
     <string name="sis_campi_pronti_creati" formatted="true">%1$s 字段已就绪：%2$s（本次新建 %3$s 个）</string>
     <string name="sis_campi_non_preparati" formatted="true">%1$s 字段未准备好：%2$s</string>
     <string name="sis_errore">错误</string>
+    <string name="sis_oggi">今天</string>
+    <string name="sis_calendario">日历</string>
+    <string name="sis_grafici">图表</string>
+    <string name="sis_impostazioni">设置</string>
+    <string name="sis_aggiorna_da_intervals">从 Intervals.icu 刷新</string>
+    <string name="sis_aggiungi">添加</string>
+    <string name="sis_oggi_data" formatted="true">今天 · %1$s</string>
+    <string name="sis_coach_ora" formatted="true">教练 · %1$s</string>
+    <string name="sis_non_valutabile">无法评估</string>
+    <string name="sis_media7_ms" formatted="true">7日平均 %1$s ms</string>
+    <string name="sis_range_ms" formatted="true">范围 %1$s–%2$s ms</string>
+    <string name="sis_ultima_notte_giorno" formatted="true">最近一次记录：%1$s 天前</string>
+    <string name="sis_ultima_notte_giorni" formatted="true">最近一次记录：%1$s 天前</string>
+    <string name="sis_hrv_stanotte">昨晚 HRV</string>
+    <string name="sis_fc_riposo_stanotte">昨晚静息心率</string>
+    <string name="sis_sonno_stanotte">昨晚睡眠</string>
+    <string name="sis_media7" formatted="true">7日平均 %1$s</string>
+    <string name="sis_abituale" formatted="true">日常 %1$s</string>
+    <string name="sis_svolta_pct" formatted="true">已完成 %1$s%%</string>
+    <string name="sis_svolta">已完成</string>
+    <string name="sis_non_svolta">未完成</string>
+    <string name="sis_da_fare">待完成</string>
+    <string name="sis_pianificata">已计划</string>
+    <string name="sis_non_pianificata">未计划</string>
+    <string name="sis_forma_fisica">体能</string>
+    <string name="sis_stanchezza">疲劳</string>
+    <string name="sis_forma">状态</string>
+    <string name="sis_zona_giorno" formatted="true">%1$s区间已 %2$s 天</string>
+    <string name="sis_zona_giorni" formatted="true">%1$s区间已 %2$s 天</string>
+    <string name="sis_range_normale">正常范围</string>
+    <string name="sis_durata">时长</string>
+    <string name="sis_distanza">距离</string>
+    <string name="sis_multisport">多项</string>
+    <string name="sis_transizione">转换</string>
+    <string name="sis_altro">其他</string>
+    <string name="sis_corsa">跑步</string>
+    <string name="sis_bici">骑行</string>
+    <string name="sis_nuoto">游泳</string>
+    <string name="sis_palestra">健身房</string>
+    <string name="sis_seduta">训练</string>
+    <string name="sis_z_fresco">新鲜</string>
+    <string name="sis_z_grigia">灰色</string>
+    <string name="sis_z_ottimale">最佳</string>
+    <string name="sis_z_alto_rischio">高风险</string>
+    <string name="sis_pausa_sparita">该休息期已不在 Intervals.icu 上：日历已更新</string>
+    <string name="sis_varra_prossima">将在下次规划时生效</string>
+    <string name="sis_ripianificazione_in_corso">正在重新规划：摘要会随教练通知送达</string>
+    <string name="sis_fino_al" formatted="true">至 %1$s</string>
+    <string name="sis_da_intervals" formatted="true">%1$s（来自 Intervals.icu）</string>
+    <string name="sis_ferie">假期</string>
+    <string name="sis_malattia">生病</string>
+    <string name="sis_infortunio">受伤</string>
+    <string name="sis_pianificato">计划</string>
+    <string name="sis_svolto">已完成</string>
+    <string name="sis_analisi_seduta">训练分析</string>
+    <string name="sis_ctl_forma_fisica">CTL 体能</string>
+    <string name="sis_atl_stanchezza">ATL 疲劳</string>
+    <string name="sis_media_7gg">7日平均</string>
+    <string name="sis_range_media7">范围与 7 日平均值比较，而不是单晚数值。</string>
+    <string name="sis_range_dopo14">14 晚有效记录后显示范围。</string>
+    <string name="sis_oggi_tsb_giorno" formatted="true">今天 TSB %1$s · %2$s区间已 %3$s 天</string>
+    <string name="sis_oggi_tsb_giorni" formatted="true">今天 TSB %1$s · %2$s区间已 %3$s 天</string>
+    <string name="sis_oltre" formatted="true">高于 %1$s</string>
+    <string name="sis_da_a" formatted="true">%1$s 至 %2$s</string>
+    <string name="sis_sotto" formatted="true">低于 %1$s</string>
+    <string name="sis_piano_della_settimana">本周计划</string>
+    <string name="sis_gara_nome" formatted="true">比赛：%1$s</string>
+    <string name="sis_obiettivo_settimana" formatted="true">本周目标 %1$s</string>
+    <string name="sis_ore_ora" formatted="true">%1$s</string>
+    <string name="sis_senza_gara">无比赛</string>
+    <string name="sis_hrv7" formatted="true">7日 HRV %1$s ms</string>
+    <string name="sis_fc7" formatted="true">7日静息心率 %1$s 次/分</string>
+    <string name="sis_baseline" formatted="true">基线 %1$s</string>
+    <string name="sis_andamento" formatted="true">趋势：%1$s</string>
+    <string name="sis_stabile">稳定</string>
+    <string name="sis_in_calo">下降</string>
+    <string name="sis_in_aumento">上升</string>
+    <string name="sis_in_crescita">上升</string>
+    <string name="sis_sotto_range_gg" formatted="true">低于范围已 %1$s 天</string>
+    <string name="sis_ultima_notte_gg" formatted="true">最近一晚：%1$s 天前</string>
+    <string name="sis_b_verde">绿色</string>
+    <string name="sis_b_gialla">黄色</string>
+    <string name="sis_b_arancione">橙色</string>
+    <string name="sis_b_rossa">红色</string>
+    <string name="sis_b_grigio">灰色</string>
+    <string name="sis_zona_x" formatted="true">%1$s区间</string>
+    <string name="sis_attesa_fase" formatted="true">本阶段预期：%1$s</string>
+    <string name="sis_obiettivo_domenica" formatted="true">周日目标：TSB %1$s</string>
+    <string name="sis_obiettivo_domenica_fascia" formatted="true">周日目标：TSB %1$s（预期范围 %2$s / %3$s）</string>
+    <string name="sis_rampa" formatted="true">CTL 增幅 %1$s/周</string>
+    <string name="sis_rampa_max" formatted="true">CTL 增幅 %1$s/周（上限 %2$s）</string>
+    <string name="sis_linea_14">线：最近 14 天</string>
+    <string name="sis_tratteggio">虚线：教练预测</string>
+    <string name="sis_riquadro">方框：周日预期范围</string>
+    <string name="sis_g7">7 天</string>
+    <string name="sis_g28">28 天</string>
+    <string name="sis_g7_val" formatted="true">7 天 %1$s</string>
+    <string name="sis_g28_val" formatted="true">28 天 %1$s</string>
+    <string name="sis_palestra_val" formatted="true">健身房：%1$s</string>
+    <string name="sis_resto_aerobico">其余训练量为轻松有氧。线为教练不会超过的上限。</string>
+    <string name="sis_polarizzazione">80/20 极化：骑行和跑步时间中最多 20% 高于阈值</string>
+    <string name="sis_ore_di" formatted="true">时长：%1$s / %2$s</string>
+    <string name="sis_tetto" formatted="true">上限 %1$s</string>
+    <string name="sis_restano" formatted="true">剩余 %1$s</string>
+    <string name="sis_restano_gg" formatted="true">%2$s 天内剩余 %1$s</string>
+    <string name="sis_tss_fatti" formatted="true">TSS：已完成 %1$s</string>
+    <string name="sis_tss_fatti_di" formatted="true">TSS：已完成 %1$s / %2$s</string>
+    <string name="sis_tss_calendario" formatted="true">含日历中的训练为 %1$s</string>
+    <string name="sis_qualita">强度课</string>
+    <string name="sis_alleggerita">已减量</string>
+    <string name="sis_dettp">DETP</string>
+    <string name="sis_caldo">高温</string>
+    <string name="sis_tag">标签</string>
+    <string name="sis_aggiornata">已更新</string>
+    <string name="sis_carico_tss">负荷（TSS）</string>
+    <string name="sis_intensita">强度</string>
+    <string name="sis_velocita">速度</string>
+    <string name="sis_passo">配速</string>
+    <string name="sis_potenza_norm">标准化功率</string>
+    <string name="sis_potenza_media">平均功率</string>
+    <string name="sis_fc_max">最大心率</string>
+    <string name="sis_cadenza">踏频/步频</string>
+    <string name="sis_dislivello">爬升</string>
+    <string name="sis_calorie">卡路里</string>
+    <string name="sis_disaccoppiamento">脱耦</string>
+    <string name="sis_fattore_efficienza">效率因子</string>
+    <string name="sis_fatica_percepita">主观疲劳</string>
+    <string name="sis_aderenza_piano">计划完成度</string>
+    <string name="sis_vasca">泳池</string>
+    <string name="sis_tr_fc">心率（次/分）</string>
+    <string name="sis_tr_potenza">功率（W）</string>
+    <string name="sis_tr_velocita">速度（km/h）</string>
+    <string name="sis_tr_passo100">配速（/100m）</string>
+    <string name="sis_tr_passokm">配速（/km）</string>
+    <string name="sis_tr_altitudine">海拔（m）</string>
+    <string name="sis_tr_fc_breve" formatted="true">心率 %1$s</string>
+    <string name="sis_tr_pot_breve" formatted="true">功率 %1$s</string>
+    <string name="sis_tr_vel_breve" formatted="true">速度 %1$s</string>
+    <string name="sis_tr_passo_breve" formatted="true">配速 %1$s</string>
+    <string name="sis_tr_cad_breve" formatted="true">频率 %1$s</string>
+    <string name="sis_tr_alt_breve" formatted="true">海拔 %1$s</string>
+    <string name="sis_tocca_grafico">点按或拖动图表查看该点的数值</string>
+    <string name="sis_lavoro">训练段</string>
+    <string name="sis_recupero">恢复段</string>
+    <string name="sis_fc_soglia_pct" formatted="true">%1$s 阈值心率</string>
+    <string name="sis_fc_max_pct" formatted="true">%1$s 最大心率</string>
+    <string name="sis_passo_pct" formatted="true">%1$s 配速</string>
+    <string name="sis_rampa_step" formatted="true">渐变 %1$s</string>
+    <string name="sis_dal_al" formatted="true">%1$s 至 %2$s</string>
+    <string name="sis_ferie_malattia">假期 / 生病 / 受伤</string>
+    <string name="sis_tag_del_giorno">当天标签</string>
+    <string name="sis_gara">比赛</string>
+    <string name="sis_tempo_disponibile">可用时间</string>
+    <string name="sis_valori_non_validi">数值无效</string>
+    <string name="sis_non_riuscito" formatted="true">失败：%1$s。请重试。</string>
+    <string name="sis_dal">开始</string>
+    <string name="sis_al">结束</string>
+    <string name="sis_non_disponibile">不可用</string>
+    <string name="sis_lingua_app_sedute">应用以及教练写入日历和手表的训练所使用的语言。</string>
+    <string name="sis_lingua_sedute">教练写入日历和手表的训练所使用的语言。应用跟随手机语言。</string>
+    <string name="sis_informativa">隐私政策</string>
+    <string name="sis_licenza_non_trovata" formatted="true">未找到许可文本（%1$s）。</string>
+    <string name="sis_scelti" formatted="true">已选：%1$s</string>
+    <string name="sis_nessun_tag_oggi">今天没有标签</string>
+    <string name="sis_aggiungi_tag_btn">添加标签</string>
+    <string name="sis_modifica">编辑</string>
+    <string name="sis_giorno_prima">前一天</string>
+    <string name="sis_giorno_dopo">后一天</string>
+    <string name="sis_coach_aspetta" formatted="true">教练会等待你的标签直到 %1$s：保存后立即开始。</string>
+    <string name="sis_coach_partito">今天的教练已运行：这些标签从下次运行起生效。</string>
+    <string name="sis_coach_prossimo">教练会在下次运行时使用。</string>
+    <string name="sis_sera">晚上</string>
+    <string name="sis_salute_contesto">健康与情况</string>
+    <string name="sis_corpo">身体</string>
+    <string name="sis_t_alcol">饮酒</string>
+    <string name="sis_t_cena">晚餐过晚</string>
+    <string name="sis_t_caffeina">晚间咖啡因</string>
+    <string name="sis_t_stress">压力</string>
+    <string name="sis_t_viaggio">出行</string>
+    <string name="sis_t_sonno">睡眠受扰</string>
+    <string name="sis_t_altitudine">高海拔</string>
+    <string name="sis_t_dolore">肌肉酸痛</string>
+    <string name="sis_t_fatica">高度疲劳</string>
+    <string name="sis_t_gambe">腿部沉重</string>
+    <string name="sis_t_malessere">不适</string>
+    <string name="sis_zc_ginocchio">膝盖</string>
+    <string name="sis_zc_caviglia">脚踝</string>
+    <string name="sis_zc_piede">脚</string>
+    <string name="sis_zc_polpaccio">小腿</string>
+    <string name="sis_zc_anca">髋部</string>
+    <string name="sis_zc_schiena">背部</string>
+    <string name="sis_zc_spalla">肩部</string>
+    <string name="sis_salvato_parte">已保存：教练现在开始运行</string>
+    <string name="sis_salvato">已保存</string>
+    <string name="sis_batt_al_collegamento">心率带电量：连接时读取</string>
+    <string name="sis_batt_livello" formatted="true">心率带电量：%1$s%%</string>
+    <string name="sis_pila">可能会在夜间关机：请更换电池（CR2025）。</string>
+    <string name="sis_chiudi">关闭</string>
+    <string name="sis_collegamento_breve">正在连接心率带…</string>
+    <string name="sis_lettura_battito">正在读取心跳…</string>
+    <string name="sis_attesa_battito">正在等待心跳：是否已佩戴心率带？</string>
+    <string name="sis_fiore_guida">花朵展开时吸气，合拢时呼气</string>
+    <string name="sis_fiore_seguira">心率带连接后，花朵会跟随你的呼吸</string>
+    <string name="sis_fiore_senza_rr">此心率带不测量 RR 间期：由花朵引导你</string>
+    <string name="sis_fiore_dal_battito">花朵跟随你的呼吸（由心跳推算）</string>
+    <string name="sis_fiore_attesa_respiro">正在等待心率带的呼吸数据</string>
+    <string name="sis_fiore_taratura">花朵跟随你的呼吸 · 校准中</string>
+    <string name="sis_fiore_segue">花朵跟随你的呼吸</string>
+    <string name="sis_segui_respiro">跟随我的呼吸</string>
+    <string name="sis_guidami">引导我</string>
+    <string name="sis_notte_in_corso_da" formatted="true">夜间记录已进行 %1$s</string>
+    <string name="sis_notte_min">夜间</string>
+    <string name="sis_ottimo">优秀</string>
+    <string name="sis_buono">良好</string>
+    <string name="sis_da_curare">需改善</string>
+    <string name="sis_c_efficienza">效率</string>
+    <string name="sis_c_profondo">深睡</string>
+    <string name="sis_c_rem">REM 睡眠</string>
+    <string name="sis_c_continuita">连续性</string>
+    <string name="sis_c_latenza">入睡时间</string>
+    <string name="sis_c_orario">作息时间</string>
+    <string name="sis_l_nessuno">无</string>
+    <string name="sis_l_basso">低</string>
+    <string name="sis_l_moderato">中等</string>
+    <string name="sis_l_alto">高</string>
+    <string name="sis_l_nessuno_m">无</string>
+    <string name="sis_l_basso_m">低</string>
+    <string name="sis_l_moderato_m">中等</string>
+    <string name="sis_l_alto_m">高</string>
+    <string name="sis_a_in_linea">正常</string>
+    <string name="sis_a_anticipo">偏早</string>
+    <string name="sis_a_ritardo">偏晚</string>
+    <string name="sis_cr_molto_matt">明显早起型</string>
+    <string name="sis_cr_matt">早起型</string>
+    <string name="sis_cr_intermedio">中间型</string>
+    <string name="sis_cr_serale">晚睡型</string>
+    <string name="sis_cr_molto_serale">明显晚睡型</string>
+    <string name="sis_sc_in_linea">与你的作息类型一致</string>
+    <string name="sis_sc_dopo" formatted="true">比你的作息类型晚 %1$s</string>
+    <string name="sis_sc_prima" formatted="true">比你的作息类型早 %1$s</string>
+    <string name="sis_linea_appreso" formatted="true">线：睡眠需求 %1$s（根据你的夜间数据学习）。灰色柱：未记录的夜晚，不计入。睡得比需求更久可减少负债。</string>
+    <string name="sis_linea_8h" formatted="true">线：睡眠需求 %1$s（少于 14 晚时按 8 小时计：%2$s/14）。灰色柱：未记录的夜晚，不计入。睡得比需求更久可减少负债。</string>
+    <string name="sis_notti_n_su" formatted="true">%1$s/%2$s 晚</string>
 </resources>

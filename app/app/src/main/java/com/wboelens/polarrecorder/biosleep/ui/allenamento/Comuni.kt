@@ -1,5 +1,6 @@
 package com.wboelens.polarrecorder.biosleep.ui.allenamento
 
+import com.wboelens.polarrecorder.biosleep.lingua.tr
 import com.wboelens.polarrecorder.R
 import androidx.compose.ui.res.stringResource
 import androidx.compose.foundation.Canvas
@@ -163,7 +164,7 @@ fun AzioneAggiorna() {
     CircularProgressIndicator(Modifier.padding(12.dp).size(24.dp), strokeWidth = 2.dp)
   } else {
     IconButton(onClick = { CacheSync.aggiornaInBackground(context, forza = true) }) {
-      Icon(Icons.Filled.Refresh, "Aggiorna da Intervals.icu")
+      Icon(Icons.Filled.Refresh, tr("Aggiorna da Intervals.icu"))
     }
   }
 }
@@ -181,7 +182,7 @@ fun StatoAggiornamento() {
       val ora =
           java.time.Instant.ofEpochMilli(stato.aggiornatoMs!!)
               .atZone(java.time.ZoneId.systemDefault())
-              .format(DateTimeFormatter.ofPattern("d MMM HH:mm", Locale.ITALIAN))
+              .let { DateIt.asse(it.toLocalDate()) + " " + it.format(DateTimeFormatter.ofPattern("HH:mm")) }
       Text(stringResource(R.string.comuni_aggiornato, ora.toString()), style = stile, color = MaterialTheme.colorScheme.onSurfaceVariant)
     }
   }
@@ -217,7 +218,7 @@ fun BarraBioSleep(navController: NavController) {
             }
           },
           icon = { Icon(v.icona, null) },
-          label = { Text(v.etichetta) },
+          label = { Text(tr(v.etichetta)) },
       )
     }
   }
@@ -247,7 +248,7 @@ fun RigaForma(forma: FormaHome?, modifier: Modifier = Modifier) {
       Box(Modifier.size(10.dp).background(ColoriBio.daNome(oggi.colore), CircleShape))
       Spacer(Modifier.width(6.dp))
       Text(
-          "Zona ${oggi.zona} da ${oggi.giorniInZona} ${if (oggi.giorniInZona == 1) "giorno" else "giorni"}",
+          tr("Zona ${oggi.zona} da ${oggi.giorniInZona} ${if (oggi.giorniInZona == 1) "giorno" else "giorni"}"),
           style = MaterialTheme.typography.bodySmall)
     }
   }
@@ -256,8 +257,8 @@ fun RigaForma(forma: FormaHome?, modifier: Modifier = Modifier) {
 @Composable
 private fun Indicatore(titolo: String, sigla: String, valore: Double, ieri: Double?, colore: Color) {
   Column(horizontalAlignment = Alignment.CenterHorizontally) {
-    Text(sigla, style = MaterialTheme.typography.labelMedium, color = colore, fontWeight = FontWeight.Bold)
-    Text(Formato.decimale(valore), style = MaterialTheme.typography.headlineSmall)
+    Text(tr(sigla), style = MaterialTheme.typography.labelMedium, color = colore, fontWeight = FontWeight.Bold)
+    Text(tr(Formato.decimale(valore)), style = MaterialTheme.typography.headlineSmall)
     if (ieri != null) {
       val delta = valore - ieri
       val icona =
@@ -269,12 +270,12 @@ private fun Indicatore(titolo: String, sigla: String, valore: Double, ieri: Doub
       Row(verticalAlignment = Alignment.CenterVertically) {
         Icon(icona, null, Modifier.size(16.dp), tint = MaterialTheme.colorScheme.onSurfaceVariant)
         Text(
-            " ${Formato.conSegno(delta)}",
+            tr(" ${Formato.conSegno(delta)}"),
             style = MaterialTheme.typography.labelSmall,
             color = MaterialTheme.colorScheme.onSurfaceVariant)
       }
     }
-    Text(titolo, style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+    Text(tr(titolo), style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
   }
 }
 
@@ -383,7 +384,7 @@ fun GraficoLinee(
 private fun Legenda(colore: Color, testo: String) {
   Row(verticalAlignment = Alignment.CenterVertically) {
     Box(Modifier.size(10.dp).background(colore, CircleShape))
-    Text(" $testo", style = MaterialTheme.typography.labelSmall)
+    Text(tr(" $testo"), style = MaterialTheme.typography.labelSmall)
   }
 }
 

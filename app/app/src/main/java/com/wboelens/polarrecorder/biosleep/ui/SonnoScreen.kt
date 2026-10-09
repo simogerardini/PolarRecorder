@@ -1,5 +1,6 @@
 package com.wboelens.polarrecorder.biosleep.ui
 
+import com.wboelens.polarrecorder.biosleep.lingua.tr
 import com.wboelens.polarrecorder.R
 import androidx.compose.ui.res.stringResource
 import androidx.compose.foundation.Canvas
@@ -133,9 +134,9 @@ fun RiquadroSonno(onApri: () -> Unit) {
 @Composable
 private fun Mini(titolo: String, valore: String, nota: String?) {
   Column {
-    Text(titolo, style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
-    Text(valore, style = MaterialTheme.typography.titleLarge)
-    nota?.let { Text(it, style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant) }
+    Text(tr(titolo), style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
+    Text(tr(valore), style = MaterialTheme.typography.titleLarge)
+    nota?.let { Text(tr(it), style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant) }
   }
 }
 
@@ -157,7 +158,7 @@ fun SonnoScreen(onBack: () -> Unit) {
       topBar = {
         TopAppBar(
             title = { Text(stringResource(R.string.sonno_sonno_2)) },
-            navigationIcon = { IconButton(onClick = onBack) { Icon(Icons.AutoMirrored.Filled.ArrowBack, "Indietro") } })
+            navigationIcon = { IconButton(onClick = onBack) { Icon(Icons.AutoMirrored.Filled.ArrowBack, tr("Indietro")) } })
       },
   ) { padding ->
     if (s == null) {
@@ -181,7 +182,7 @@ fun SonnoScreen(onBack: () -> Unit) {
 
 @Composable
 private fun Nota(t: String) =
-    Text(t, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+    Text(tr(t), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
 
 @Composable
 private fun Punteggio(s: StatoSonno) {
@@ -191,16 +192,16 @@ private fun Punteggio(s: StatoSonno) {
     return
   }
   Row(verticalAlignment = Alignment.Bottom) {
-    Text("${p.totale}", style = MaterialTheme.typography.displayMedium)
+    Text(tr("${p.totale}"), style = MaterialTheme.typography.displayMedium)
     Spacer(Modifier.width(10.dp))
-    Text(PunteggioSonno.etichetta(p.totale), style = MaterialTheme.typography.titleMedium, color = BLU, modifier = Modifier.padding(bottom = 10.dp))
+    Text(tr(PunteggioSonno.etichetta(p.totale)), style = MaterialTheme.typography.titleMedium, color = BLU, modifier = Modifier.padding(bottom = 10.dp))
   }
   Nota(stringResource(R.string.sonno_notte_del_di_sonno, (DateIt.breve(s.ultima.giorno)).toString(), (durata(s.ultima.sonnoMin / 60.0)).toString()))
   for (c in p.contributi) {
     Column {
       Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-        Text(c.nome, style = MaterialTheme.typography.bodyMedium)
-        Text("${c.punti}", style = MaterialTheme.typography.bodyMedium, fontWeight = FontWeight.SemiBold)
+        Text(tr(c.nome), style = MaterialTheme.typography.bodyMedium)
+        Text(tr("${c.punti}"), style = MaterialTheme.typography.bodyMedium, fontWeight = FontWeight.SemiBold)
       }
       LinearProgressIndicator(
           progress = { c.punti / 100f }, modifier = Modifier.fillMaxWidth().height(6.dp), color = BLU, strokeCap = StrokeCap.Round)
@@ -215,9 +216,9 @@ private fun Deficit(s: StatoSonno) {
   val d = s.deficit
   val colore = coloreDeficit(d.livello)
   Row(verticalAlignment = Alignment.Bottom) {
-    Text(if (d.ore < 0.02) "0m" else durata(d.ore), style = MaterialTheme.typography.displaySmall)
+    Text(tr(if (d.ore < 0.02) "0m" else durata(d.ore)), style = MaterialTheme.typography.displaySmall)
     Spacer(Modifier.width(10.dp))
-    Text(d.livello.etichetta.uppercase(), color = colore, fontWeight = FontWeight.Bold, modifier = Modifier.padding(bottom = 8.dp))
+    Text(tr(d.livello.etichetta.uppercase()), color = colore, fontWeight = FontWeight.Bold, modifier = Modifier.padding(bottom = 8.dp))
   }
   // quattro livelli, come Oura: Nessuno, Basso, Moderato, Alto
   Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(6.dp)) {
@@ -295,8 +296,8 @@ private fun Orologio(s: StatoSonno) {
         style = MaterialTheme.typography.bodyMedium)
   }
   s.scartoMin?.let { scarto ->
-    Text(OrologioBiologico.allineamento(scarto).etichetta, style = MaterialTheme.typography.titleLarge)
-    Text(stringResource(R.string.sonno_il_punto_centrale_del, (scartoTesto(scarto)).toString()), style = MaterialTheme.typography.bodyMedium)
+    Text(tr(OrologioBiologico.allineamento(scarto).etichetta), style = MaterialTheme.typography.titleLarge)
+    Text(stringResource(R.string.sonno_il_punto_centrale_del, tr(scartoTesto(scarto))), style = MaterialTheme.typography.bodyMedium)
   }
   Nota(stringResource(R.string.sonno_anello_esterno_azzurro_la))
 }
@@ -309,7 +310,7 @@ private fun Cronotipo(s: StatoSonno) {
         stringResource(R.string.sonno_il_cronotipo_si_calcola, OrologioBiologico.NOTTI_MINIME.toString(), s.notti.toString()))
     return
   }
-  Text(c.tipo.etichetta, style = MaterialTheme.typography.headlineSmall)
+  Text(tr(c.tipo.etichetta), style = MaterialTheme.typography.headlineSmall)
   Text(stringResource(R.string.sonno_orari_di_sonno_ottimali), style = MaterialTheme.typography.labelLarge, color = MaterialTheme.colorScheme.onSurfaceVariant)
   Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
     Mini(stringResource(R.string.sonno_sonno_3), orario(c.sonnoMin).toString(), null)

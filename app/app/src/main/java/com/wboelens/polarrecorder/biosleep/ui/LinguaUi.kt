@@ -1,5 +1,6 @@
 package com.wboelens.polarrecorder.biosleep.ui
 
+import com.wboelens.polarrecorder.biosleep.lingua.tr
 import com.wboelens.polarrecorder.R
 import androidx.compose.ui.res.stringResource
 import androidx.compose.foundation.layout.Arrangement
@@ -46,11 +47,11 @@ fun SezioneLingua() {
     Text(stringResource(R.string.lingua_lingua), style = MaterialTheme.typography.titleSmall)
     FlowRow(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
       FilterChip(selected = scelta == null, onClick = { cambia(null) }, label = { Text(stringResource(R.string.lingua_come_il_telefono)) })
-      for ((codice, nome) in Lingua.LINGUE) FilterChip(selected = scelta == codice, onClick = { cambia(codice) }, label = { Text(nome) })
+      for ((codice, nome) in Lingua.LINGUE) FilterChip(selected = scelta == codice, onClick = { cambia(codice) }, label = { Text(tr(nome)) })
     }
     Text(
-        if (Lingua.perAppDisponibile()) "Lingua dell'app e delle sedute che il coach scrive sul calendario e sull'orologio."
-        else "Lingua delle sedute che il coach scrive sul calendario e sull'orologio. L'app segue la lingua del telefono.",
+        tr(if (Lingua.perAppDisponibile()) "Lingua dell'app e delle sedute che il coach scrive sul calendario e sull'orologio."
+        else "Lingua delle sedute che il coach scrive sul calendario e sull'orologio. L'app segue la lingua del telefono."),
         style = MaterialTheme.typography.bodySmall,
         color = MaterialTheme.colorScheme.onSurfaceVariant)
     if (Lingua.calendarioInInglese(effettiva)) {
@@ -59,7 +60,7 @@ fun SezioneLingua() {
           style = MaterialTheme.typography.bodySmall,
           color = MaterialTheme.colorScheme.primary)
     }
-    messaggio?.let { Text(it, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.primary) }
+    messaggio?.let { Text(tr(it), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.primary) }
   }
 
   if (chiedi) {

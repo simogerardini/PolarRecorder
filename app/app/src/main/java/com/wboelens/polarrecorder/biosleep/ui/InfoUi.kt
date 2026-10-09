@@ -1,5 +1,6 @@
 package com.wboelens.polarrecorder.biosleep.ui
 
+import com.wboelens.polarrecorder.biosleep.lingua.tr
 import com.wboelens.polarrecorder.R
 import androidx.compose.ui.res.stringResource
 import kotlinx.coroutines.withContext
@@ -63,7 +64,7 @@ fun apriPagina(context: Context, url: String) {
 @Composable
 fun RigaInformativa(testo: String = "Informativa sulla privacy") {
   val context = LocalContext.current
-  TextButton(onClick = { apriPagina(context, Licenze.PRIVACY_URL) }) { Text(testo) }
+  TextButton(onClick = { apriPagina(context, Licenze.PRIVACY_URL) }) { Text(tr(testo)) }
 }
 
 /** Sezione "Informazioni" delle Impostazioni. */
@@ -74,7 +75,7 @@ fun SezioneInformazioni(onApriLicenze: () -> Unit) {
     val context = LocalContext.current.applicationContext
     val versioneCoach by produceState<String?>(null) { value = withContext(Dispatchers.IO) { Cervello.versione(context) } }
     Text(
-        "${BuildConfig.APP_NAME} ${BuildConfig.VERSION_NAME}" + (versioneCoach?.let { " · coach $it" } ?: ""),
+        tr("${BuildConfig.APP_NAME} ${BuildConfig.VERSION_NAME}" + (versioneCoach?.let { " · coach $it" } ?: "")),
         style = MaterialTheme.typography.bodySmall,
         color = MaterialTheme.colorScheme.onSurfaceVariant)
     RigaInformativa()
@@ -92,30 +93,30 @@ fun LicenzeScreen(onBack: () -> Unit) {
       topBar = {
         TopAppBar(
             title = { Text(stringResource(R.string.info_licenze_open_source)) },
-            navigationIcon = { IconButton(onClick = onBack) { Icon(Icons.AutoMirrored.Filled.ArrowBack, "Indietro") } })
+            navigationIcon = { IconButton(onClick = onBack) { Icon(Icons.AutoMirrored.Filled.ArrowBack, tr("Indietro")) } })
       },
   ) { padding ->
     Column(
         Modifier.fillMaxSize().padding(padding).verticalScroll(rememberScrollState()).padding(16.dp),
         verticalArrangement = Arrangement.spacedBy(10.dp),
     ) {
-      Text(Licenze.ORIGINE.descrizione, style = MaterialTheme.typography.bodyMedium)
+      Text(tr(Licenze.ORIGINE.descrizione), style = MaterialTheme.typography.bodyMedium)
       RigaComponente(Licenze.ORIGINE) { aperto = it }
       HorizontalDivider()
       Text(stringResource(R.string.info_componenti_usati), style = MaterialTheme.typography.titleSmall)
       for (c in Licenze.COMPONENTI) RigaComponente(c) { aperto = it }
       HorizontalDivider()
-      Text(Licenze.NOTA_GOOGLE, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+      Text(tr(Licenze.NOTA_GOOGLE), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
     }
   }
   aperto?.let { c ->
     val testo = remember(c.file) { leggiAsset(context, "licenze/${c.file}") }
     AlertDialog(
         onDismissRequest = { aperto = null },
-        title = { Text("${c.nome} · ${c.licenza}") },
+        title = { Text(tr("${c.nome} · ${c.licenza}")) },
         text = {
           Text(
-              testo,
+              tr(testo),
               fontFamily = FontFamily.Monospace,
               style = MaterialTheme.typography.bodySmall,
               modifier = Modifier.heightIn(max = 480.dp).verticalScroll(rememberScrollState()))
@@ -129,8 +130,8 @@ fun LicenzeScreen(onBack: () -> Unit) {
 @Composable
 private fun RigaComponente(c: Componente, onApri: (Componente) -> Unit) {
   Column(Modifier.fillMaxWidth().clickable { onApri(c) }.padding(vertical = 4.dp)) {
-    Text(c.nome, style = MaterialTheme.typography.bodyLarge)
-    Text("${c.licenza} · ${c.descrizione}", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+    Text(tr(c.nome), style = MaterialTheme.typography.bodyLarge)
+    Text(tr("${c.licenza} · ${c.descrizione}"), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
   }
 }
 

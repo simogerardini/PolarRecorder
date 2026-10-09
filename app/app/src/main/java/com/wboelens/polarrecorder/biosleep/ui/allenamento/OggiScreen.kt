@@ -1,5 +1,6 @@
 package com.wboelens.polarrecorder.biosleep.ui.allenamento
 
+import com.wboelens.polarrecorder.biosleep.lingua.tr
 import com.wboelens.polarrecorder.R
 import androidx.compose.ui.res.stringResource
 import com.wboelens.polarrecorder.biosleep.intervals.CampiWellness
@@ -136,7 +137,7 @@ fun OggiScreen(
             actions = {
               AzioneAggiorna()
               // Impostazioni di tutta l'app (Intervals.icu, coach, profilo atleta): dalla home
-              IconButton(onClick = onApriImpostazioni) { Icon(Icons.Filled.Settings, "Impostazioni") }
+              IconButton(onClick = onApriImpostazioni) { Icon(Icons.Filled.Settings, tr("Impostazioni")) }
             },
         )
       },
@@ -175,7 +176,7 @@ fun OggiScreen(
 fun Sezione(titolo: String, contenuto: @Composable ColumnScope.() -> Unit) {
   Card(Modifier.fillMaxWidth()) {
     Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
-      Text(titolo, style = MaterialTheme.typography.titleMedium)
+      Text(tr(titolo), style = MaterialTheme.typography.titleMedium)
       contenuto()
     }
   }
@@ -210,19 +211,19 @@ private fun Recupero(d: DatiOggi) {
       Row(verticalAlignment = Alignment.CenterVertically) {
         Box(Modifier.size(14.dp).background(ColoriBio.daNome(b.banda), CircleShape))
         Spacer(Modifier.width(8.dp))
-        Text(etichettaBanda(b.banda), fontWeight = FontWeight.Bold)
+        Text(tr(etichettaBanda(b.banda)), fontWeight = FontWeight.Bold)
       }
       val r = b.normalRangeMs
       Text(
-          "Media 7 gg ${b.rolling7Hrv?.let { Formato.decimale(it) } ?: "—"} ms" +
-              (r?.let { " · range ${Formato.decimale(it.first)}–${Formato.decimale(it.second)} ms" } ?: ""),
+          tr("Media 7 gg ${b.rolling7Hrv?.let { Formato.decimale(it) } ?: "—"} ms" +
+              (r?.let { " · range ${Formato.decimale(it.first)}–${Formato.decimale(it.second)} ms" } ?: "")),
           style = stileNota)
       if (b.persistenzaGgSotto >= 2) Text(stringResource(R.string.oggi_sotto_il_range_da, b.persistenzaGgSotto.toString()), style = stileNota)
     }
   }
   if (d.baseline.ok && d.baseline.ggRitardo >= 1) {
     Text(
-        "Ultima notte registrata: ${d.baseline.ggRitardo} ${if (d.baseline.ggRitardo == 1) "giorno" else "giorni"} fa",
+        tr("Ultima notte registrata: ${d.baseline.ggRitardo} ${if (d.baseline.ggRitardo == 1) "giorno" else "giorni"} fa"),
         style = stileNota,
         color = MaterialTheme.colorScheme.error)
   }
@@ -253,15 +254,15 @@ private fun Recupero(d: DatiOggi) {
 private fun Valore(titolo: String, valore: String, nota: String?, allarme: Boolean = false) {
   Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
     Column(Modifier.weight(1f)) {
-      Text(titolo, style = MaterialTheme.typography.bodyMedium)
+      Text(tr(titolo), style = MaterialTheme.typography.bodyMedium)
       if (nota != null) {
         Text(
-            nota,
+            tr(nota),
             style = MaterialTheme.typography.bodySmall,
             color = if (allarme) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.onSurfaceVariant)
       }
     }
-    Text(valore, style = MaterialTheme.typography.titleMedium)
+    Text(tr(valore), style = MaterialTheme.typography.titleMedium)
   }
 }
 
@@ -355,10 +356,10 @@ private fun RigaSeduta(
         Box(Modifier.width(4.dp).height(36.dp).background(coloreSport, RoundedCornerShape(2.dp)))
         Spacer(Modifier.width(10.dp))
         Column(Modifier.weight(1f)) {
-          Text(nome, style = MaterialTheme.typography.bodyMedium, fontWeight = FontWeight.SemiBold, maxLines = 2)
-          Text("$sport · $dettaglio", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+          Text(tr(nome), style = MaterialTheme.typography.bodyMedium, fontWeight = FontWeight.SemiBold, maxLines = 2)
+          Text(tr("$sport · $dettaglio"), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
         }
-        Text(testoEsito, style = MaterialTheme.typography.labelSmall, color = coloreEsito)
+        Text(tr(testoEsito), style = MaterialTheme.typography.labelSmall, color = coloreEsito)
       }
 }
 
@@ -372,7 +373,7 @@ private fun Settimana(d: DatiOggi) {
         Allenamenti.settimana(d.eventiSettimana, d.attivitaSettimana, Allenamenti.lunedi(d.oggi), metrica)
       }
   Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-    for (m in Metrica.entries) FilterChip(selected = m == metrica, onClick = { metrica = m }, label = { Text(m.etichetta) })
+    for (m in Metrica.entries) FilterChip(selected = m == metrica, onClick = { metrica = m }, label = { Text(tr(m.etichetta)) })
   }
   val massimo = barre.maxOf { maxOf(it.svolto, it.pianificato) }.takeIf { it > 0 } ?: 1.0
   val primario = MaterialTheme.colorScheme.primary
@@ -394,7 +395,7 @@ private fun Settimana(d: DatiOggi) {
                       .background(primario, RoundedCornerShape(topStart = 3.dp, topEnd = 3.dp)))
             }
         Text(
-            DateIt.iniziale(b.data),
+            tr(DateIt.iniziale(b.data)),
             style = MaterialTheme.typography.labelSmall,
             fontWeight = if (b.data == d.oggi) FontWeight.Bold else FontWeight.Normal,
             color = if (b.data == d.oggi) primario else MaterialTheme.colorScheme.onSurfaceVariant)

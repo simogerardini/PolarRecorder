@@ -1,5 +1,6 @@
 package com.wboelens.polarrecorder.biosleep.ui.allenamento
 
+import com.wboelens.polarrecorder.biosleep.lingua.tr
 import com.wboelens.polarrecorder.R
 import androidx.compose.ui.res.stringResource
 import com.wboelens.polarrecorder.biosleep.riepilogo.TraduzioneMessaggi
@@ -158,18 +159,18 @@ private fun RigaConTag(
   val caldo = pulito.startsWith("caldo del", ignoreCase = true)
   val detp = pulito.startsWith("DETP", ignoreCase = true)
   if (!daTag && !caldo && !detp) {
-    Text(if (puntato) "• $mostrato" else mostrato, style = stile, color = colore)
+    Text(tr(if (puntato) "• $mostrato" else mostrato), style = stile, color = colore)
     return
   }
   Row(verticalAlignment = Alignment.Top) {
     if (detp) {
-      Icon(Icons.Filled.Thermostat, "DETP", Modifier.padding(top = 2.dp, end = 6.dp).size(16.dp), tint = ColoriBio.rosso)
+      Icon(Icons.Filled.Thermostat, tr("DETP"), Modifier.padding(top = 2.dp, end = 6.dp).size(16.dp), tint = ColoriBio.rosso)
     } else if (caldo) {
-      Icon(Icons.Filled.WbSunny, "Caldo", Modifier.padding(top = 2.dp, end = 6.dp).size(16.dp), tint = ColoriBio.giallo)
+      Icon(Icons.Filled.WbSunny, tr("Caldo"), Modifier.padding(top = 2.dp, end = 6.dp).size(16.dp), tint = ColoriBio.giallo)
     } else {
-      Icon(Icons.Filled.Sell, "Tag", Modifier.padding(top = 2.dp, end = 6.dp).size(16.dp), tint = colore)
+      Icon(Icons.Filled.Sell, tr("Tag"), Modifier.padding(top = 2.dp, end = 6.dp).size(16.dp), tint = colore)
     }
-    Text(mostrato.replaceFirstChar { it.uppercase() }, style = stile, color = colore)
+    Text(tr(mostrato.replaceFirstChar { it.uppercase() }), style = stile, color = colore)
   }
 }
 
@@ -181,8 +182,8 @@ fun RiquadroRiepilogo(oggi: LocalDate, onApri: (String) -> Unit) {
   val r = rememberRiepilogo(oggi.toString()).second ?: return
   Card(Modifier.fillMaxWidth().clickable { onApri(r.data) }) {
     Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
-      Text("Coach" + (r.ora?.let { " · $it" } ?: ""), style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
-      Text(titolo(r), style = MaterialTheme.typography.titleLarge)
+      Text(tr("Coach" + (r.ora?.let { " · $it" } ?: "")), style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
+      Text(tr(titolo(r)), style = MaterialTheme.typography.titleLarge)
       motivo(r)?.let { RigaConTag(it, MaterialTheme.typography.bodyMedium, MaterialTheme.colorScheme.onSurface, it in motiviDaTag(r)) }
       if (r.avvisi != null || r.nonScritte.isNotEmpty()) {
         Text(stringResource(R.string.riepilogo_ci_sono_avvisi_apri), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.error)
@@ -203,7 +204,7 @@ fun RiepilogoScreen(data: String, onBack: () -> Unit, onApriSeduta: (String) -> 
       topBar = {
         TopAppBar(
             title = { Text(stringResource(R.string.riepilogo_coach, (DateIt.breve(LocalDate.parse(data))).toString())) },
-            navigationIcon = { IconButton(onClick = onBack) { Icon(Icons.AutoMirrored.Filled.ArrowBack, "Indietro") } },
+            navigationIcon = { IconButton(onClick = onBack) { Icon(Icons.AutoMirrored.Filled.ArrowBack, tr("Indietro")) } },
         )
       },
   ) { padding ->
@@ -230,8 +231,8 @@ fun RiepilogoScreen(data: String, onBack: () -> Unit, onApriSeduta: (String) -> 
         Sezione(stringResource(R.string.riepilogo_soglie_aggiornate)) {
           for (riga in righe) {
             Row(verticalAlignment = Alignment.Top) {
-              Icon(Icons.Filled.Update, "Aggiornata", Modifier.padding(top = 2.dp, end = 6.dp).size(16.dp), tint = MaterialTheme.colorScheme.primary)
-              Text(TraduzioneMessaggi.testo(LocalContext.current, riga).replaceFirstChar { it.uppercase() }, style = MaterialTheme.typography.bodyMedium)
+              Icon(Icons.Filled.Update, tr("Aggiornata"), Modifier.padding(top = 2.dp, end = 6.dp).size(16.dp), tint = MaterialTheme.colorScheme.primary)
+              Text(tr(TraduzioneMessaggi.testo(LocalContext.current, riga).replaceFirstChar { it.uppercase() }), style = MaterialTheme.typography.bodyMedium)
             }
           }
         }
@@ -240,7 +241,7 @@ fun RiepilogoScreen(data: String, onBack: () -> Unit, onApriSeduta: (String) -> 
       if (r.oggi != null || giorno != null) {
         Sezione(stringResource(R.string.riepilogo_oggi_2)) {
           // dal calendario (con lo stato svolta/da fare); il testo del coach solo se il calendario non c'e'
-          if (giorno == null) r.oggi?.let { Text(it, style = MaterialTheme.typography.bodyMedium) }
+          if (giorno == null) r.oggi?.let { Text(tr(it), style = MaterialTheme.typography.bodyMedium) }
           giorno?.let { g ->
             if (g.pianificate.isEmpty() && g.nonPianificate.isEmpty()) Text(stringResource(R.string.riepilogo_riposo), style = MaterialTheme.typography.bodyMedium)
             for (s in g.pianificate) CardSeduta(s, onClick = { onApriSeduta(data) })
@@ -261,7 +262,7 @@ fun RiepilogoScreen(data: String, onBack: () -> Unit, onApriSeduta: (String) -> 
         Sezione(stringResource(R.string.riepilogo_settimana)) {
           Settimana(volume, carico)
           // sedute di forza che il coach non ha potuto mettere, con il motivo
-          for (m in forza) Text("• " + m.trim().replaceFirstChar { it.uppercase() }, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+          for (m in forza) Text(tr("• " + m.trim().replaceFirstChar { it.uppercase() }), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
         }
       }
       if (r.sedute.isNotEmpty()) Sezione(stringResource(R.string.riepilogo_sedute_della_settimana)) { SeduteDellaSettimana(r.sedute, onApriSeduta) }
@@ -282,7 +283,7 @@ private fun Avvisi(r: Riepilogo) {
       righe.forEach { RigaConTag(it, MaterialTheme.typography.bodyMedium, colore) }
       if (r.nonScritte.isNotEmpty()) {
         Text(stringResource(R.string.riepilogo_sedute_che_il_coach), style = MaterialTheme.typography.bodyMedium, color = colore)
-        for (s in r.nonScritte) Text("• $s", style = MaterialTheme.typography.bodyMedium, color = colore)
+        for (s in r.nonScritte) Text(tr("• $s"), style = MaterialTheme.typography.bodyMedium, color = colore)
       }
     }
   }
@@ -291,7 +292,7 @@ private fun Avvisi(r: Riepilogo) {
 @Composable
 private fun Intestazione(r: Riepilogo) {
   Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
-    Text(titolo(r), style = MaterialTheme.typography.headlineMedium)
+    Text(tr(titolo(r)), style = MaterialTheme.typography.headlineMedium)
     val daTag = motiviDaTag(r)
     motivo(r)?.let { RigaConTag(it, MaterialTheme.typography.bodyLarge, MaterialTheme.colorScheme.onSurface, it in daTag) }
     // gli altri motivi del piano (il primo e' gia' sopra se manca la decisione)
@@ -302,7 +303,7 @@ private fun Intestazione(r: Riepilogo) {
             r.fase, r.gara?.let { "gara: $it" },
             r.oreTarget?.let { "obiettivo settimana ${ore(it)}" }, r.ora?.let { "ore $it" })
     if (sotto.isNotEmpty()) {
-      Text(sotto.joinToString(" · "), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+      Text(tr(sotto.joinToString(" · ")), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
     }
   }
 }
@@ -315,7 +316,7 @@ private fun Biometria(b: BiometriaCoach) {
   val grigio = MaterialTheme.colorScheme.onSurfaceVariant
   if (b.ok == false) {
     Text(stringResource(R.string.riepilogo_baseline_in_calibrazione), fontWeight = FontWeight.Bold)
-    b.nota?.let { Text(it, style = nota, color = grigio) }
+    b.nota?.let { Text(tr(it), style = nota, color = grigio) }
     return
   }
   // "Procedi con la seduta pianificata (media 7gg dentro il normal range 54.0-59.4ms)."
@@ -326,19 +327,19 @@ private fun Biometria(b: BiometriaCoach) {
     Spacer(Modifier.width(10.dp))
     Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(2.dp)) {
       Text(
-          listOfNotNull(b.banda?.replaceFirstChar { it.uppercase() }, azione).joinToString(" · "),
+          tr(listOfNotNull(b.banda?.replaceFirstChar { it.uppercase() }, azione).joinToString(" · ")),
           style = MaterialTheme.typography.titleMedium)
       dettaglio?.let {
-        Text(it, style = MaterialTheme.typography.bodyMedium, color = grigio, textAlign = TextAlign.Justify)
+        Text(tr(it), style = MaterialTheme.typography.bodyMedium, color = grigio, textAlign = TextAlign.Justify)
       }
     }
   }
-  b.nota?.let { Text(it, style = nota, color = grigio) }
+  b.nota?.let { Text(tr(it), style = nota, color = grigio) }
   if (b.hrv7gg != null) {
     Text(
-        "HRV 7 gg ${Formato.decimale(b.hrv7gg)} ms" +
+        tr("HRV 7 gg ${Formato.decimale(b.hrv7gg)} ms" +
             (b.hrvBaseline?.let { " · baseline ${Formato.decimale(it)}" } ?: "") +
-            (b.pctVsBaseline?.let { " (${Formato.conSegno(it)}%)" } ?: ""),
+            (b.pctVsBaseline?.let { " (${Formato.conSegno(it)}%)" } ?: "")),
         style = MaterialTheme.typography.bodyMedium)
     b.rangeMs?.let { BarraRange(b.hrv7gg, it, ColoriBio.daNome(b.banda)) }
   }
@@ -347,12 +348,12 @@ private fun Biometria(b: BiometriaCoach) {
           b.direzione?.let { "andamento $it" },
           b.ggSottoRange?.takeIf { it > 0 }?.let { "sotto il range da $it gg" },
           b.ggRitardo?.takeIf { it > 0 }?.let { "ultima notte $it gg fa" })
-  if (andamento.isNotEmpty()) Text(andamento.joinToString(" · "), style = nota, color = grigio)
+  if (andamento.isNotEmpty()) Text(tr(andamento.joinToString(" · ")), style = nota, color = grigio)
   if (b.fc7gg != null) {
     Text(
-        "FC a riposo 7 gg ${Formato.decimale(b.fc7gg)} bpm" +
+        tr("FC a riposo 7 gg ${Formato.decimale(b.fc7gg)} bpm" +
             (b.fcBaseline?.let { " · baseline ${Formato.decimale(it)}" } ?: "") +
-            (b.fcDelta?.let { " (${Formato.conSegno(it)})" } ?: ""),
+            (b.fcDelta?.let { " (${Formato.conSegno(it)})" } ?: "")),
         style = MaterialTheme.typography.bodyMedium,
         color = if (b.fcAllarme == true) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.onSurface)
   }
@@ -415,7 +416,7 @@ private fun Forma(f: FormaCoach, giorno: LocalDate, storico: List<Pair<LocalDate
             .padding(10.dp),
         verticalArrangement = Arrangement.spacedBy(4.dp)) {
           Text(stringResource(R.string.riepilogo_fuori_dalla_fascia_attesa), style = MaterialTheme.typography.titleSmall, color = MaterialTheme.colorScheme.onErrorContainer, fontWeight = FontWeight.Bold)
-          for (riga in fuoriFascia) Text(TraduzioneMessaggi.testo(LocalContext.current, riga), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onErrorContainer)
+          for (riga in fuoriFascia) Text(tr(TraduzioneMessaggi.testo(LocalContext.current, riga)), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onErrorContainer)
         }
   }
   Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
@@ -424,15 +425,15 @@ private fun Forma(f: FormaCoach, giorno: LocalDate, storico: List<Pair<LocalDate
     f.tsb?.let { Cifra(stringResource(R.string.riepilogo_tsb), Formato.conSegno(it) + (f.formPct?.let { p -> " (${Formato.conSegno(p)}%)" } ?: ""), ColoriBio.tsb) }
   }
   val zona = listOfNotNull(f.zona?.let { "zona $it" }, f.zonaAttesa?.let { "attesa in questa fase: $it" })
-  if (zona.isNotEmpty()) Text(zona.joinToString(" · "), style = MaterialTheme.typography.bodySmall)
+  if (zona.isNotEmpty()) Text(tr(zona.joinToString(" · ")), style = MaterialTheme.typography.bodySmall)
   if (f.tsb != null) GraficoTsb(f, giorno, storico)
   f.tsbObiettivo?.let {
-    Text("Obiettivo a domenica: TSB ${Formato.conSegno(it)}" + (f.fascia?.let { (a, b) -> " (fascia attesa ${Formato.conSegno(a)} / ${Formato.conSegno(b)})" } ?: ""),
+    Text(tr("Obiettivo a domenica: TSB ${Formato.conSegno(it)}" + (f.fascia?.let { (a, b) -> " (fascia attesa ${Formato.conSegno(a)} / ${Formato.conSegno(b)})" } ?: "")),
         style = MaterialTheme.typography.bodySmall)
   }
   if (f.ramp != null) {
     Text(
-        "Rampa CTL ${Formato.conSegno(f.ramp)}/sett" + (f.rampMax?.let { " (max ${Formato.decimale(it)})" } ?: ""),
+        tr("Rampa CTL ${Formato.conSegno(f.ramp)}/sett" + (f.rampMax?.let { " (max ${Formato.decimale(it)})" } ?: "")),
         style = MaterialTheme.typography.bodyMedium)
     f.rampMax?.takeIf { it > 0 }?.let { BarraAvanzamento(f.ramp, it, null) }
   }
@@ -460,6 +461,7 @@ private fun GraficoTsb(f: FormaCoach, giorno: LocalDate, storico: List<Pair<Loca
   val obiettivo = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
   val giorni = ChronoUnit.DAYS.between(inizio, fine).coerceAtLeast(1).toFloat()
   Column {
+    val nomiZone = (FormaCalc.BANDE.map { it.second } + "Alto rischio").associateWith { tr(it) }
     Canvas(Modifier.fillMaxWidth().height(170.dp)) {
       fun y(v: Double) = (size.height * (1 - (v - lo) / (hi - lo))).toFloat()
       fun x(d: LocalDate) = size.width * ChronoUnit.DAYS.between(inizio, d) / giorni
@@ -470,7 +472,7 @@ private fun GraficoTsb(f: FormaCoach, giorno: LocalDate, storico: List<Pair<Loca
         val basso = y(maxOf(soglia, lo))
         if (basso > alto) {
           drawRect(ColoriBio.daNome(colore).copy(alpha = 0.16f), Offset(0f, alto), Size(size.width, basso - alto))
-          val t = misuratore.measure(nome, stileZona)
+          val t = misuratore.measure(nomiZone[nome] ?: nome, stileZona)
           // nome della zona a sinistra: a destra c'e' il riquadro dell'obiettivo
           if (basso - alto > t.size.height) drawText(t, topLeft = Offset(4.dp.toPx(), alto + 2.dp.toPx()))
         }
@@ -498,7 +500,7 @@ private fun GraficoTsb(f: FormaCoach, giorno: LocalDate, storico: List<Pair<Loca
       drawCircle(linea, 5.dp.toPx(), Offset(x(giorno), y(tsb)))
     }
     Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-      Text(DateIt.asse(inizio), style = MaterialTheme.typography.labelSmall)
+      Text(tr(DateIt.asse(inizio)), style = MaterialTheme.typography.labelSmall)
       Text(stringResource(R.string.riepilogo_oggi, (Formato.conSegno(tsb)).toString()), style = MaterialTheme.typography.labelSmall, fontWeight = FontWeight.Bold)
       f.tsbDomenica?.takeIf { fine > giorno }?.let {
         val fuori = f.fascia?.let { (a, b) -> it < a || it > b } == true
@@ -514,7 +516,7 @@ private fun GraficoTsb(f: FormaCoach, giorno: LocalDate, storico: List<Pair<Loca
             "linea: ultimi 14 giorni",
             "tratteggio: previsione del coach".takeIf { f.tsbDomenica != null },
             "riquadro: fascia attesa a domenica".takeIf { f.fascia != null })
-    Text(legenda.joinToString(" · "), style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+    Text(tr(legenda.joinToString(" · ")), style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
   }
 }
 
@@ -531,7 +533,7 @@ private fun Discipline(discipline: Map<String, Map<String, QuotaDisciplina>>) {
     val b = mese[chiave]
     if (a?.pct == null && b?.pct == null) continue
     Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
-      Text(nome, style = MaterialTheme.typography.bodyMedium)
+      Text(tr(nome), style = MaterialTheme.typography.bodyMedium)
       a?.pct?.let { RigaQuota("7 gg", it, a.targetPct, a.ore) }
       b?.pct?.let { RigaQuota("28 gg", it, b.targetPct, b.ore) }
     }
@@ -540,7 +542,7 @@ private fun Discipline(discipline: Map<String, Map<String, QuotaDisciplina>>) {
   val p28 = mese["palestra"]?.ore
   if (p7 != null || p28 != null) {
     Text(
-        "Palestra: " + listOfNotNull(p7?.let { "7 gg ${ore(it)}" }, p28?.let { "28 gg ${ore(it)}" }).joinToString(" · "),
+        tr("Palestra: " + listOfNotNull(p7?.let { "7 gg ${ore(it)}" }, p28?.let { "28 gg ${ore(it)}" }).joinToString(" · ")),
         style = MaterialTheme.typography.bodyMedium)
   }
 }
@@ -550,10 +552,10 @@ private fun ore(h: Double) = Formato.durata((h * 3600).toInt()).let { if (it == 
 @Composable
 private fun RigaQuota(etichetta: String, pct: Double, target: Double?, ore: Double?) {
   Row(verticalAlignment = Alignment.CenterVertically) {
-    Text(etichetta, Modifier.width(44.dp), style = MaterialTheme.typography.labelSmall)
+    Text(tr(etichetta), Modifier.width(44.dp), style = MaterialTheme.typography.labelSmall)
     Box(Modifier.weight(1f)) { BarraAvanzamento(pct, 100.0, target) }
     Text(
-        " ${pct.toInt()}%" + (ore?.let { " · ${ore(it)}" } ?: ""),
+        tr(" ${pct.toInt()}%" + (ore?.let { " · ${ore(it)}" } ?: "")),
         Modifier.width(90.dp),
         style = MaterialTheme.typography.labelSmall)
   }
@@ -630,8 +632,8 @@ private fun AltaIntensitaSettimana(a: AltaIntensita) {
   }
   Text(
       // la regola della fase scritta dal coach; nei riepiloghi vecchi, la frase di prima
-      a.regola?.replaceFirstChar { it.uppercase() }
-          ?: "Il resto del volume è aerobico facile. La linea è il tetto che il coach non supera.",
+      tr(a.regola?.replaceFirstChar { it.uppercase() }
+          ?: "Il resto del volume è aerobico facile. La linea è il tetto che il coach non supera."),
       style = MaterialTheme.typography.bodySmall,
       color = MaterialTheme.colorScheme.onSurfaceVariant)
 }
@@ -650,8 +652,8 @@ private fun Settimana(volume: Volume?, carico: Carico?) {
     val target = v.targetH
     if (fatte != null && target != null) {
       Text(
-          "Ore: ${ore(fatte)} di ${ore(target)}" + (v.tettoH?.let { " · tetto ${ore(it)}" } ?: "") +
-              (v.restanoH?.let { r2 -> " · restano ${ore(r2)}" + (v.giorni?.let { " in $it gg" } ?: "") } ?: ""),
+          tr("Ore: ${ore(fatte)} di ${ore(target)}" + (v.tettoH?.let { " · tetto ${ore(it)}" } ?: "") +
+              (v.restanoH?.let { r2 -> " · restano ${ore(r2)}" + (v.giorni?.let { " in $it gg" } ?: "") } ?: "")),
           style = MaterialTheme.typography.bodyMedium)
       BarraAvanzamento(fatte, max(v.tettoH ?: target, target), target, tetto = v.tettoH)
     }
@@ -661,8 +663,8 @@ private fun Settimana(volume: Volume?, carico: Carico?) {
     val tetto = c.tetto
     if (fatti != null) {
       Text(
-          "TSS: ${fatti.toInt()} fatti" + (tetto?.let { " di ${it.toInt()}" } ?: "") +
-              (c.calendario?.let { " · ${it.toInt()} con le sedute in calendario" } ?: ""),
+          tr("TSS: ${fatti.toInt()} fatti" + (tetto?.let { " di ${it.toInt()}" } ?: "") +
+              (c.calendario?.let { " · ${it.toInt()} con le sedute in calendario" } ?: "")),
           style = MaterialTheme.typography.bodyMedium)
       val scala = max(tetto ?: 0.0, c.calendario ?: 0.0)
       if (scala > 0) BarraAvanzamento(fatti, scala, c.sostenibile, previsione = c.calendario, tetto = tetto)
@@ -696,8 +698,8 @@ fun BarraAvanzamento(valore: Double, massimo: Double, obiettivo: Double?, previs
 @Composable
 private fun Cifra(etichetta: String, valore: String, colore: Color) {
   Column(horizontalAlignment = Alignment.CenterHorizontally) {
-    Text(etichetta, style = MaterialTheme.typography.labelMedium, color = colore, fontWeight = FontWeight.Bold)
-    Text(valore, style = MaterialTheme.typography.titleLarge)
+    Text(tr(etichetta), style = MaterialTheme.typography.labelMedium, color = colore, fontWeight = FontWeight.Bold)
+    Text(tr(valore), style = MaterialTheme.typography.titleLarge)
   }
 }
 
@@ -708,7 +710,7 @@ private fun SeduteDellaSettimana(sedute: List<SedutaPiano>, onApriSeduta: (Strin
   for ((giorno, delGiorno) in sedute.groupBy { it.data }) {
     val d = runCatching { LocalDate.parse(giorno) }.getOrNull()
     Text(
-        d?.let { DateIt.breve(it) } ?: giorno,
+        tr(d?.let { DateIt.breve(it) } ?: giorno),
         style = MaterialTheme.typography.titleSmall,
         modifier = Modifier.padding(top = 4.dp))
     for (s in delGiorno) Seduta(s, onApri = { onApriSeduta(s.data) })
@@ -732,9 +734,9 @@ private fun Seduta(s: SedutaPiano, onApri: () -> Unit) {
       Box(Modifier.width(4.dp).height(32.dp).background(colore, RoundedCornerShape(2.dp)))
       Spacer(Modifier.width(10.dp))
       Column(Modifier.weight(1f)) {
-        Text(s.nome, style = MaterialTheme.typography.bodyMedium, fontWeight = FontWeight.SemiBold)
+        Text(tr(s.nome), style = MaterialTheme.typography.bodyMedium, fontWeight = FontWeight.SemiBold)
         Text(
-            listOfNotNull(sport.etichetta, s.durataMin?.let { Formato.durata(it * 60) }).joinToString(" · "),
+            tr(listOfNotNull(sport.etichetta, s.durataMin?.let { Formato.durata(it * 60) }).joinToString(" · ")),
             style = MaterialTheme.typography.bodySmall,
             color = MaterialTheme.colorScheme.onSurfaceVariant)
       }
@@ -742,7 +744,7 @@ private fun Seduta(s: SedutaPiano, onApri: () -> Unit) {
       if (s.declassata) Etichetta("alleggerita", ColoriBio.giallo)
     }
     if (aperta) {
-      s.descrizione?.let { Text(it, style = MaterialTheme.typography.bodySmall) }
+      s.descrizione?.let { Text(tr(it), style = MaterialTheme.typography.bodySmall) }
       Text(
           stringResource(R.string.riepilogo_apri_nel_calendario),
           style = MaterialTheme.typography.labelLarge,
@@ -755,7 +757,7 @@ private fun Seduta(s: SedutaPiano, onApri: () -> Unit) {
 @Composable
 private fun Etichetta(testo: String, colore: Color) {
   Text(
-      testo,
+      tr(testo),
       style = MaterialTheme.typography.labelSmall,
       color = colore,
       modifier = Modifier.padding(start = 6.dp).background(colore.copy(alpha = 0.12f), RoundedCornerShape(6.dp)).padding(horizontal = 6.dp, vertical = 2.dp))
