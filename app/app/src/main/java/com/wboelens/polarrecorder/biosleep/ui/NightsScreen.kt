@@ -1,5 +1,6 @@
 package com.wboelens.polarrecorder.biosleep.ui
 
+import com.wboelens.polarrecorder.biosleep.lingua.tr
 import com.wboelens.polarrecorder.R
 import androidx.compose.ui.res.stringResource
 import com.wboelens.polarrecorder.BuildConfig
@@ -83,15 +84,15 @@ fun NightsScreen(
             title = { Text(stringResource(R.string.nights_le_mie_notti)) },
             navigationIcon = {
               IconButton(onClick = onBack) {
-                Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Indietro")
+                Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = tr("Indietro"))
               }
             },
             actions = {
               IconButton(onClick = onOpenBioAge) {
-                Icon(Icons.Filled.HourglassTop, contentDescription = "Età ${BuildConfig.APP_NAME}")
+                Icon(Icons.Filled.HourglassTop, contentDescription = tr("Età ${BuildConfig.APP_NAME}"))
               }
               IconButton(onClick = onOpenSettings) {
-                Icon(Icons.Filled.Settings, contentDescription = "Impostazioni Intervals.icu")
+                Icon(Icons.Filled.Settings, contentDescription = tr("Impostazioni Intervals.icu"))
               }
             },
         )
@@ -196,7 +197,7 @@ private fun NightCard(night: NightListItem, onClick: () -> Unit) {
 private fun SmallMetric(label: String, value: String) {
   Column {
     Text(
-        label,
+        tr(label),
         style = MaterialTheme.typography.labelSmall,
         color = MaterialTheme.colorScheme.onSurfaceVariant,
     )
@@ -207,6 +208,6 @@ private fun SmallMetric(label: String, value: String) {
 @Composable
 internal fun CenteredText(modifier: Modifier, text: String) {
   Box(modifier.padding(32.dp), contentAlignment = Alignment.Center) {
-    Text(text, textAlign = TextAlign.Center, style = MaterialTheme.typography.bodyMedium)
+    Text(tr(text), textAlign = TextAlign.Center, style = MaterialTheme.typography.bodyMedium)
   }
 }

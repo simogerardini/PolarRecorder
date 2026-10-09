@@ -1,5 +1,6 @@
 package com.wboelens.polarrecorder.biosleep.ui
 
+import com.wboelens.polarrecorder.biosleep.lingua.tr
 import com.wboelens.polarrecorder.R
 import androidx.compose.ui.res.stringResource
 import com.wboelens.polarrecorder.BuildConfig
@@ -97,7 +98,7 @@ fun BioAgeScreen(onBack: () -> Unit) {
             title = { Text(stringResource(R.string.bio_age_eta, BuildConfig.APP_NAME)) },
             navigationIcon = {
               IconButton(onClick = onBack) {
-                Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Indietro")
+                Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = tr("Indietro"))
               }
             },
         )
@@ -210,7 +211,7 @@ private fun AgeRings(result: BioAgeResult?, centerTop: String, centerBottom: Str
   }
   Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceEvenly) {
     listOf("Esterno: fitness", "Centro: allenamento", "Interno: sonno").forEach {
-      Text(it, style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+      Text(tr(it), style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
     }
   }
 }
@@ -227,10 +228,10 @@ private fun ringValues(r: BioAgeResult?): List<Double> {
 @Composable
 private fun ReadyContent(r: BioAgeResult, d: BioAgeScreenData) {
   val delta = r.age - r.chronologicalAge
-  AgeRings(r, "", "tra ${fmt(r.low, 1)} e ${fmt(r.high, 1)} anni", dimmed = false)
+  AgeRings(r, "", tr("tra ${fmt(r.low, 1)} e ${fmt(r.high, 1)} anni"), dimmed = false)
   Text(
-      "Età anagrafica ${fmt(r.chronologicalAge, 1)} · " +
-          (if (delta <= 0) "${fmt(-delta, 1)} anni in meno" else "${fmt(delta, 1)} anni in più"),
+      tr("Età anagrafica ${fmt(r.chronologicalAge, 1)} · " +
+          (if (delta <= 0) "${fmt(-delta, 1)} anni in meno" else "${fmt(delta, 1)} anni in più")),
       style = MaterialTheme.typography.titleMedium,
       color = if (delta <= 0) YOUNGER else OLDER,
   )
@@ -240,7 +241,7 @@ private fun ReadyContent(r: BioAgeResult, d: BioAgeScreenData) {
       r.components.forEach { ComponentRow(it) }
       if (r.missing.isNotEmpty()) {
         Text(
-            "Non disponibili: ${r.missing.joinToString("; ")}",
+            tr("Non disponibili: ${r.missing.joinToString("; ")}"),
             style = MaterialTheme.typography.bodySmall,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
@@ -251,10 +252,10 @@ private fun ReadyContent(r: BioAgeResult, d: BioAgeScreenData) {
     Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
       Text(stringResource(R.string.bio_age_ritmo_d_invecchiamento), style = MaterialTheme.typography.titleSmall)
       Text(
-          d.pace?.let {
+          tr(d.pace?.let {
             "${fmt(it, 2)} anni biologici per anno di calendario " +
                 (if (it < 1) "(stai rallentando)" else "(stai accelerando)")
-          } ?: "Disponibile dopo 90 giorni di storico (ora ${d.historyDays} giorni con una stima).",
+          } ?: "Disponibile dopo 90 giorni di storico (ora ${d.historyDays} giorni con una stima)."),
           style = MaterialTheme.typography.bodyMedium,
       )
     }
@@ -265,12 +266,12 @@ private fun ReadyContent(r: BioAgeResult, d: BioAgeScreenData) {
 private fun ComponentRow(c: AgeComponent) {
   Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
     Column(Modifier.weight(1f)) {
-      Text(c.label, style = MaterialTheme.typography.bodyMedium)
-      Text(c.detail, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+      Text(tr(c.label), style = MaterialTheme.typography.bodyMedium)
+      Text(tr(c.detail), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
     }
     Spacer(Modifier.width(12.dp))
     Text(
-        (if (c.years > 0) "+" else "") + fmt(c.years, 1) + " anni",
+        tr((if (c.years > 0) "+" else "") + fmt(c.years, 1) + " anni"),
         style = MaterialTheme.typography.titleSmall,
         color = if (c.years <= 0) YOUNGER else OLDER,
     )
@@ -279,7 +280,7 @@ private fun ComponentRow(c: AgeComponent) {
 
 @Composable
 private fun CalibratingContent(o: BioAgeOutcome.Calibrating, d: BioAgeScreenData) {
-  AgeRings(null, "${o.validNights}/${o.requiredNights}", "notti valide", dimmed = true)
+  AgeRings(null, "${o.validNights}/${o.requiredNights}", tr("notti valide"), dimmed = true)
   Text(stringResource(R.string.bio_age_in_calibrazione), style = MaterialTheme.typography.titleMedium)
   OutlinedCard(Modifier.fillMaxWidth()) {
     Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
@@ -311,7 +312,7 @@ private fun CalibratingContent(o: BioAgeOutcome.Calibrating, d: BioAgeScreenData
       }
       if (o.missing.isNotEmpty()) {
         Text(
-            "Non disponibili: ${o.missing.joinToString("; ")}",
+            tr("Non disponibili: ${o.missing.joinToString("; ")}"),
             style = MaterialTheme.typography.bodySmall,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
         )

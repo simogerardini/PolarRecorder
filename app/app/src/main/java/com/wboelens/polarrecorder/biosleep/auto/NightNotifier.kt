@@ -1,5 +1,6 @@
 package com.wboelens.polarrecorder.biosleep.auto
 
+import com.wboelens.polarrecorder.biosleep.lingua.TestiSistema
 import android.Manifest
 import android.app.NotificationChannel
 import android.app.NotificationManager
@@ -68,9 +69,9 @@ object NightNotifier {
         NotificationCompat.Builder(context, CHANNEL_ID)
             .setSmallIcon(icona)
             .setColor(ContextCompat.getColor(context, R.color.biosleep_notifica))
-            .setContentTitle(title)
-            .setContentText(text.lineSequence().first())
-            .setStyle(NotificationCompat.BigTextStyle().bigText(text))
+            .setContentTitle(TestiSistema.traduci(context, title))
+            .setContentText(TestiSistema.righe(context, text).lineSequence().first())
+            .setStyle(NotificationCompat.BigTextStyle().bigText(TestiSistema.righe(context, text)))
             .setContentIntent(openApp)
             .setAutoCancel(true)
             .build()
@@ -80,7 +81,7 @@ object NightNotifier {
   private fun ensureChannel(context: Context) {
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
       val channel =
-          NotificationChannel(CHANNEL_ID, "Riepilogo notte", NotificationManager.IMPORTANCE_DEFAULT)
+          NotificationChannel(CHANNEL_ID, TestiSistema.traduci(context, "Riepilogo notte"), NotificationManager.IMPORTANCE_DEFAULT)
       context.getSystemService(NotificationManager::class.java).createNotificationChannel(channel)
     }
   }

@@ -1,5 +1,6 @@
 package com.wboelens.polarrecorder.biosleep.ui
 
+import com.wboelens.polarrecorder.biosleep.lingua.tr
 import com.wboelens.polarrecorder.R
 import androidx.compose.ui.res.stringResource
 import android.os.Build
@@ -87,7 +88,7 @@ fun AutoStartCard(habits: Habits) {
                 },
             )
             Spacer(Modifier.width(12.dp))
-            Text(if (enabled) "Attivo" else "Disattivato")
+            Text(tr(if (enabled) "Attivo" else "Disattivato"))
           }
           InfoText(
               if (habits.learned) {
@@ -118,7 +119,7 @@ fun AutoStartCard(habits: Habits) {
 @Composable
 private fun InfoText(text: String) {
   Text(
-      text,
+      tr(text),
       style = MaterialTheme.typography.bodySmall,
       color = MaterialTheme.colorScheme.onSurfaceVariant,
   )

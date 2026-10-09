@@ -1,0 +1,180 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Spagnolo: DA RIVEDERE da un madrelingua (closed testing). Traduzione iniziale della Parte 3, ottobre 2026. -->
+<!-- Testi di sistema (lingua/TestiSistema.kt): frasi italiane della logica tradotte quando vengono mostrate. -->
+<resources>
+    <string name="sis_la_tua_notte">Tu noche</string>
+    <string name="sis_canale_riepilogo_notte">Resumen de la noche</string>
+    <string name="sis_notifica_sonno" formatted="true">Sueño %1$s · profundo %2$s · REM %3$s</string>
+    <string name="sis_notifica_ore" formatted="true">%1$s h registradas</string>
+    <string name="sis_notifica_fc" formatted="true">FC en reposo %1$s · rMSSD %2$s ms</string>
+    <string name="sis_invio_in_corso">Enviando a Intervals.icu (empieza en cuanto haya red)</string>
+    <string name="sis_interruzioni" formatted="true">Interrupciones: %1$s</string>
+    <string name="sis_minuti_persi" formatted="true">%1$s\' perdidos: %2$s</string>
+    <string name="sis_causa_bt_ora" formatted="true">Bluetooth apagado a las %1$s</string>
+    <string name="sis_causa_app_ora" formatted="true">app cerrada por el sistema a las %1$s</string>
+    <string name="sis_causa_portata_ora" formatted="true">banda fuera de alcance o apagada a las %1$s</string>
+    <string name="sis_causa_contatto_ora" formatted="true">ningún latido desde las %1$s (banda movida o sin contacto)</string>
+    <string name="sis_causa_bt">Bluetooth apagado</string>
+    <string name="sis_causa_app">app cerrada por el sistema</string>
+    <string name="sis_causa_portata">banda fuera de alcance</string>
+    <string name="sis_causa_contatto">banda sin contacto</string>
+    <string name="sis_causa_altra_1" formatted="true">%1$s, +1 interrupción</string>
+    <string name="sis_causa_altre" formatted="true">%1$s, +%2$s interrupciones</string>
+    <string name="sis_causa_minuti" formatted="true">%1$s (%2$s\')</string>
+    <string name="sis_inviata" formatted="true">Enviada a Intervals.icu (%1$s)</string>
+    <string name="sis_connessione_non_riuscita" formatted="true">Conexión fallida: %1$s</string>
+    <string name="sis_campi_mancanti" formatted="true">Intervals no ha guardado: %1$s. Faltan los campos %2$s: en Ajustes pulsa \"Preparar los campos\" y vuelve a enviar la noche.</string>
+    <string name="sis_connessione_riuscita">Conexión correcta</string>
+    <string name="sis_connesso_come" formatted="true">Conectado como %1$s</string>
+    <string name="sis_accesso_non_valido" formatted="true">Acceso a Intervals.icu no válido: vuelve a conectar o revisa la API key (HTTP %1$s)</string>
+    <string name="sis_dati_rifiutati" formatted="true">Datos rechazados por Intervals (HTTP 422): %1$s</string>
+    <string name="sis_errore_http" formatted="true">Error de Intervals HTTP %1$s: %2$s</string>
+    <string name="sis_notte_non_inviata">Noche no enviada a Intervals.icu</string>
+    <string name="sis_puoi_reinviarla">Puedes volver a enviarla desde la ficha de la noche.</string>
+    <string name="sis_non_collegato">Intervals.icu no conectado</string>
+    <string name="sis_inviata_il" formatted="true">✓ Enviada el %1$s</string>
+    <string name="sis_non_inviata" formatted="true">No enviada: %1$s</string>
+    <string name="sis_non_ancora_inviata">Aún no enviada</string>
+    <string name="sis_invia_di_nuovo">Enviar de nuevo</string>
+    <string name="sis_intervals_inviata_il" formatted="true">Intervals.icu: ✓ enviada el %1$s</string>
+    <string name="sis_intervals_non_inviata" formatted="true">Intervals.icu: no enviada (%1$s)</string>
+    <string name="sis_intervals_non_ancora">Intervals.icu: aún no enviada</string>
+    <string name="sis_notte">Noche</string>
+    <string name="sis_notte_non_trovata">Noche no encontrada</string>
+    <string name="sis_errore_database">Error de la base de datos</string>
+    <string name="sis_addormentamento_alle" formatted="true">Se durmió a las %1$s</string>
+    <string name="sis_dopo_minuti" formatted="true">" (tras %1$s\')"</string>
+    <string name="sis_risveglio_alle" formatted="true">" · despertar a las %1$s"</string>
+    <string name="sis_stima_fc_acc">Estimación solo a partir de la frecuencia cardíaca y el movimiento: la banda no proporciona RR fiables. Es orientativa: no sustituye a una polisomnografía.</string>
+    <string name="sis_stima_fc">Estimación solo a partir de la frecuencia cardíaca, sin datos de movimiento: la banda no proporciona RR fiables. Es orientativa: no sustituye a una polisomnografía.</string>
+    <string name="sis_stima_hrv_acc_resp">Estimación a partir de frecuencia cardíaca, HRV, movimiento y respiración (acelerómetro H10). Es orientativa: no sustituye a una polisomnografía.</string>
+    <string name="sis_stima_hrv_acc">Estimación a partir de frecuencia cardíaca, HRV y movimiento (acelerómetro H10). Es orientativa: no sustituye a una polisomnografía.</string>
+    <string name="sis_stima_senza_acc">Fases estimadas sin datos de movimiento: frecuencia cardíaca y HRV (banda sin acelerómetro). Es orientativa: no sustituye a una polisomnografía.</string>
+    <string name="sis_indietro">Atrás</string>
+    <string name="sis_elimina_notte">Eliminar noche</string>
+    <string name="sis_avvio_non_riuscito_titolo">No se pudo iniciar la noche</string>
+    <string name="sis_avvio_della_notte">Iniciando la noche</string>
+    <string name="sis_collegamento_in_corso">Conectando con la banda…</string>
+    <string name="sis_analisi_della_notte">Analizando la noche</string>
+    <string name="sis_calcolo_invio_punti">Calculando y enviando a Intervals.icu…</string>
+    <string name="sis_calcolo_invio">Calculando y enviando a Intervals.icu</string>
+    <string name="sis_notte_in_corso">Noche en curso</string>
+    <string name="sis_registrazione_da" formatted="true">Registro %1$s · se detiene solo cuando te quitas la banda</string>
+    <string name="sis_da_durata" formatted="true">desde hace %1$s</string>
+    <string name="sis_gestore_bt">Gestor de Bluetooth no disponible</string>
+    <string name="sis_salvataggi_nd">Guardado de datos no disponible</string>
+    <string name="sis_fascia_non_trovata" formatted="true">Banda %1$s no encontrada: ¿la llevas puesta y está cerca?</string>
+    <string name="sis_collegamento_fallito">No se pudo conectar con la banda</string>
+    <string name="sis_collegamento_fallito_std">No se pudo conectar con la banda (tampoco con el driver estándar)</string>
+    <string name="sis_stato_fascia_nd">Estado de la banda no disponible</string>
+    <string name="sis_init_salvataggi_fallita">No se pudo inicializar el guardado de datos</string>
+    <string name="sis_nessuna_impostazione">No hay ajustes guardados: haz primero un registro desde las pantallas</string>
+    <string name="sis_registrazione_non_partita">El registro no ha empezado, revisa la app</string>
+    <string name="sis_fascia_associata">Banda vinculada</string>
+    <string name="sis_associazione_fallita" formatted="true">Vinculación fallida: %1$s</string>
+    <string name="sis_annullata">cancelada</string>
+    <string name="sis_associazione_rimossa">Vinculación eliminada</string>
+    <string name="sis_richiede_android13">Requiere Android 13 o posterior.</string>
+    <string name="sis_prima_registrazione">Haz primero un registro: hay que saber qué banda usar.</string>
+    <string name="sis_associa_una_volta">Vincula la banda una sola vez: Android avisará a la app cuando te la pongas. Póntela ahora (electrodos mojados) y pulsa el botón.</string>
+    <string name="sis_attivo">Activado</string>
+    <string name="sis_disattivato">Desactivado</string>
+    <string name="sis_parte_da_sola" formatted="true">Empieza sola entre las %1$s y las %2$s cuando llevas la banda y el teléfono se está cargando cerca de ti.</string>
+    <string name="sis_si_attivera" formatted="true">Se activará tras %1$s noches de aprendizaje (ahora %2$s). Hasta entonces usa \"Iniciar noche\".</string>
+    <string name="sis_non_legge_funzioni">Conectada, pero no puedo leer las funciones de la banda. Inténtalo de nuevo.</string>
+    <string name="sis_collegamento_elettrodi">Conexión fallida: ¿llevas la banda con los electrodos mojados?</string>
+    <string name="sis_fascia_non_risponde">La banda no responde. Acércala al teléfono e inténtalo de nuevo.</string>
+    <string name="sis_movimento_respiro">movimiento y respiración</string>
+    <string name="sis_battito_hrv">latido y HRV</string>
+    <string name="sis_indossa_e_premi">Ponte la banda y pulsa Iniciar noche. Por la mañana se detiene sola cuando te la quitas.</string>
+    <string name="sis_letta_il" formatted="true">leída el %1$s</string>
+    <string name="sis_avvio_in_corso">Iniciando…</string>
+    <string name="sis_riprova">Reintentar</string>
+    <string name="sis_avvia_notte">Iniciar noche</string>
+    <string name="sis_segnale_ok">Señal de la banda: OK</string>
+    <string name="sis_nessun_battito_da" formatted="true">Ningún latido desde hace %1$s minutos: ¿llevas puesta la banda?</string>
+    <string name="sis_le_mie_notti">Mis noches</string>
+    <string name="sis_eta_app" formatted="true">Edad %1$s</string>
+    <string name="sis_impossibile_leggere_notti" formatted="true">No se pueden leer las noches:\n%1$s</string>
+    <string name="sis_nessuna_notte">Todavía no hay noches.\nLas noches aparecen aquí tras detener un registro de al menos 10 minutos.</string>
+    <string name="sis_fc_riposo">FC en reposo</string>
+    <string name="sis_sonno">Sueño</string>
+    <string name="sis_fc_media">FC media</string>
+    <string name="sis_impostazioni_intervals">Ajustes de Intervals.icu</string>
+    <string name="sis_anello_esterno">Exterior: forma física</string>
+    <string name="sis_anello_centro">Centro: entrenamiento</string>
+    <string name="sis_anello_interno">Interior: sueño</string>
+    <string name="sis_tra_anni" formatted="true">entre %1$s y %2$s años</string>
+    <string name="sis_eta_anagrafica" formatted="true">Edad real %1$s · %2$s</string>
+    <string name="sis_anni_in_meno" formatted="true">%1$s años menos</string>
+    <string name="sis_anni_in_piu" formatted="true">%1$s años más</string>
+    <string name="sis_non_disponibili" formatted="true">No disponibles: %1$s</string>
+    <string name="sis_ritmo" formatted="true">%1$s años biológicos por año natural %2$s</string>
+    <string name="sis_stai_rallentando">(estás desacelerando)</string>
+    <string name="sis_stai_accelerando">(estás acelerando)</string>
+    <string name="sis_disponibile_90" formatted="true">Disponible tras 90 días de historial (ahora %1$s días con una estimación).</string>
+    <string name="sis_anni" formatted="true">%1$s años</string>
+    <string name="sis_notti_valide">noches válidas</string>
+    <string name="sis_comp_fitness">Forma física (VO2max)</string>
+    <string name="sis_comp_allenamento">Entrenamiento</string>
+    <string name="sis_comp_durata_sonno">Duración del sueño</string>
+    <string name="sis_comp_regolarita">Regularidad del sueño</string>
+    <string name="sis_det_vo2" formatted="true">VO2max %1$s (%2$s) frente a %3$s típico para edad y sexo</string>
+    <string name="sis_det_stimato" formatted="true">estimado con %1$s carreras y %2$s salidas en bici, FC máx. %3$s</string>
+    <string name="sis_det_allenamento" formatted="true">%1$s min/semana equivalentes (%2$sx el mínimo recomendado)</string>
+    <string name="sis_det_durata" formatted="true">mediana de %1$s h de sueño</string>
+    <string name="sis_det_regolarita" formatted="true">horario de sueño variable en ±%1$s minutos</string>
+    <string name="sis_mancante_vo2">VO2max (ausente en Intervals.icu y no estimable: se necesitan al menos 3 carreras en llano o salidas en bici con potencia, de 20+ minutos, en los últimos 90 días)</string>
+    <string name="sis_mancante_allenamento">Entrenamiento (Intervals.icu no configurado o no accesible)</string>
+    <string name="sis_errore_codice" formatted="true">error %1$s</string>
+    <string name="sis_conn_non_riuscita">conexión fallida</string>
+    <string name="sis_risposta_non_valida">respuesta no válida</string>
+    <string name="sis_movimento">Movimiento</string>
+    <string name="sis_niente_hrv_verificato">Sin HRV: solo frecuencia cardíaca (verificado)</string>
+    <string name="sis_niente_hrv_ottico">Sin HRV: solo frecuencia cardíaca (sensor óptico)</string>
+    <string name="sis_hrv_verificata">HRV verificada en los primeros 5 minutos de la primera noche</string>
+    <string name="sis_battito_senza_movimento">Latido y HRV, sin movimiento</string>
+    <string name="sis_avviso_senza_hrv">Esta banda no mide la HRV de forma fiable: tendrás duración y fases del sueño estimadas con la FC, pero ni HRV, ni disposición, ni línea base.</string>
+    <string name="sis_consiglio_fascia">Para la HRV usa una banda cardíaca de pecho que transmita los intervalos entre latidos, como la Polar H10.</string>
+    <string name="sis_voce_batteria">Batería sin restricciones</string>
+    <string name="sis_voce_batteria_sp">El registro dura 8 horas con la pantalla apagada: con la optimización activa Android puede detenerlo.</string>
+    <string name="sis_voce_notifiche">Notificaciones permitidas</string>
+    <string name="sis_voce_notifiche_sp">Sirven para la notificación de la noche en curso y para los avisos del coach.</string>
+    <string name="sis_voce_allarmi">Alarmas exactas permitidas</string>
+    <string name="sis_voce_allarmi_sp">Sirven para iniciar y detener la noche a la hora correcta.</string>
+    <string name="sis_voce_bt">Bluetooth activado</string>
+    <string name="sis_voce_bt_sp">La banda transmite por Bluetooth toda la noche.</string>
+    <string name="sis_il_tuo_telefono">tu teléfono</string>
+    <string name="sis_istr_xiaomi_1" formatted="true">Activa el Inicio automático para %1$s.</string>
+    <string name="sis_istr_xiaomi_2">En Ahorro de batería elige \"Sin restricciones\".</string>
+    <string name="sis_istr_samsung_1" formatted="true">Quita %1$s de \"Aplicaciones en suspensión profunda\" y de \"Aplicaciones en suspensión\".</string>
+    <string name="sis_istr_samsung_2" formatted="true">Añade %1$s a \"Aplicaciones nunca en suspensión\".</string>
+    <string name="sis_istr_huawei_1" formatted="true">En Inicio de aplicaciones pon %1$s en gestión manual.</string>
+    <string name="sis_istr_huawei_2">Activa las tres opciones: inicio automático, inicio secundario, ejecución en segundo plano.</string>
+    <string name="sis_istr_oppo_1" formatted="true">En Optimización de batería elige \"No optimizar\" para %1$s.</string>
+    <string name="sis_istr_oppo_2">Activa el Inicio automático.</string>
+    <string name="sis_istr_pixel">Basta con la optimización de batería \"Sin restricciones\".</string>
+    <string name="sis_istr_altra" formatted="true">Configura la batería de %1$s en \"Sin restricciones\".</string>
+    <string name="sis_coach_al_lavoro">Coach trabajando</string>
+    <string name="sis_coach_analisi">Analizando la noche y el plan</string>
+    <string name="sis_canale_coach">Coach</string>
+    <string name="sis_com_e_andata">¿Qué tal la noche?</string>
+    <string name="sis_aggiungi_tag">Añade etiquetas: el coach las espera 15 minutos</string>
+    <string name="sis_piano_pronto">Plan listo</string>
+    <string name="sis_piano_settimana" formatted="true">Plan de la semana: %1$s sesiones%2$s</string>
+    <string name="sis_seduta_aggiornata">Sesión de hoy actualizada</string>
+    <string name="sis_addorm_completo" formatted="true">Se durmió a las %1$s (tras %2$s\') · despertar a las %3$s</string>
+    <string name="sis_addorm_risveglio" formatted="true">Se durmió a las %1$s · despertar a las %2$s</string>
+    <string name="sis_numerato" formatted="true">%1$s. %2$s</string>
+    <string name="sis_nascondi_avanzate">Ocultar opciones avanzadas</string>
+    <string name="sis_opzioni_avanzate">Opciones avanzadas: API key personal</string>
+    <string name="sis_a_posto">Correcto</string>
+    <string name="sis_da_sistemare">Por corregir</string>
+    <string name="sis_invia_ora">Enviar ahora</string>
+    <string name="sis_collegato">Conectado</string>
+    <string name="sis_collegato_atleta" formatted="true">Conectado como atleta %1$s</string>
+    <string name="sis_campi_pronti" formatted="true">Campos %1$s listos: %2$s</string>
+    <string name="sis_campi_pronti_creati" formatted="true">Campos %1$s listos: %2$s (%3$s creados ahora)</string>
+    <string name="sis_campi_non_preparati" formatted="true">Campos %1$s no preparados: %2$s</string>
+    <string name="sis_errore">error</string>
+</resources>

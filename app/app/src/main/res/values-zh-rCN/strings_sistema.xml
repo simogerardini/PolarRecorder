@@ -1,0 +1,180 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Cinese semplificato: DA RIVEDERE da un madrelingua (closed testing). Traduzione iniziale della Parte 3, ottobre 2026. -->
+<!-- Testi di sistema (lingua/TestiSistema.kt): frasi italiane della logica tradotte quando vengono mostrate. -->
+<resources>
+    <string name="sis_la_tua_notte">你的夜间记录</string>
+    <string name="sis_canale_riepilogo_notte">夜间摘要</string>
+    <string name="sis_notifica_sonno" formatted="true">睡眠 %1$s · 深睡 %2$s · REM %3$s</string>
+    <string name="sis_notifica_ore" formatted="true">已记录 %1$s 小时</string>
+    <string name="sis_notifica_fc" formatted="true">静息心率 %1$s · rMSSD %2$s ms</string>
+    <string name="sis_invio_in_corso">正在发送到 Intervals.icu（有网络时立即开始）</string>
+    <string name="sis_interruzioni" formatted="true">中断：%1$s</string>
+    <string name="sis_minuti_persi" formatted="true">丢失 %1$s 分钟：%2$s</string>
+    <string name="sis_causa_bt_ora" formatted="true">%1$s 蓝牙已关闭</string>
+    <string name="sis_causa_app_ora" formatted="true">%1$s 应用被系统关闭</string>
+    <string name="sis_causa_portata_ora" formatted="true">%1$s 心率带超出范围或已关闭</string>
+    <string name="sis_causa_contatto_ora" formatted="true">自 %1$s 起无心跳（心率带移位或未接触皮肤）</string>
+    <string name="sis_causa_bt">蓝牙已关闭</string>
+    <string name="sis_causa_app">应用被系统关闭</string>
+    <string name="sis_causa_portata">心率带超出范围</string>
+    <string name="sis_causa_contatto">心率带未接触皮肤</string>
+    <string name="sis_causa_altra_1" formatted="true">%1$s，另有 1 次中断</string>
+    <string name="sis_causa_altre" formatted="true">%1$s，另有 %2$s 次中断</string>
+    <string name="sis_causa_minuti" formatted="true">%1$s（%2$s 分钟）</string>
+    <string name="sis_inviata" formatted="true">已发送到 Intervals.icu（%1$s）</string>
+    <string name="sis_connessione_non_riuscita" formatted="true">连接失败：%1$s</string>
+    <string name="sis_campi_mancanti" formatted="true">Intervals 未保存：%1$s。缺少 %2$s 字段：请在“设置”中点按“准备字段”，然后重新发送这一晚。</string>
+    <string name="sis_connessione_riuscita">连接成功</string>
+    <string name="sis_connesso_come" formatted="true">已连接：%1$s</string>
+    <string name="sis_accesso_non_valido" formatted="true">Intervals.icu 访问无效：请重新连接或检查 API key（HTTP %1$s）</string>
+    <string name="sis_dati_rifiutati" formatted="true">Intervals 拒绝了数据（HTTP 422）：%1$s</string>
+    <string name="sis_errore_http" formatted="true">Intervals 错误 HTTP %1$s：%2$s</string>
+    <string name="sis_notte_non_inviata">这一晚未发送到 Intervals.icu</string>
+    <string name="sis_puoi_reinviarla">你可以在该晚的详情页中重新发送。</string>
+    <string name="sis_non_collegato">未连接 Intervals.icu</string>
+    <string name="sis_inviata_il" formatted="true">✓ 已于 %1$s 发送</string>
+    <string name="sis_non_inviata" formatted="true">未发送：%1$s</string>
+    <string name="sis_non_ancora_inviata">尚未发送</string>
+    <string name="sis_invia_di_nuovo">重新发送</string>
+    <string name="sis_intervals_inviata_il" formatted="true">Intervals.icu：✓ 已于 %1$s 发送</string>
+    <string name="sis_intervals_non_inviata" formatted="true">Intervals.icu：未发送（%1$s）</string>
+    <string name="sis_intervals_non_ancora">Intervals.icu：尚未发送</string>
+    <string name="sis_notte">夜间</string>
+    <string name="sis_notte_non_trovata">未找到这一晚</string>
+    <string name="sis_errore_database">数据库错误</string>
+    <string name="sis_addormentamento_alle" formatted="true">%1$s 入睡</string>
+    <string name="sis_dopo_minuti" formatted="true">（%1$s 分钟后）</string>
+    <string name="sis_risveglio_alle" formatted="true">" · %1$s 醒来"</string>
+    <string name="sis_stima_fc_acc">仅根据心率和动作估算：心率带无法提供可靠的 RR 间期。仅供参考，不能替代多导睡眠监测。</string>
+    <string name="sis_stima_fc">仅根据心率估算，无动作数据：心率带无法提供可靠的 RR 间期。仅供参考，不能替代多导睡眠监测。</string>
+    <string name="sis_stima_hrv_acc_resp">根据心率、HRV、动作和呼吸估算（H10 加速度计）。仅供参考，不能替代多导睡眠监测。</string>
+    <string name="sis_stima_hrv_acc">根据心率、HRV 和动作估算（H10 加速度计）。仅供参考，不能替代多导睡眠监测。</string>
+    <string name="sis_stima_senza_acc">在无动作数据的情况下估算睡眠阶段：心率和 HRV（心率带无加速度计）。仅供参考，不能替代多导睡眠监测。</string>
+    <string name="sis_indietro">返回</string>
+    <string name="sis_elimina_notte">删除这一晚</string>
+    <string name="sis_avvio_non_riuscito_titolo">夜间记录启动失败</string>
+    <string name="sis_avvio_della_notte">正在开始夜间记录</string>
+    <string name="sis_collegamento_in_corso">正在连接心率带…</string>
+    <string name="sis_analisi_della_notte">正在分析这一晚</string>
+    <string name="sis_calcolo_invio_punti">正在计算并发送到 Intervals.icu…</string>
+    <string name="sis_calcolo_invio">正在计算并发送到 Intervals.icu</string>
+    <string name="sis_notte_in_corso">正在记录夜间</string>
+    <string name="sis_registrazione_da" formatted="true">记录中 %1$s · 取下心率带后自动停止</string>
+    <string name="sis_da_durata" formatted="true">已 %1$s</string>
+    <string name="sis_gestore_bt">蓝牙管理器不可用</string>
+    <string name="sis_salvataggi_nd">数据保存不可用</string>
+    <string name="sis_fascia_non_trovata" formatted="true">未找到心率带 %1$s：是否已佩戴并靠近手机？</string>
+    <string name="sis_collegamento_fallito">连接心率带失败</string>
+    <string name="sis_collegamento_fallito_std">连接心率带失败（标准驱动也失败）</string>
+    <string name="sis_stato_fascia_nd">心率带状态不可用</string>
+    <string name="sis_init_salvataggi_fallita">数据保存初始化失败</string>
+    <string name="sis_nessuna_impostazione">没有已保存的设置：请先在界面中完成一次记录</string>
+    <string name="sis_registrazione_non_partita">记录未启动，请检查应用</string>
+    <string name="sis_fascia_associata">心率带已配对</string>
+    <string name="sis_associazione_fallita" formatted="true">配对失败：%1$s</string>
+    <string name="sis_annullata">已取消</string>
+    <string name="sis_associazione_rimossa">已取消配对</string>
+    <string name="sis_richiede_android13">需要 Android 13 或更高版本。</string>
+    <string name="sis_prima_registrazione">请先完成一次记录：应用需要知道使用哪条心率带。</string>
+    <string name="sis_associa_una_volta">只需配对一次：佩戴心率带时 Android 会通知应用。现在请佩戴（润湿电极）并点按按钮。</string>
+    <string name="sis_attivo">已开启</string>
+    <string name="sis_disattivato">已关闭</string>
+    <string name="sis_parte_da_sola" formatted="true">在 %1$s 至 %2$s 之间，当你佩戴心率带且手机在身边充电时自动开始。</string>
+    <string name="sis_si_attivera" formatted="true">学习 %1$s 晚后启用（目前 %2$s 晚）。在此之前请使用“开始夜间记录”。</string>
+    <string name="sis_non_legge_funzioni">已连接，但无法读取心率带的功能。请重试。</string>
+    <string name="sis_collegamento_elettrodi">连接失败：是否已佩戴心率带并润湿电极？</string>
+    <string name="sis_fascia_non_risponde">心率带无响应。请靠近手机后重试。</string>
+    <string name="sis_movimento_respiro">动作和呼吸</string>
+    <string name="sis_battito_hrv">心跳和 HRV</string>
+    <string name="sis_indossa_e_premi">佩戴心率带并点按“开始夜间记录”。早上取下后会自动停止。</string>
+    <string name="sis_letta_il" formatted="true">读取于 %1$s</string>
+    <string name="sis_avvio_in_corso">正在启动…</string>
+    <string name="sis_riprova">重试</string>
+    <string name="sis_avvia_notte">开始夜间记录</string>
+    <string name="sis_segnale_ok">心率带信号：正常</string>
+    <string name="sis_nessun_battito_da" formatted="true">已有 %1$s 分钟没有心跳：是否已佩戴心率带？</string>
+    <string name="sis_le_mie_notti">我的夜间记录</string>
+    <string name="sis_eta_app" formatted="true">%1$s 年龄</string>
+    <string name="sis_impossibile_leggere_notti" formatted="true">无法读取夜间记录：\n%1$s</string>
+    <string name="sis_nessuna_notte">还没有夜间记录。\n停止一次至少 10 分钟的记录后，夜间记录会显示在这里。</string>
+    <string name="sis_fc_riposo">静息心率</string>
+    <string name="sis_sonno">睡眠</string>
+    <string name="sis_fc_media">平均心率</string>
+    <string name="sis_impostazioni_intervals">Intervals.icu 设置</string>
+    <string name="sis_anello_esterno">外环：体能</string>
+    <string name="sis_anello_centro">中环：训练</string>
+    <string name="sis_anello_interno">内环：睡眠</string>
+    <string name="sis_tra_anni" formatted="true">%1$s 至 %2$s 岁</string>
+    <string name="sis_eta_anagrafica" formatted="true">实际年龄 %1$s · %2$s</string>
+    <string name="sis_anni_in_meno" formatted="true">年轻 %1$s 岁</string>
+    <string name="sis_anni_in_piu" formatted="true">年长 %1$s 岁</string>
+    <string name="sis_non_disponibili" formatted="true">不可用：%1$s</string>
+    <string name="sis_ritmo" formatted="true">每个日历年 %1$s 生理年 %2$s</string>
+    <string name="sis_stai_rallentando">（正在减缓）</string>
+    <string name="sis_stai_accelerando">（正在加快）</string>
+    <string name="sis_disponibile_90" formatted="true">需要 90 天历史数据（目前有估算的天数：%1$s）。</string>
+    <string name="sis_anni" formatted="true">%1$s 岁</string>
+    <string name="sis_notti_valide">有效夜间</string>
+    <string name="sis_comp_fitness">体能（VO2max）</string>
+    <string name="sis_comp_allenamento">训练</string>
+    <string name="sis_comp_durata_sonno">睡眠时长</string>
+    <string name="sis_comp_regolarita">睡眠规律性</string>
+    <string name="sis_det_vo2" formatted="true">VO2max %1$s（%2$s），同龄同性别典型值 %3$s</string>
+    <string name="sis_det_stimato" formatted="true">根据 %1$s 次跑步和 %2$s 次骑行估算，最大心率 %3$s</string>
+    <string name="sis_det_allenamento" formatted="true">每周等效 %1$s 分钟（推荐最低量的 %2$s 倍）</string>
+    <string name="sis_det_durata" formatted="true">睡眠中位数 %1$s 小时</string>
+    <string name="sis_det_regolarita" formatted="true">睡眠时间波动 ±%1$s 分钟</string>
+    <string name="sis_mancante_vo2">VO2max（Intervals.icu 中没有且无法估算：最近 90 天内需要至少 3 次平地跑或带功率的骑行，每次 20 分钟以上）</string>
+    <string name="sis_mancante_allenamento">训练（未配置 Intervals.icu 或无法访问）</string>
+    <string name="sis_errore_codice" formatted="true">错误 %1$s</string>
+    <string name="sis_conn_non_riuscita">连接失败</string>
+    <string name="sis_risposta_non_valida">响应无效</string>
+    <string name="sis_movimento">动作</string>
+    <string name="sis_niente_hrv_verificato">无 HRV：仅心率（已验证）</string>
+    <string name="sis_niente_hrv_ottico">无 HRV：仅心率（光学传感器）</string>
+    <string name="sis_hrv_verificata">HRV 将在第一晚的前 5 分钟内验证</string>
+    <string name="sis_battito_senza_movimento">心跳和 HRV，无动作</string>
+    <string name="sis_avviso_senza_hrv">此心率带无法可靠测量 HRV：你将获得根据心率估算的睡眠时长和阶段，但没有 HRV、准备度和基线。</string>
+    <string name="sis_consiglio_fascia">如需 HRV，请使用可传输心跳间期的胸带式心率带，例如 Polar H10。</string>
+    <string name="sis_voce_batteria">电池不受限制</string>
+    <string name="sis_voce_batteria_sp">记录会在熄屏状态下持续 8 小时：开启优化时 Android 可能会中止记录。</string>
+    <string name="sis_voce_notifiche">已允许通知</string>
+    <string name="sis_voce_notifiche_sp">用于显示夜间记录通知和教练提醒。</string>
+    <string name="sis_voce_allarmi">已允许精确闹钟</string>
+    <string name="sis_voce_allarmi_sp">用于在正确的时间开始和停止夜间记录。</string>
+    <string name="sis_voce_bt">蓝牙已开启</string>
+    <string name="sis_voce_bt_sp">心率带整晚通过蓝牙传输数据。</string>
+    <string name="sis_il_tuo_telefono">你的手机</string>
+    <string name="sis_istr_xiaomi_1" formatted="true">为 %1$s 开启“自启动”。</string>
+    <string name="sis_istr_xiaomi_2">在“省电策略”中选择“无限制”。</string>
+    <string name="sis_istr_samsung_1" formatted="true">将 %1$s 从“深度休眠应用”和“休眠应用”中移除。</string>
+    <string name="sis_istr_samsung_2" formatted="true">将 %1$s 添加到“永不休眠的应用”。</string>
+    <string name="sis_istr_huawei_1" formatted="true">在“应用启动管理”中将 %1$s 设为手动管理。</string>
+    <string name="sis_istr_huawei_2">开启全部三项：自动启动、关联启动、后台活动。</string>
+    <string name="sis_istr_oppo_1" formatted="true">在“电池优化”中为 %1$s 选择“不优化”。</string>
+    <string name="sis_istr_oppo_2">开启“自启动”。</string>
+    <string name="sis_istr_pixel">只需将电池优化设为“不受限制”。</string>
+    <string name="sis_istr_altra" formatted="true">将 %1$s 的电池设置为“不受限制”。</string>
+    <string name="sis_coach_al_lavoro">教练正在工作</string>
+    <string name="sis_coach_analisi">正在分析夜间数据和计划</string>
+    <string name="sis_canale_coach">教练</string>
+    <string name="sis_com_e_andata">昨晚睡得怎么样？</string>
+    <string name="sis_aggiungi_tag">添加标签：教练会等待 15 分钟</string>
+    <string name="sis_piano_pronto">计划已就绪</string>
+    <string name="sis_piano_settimana" formatted="true">本周计划：%1$s 次训练%2$s</string>
+    <string name="sis_seduta_aggiornata">今日训练已更新</string>
+    <string name="sis_addorm_completo" formatted="true">%1$s 入睡（%2$s 分钟后）· %3$s 醒来</string>
+    <string name="sis_addorm_risveglio" formatted="true">%1$s 入睡 · %2$s 醒来</string>
+    <string name="sis_numerato" formatted="true">%1$s. %2$s</string>
+    <string name="sis_nascondi_avanzate">隐藏高级选项</string>
+    <string name="sis_opzioni_avanzate">高级选项：个人 API key</string>
+    <string name="sis_a_posto">正常</string>
+    <string name="sis_da_sistemare">需要处理</string>
+    <string name="sis_invia_ora">立即发送</string>
+    <string name="sis_collegato">已连接</string>
+    <string name="sis_collegato_atleta" formatted="true">已作为运动员 %1$s 连接</string>
+    <string name="sis_campi_pronti" formatted="true">%1$s 字段已就绪：%2$s</string>
+    <string name="sis_campi_pronti_creati" formatted="true">%1$s 字段已就绪：%2$s（本次新建 %3$s 个）</string>
+    <string name="sis_campi_non_preparati" formatted="true">%1$s 字段未准备好：%2$s</string>
+    <string name="sis_errore">错误</string>
+</resources>

@@ -1,5 +1,6 @@
 package com.wboelens.polarrecorder.services
 
+import com.wboelens.polarrecorder.biosleep.lingua.TestiSistema
 import com.wboelens.polarrecorder.BuildConfig
 import android.app.Notification
 import android.app.NotificationChannel
@@ -458,8 +459,8 @@ class RecordingService : Service() {
       text: String = "Collegamento alla fascia in corso…",
   ): Notification =
       NotificationCompat.Builder(this, CHANNEL_ID)
-          .setContentTitle(title)
-          .setContentText(text)
+          .setContentTitle(TestiSistema.traduci(this, title))
+          .setContentText(TestiSistema.traduci(this, text))
           .setSmallIcon(R.drawable.ic_notifica_notte)
           .setColor(ContextCompat.getColor(this, R.color.biosleep_notifica))
           .setOngoing(true)
@@ -510,7 +511,7 @@ class RecordingService : Service() {
       val channel =
           NotificationChannel(
               CHANNEL_ID,
-              "Notte in corso", // nome visibile in Impostazioni > Notifiche
+              TestiSistema.traduci(this, "Notte in corso"), // nome visibile in Impostazioni > Notifiche
               NotificationManager.IMPORTANCE_LOW,
           )
       val manager = getSystemService(NotificationManager::class.java)
@@ -534,8 +535,8 @@ class RecordingService : Service() {
         )
 
     return NotificationCompat.Builder(this, CHANNEL_ID)
-        .setContentTitle("Notte in corso")
-        .setContentText("Registrazione $durationText · si ferma da sola quando togli la fascia")
+        .setContentTitle(TestiSistema.traduci(this, "Notte in corso"))
+        .setContentText(TestiSistema.traduci(this, "Registrazione $durationText · si ferma da sola quando togli la fascia"))
         .setSmallIcon(R.drawable.ic_notifica_notte)
         .setColor(ContextCompat.getColor(this, R.color.biosleep_notifica))
         .setOngoing(true)

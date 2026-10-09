@@ -1,5 +1,6 @@
 package com.wboelens.polarrecorder.biosleep.finalize
 
+import com.wboelens.polarrecorder.biosleep.lingua.TestiSistema
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.content.Context
@@ -64,12 +65,12 @@ class NightFinalizeWorker(context: Context, params: WorkerParameters) : Coroutin
   override suspend fun getForegroundInfo(): ForegroundInfo {
     // Il canale deve esistere prima della notifica, altrimenti Android rifiuta il primo piano
     applicationContext.getSystemService(NotificationManager::class.java).createNotificationChannel(
-        NotificationChannel("biosleep_summary", "Riepilogo notte", NotificationManager.IMPORTANCE_DEFAULT))
+        NotificationChannel("biosleep_summary", TestiSistema.traduci(applicationContext, "Riepilogo notte"), NotificationManager.IMPORTANCE_DEFAULT))
     val n =
         NotificationCompat.Builder(applicationContext, "biosleep_summary")
             .setSmallIcon(R.drawable.ic_notifica_notte)
-            .setContentTitle("Analisi della notte")
-            .setContentText("Calcolo e invio a Intervals.icu")
+            .setContentTitle(TestiSistema.traduci(applicationContext, "Analisi della notte"))
+            .setContentText(TestiSistema.traduci(applicationContext, "Calcolo e invio a Intervals.icu"))
             .setOngoing(true)
             .setSilent(true)
             .build()

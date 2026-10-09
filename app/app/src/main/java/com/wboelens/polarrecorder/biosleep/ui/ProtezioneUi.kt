@@ -1,5 +1,6 @@
 package com.wboelens.polarrecorder.biosleep.ui
 
+import com.wboelens.polarrecorder.biosleep.lingua.tr
 import com.wboelens.polarrecorder.R
 import androidx.compose.ui.res.stringResource
 import com.wboelens.polarrecorder.BuildConfig
@@ -78,7 +79,7 @@ fun CardProtezione(onApri: () -> Unit) {
     Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
       Text(stringResource(R.string.protezione_protezione_notturna_incompleta), style = MaterialTheme.typography.titleMedium, color = MaterialTheme.colorScheme.onErrorContainer)
       Text(
-          "Da sistemare: " + rosse.joinToString(", ") { it.titolo.lowercase() } + ". Android potrebbe interrompere la registrazione.",
+          tr("Da sistemare: " + rosse.joinToString(", ") { it.titolo.lowercase() } + ". Android potrebbe interrompere la registrazione."),
           style = MaterialTheme.typography.bodySmall,
           color = MaterialTheme.colorScheme.onErrorContainer)
       Button(onClick = onApri) { Text(stringResource(R.string.protezione_sistema)) }
@@ -101,14 +102,14 @@ fun CardInterruzione(onApriIstruzioni: () -> Unit) {
   Card(Modifier.fillMaxWidth()) {
     Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
       Text(
-          stringResource(R.string.protezione_registrazione_interrotta_per_minuti, x.minuti.toString(), x.causa.toString()),
+          stringResource(R.string.protezione_registrazione_interrotta_per_minuti, x.minuti.toString(), tr(x.causa)),
           style = MaterialTheme.typography.titleSmall,
           color = MaterialTheme.colorScheme.error)
       Text(
           stringResource(R.string.protezione_succede_soprattutto_quando_il),
           style = MaterialTheme.typography.bodySmall)
       Row {
-        TextButton(onClick = onApriIstruzioni) { Text(stringResource(R.string.protezione_istruzioni_per, (Marca.da(Build.MANUFACTURER).nome).toString())) }
+        TextButton(onClick = onApriIstruzioni) { Text(stringResource(R.string.protezione_istruzioni_per, tr(Marca.da(Build.MANUFACTURER).nome))) }
         TextButton(onClick = { Protezione.chiudiInterruzione(context, x.data); giro++ }) { Text(stringResource(R.string.protezione_chiudi)) }
       }
     }
@@ -141,10 +142,10 @@ fun ProtezioneScreen(onBack: () -> Unit) {
           style = MaterialTheme.typography.bodyMedium)
       for (v in stato) VoceChecklist(v) { Protezione.apri(context, v.id) }
       HorizontalDivider()
-      Text(stringResource(R.string.protezione_istruzioni_per, marca.nome.toString()), style = MaterialTheme.typography.titleSmall)
-      for ((k, riga) in marca.istruzioni.withIndex()) Text("${k + 1}. $riga", style = MaterialTheme.typography.bodyMedium)
+      Text(stringResource(R.string.protezione_istruzioni_per, tr(marca.nome)), style = MaterialTheme.typography.titleSmall)
+      for ((k, riga) in marca.istruzioni.withIndex()) Text(tr("${k + 1}. $riga"), style = MaterialTheme.typography.bodyMedium)
       if (marca != Marca.PIXEL && marca != Marca.ALTRA) {
-        Button(onClick = { marcaNonAperta = !Protezione.apriMarca(context, marca) }) { Text(stringResource(R.string.protezione_apri_le_impostazioni_di, marca.nome.toString())) }
+        Button(onClick = { marcaNonAperta = !Protezione.apriMarca(context, marca) }) { Text(stringResource(R.string.protezione_apri_le_impostazioni_di, tr(marca.nome))) }
         if (marcaNonAperta) {
           Text(stringResource(R.string.protezione_su_questa_versione_la), style = MaterialTheme.typography.bodySmall)
         }
@@ -159,12 +160,12 @@ private fun VoceChecklist(v: VoceProtezione, onSistema: () -> Unit) {
   Row(verticalAlignment = Alignment.Top) {
     Icon(
         if (v.ok) Icons.Filled.CheckCircle else Icons.Filled.Error,
-        if (v.ok) "A posto" else "Da sistemare",
+        tr(if (v.ok) "A posto" else "Da sistemare"),
         Modifier.padding(top = 2.dp, end = 10.dp).size(22.dp),
         tint = if (v.ok) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.error)
     Column(Modifier.weight(1f)) {
-      Text(v.titolo, style = MaterialTheme.typography.bodyLarge, fontWeight = FontWeight.SemiBold)
-      Text(v.spiegazione, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+      Text(tr(v.titolo), style = MaterialTheme.typography.bodyLarge, fontWeight = FontWeight.SemiBold)
+      Text(tr(v.spiegazione), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
       if (!v.ok) TextButton(onClick = onSistema) { Text(stringResource(R.string.protezione_sistema)) }
     }
   }

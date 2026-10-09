@@ -1,5 +1,6 @@
 package com.wboelens.polarrecorder.biosleep.ui
 
+import com.wboelens.polarrecorder.biosleep.lingua.tr
 import com.wboelens.polarrecorder.R
 import androidx.compose.ui.res.stringResource
 import androidx.compose.foundation.background
@@ -54,7 +55,7 @@ private fun Badge(testo: String, pieno: Boolean) {
       if (pieno) Modifier.background(colore, forma)
       else Modifier.border(1.dp, colore, forma)
   Text(
-      testo,
+      tr(testo),
       m.padding(horizontal = 8.dp, vertical = 2.dp),
       style = MaterialTheme.typography.labelMedium,
       fontWeight = FontWeight.SemiBold,
@@ -89,8 +90,8 @@ fun AvvisoSenzaHrv() {
   Column(
       Modifier.fillMaxWidth().background(MaterialTheme.colorScheme.errorContainer, RoundedCornerShape(8.dp)).padding(12.dp),
       verticalArrangement = Arrangement.spacedBy(4.dp)) {
-        Text(InfoFascia.AVVISO_SENZA_HRV, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onErrorContainer)
-        Text(InfoFascia.CONSIGLIO, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onErrorContainer)
+        Text(tr(InfoFascia.AVVISO_SENZA_HRV), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onErrorContainer)
+        Text(tr(InfoFascia.CONSIGLIO), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onErrorContainer)
       }
 }
 
@@ -133,7 +134,7 @@ fun FasciaScreen(onBack: () -> Unit) {
       Text(nome, style = MaterialTheme.typography.titleLarge)
       val p = InfoFascia.prevedi(nome, DriverRegistry.tipo(nome), rapporto)
       BadgeFascia(p)
-      descrizioneFascia(p)?.let { Text(it, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant) }
+      descrizioneFascia(p)?.let { Text(tr(it), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant) }
       if (p.hrv == false) AvvisoSenzaHrv()
       Text(stringResource(R.string.fascia_per_cambiare_fascia_scheda), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
       HorizontalDivider()

@@ -1,5 +1,7 @@
 package com.wboelens.polarrecorder.biosleep.ui
 
+import com.wboelens.polarrecorder.biosleep.lingua.tr
+import com.wboelens.polarrecorder.biosleep.lingua.TestiSistema
 import com.wboelens.polarrecorder.R
 import androidx.compose.ui.res.stringResource
 import com.wboelens.polarrecorder.BuildConfig
@@ -122,8 +124,8 @@ fun HomeScreen(
             title = { Text(BuildConfig.APP_NAME) },
             actions = {
               if (profile != null) {
-                IconButton(onClick = onOpenNights) { Icon(Icons.Filled.Bedtime, "Le mie notti") }
-                IconButton(onClick = onOpenBioAge) { Icon(Icons.Filled.HourglassTop, "Età ${BuildConfig.APP_NAME}") }
+                IconButton(onClick = onOpenNights) { Icon(Icons.Filled.Bedtime, tr("Le mie notti")) }
+                IconButton(onClick = onOpenBioAge) { Icon(Icons.Filled.HourglassTop, tr("Età ${BuildConfig.APP_NAME}")) }
               }
             },
         )
@@ -222,7 +224,7 @@ private fun SetupStrap(
       stringResource(R.string.home_1_bagna_gli_elettrodi, BuildConfig.APP_NAME),
       style = MaterialTheme.typography.bodyMedium,
   )
-  error?.let { Text(it, color = MaterialTheme.colorScheme.error) }
+  error?.let { Text(tr(it), color = MaterialTheme.colorScheme.error) }
 
   val ultimoRapporto = remember { Fasce.rapportoUltimaSessione(context) }
   // Polar (driver Polar) e fasce di altre marche con il servizio cardio standard (driver GATT)
@@ -242,7 +244,7 @@ private fun SetupStrap(
           // Badge "HRV" / "Movimento": dal nome, o dal rapporto dell'ultima notte con questa fascia
           val previsione = InfoFascia.prevedi(d.info.name, DriverRegistry.tipo(d.info.name), ultimoRapporto)
           BadgeFascia(previsione)
-          val descrizione = descrizioneFascia(previsione)
+          val descrizione = descrizioneFascia(previsione)?.let { tr(it) }
           if (descrizione != null) {
             Text(
                 descrizione,
@@ -292,13 +294,13 @@ private fun ReadyCard(
     Column(Modifier.padding(20.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
       Text(stringResource(R.string.home_pronta_per_la_notte), style = MaterialTheme.typography.headlineSmall)
       Text(
-          "${profile.deviceName.ifBlank { profile.deviceId }} · " +
-              profile.dataTypes.joinToString(" + ") { if (it.name == "ACC") "movimento e respiro" else "battito e HRV" },
+          tr("${profile.deviceName.ifBlank { profile.deviceId }} · " +
+              profile.dataTypes.joinToString(" + ") { TestiSistema.traduci(context, if (it.name == "ACC") "movimento e respiro" else "battito e HRV") }),
           style = MaterialTheme.typography.bodyMedium,
       )
       Text(
-          if (starting) "Collegamento alla fascia in corso…"
-          else "Indossa la fascia e premi Avvia notte. Al mattino si ferma da sola quando la togli.",
+          tr(if (starting) "Collegamento alla fascia in corso…"
+          else "Indossa la fascia e premi Avvia notte. Al mattino si ferma da sola quando la togli."),
           style = MaterialTheme.typography.bodySmall,
           color = MaterialTheme.colorScheme.onSurfaceVariant,
       )
@@ -310,10 +312,10 @@ private fun ReadyCard(
       if (InfoFascia.prevedi(nomeFascia, DriverRegistry.tipo(nomeFascia), rapporto).hrv == false) AvvisoSenzaHrv()
       if (rapporto != null) TextButton(onClick = { Fasce.condividi(context) }) { Text(stringResource(R.string.home_invia_rapporto_fascia)) }
       // Ultima lettura: la fascia ora e' scollegata, il valore vero arriva all'avvio della notte
-      RigaBatteria(ultimaBatteria?.first, ultimaBatteria?.second?.let { "letta il ${quandoLetta(it)}" })
+      RigaBatteria(ultimaBatteria?.first, ultimaBatteria?.second?.let { tr("letta il ${quandoLetta(it)}") })
       (avvio as? AvvioNotte.Fallito)?.let {
         Text(
-            stringResource(R.string.home_avvio_non_riuscito, it.motivo.toString()),
+            stringResource(R.string.home_avvio_non_riuscito, tr(it.motivo.toString())),
             style = MaterialTheme.typography.bodySmall,
             color = MaterialTheme.colorScheme.error,
         )
@@ -324,11 +326,11 @@ private fun ReadyCard(
           modifier = Modifier.fillMaxWidth().height(56.dp),
       ) {
         Text(
-            when {
+            tr(when {
               starting -> "Avvio in corso…"
               avvio is AvvioNotte.Fallito -> "Riprova"
               else -> "Avvia notte"
-            })
+            }))
       }
     }
   }
@@ -383,8 +385,8 @@ private fun NightInProgress(
           style = MaterialTheme.typography.titleMedium,
       )
       Text(
-          if (silentMin < 2) "Segnale della fascia: OK"
-          else "Nessun battito da $silentMin minuti: la fascia è indossata?",
+          tr(if (silentMin < 2) "Segnale della fascia: OK"
+          else "Nessun battito da $silentMin minuti: la fascia è indossata?"),
           style = MaterialTheme.typography.bodyMedium,
           color = if (silentMin < 2) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.error,
       )

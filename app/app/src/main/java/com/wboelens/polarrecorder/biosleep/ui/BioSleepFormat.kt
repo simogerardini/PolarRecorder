@@ -1,5 +1,6 @@
 package com.wboelens.polarrecorder.biosleep.ui
 
+import com.wboelens.polarrecorder.biosleep.ui.allenamento.DateIt
 import java.time.Instant
 import java.time.ZoneId
 import java.time.ZonedDateTime
@@ -22,7 +23,7 @@ fun Long.toLocalTime(): ZonedDateTime = Instant.ofEpochMilli(this).atZone(ZoneId
 
 /** Titolo della notte: il giorno del risveglio, es. "Mercoledì 30 settembre". */
 fun nightTitle(endMs: Long): String =
-    endMs.toLocalTime().format(DAY_FORMAT).replaceFirstChar { it.titlecase(Locale.ITALIAN) }
+    DateIt.lunga(endMs.toLocalTime().toLocalDate())
 
 /** Es. "22:18 → 06:40 · 8,4 h". */
 fun nightTimes(startMs: Long, endMs: Long): String {
@@ -36,11 +37,11 @@ fun hourLabel(ms: Long): String = ms.toLocalTime().format(HOUR_FORMAT)
 private val DATE_TIME_FORMAT = DateTimeFormatter.ofPattern("dd/MM 'alle' HH:mm", Locale.ITALIAN)
 
 /** Es. "01/10 alle 06:46". */
-fun dateTimeLabel(ms: Long): String = ms.toLocalTime().format(DATE_TIME_FORMAT)
+fun dateTimeLabel(ms: Long): String = ms.toLocalTime().let { DateIt.asse(it.toLocalDate()) + " " + it.format(HOUR_FORMAT) }
 
 /** Numero con virgola italiana; "–" se il valore manca. */
 fun fmt(value: Double?, decimals: Int = 0): String =
-    if (value == null || value.isNaN()) "–" else String.format(Locale.ITALY, "%.${decimals}f", value)
+    if (value == null || value.isNaN()) "–" else String.format(Locale.getDefault(), "%.${decimals}f", value)
 
 /** Minuti in formato "7 h 12'" (o "45'" sotto l'ora). */
 fun hm(minutes: Int): String =

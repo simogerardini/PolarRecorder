@@ -1,5 +1,6 @@
 package com.wboelens.polarrecorder.biosleep.ui
 
+import com.wboelens.polarrecorder.biosleep.lingua.tr
 import com.wboelens.polarrecorder.R
 import androidx.compose.ui.res.stringResource
 import android.database.SQLException
@@ -114,17 +115,17 @@ fun NightDetailScreen(sessionId: Long, onBack: () -> Unit) {
         TopAppBar(
             title = {
               val s = state
-              Text(if (s is LoadState.Ready) nightTitle(s.data.night.summary.endMs) else "Notte")
+              Text(tr(if (s is LoadState.Ready) nightTitle(s.data.night.summary.endMs) else "Notte"))
             },
             navigationIcon = {
               IconButton(onClick = onBack) {
-                Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Indietro")
+                Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = tr("Indietro"))
               }
             },
             actions = {
               if (state is LoadState.Ready) {
                 IconButton(onClick = { askDelete = true }) {
-                  Icon(Icons.Filled.Delete, contentDescription = "Elimina notte")
+                  Icon(Icons.Filled.Delete, contentDescription = tr("Elimina notte"))
                 }
               }
             },
@@ -217,11 +218,11 @@ private fun NightContent(
     val night = detail.night
     Text(stringResource(R.string.night_detail_intervals_icu), style = MaterialTheme.typography.titleSmall)
     Text(
-        when {
+        tr(when {
           night.syncedAt != null -> "✓ Inviata il ${dateTimeLabel(night.syncedAt)}"
           night.syncStatus != null -> "Non inviata: ${night.syncStatus}"
           else -> "Non ancora inviata"
-        },
+        }),
         style = MaterialTheme.typography.bodySmall,
         color =
             if (night.syncedAt == null && night.syncStatus != null) MaterialTheme.colorScheme.error
@@ -229,7 +230,7 @@ private fun NightContent(
     )
     Row(verticalAlignment = Alignment.CenterVertically) {
       Button(onClick = onSync, enabled = !syncing) {
-        Text(if (night.syncedAt != null) "Invia di nuovo" else "Invia ora")
+        Text(tr(if (night.syncedAt != null) "Invia di nuovo" else "Invia ora"))
       }
       if (syncing) {
         Spacer(Modifier.width(12.dp))
@@ -261,11 +262,11 @@ private fun SleepStagesSection(night: NightListItem, titolo: Boolean = true) {
       Metric(stringResource(R.string.night_detail_efficienza), fmt(efficiency), "%"),
   )
   Text(
-      buildString {
+      tr(buildString {
         st.sleepOnsetMs?.let { append("Addormentamento alle ${hourLabel(it)}") }
         latency?.let { append(" (dopo $it')") }
         st.sleepEndMs?.let { append(" · risveglio alle ${hourLabel(it)}") }
-      },
+      }),
       style = MaterialTheme.typography.bodySmall,
       color = MaterialTheme.colorScheme.onSurfaceVariant,
   )
@@ -279,7 +280,7 @@ private fun SleepStagesSection(night: NightListItem, titolo: Boolean = true) {
       Metric(stringResource(R.string.night_detail_veglia_notturna), hm(st.wakeMin), ""),
   )
   Text(
-      if (st.mode.startsWith("FC"))
+      tr(if (st.mode.startsWith("FC"))
           "Stima dalla sola frequenza cardiaca" + (if (st.mode.contains("ACC")) " e dal movimento" else ", senza dati di movimento") +
               ": la fascia non fornisce RR affidabili. È indicativa: non sostituisce una polisonnografia."
       else if (st.mode == "HRV+ACC+RESP")
@@ -288,7 +289,7 @@ private fun SleepStagesSection(night: NightListItem, titolo: Boolean = true) {
       else if (st.mode == "HRV+ACC") "Stima da frequenza cardiaca, HRV e movimento (accelerometro H10). " +
           "È indicativa: non sostituisce una polisonnografia."
       else "Fasi stimate senza dati di movimento: frequenza cardiaca e HRV (fascia senza accelerometro). " +
-          "È indicativa: non sostituisce una polisonnografia.",
+          "È indicativa: non sostituisce una polisonnografia."),
       style = MaterialTheme.typography.bodySmall,
       color = MaterialTheme.colorScheme.onSurfaceVariant,
   )
@@ -316,7 +317,7 @@ private fun MetricCard(m: Metric, modifier: Modifier) {
       Row(verticalAlignment = Alignment.Bottom) {
         Text(m.value, style = MaterialTheme.typography.headlineSmall)
         Text(
-            " ${m.unit}",
+            tr(" ${m.unit}"),
             style = MaterialTheme.typography.bodySmall,
             modifier = Modifier.padding(bottom = 4.dp),
         )
@@ -354,7 +355,7 @@ fun RiepilogoNotte(sessionId: Long) {
       }
   when (val st = state) {
     is LoadState.Loading -> Box(Modifier.fillMaxWidth().padding(24.dp), contentAlignment = Alignment.Center) { CircularProgressIndicator() }
-    is LoadState.Error -> Text(st.message, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.error)
+    is LoadState.Error -> Text(tr(st.message), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.error)
     is LoadState.Ready -> {
       val night = st.data.night
       val s = night.summary
@@ -392,11 +393,11 @@ fun RiepilogoNotte(sessionId: Long) {
             style = MaterialTheme.typography.bodySmall,
             color = MaterialTheme.colorScheme.onSurfaceVariant)
         Text(
-            when {
+            tr(when {
               night.syncedAt != null -> "Intervals.icu: ✓ inviata il ${dateTimeLabel(night.syncedAt)}"
               night.syncStatus != null -> "Intervals.icu: non inviata (${night.syncStatus})"
               else -> "Intervals.icu: non ancora inviata"
-            },
+            }),
             style = MaterialTheme.typography.bodySmall,
             color =
                 if (night.syncedAt == null && night.syncStatus != null) MaterialTheme.colorScheme.error

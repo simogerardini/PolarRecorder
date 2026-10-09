@@ -1,0 +1,180 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Inglese: DA RIVEDERE da un madrelingua (closed testing). Traduzione iniziale della Parte 3, ottobre 2026. -->
+<!-- Testi di sistema (lingua/TestiSistema.kt): frasi italiane della logica tradotte quando vengono mostrate. -->
+<resources>
+    <string name="sis_la_tua_notte">Your night</string>
+    <string name="sis_canale_riepilogo_notte">Night summary</string>
+    <string name="sis_notifica_sonno" formatted="true">Sleep %1$s · deep %2$s · REM %3$s</string>
+    <string name="sis_notifica_ore" formatted="true">%1$s h recorded</string>
+    <string name="sis_notifica_fc" formatted="true">Resting HR %1$s · rMSSD %2$s ms</string>
+    <string name="sis_invio_in_corso">Sending to Intervals.icu (starts as soon as there is a network)</string>
+    <string name="sis_interruzioni" formatted="true">Interruptions: %1$s</string>
+    <string name="sis_minuti_persi" formatted="true">%1$s\' lost: %2$s</string>
+    <string name="sis_causa_bt_ora" formatted="true">Bluetooth off at %1$s</string>
+    <string name="sis_causa_app_ora" formatted="true">app closed by the system at %1$s</string>
+    <string name="sis_causa_portata_ora" formatted="true">strap out of range or off at %1$s</string>
+    <string name="sis_causa_contatto_ora" formatted="true">no heartbeat from %1$s (strap moved or without contact)</string>
+    <string name="sis_causa_bt">Bluetooth off</string>
+    <string name="sis_causa_app">app closed by the system</string>
+    <string name="sis_causa_portata">strap out of range</string>
+    <string name="sis_causa_contatto">strap without contact</string>
+    <string name="sis_causa_altra_1" formatted="true">%1$s, +1 interruption</string>
+    <string name="sis_causa_altre" formatted="true">%1$s, +%2$s interruptions</string>
+    <string name="sis_causa_minuti" formatted="true">%1$s (%2$s\')</string>
+    <string name="sis_inviata" formatted="true">Sent to Intervals.icu (%1$s)</string>
+    <string name="sis_connessione_non_riuscita" formatted="true">Connection failed: %1$s</string>
+    <string name="sis_campi_mancanti" formatted="true">Intervals did not save: %1$s. The %2$s fields are missing: in Settings tap \"Prepare the fields\" and send the night again.</string>
+    <string name="sis_connessione_riuscita">Connection successful</string>
+    <string name="sis_connesso_come" formatted="true">Connected as %1$s</string>
+    <string name="sis_accesso_non_valido" formatted="true">Intervals.icu access not valid: reconnect or check the API key (HTTP %1$s)</string>
+    <string name="sis_dati_rifiutati" formatted="true">Data rejected by Intervals (HTTP 422): %1$s</string>
+    <string name="sis_errore_http" formatted="true">Intervals error HTTP %1$s: %2$s</string>
+    <string name="sis_notte_non_inviata">Night not sent to Intervals.icu</string>
+    <string name="sis_puoi_reinviarla">You can send it again from the night\'s page.</string>
+    <string name="sis_non_collegato">Intervals.icu not connected</string>
+    <string name="sis_inviata_il" formatted="true">✓ Sent on %1$s</string>
+    <string name="sis_non_inviata" formatted="true">Not sent: %1$s</string>
+    <string name="sis_non_ancora_inviata">Not sent yet</string>
+    <string name="sis_invia_di_nuovo">Send again</string>
+    <string name="sis_intervals_inviata_il" formatted="true">Intervals.icu: ✓ sent on %1$s</string>
+    <string name="sis_intervals_non_inviata" formatted="true">Intervals.icu: not sent (%1$s)</string>
+    <string name="sis_intervals_non_ancora">Intervals.icu: not sent yet</string>
+    <string name="sis_notte">Night</string>
+    <string name="sis_notte_non_trovata">Night not found</string>
+    <string name="sis_errore_database">Database error</string>
+    <string name="sis_addormentamento_alle" formatted="true">Fell asleep at %1$s</string>
+    <string name="sis_dopo_minuti" formatted="true">" (after %1$s\')"</string>
+    <string name="sis_risveglio_alle" formatted="true">" · woke up at %1$s"</string>
+    <string name="sis_stima_fc_acc">Estimated from heart rate and movement only: the strap does not provide reliable RR intervals. It is indicative: it does not replace polysomnography.</string>
+    <string name="sis_stima_fc">Estimated from heart rate only, without movement data: the strap does not provide reliable RR intervals. It is indicative: it does not replace polysomnography.</string>
+    <string name="sis_stima_hrv_acc_resp">Estimated from heart rate, HRV, movement and breathing (H10 accelerometer). It is indicative: it does not replace polysomnography.</string>
+    <string name="sis_stima_hrv_acc">Estimated from heart rate, HRV and movement (H10 accelerometer). It is indicative: it does not replace polysomnography.</string>
+    <string name="sis_stima_senza_acc">Stages estimated without movement data: heart rate and HRV (strap without accelerometer). It is indicative: it does not replace polysomnography.</string>
+    <string name="sis_indietro">Back</string>
+    <string name="sis_elimina_notte">Delete night</string>
+    <string name="sis_avvio_non_riuscito_titolo">Night start failed</string>
+    <string name="sis_avvio_della_notte">Starting the night</string>
+    <string name="sis_collegamento_in_corso">Connecting to the strap…</string>
+    <string name="sis_analisi_della_notte">Analysing the night</string>
+    <string name="sis_calcolo_invio_punti">Calculating and sending to Intervals.icu…</string>
+    <string name="sis_calcolo_invio">Calculating and sending to Intervals.icu</string>
+    <string name="sis_notte_in_corso">Night in progress</string>
+    <string name="sis_registrazione_da" formatted="true">Recording %1$s · stops by itself when you take off the strap</string>
+    <string name="sis_da_durata" formatted="true">for %1$s</string>
+    <string name="sis_gestore_bt">Bluetooth manager not available</string>
+    <string name="sis_salvataggi_nd">Data saving not available</string>
+    <string name="sis_fascia_non_trovata" formatted="true">Strap %1$s not found: are you wearing it and is it nearby?</string>
+    <string name="sis_collegamento_fallito">Connection to the strap failed</string>
+    <string name="sis_collegamento_fallito_std">Connection to the strap failed (also with the standard driver)</string>
+    <string name="sis_stato_fascia_nd">Strap status not available</string>
+    <string name="sis_init_salvataggi_fallita">Data saving could not be initialised</string>
+    <string name="sis_nessuna_impostazione">No saved settings: first make a recording from the screens</string>
+    <string name="sis_registrazione_non_partita">The recording did not start, check the app</string>
+    <string name="sis_fascia_associata">Strap paired</string>
+    <string name="sis_associazione_fallita" formatted="true">Pairing failed: %1$s</string>
+    <string name="sis_annullata">cancelled</string>
+    <string name="sis_associazione_rimossa">Pairing removed</string>
+    <string name="sis_richiede_android13">Requires Android 13 or later.</string>
+    <string name="sis_prima_registrazione">Make a recording first: the app needs to know which strap to use.</string>
+    <string name="sis_associa_una_volta">Pair the strap once: Android will notify the app when you put it on. Put it on now (electrodes wet) and tap the button.</string>
+    <string name="sis_attivo">On</string>
+    <string name="sis_disattivato">Off</string>
+    <string name="sis_parte_da_sola" formatted="true">Starts by itself between %1$s and %2$s when you wear the strap and the phone is charging near you.</string>
+    <string name="sis_si_attivera" formatted="true">It will turn on after %1$s learning nights (now %2$s). Until then use \"Start night\".</string>
+    <string name="sis_non_legge_funzioni">Connected, but I cannot read the strap\'s features. Try again.</string>
+    <string name="sis_collegamento_elettrodi">Connection failed: are you wearing the strap with wet electrodes?</string>
+    <string name="sis_fascia_non_risponde">The strap does not respond. Bring it closer to the phone and try again.</string>
+    <string name="sis_movimento_respiro">movement and breathing</string>
+    <string name="sis_battito_hrv">heartbeat and HRV</string>
+    <string name="sis_indossa_e_premi">Put on the strap and tap Start night. In the morning it stops by itself when you take it off.</string>
+    <string name="sis_letta_il" formatted="true">read on %1$s</string>
+    <string name="sis_avvio_in_corso">Starting…</string>
+    <string name="sis_riprova">Try again</string>
+    <string name="sis_avvia_notte">Start night</string>
+    <string name="sis_segnale_ok">Strap signal: OK</string>
+    <string name="sis_nessun_battito_da" formatted="true">No heartbeat for %1$s minutes: are you wearing the strap?</string>
+    <string name="sis_le_mie_notti">My nights</string>
+    <string name="sis_eta_app" formatted="true">%1$s Age</string>
+    <string name="sis_impossibile_leggere_notti" formatted="true">Unable to read the nights:\n%1$s</string>
+    <string name="sis_nessuna_notte">No nights yet.\nNights appear here after stopping a recording of at least 10 minutes.</string>
+    <string name="sis_fc_riposo">Resting HR</string>
+    <string name="sis_sonno">Sleep</string>
+    <string name="sis_fc_media">Average HR</string>
+    <string name="sis_impostazioni_intervals">Intervals.icu settings</string>
+    <string name="sis_anello_esterno">Outer: fitness</string>
+    <string name="sis_anello_centro">Middle: training</string>
+    <string name="sis_anello_interno">Inner: sleep</string>
+    <string name="sis_tra_anni" formatted="true">between %1$s and %2$s years</string>
+    <string name="sis_eta_anagrafica" formatted="true">Chronological age %1$s · %2$s</string>
+    <string name="sis_anni_in_meno" formatted="true">%1$s years younger</string>
+    <string name="sis_anni_in_piu" formatted="true">%1$s years older</string>
+    <string name="sis_non_disponibili" formatted="true">Not available: %1$s</string>
+    <string name="sis_ritmo" formatted="true">%1$s biological years per calendar year %2$s</string>
+    <string name="sis_stai_rallentando">(you are slowing down)</string>
+    <string name="sis_stai_accelerando">(you are speeding up)</string>
+    <string name="sis_disponibile_90" formatted="true">Available after 90 days of history (now %1$s days with an estimate).</string>
+    <string name="sis_anni" formatted="true">%1$s years</string>
+    <string name="sis_notti_valide">valid nights</string>
+    <string name="sis_comp_fitness">Fitness (VO2max)</string>
+    <string name="sis_comp_allenamento">Training</string>
+    <string name="sis_comp_durata_sonno">Sleep duration</string>
+    <string name="sis_comp_regolarita">Sleep regularity</string>
+    <string name="sis_det_vo2" formatted="true">VO2max %1$s (%2$s) vs %3$s typical for age and sex</string>
+    <string name="sis_det_stimato" formatted="true">estimated from %1$s runs and %2$s rides, max HR %3$s</string>
+    <string name="sis_det_allenamento" formatted="true">%1$s equivalent min/week (%2$sx the recommended minimum)</string>
+    <string name="sis_det_durata" formatted="true">median %1$s h of sleep</string>
+    <string name="sis_det_regolarita" formatted="true">sleep time varies by ±%1$s minutes</string>
+    <string name="sis_mancante_vo2">VO2max (missing on Intervals.icu and cannot be estimated: at least 3 flat runs or rides with power, of 20+ minutes, in the last 90 days are needed)</string>
+    <string name="sis_mancante_allenamento">Training (Intervals.icu not configured or not reachable)</string>
+    <string name="sis_errore_codice" formatted="true">error %1$s</string>
+    <string name="sis_conn_non_riuscita">connection failed</string>
+    <string name="sis_risposta_non_valida">invalid response</string>
+    <string name="sis_movimento">Movement</string>
+    <string name="sis_niente_hrv_verificato">No HRV: heart rate only (verified)</string>
+    <string name="sis_niente_hrv_ottico">No HRV: heart rate only (optical sensor)</string>
+    <string name="sis_hrv_verificata">HRV checked in the first 5 minutes of the first night</string>
+    <string name="sis_battito_senza_movimento">Heartbeat and HRV, without movement</string>
+    <string name="sis_avviso_senza_hrv">This strap does not measure HRV reliably: you will get sleep duration and stages estimated from HR, but no HRV, readiness or baseline.</string>
+    <string name="sis_consiglio_fascia">For HRV use a chest heart rate strap that transmits beat-to-beat intervals, like the Polar H10.</string>
+    <string name="sis_voce_batteria">Battery unrestricted</string>
+    <string name="sis_voce_batteria_sp">The recording lasts 8 hours with the screen off: with optimisation on, Android may stop it.</string>
+    <string name="sis_voce_notifiche">Notifications allowed</string>
+    <string name="sis_voce_notifiche_sp">Needed for the night-in-progress notification and coach alerts.</string>
+    <string name="sis_voce_allarmi">Exact alarms allowed</string>
+    <string name="sis_voce_allarmi_sp">Needed to start and stop the night at the right time.</string>
+    <string name="sis_voce_bt">Bluetooth on</string>
+    <string name="sis_voce_bt_sp">The strap transmits via Bluetooth all night.</string>
+    <string name="sis_il_tuo_telefono">your phone</string>
+    <string name="sis_istr_xiaomi_1" formatted="true">Turn on Autostart for %1$s.</string>
+    <string name="sis_istr_xiaomi_2">In Battery saver choose \"No restrictions\".</string>
+    <string name="sis_istr_samsung_1" formatted="true">Remove %1$s from \"Deep sleeping apps\" and from \"Sleeping apps\".</string>
+    <string name="sis_istr_samsung_2" formatted="true">Add %1$s to \"Never sleeping apps\".</string>
+    <string name="sis_istr_huawei_1" formatted="true">In App launch set %1$s to manage manually.</string>
+    <string name="sis_istr_huawei_2">Turn on all three options: auto-launch, secondary launch, run in background.</string>
+    <string name="sis_istr_oppo_1" formatted="true">In Battery optimisation choose \"Don\'t optimise\" for %1$s.</string>
+    <string name="sis_istr_oppo_2">Turn on Autostart.</string>
+    <string name="sis_istr_pixel">Battery optimisation set to \"Unrestricted\" is enough.</string>
+    <string name="sis_istr_altra" formatted="true">Set %1$s\'s battery to \"Unrestricted\".</string>
+    <string name="sis_coach_al_lavoro">Coach at work</string>
+    <string name="sis_coach_analisi">Analysing the night and the plan</string>
+    <string name="sis_canale_coach">Coach</string>
+    <string name="sis_com_e_andata">How was your night?</string>
+    <string name="sis_aggiungi_tag">Add tags: the coach waits 15 minutes for them</string>
+    <string name="sis_piano_pronto">Plan ready</string>
+    <string name="sis_piano_settimana" formatted="true">Weekly plan: %1$s sessions%2$s</string>
+    <string name="sis_seduta_aggiornata">Today\'s session updated</string>
+    <string name="sis_addorm_completo" formatted="true">Fell asleep at %1$s (after %2$s\') · woke up at %3$s</string>
+    <string name="sis_addorm_risveglio" formatted="true">Fell asleep at %1$s · woke up at %2$s</string>
+    <string name="sis_numerato" formatted="true">%1$s. %2$s</string>
+    <string name="sis_nascondi_avanzate">Hide advanced options</string>
+    <string name="sis_opzioni_avanzate">Advanced options: personal API key</string>
+    <string name="sis_a_posto">OK</string>
+    <string name="sis_da_sistemare">Needs fixing</string>
+    <string name="sis_invia_ora">Send now</string>
+    <string name="sis_collegato">Connected</string>
+    <string name="sis_collegato_atleta" formatted="true">Connected as athlete %1$s</string>
+    <string name="sis_campi_pronti" formatted="true">%1$s fields ready: %2$s</string>
+    <string name="sis_campi_pronti_creati" formatted="true">%1$s fields ready: %2$s (%3$s created now)</string>
+    <string name="sis_campi_non_preparati" formatted="true">%1$s fields not prepared: %2$s</string>
+    <string name="sis_errore">error</string>
+</resources>

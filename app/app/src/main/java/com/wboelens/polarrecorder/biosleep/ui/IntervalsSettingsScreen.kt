@@ -1,5 +1,6 @@
 package com.wboelens.polarrecorder.biosleep.ui
 
+import com.wboelens.polarrecorder.biosleep.lingua.tr
 import com.wboelens.polarrecorder.R
 import androidx.compose.ui.res.stringResource
 import com.wboelens.polarrecorder.BuildConfig
@@ -94,7 +95,7 @@ fun IntervalsSettingsScreen(
         TopAppBar(
             title = { Text(stringResource(R.string.intervals_settings_impostazioni)) },
             navigationIcon = {
-              IconButton(onClick = onBack) { Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Indietro") }
+              IconButton(onClick = onBack) { Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = tr("Indietro")) }
             },
         )
       }
@@ -107,7 +108,7 @@ fun IntervalsSettingsScreen(
       Text(stringResource(R.string.intervals_settings_1_intervals_icu), style = MaterialTheme.typography.titleSmall)
       if (collegato) {
         Text(
-            "Collegato" + settings.atletaCollegato.takeIf { it.isNotBlank() }?.let { " come atleta $it" }.orEmpty(),
+            tr("Collegato" + settings.atletaCollegato.takeIf { it.isNotBlank() }?.let { " come atleta $it" }.orEmpty()),
             color = MaterialTheme.colorScheme.primary)
         OutlinedButton(
             onClick = {
@@ -126,7 +127,7 @@ fun IntervalsSettingsScreen(
         RigaInformativa()
         Button(onClick = { OAuthIntervals.avvia(context) }) { Text(stringResource(R.string.intervals_settings_collega_intervals_icu)) }
       }
-      stato.messaggio?.let { Text(it, style = MaterialTheme.typography.bodySmall) }
+      stato.messaggio?.let { Text(tr(it), style = MaterialTheme.typography.bodySmall) }
 
       // Campi BioSleep su Intervals.icu (cervello.prepara_account)
       if (stato.inCorso) CircularProgressIndicator()
@@ -134,8 +135,8 @@ fun IntervalsSettingsScreen(
         when (e.esito) {
           EsitoPrepara.OK ->
               Text(
-                  "Campi ${BuildConfig.APP_NAME} pronti: ${e.creati.size + e.esistenti.size}" +
-                      (if (e.creati.isNotEmpty()) " (${e.creati.size} creati ora)" else ""),
+                  tr("Campi ${BuildConfig.APP_NAME} pronti: ${e.creati.size + e.esistenti.size}" +
+                      (if (e.creati.isNotEmpty()) " (${e.creati.size} creati ora)" else "")),
                   style = MaterialTheme.typography.bodySmall,
                   color = MaterialTheme.colorScheme.primary)
           EsitoPrepara.PERMESSO_MANCANTE -> {
@@ -146,7 +147,7 @@ fun IntervalsSettingsScreen(
             Button(onClick = { OAuthIntervals.avvia(context) }) { Text(stringResource(R.string.intervals_settings_ricollega)) }
           }
           else -> {
-            Text("Campi ${BuildConfig.APP_NAME} non preparati: ${e.errore ?: "errore"}", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.error)
+            Text(tr("Campi ${BuildConfig.APP_NAME} non preparati: ${e.errore ?: "errore"}"), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.error)
             OutlinedButton(onClick = { prepara() }, enabled = !stato.inCorso) { Text(stringResource(R.string.intervals_settings_riprova)) }
           }
         }
@@ -169,7 +170,7 @@ fun IntervalsSettingsScreen(
 
       // --- Opzione avanzata: API key -----------------------------------------------------------
       TextButton(onClick = { avanzate = !avanzate }) {
-        Text(if (avanzate) "Nascondi opzioni avanzate" else "Opzioni avanzate: API key personale")
+        Text(tr(if (avanzate) "Nascondi opzioni avanzate" else "Opzioni avanzate: API key personale"))
       }
       if (avanzate) {
         Text(
@@ -216,7 +217,7 @@ fun IntervalsSettingsScreen(
         if (testing) CircularProgressIndicator()
         testResult?.let {
           Text(
-              it.message,
+              tr(it.message),
               color = if (it is IntervalsResult.Ok) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.error)
         }
       }

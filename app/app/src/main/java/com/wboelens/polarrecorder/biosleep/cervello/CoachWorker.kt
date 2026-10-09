@@ -1,5 +1,7 @@
 package com.wboelens.polarrecorder.biosleep.cervello
 
+import com.wboelens.polarrecorder.biosleep.riepilogo.TraduzioneMessaggi
+import com.wboelens.polarrecorder.biosleep.lingua.TestiSistema
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
@@ -206,8 +208,8 @@ class CoachWorker(context: Context, params: WorkerParameters) : CoroutineWorker(
     val n =
         NotificationCompat.Builder(applicationContext, NotificheCoach.CANALE_LAVORO)
             .setSmallIcon(R.drawable.ic_notifica_biosleep)
-            .setContentTitle("Coach al lavoro")
-            .setContentText("Analisi della notte e del piano")
+            .setContentTitle(TestiSistema.traduci(applicationContext, "Coach al lavoro"))
+            .setContentText(TestiSistema.traduci(applicationContext, "Analisi della notte e del piano"))
             .setOngoing(true)
             .setSilent(true)
             .build()
@@ -228,9 +230,9 @@ object NotificheCoach {
 
   fun canali(context: Context) {
     val nm = context.getSystemService(NotificationManager::class.java)
-    nm.createNotificationChannel(NotificationChannel(CANALE, "Coach", NotificationManager.IMPORTANCE_DEFAULT))
+    nm.createNotificationChannel(NotificationChannel(CANALE, TestiSistema.traduci(context, "Coach"), NotificationManager.IMPORTANCE_DEFAULT))
     nm.createNotificationChannel(
-        NotificationChannel(CANALE_LAVORO, "Coach al lavoro", NotificationManager.IMPORTANCE_LOW))
+        NotificationChannel(CANALE_LAVORO, TestiSistema.traduci(context, "Coach al lavoro"), NotificationManager.IMPORTANCE_LOW))
   }
 
   private fun permesso(context: Context) =
@@ -253,9 +255,9 @@ object NotificheCoach {
     val n =
         NotificationCompat.Builder(context, CANALE)
             .setSmallIcon(R.drawable.ic_notifica_biosleep)
-            .setContentTitle(titolo)
-            .setContentText(testo)
-            .setStyle(NotificationCompat.BigTextStyle().bigText(testo))
+            .setContentTitle(TestiSistema.traduci(context, titolo))
+            .setContentText(TestiSistema.traduci(context, TraduzioneMessaggi.testo(context, testo)))
+            .setStyle(NotificationCompat.BigTextStyle().bigText(TestiSistema.traduci(context, TraduzioneMessaggi.testo(context, testo))))
             .setContentIntent(apri(context, data))
             .setAutoCancel(true)
             .build()
@@ -282,8 +284,8 @@ object NotificheCoach {
     val n =
         NotificationCompat.Builder(context, CANALE)
             .setSmallIcon(R.drawable.ic_notifica_biosleep)
-            .setContentTitle("Com'è andata la notte?")
-            .setContentText("Aggiungi i tag: il coach li aspetta 15 minuti")
+            .setContentTitle(TestiSistema.traduci(context, "Com'è andata la notte?"))
+            .setContentText(TestiSistema.traduci(context, "Aggiungi i tag: il coach li aspetta 15 minuti"))
             .setContentIntent(pi)
             .setAutoCancel(true)
             .setTimeoutAfter(CoachWorker.ATTESA_TAG_MS)
