@@ -321,7 +321,7 @@ private fun Biometria(b: BiometriaCoach) {
   }
   // "Procedi con la seduta pianificata (media 7gg dentro il normal range 54.0-59.4ms)."
   // -> titolo corto sulla riga del pallino, dettaglio tra parentesi sotto, piu' piccolo e giustificato
-  val (azione, dettaglio) = dividiAzione(b.azione)
+  val (azione, dettaglio) = dividiAzione(b.azione?.let { TraduzioneMessaggi.testo(LocalContext.current, it) })
   Row(verticalAlignment = Alignment.Top) {
     Box(Modifier.padding(top = 5.dp).size(12.dp).background(ColoriBio.daNome(b.banda), CircleShape))
     Spacer(Modifier.width(10.dp))

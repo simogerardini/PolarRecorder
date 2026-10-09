@@ -23,7 +23,7 @@ class TestiSistemaTest {
   private fun traduttore(cartella: String): (String) -> String {
     val s = stringhe(cartella)
     // come Android in TestiSistema: senza argomenti la stringa non si formatta
-    return { t -> TestiSistema.traduci(t) { nome, args -> s[nome]?.let { if (args.isEmpty()) it else String.format(it, *args) } } }
+    return { t -> TestiSistema.traduci(t, { nome, args -> s[nome]?.let { if (args.isEmpty()) it else String.format(it, *args) } }) }
   }
 
   @Test
@@ -94,5 +94,16 @@ class TestiSistemaTest {
     val en = traduttore("values-en")
     assertEquals("80/20 polarisation: at most 20% of cycling and running time above threshold",
         en("Polarizzazione 80/20: al massimo il 20% del tempo di bici e corsa sopra la soglia"))
+  }
+
+  @Test
+  fun primaIMessaggiDelCervello() {
+    // i testi con codice del riepilogo (Messaggi) vincono sulla tabella, anche dentro una riga composta
+    val s = stringhe("values-en")
+    val stringa = { nome: String, args: Array<String> -> s[nome]?.let { if (args.isEmpty()) it else String.format(it, *args) } }
+    val cervello = mapOf("senza_gara" to "no race (code)", "stabile" to "stable (code)")
+    val t = { x: String -> TestiSistema.traduci(x, stringa) { cervello[it] } }
+    assertEquals("no race (code) · weekly target 6h35", t("senza_gara · obiettivo settimana 6h35"))
+    assertEquals("trend stable (code)", t("andamento stabile"))
   }
 }

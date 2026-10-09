@@ -420,4 +420,13 @@
     <string name="sis_linea_appreso" formatted="true">Line: sleep need %1$s (learned from your nights). Grey bars: nights not recorded, they don\'t count. A night longer than your need reduces the debt.</string>
     <string name="sis_linea_8h" formatted="true">Line: sleep need %1$s (8 h until there are fewer than 14 nights: %2$s/14). Grey bars: nights not recorded, they don\'t count. A night longer than your need reduces the debt.</string>
     <string name="sis_notti_n_su" formatted="true">%1$s/%2$s nights</string>
+    <string name="sis_prep_gara">Race preparation: at most 10% of cycling and running time above threshold</string>
+    <string name="sis_piano_rimodulato_n" formatted="true">🗓️ Weekly plan — adjusted on %1$s, band %2$s:</string>
+    <string name="sis_piano_settimanale_n">🗓️ Weekly plan</string>
+    <string name="sis_banda_verde_min">green</string>
+    <string name="sis_banda_gialla_min">yellow</string>
+    <string name="sis_banda_arancione_min">orange</string>
+    <string name="sis_banda_rossa_min">red</string>
+    <string name="sis_banda_grigia_min">grey</string>
+    <string name="sis_piano_n_sedute" formatted="true">Weekly plan: %1$s sessions</string>
 </resources>

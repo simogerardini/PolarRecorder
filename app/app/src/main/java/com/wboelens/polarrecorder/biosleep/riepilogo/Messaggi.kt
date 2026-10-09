@@ -84,6 +84,39 @@ object Messaggi {
           "seduta_accorciata_disponibilita" to listOf("seduta", "minuti"),
           "seduta_rimossa" to listOf("seduta", "motivo"),
           "seduta_resa_aerobica" to listOf("seduta", "motivo"),
+          // 13d: decisione, biometria, direzione, zona, fase, regola d'intensita', oggi
+          "decisione_recupero" to listOf(),
+          "decisione_riduci" to listOf(),
+          "decisione_rispetta_piano" to listOf(),
+          "decisione_puoi_spingere" to listOf(),
+          "motivo_banda_segue_piano" to listOf("banda"),
+          "motivo_calibrazione_segue_piano" to listOf(),
+          "biometria_procedi" to listOf("min", "max", "note_opz"),
+          "biometria_riduci" to listOf("z", "limite", "note_opz"),
+          "biometria_recupero" to listOf("z", "note_opz"),
+          "biometria_procedi_pct" to listOf(),
+          "biometria_riduci_pct" to listOf(),
+          "biometria_recupero_pct" to listOf(),
+          "biometria_dati_insufficienti" to listOf(),
+          "direzione_in_salita" to listOf(),
+          "direzione_in_calo" to listOf(),
+          "direzione_stabile" to listOf(),
+          "direzione_non_determinabile" to listOf(),
+          "zona_fresco" to listOf(),
+          "zona_ottimale" to listOf(),
+          "zona_grigia" to listOf(),
+          "zona_transizione" to listOf(),
+          "zona_alto_rischio" to listOf(),
+          "fase_base" to listOf(),
+          "fase_build" to listOf(),
+          "fase_peak" to listOf(),
+          "fase_taper" to listOf(),
+          "fase_gara" to listOf(),
+          "fase_recupero" to listOf(),
+          "fase_senza_gara" to listOf(),
+          "regola_intensita_8020" to listOf(),
+          "regola_intensita_gara" to listOf(),
+          "oggi_riposo" to listOf(),
           "piano_rimodulato" to listOf("data", "banda"),
           "piano_settimanale" to listOf(),
       )
@@ -91,7 +124,7 @@ object Messaggi {
   /** Valori da tradurre con un piccolo vocabolario (voc_<parola>), se la parola c'e'. */
   private val VOCABOLARIO = setOf("banda", "zona", "sport")
 
-  private val NUMERI = setOf("z", "ore", "gradi", "valore", "bpm", "rampa", "tsb", "min", "max", "temp")
+  private val NUMERI = setOf("z", "ore", "gradi", "valore", "bpm", "rampa", "tsb", "min", "max", "temp", "limite")
 
   fun leggi(arr: JsonArray?): List<Messaggio> = arr?.mapNotNull { leggiUno(it) }.orEmpty()
 
@@ -139,6 +172,10 @@ object Messaggi {
                         (v["ora"]?.let { stringa("msg_frammento_alle", arrayOf(it)) } ?: "")
             "seduta_opz" -> v["seduta"]?.let { stringa("msg_frammento_seduta", arrayOf(it)) } ?: ""
             "senza_opz" -> v["discipline"]?.let { stringa("msg_frammento_senza", arrayOf(it)) } ?: ""
+            // note facoltative della biometria: c'e' il valore -> la frase tradotta in coda
+            "note_opz" ->
+                (if (v["nota_saturazione"].isNullOrEmpty()) "" else stringa("msg_frammento_nota_sat", emptyArray()) ?: "") +
+                    (if (v["nota_cv"].isNullOrEmpty()) "" else stringa("msg_frammento_nota_cv", emptyArray()) ?: "")
             else -> valore(k)
           }
         }

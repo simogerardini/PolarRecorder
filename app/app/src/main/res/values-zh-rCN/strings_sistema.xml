@@ -420,4 +420,13 @@
     <string name="sis_linea_appreso" formatted="true">线：睡眠需求 %1$s（根据你的夜间数据学习）。灰色柱：未记录的夜晚，不计入。睡得比需求更久可减少负债。</string>
     <string name="sis_linea_8h" formatted="true">线：睡眠需求 %1$s（少于 14 晚时按 8 小时计：%2$s/14）。灰色柱：未记录的夜晚，不计入。睡得比需求更久可减少负债。</string>
     <string name="sis_notti_n_su" formatted="true">%1$s/%2$s 晚</string>
+    <string name="sis_prep_gara">备赛：骑行和跑步时间中最多 10% 高于阈值</string>
+    <string name="sis_piano_rimodulato_n" formatted="true">🗓️ 周计划 — %1$s 调整，区间 %2$s：</string>
+    <string name="sis_piano_settimanale_n">🗓️ 周计划</string>
+    <string name="sis_banda_verde_min">绿色</string>
+    <string name="sis_banda_gialla_min">黄色</string>
+    <string name="sis_banda_arancione_min">橙色</string>
+    <string name="sis_banda_rossa_min">红色</string>
+    <string name="sis_banda_grigia_min">灰色</string>
+    <string name="sis_piano_n_sedute" formatted="true">本周计划：%1$s 次训练</string>
 </resources>

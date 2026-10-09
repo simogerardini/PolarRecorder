@@ -61,6 +61,40 @@
     <string name="msg_seduta_resa_aerobica" formatted="true">%1$s convertida en aeróbica — %2$s</string>
     <string name="msg_piano_rimodulato" formatted="true">🗓️ Plan semanal — ajuste del %1$s, banda %2$s:</string>
     <string name="msg_piano_settimanale">🗓️ Plan semanal</string>
+    <string name="msg_decisione_recupero">🔴 RECUPERACIÓN</string>
+    <string name="msg_decisione_riduci">🟠 REDUCE</string>
+    <string name="msg_decisione_rispetta_piano">🟢 SIGUE EL PLAN</string>
+    <string name="msg_decisione_puoi_spingere">🔵 PUEDES APRETAR</string>
+    <string name="msg_motivo_banda_segue_piano" formatted="true">banda %1$s: se sigue el plan</string>
+    <string name="msg_motivo_calibrazione_segue_piano">línea base en calibración: se sigue el plan</string>
+    <string name="msg_biometria_procedi" formatted="true">Sigue con la sesión planificada (media de 7 días dentro del rango normal %1$s-%2$s ms).%3$s</string>
+    <string name="msg_biometria_riduci" formatted="true">Reduce intensidad/volumen o convierte la calidad en Z1-Z2 (media de 7 días por debajo del rango normal: %1$s DE, límite inferior %2$s ms).%3$s</string>
+    <string name="msg_biometria_recupero" formatted="true">Recuperación activa o descanso, sobre todo si persiste varios días (media de 7 días %1$s DE bajo la línea base, más de una desviación estándar).%2$s</string>
+    <string name="msg_biometria_procedi_pct" formatted="true">Sigue con la sesión planificada (media de 7 días dentro del -10%% de la línea base).</string>
+    <string name="msg_biometria_riduci_pct" formatted="true">Reduce intensidad/volumen o convierte la calidad en Z1-Z2 (media de 7 días entre 10 y 20%% bajo la línea base).</string>
+    <string name="msg_biometria_recupero_pct" formatted="true">Recuperación activa o descanso, sobre todo si persiste (media de 7 días más de un 20%% bajo la línea base).</string>
+    <string name="msg_biometria_dati_insufficienti">Datos insuficientes para una banda fiable.</string>
+    <string name="msg_direzione_in_salita">en aumento</string>
+    <string name="msg_direzione_in_calo">a la baja</string>
+    <string name="msg_direzione_stabile">estable</string>
+    <string name="msg_direzione_non_determinabile">no determinable</string>
+    <string name="msg_zona_fresco">Fresco</string>
+    <string name="msg_zona_ottimale">Óptima</string>
+    <string name="msg_zona_grigia">Gris</string>
+    <string name="msg_zona_transizione">Transición</string>
+    <string name="msg_zona_alto_rischio">Riesgo alto</string>
+    <string name="msg_fase_base">base</string>
+    <string name="msg_fase_build">desarrollo</string>
+    <string name="msg_fase_peak">pico</string>
+    <string name="msg_fase_taper">puesta a punto</string>
+    <string name="msg_fase_gara">carrera</string>
+    <string name="msg_fase_recupero">recuperación</string>
+    <string name="msg_fase_senza_gara">sin carrera</string>
+    <string name="msg_regola_intensita_8020" formatted="true">polarización 80/20: como máximo el 20%% del tiempo de bici y carrera por encima del umbral</string>
+    <string name="msg_regola_intensita_gara" formatted="true">preparación de carrera: como máximo el 10%% del tiempo de bici y carrera por encima del umbral</string>
+    <string name="msg_oggi_riposo">Descanso</string>
+    <string name="msg_frammento_nota_sat">" NOTA: media de 7 días más de +1 DE por encima de la línea base: si coincide con FC en reposo baja y piernas pesadas, interprétala como posible saturación parasimpática (overreaching), no como frescura garantizada."</string>
+    <string name="msg_frammento_nota_cv">" NOTA: la variabilidad diaria de la HRV casi ha desaparecido. En un atleta entrenado, un CV que se desploma no es estabilidad sino uno de los marcadores de overreaching no funcional (Plews 2013): no aumentes la carga esta semana aunque la banda esté verde."</string>
     <string name="msg_frammento_caldo_tag">" (etiqueta)"</string>
     <string name="msg_frammento_caldo_meteo" formatted="true">: %1$s °C, humedad %2$s%%</string>
     <string name="msg_frammento_alle" formatted="true">" a las %1$s"</string>

@@ -60,6 +60,40 @@
     <string name="msg_seduta_resa_aerobica" formatted="true">%1$s convertita in aerobica — %2$s</string>
     <string name="msg_piano_rimodulato" formatted="true">🗓️ Piano settimanale — rimodulazione del %1$s, banda %2$s:</string>
     <string name="msg_piano_settimanale">🗓️ Piano settimanale</string>
+    <string name="msg_decisione_recupero">🔴 RECUPERO</string>
+    <string name="msg_decisione_riduci">🟠 RIDUCI</string>
+    <string name="msg_decisione_rispetta_piano">🟢 RISPETTA IL PIANO</string>
+    <string name="msg_decisione_puoi_spingere">🔵 PUOI SPINGERE</string>
+    <string name="msg_motivo_banda_segue_piano" formatted="true">banda %1$s: si segue il piano</string>
+    <string name="msg_motivo_calibrazione_segue_piano">baseline in calibrazione: si segue il piano</string>
+    <string name="msg_biometria_procedi" formatted="true">Procedi con la seduta pianificata (media 7gg dentro il normal range %1$s-%2$s ms).%3$s</string>
+    <string name="msg_biometria_riduci" formatted="true">Riduci intensità/volume o converti la qualità in Z1-Z2 (media 7gg sotto il normal range: %1$s SD, limite inferiore %2$s ms).%3$s</string>
+    <string name="msg_biometria_recupero" formatted="true">Recupero attivo o riposo, specie se persistente su più giorni (media 7gg %1$s SD sotto baseline, oltre una deviazione standard).%2$s</string>
+    <string name="msg_biometria_procedi_pct" formatted="true">Procedi con la seduta pianificata (media 7gg entro -10%% dalla baseline).</string>
+    <string name="msg_biometria_riduci_pct" formatted="true">Riduci intensità/volume o converti la qualità in Z1-Z2 (media 7gg fra 10 e 20%% sotto baseline).</string>
+    <string name="msg_biometria_recupero_pct" formatted="true">Recupero attivo o riposo, specie se persistente (media 7gg oltre 20%% sotto baseline).</string>
+    <string name="msg_biometria_dati_insufficienti">Dati insufficienti per una banda affidabile.</string>
+    <string name="msg_direzione_in_salita">in salita</string>
+    <string name="msg_direzione_in_calo">in calo</string>
+    <string name="msg_direzione_stabile">stabile</string>
+    <string name="msg_direzione_non_determinabile">non determinabile</string>
+    <string name="msg_zona_fresco">Fresco</string>
+    <string name="msg_zona_ottimale">Ottimale</string>
+    <string name="msg_zona_grigia">Grigia</string>
+    <string name="msg_zona_transizione">Transizione</string>
+    <string name="msg_zona_alto_rischio">Alto rischio</string>
+    <string name="msg_fase_base">base</string>
+    <string name="msg_fase_build">build</string>
+    <string name="msg_fase_peak">peak</string>
+    <string name="msg_fase_taper">taper</string>
+    <string name="msg_fase_gara">gara</string>
+    <string name="msg_fase_recupero">recupero</string>
+    <string name="msg_fase_senza_gara">senza gara</string>
+    <string name="msg_regola_intensita_8020" formatted="true">polarizzazione 80/20: al massimo il 20%% del tempo di bici e corsa sopra la soglia</string>
+    <string name="msg_regola_intensita_gara" formatted="true">preparazione gara: al massimo il 10%% del tempo di bici e corsa sopra la soglia</string>
+    <string name="msg_oggi_riposo">Riposo</string>
+    <string name="msg_frammento_nota_sat">" NOTA: media 7gg oltre +1 SD sopra la baseline: se coincide con FC a riposo bassa e gambe pesanti, leggila come possibile saturazione parasimpatica (overreaching), non come freschezza garantita."</string>
+    <string name="msg_frammento_nota_cv">" NOTA: la variabilità giorno per giorno dell\'HRV si è quasi azzerata. In un atleta allenato un CV in collasso non è stabilità ma uno dei marcatori di overreaching non funzionale (Plews 2013): non aumentare il carico questa settimana anche se la banda è verde."</string>
     <string name="msg_frammento_caldo_tag">" (tag)"</string>
     <string name="msg_frammento_caldo_meteo" formatted="true">: %1$s °C, umidità %2$s%%</string>
     <string name="msg_frammento_alle" formatted="true">" alle %1$s"</string>

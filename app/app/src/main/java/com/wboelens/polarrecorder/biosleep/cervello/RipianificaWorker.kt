@@ -71,7 +71,8 @@ class RipianificaWorker(context: Context, params: WorkerParameters) : CoroutineW
                           lingua = Lingua.effettiva(ctx))
     val r = withContext(Dispatchers.IO) { Cervello.esegui(ctx, config) }
     Log.i("BioSleepCoach", "Ripianifica: ${r.esito}")
-    r.notifiche.forEach { NotificheCoach.testo(ctx, it) }
+    val riepilogoLetto = r.riepilogoFile?.let { f -> runCatching { com.wboelens.polarrecorder.biosleep.riepilogo.RiepilogoParser.leggi(java.io.File(f).readText(Charsets.UTF_8)) }.getOrNull() }
+    r.notifiche.forEach { NotificheCoach.testo(ctx, it, riepilogoLetto) }
     var data: String? = null
     r.riepilogoFile?.let { percorso ->
       try {

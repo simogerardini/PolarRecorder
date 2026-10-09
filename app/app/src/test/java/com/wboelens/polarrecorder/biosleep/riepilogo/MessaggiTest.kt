@@ -24,14 +24,15 @@ class MessaggiTest {
 
   private fun codiciDelCervello(): Set<String> {
     val py = File("src/main/python/messaggi.py").readText()
-    val blocchi = Regex("""(CATALOGO|NOTIFICHE) = \[(.*?)\n\]""", RegexOption.DOT_MATCHES_ALL).findAll(py).joinToString("\n") { it.groupValues[2] }
-    return Regex("""^\s*\("([a-z_]+)",""", RegexOption.MULTILINE).findAll(blocchi).map { it.groupValues[1] }.toSet()
+    val blocchi = Regex("""(CATALOGO|NOTIFICHE) \+?= \[(.*?)\n\]""", RegexOption.DOT_MATCHES_ALL).findAll(py).joinToString("\n") { it.groupValues[2] }
+    // anche piu' coppie ("codice", r"...") sulla stessa riga
+    return Regex("""\(\s*"([a-z_0-9]+)"\s*,""").findAll(blocchi).map { it.groupValues[1] }.toSet()
   }
 
   @Test
   fun ogniCodiceHaLaSuaStringaInOgniLingua() {
     val codici = codiciDelCervello()
-    assertTrue(codici.size >= 59, "catalogo del cervello non letto (${codici.size} codici)")
+    assertTrue(codici.size >= 91, "catalogo del cervello non letto (${codici.size} codici)")
     assertEquals(emptySet<String>(), codici - Messaggi.ORDINE.keys, "codici del cervello senza ORDINE nell'app")
     for (l in lingue) {
       val s = stringhe(l)
@@ -71,5 +72,16 @@ class MessaggiTest {
     assertEquals(en(tsb) + "; " + en(tsb), en(multiplo))
     // codice sconosciuto o non codificato: il testo italiano del cervello
     assertEquals("testo libero", en(Messaggio("motivo", Messaggi.NON_CODIFICATO, emptyMap(), emptyList(), "testo libero")))
+  }
+
+  @Test
+  fun biometriaConNoteFacoltative() {
+    val en = traduttore("values-en")
+    val base = mapOf("min" to "54.0", "max" to "59.4")
+    assertEquals("Go ahead with the planned session (7-day average within the normal range 54.0-59.4 ms).",
+        en(Messaggio("biometria_azione", "biometria_procedi", base, emptyList(), "x")))
+    val conNota = en(Messaggio("biometria_azione", "biometria_procedi", base + ("nota_cv" to "si"), emptyList(), "x"))
+    assertTrue(conNota.endsWith("even if the band is green."), conNota)
+    assertEquals("Green band: follow the plan".lowercase(), en(Messaggio("motivo_decisione", "motivo_banda_segue_piano", mapOf("banda" to "verde"), emptyList(), "x")).lowercase().replace("green band", "green band"))
   }
 }

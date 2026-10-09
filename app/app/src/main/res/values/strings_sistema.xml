@@ -419,4 +419,13 @@
     <string name="sis_linea_appreso" formatted="true">Linea: fabbisogno %1$s (appreso dalle tue notti). Barre grigie: notti non registrate, non contano. Una notte più lunga del fabbisogno riduce il deficit.</string>
     <string name="sis_linea_8h" formatted="true">Linea: fabbisogno %1$s (8 h finché le notti sono meno di 14: %2$s/14). Barre grigie: notti non registrate, non contano. Una notte più lunga del fabbisogno riduce il deficit.</string>
     <string name="sis_notti_n_su" formatted="true">%1$s/%2$s notti</string>
+    <string name="sis_prep_gara">Preparazione gara: al massimo il 10% del tempo di bici e corsa sopra la soglia</string>
+    <string name="sis_piano_rimodulato_n" formatted="true">🗓️ Piano settimanale — rimodulazione del %1$s, banda %2$s:</string>
+    <string name="sis_piano_settimanale_n">🗓️ Piano settimanale</string>
+    <string name="sis_banda_verde_min">verde</string>
+    <string name="sis_banda_gialla_min">gialla</string>
+    <string name="sis_banda_arancione_min">arancione</string>
+    <string name="sis_banda_rossa_min">rossa</string>
+    <string name="sis_banda_grigia_min">grigia</string>
+    <string name="sis_piano_n_sedute" formatted="true">Piano della settimana: %1$s sedute</string>
 </resources>

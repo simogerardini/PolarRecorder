@@ -9,11 +9,13 @@ import java.time.LocalDate
 object TraduzioneMessaggi {
   fun testo(context: Context, testo: String): String {
     val m = Messaggi.per(testo) ?: return testo
-    val res = context.resources
+    // nella lingua dell'app anche quando a chiamare e' un worker o un servizio (notifiche)
+    val c = com.wboelens.polarrecorder.biosleep.lingua.TestiSistema.localizzato(context)
+    val res = c.resources
     return Messaggi.traduci(
         m,
         stringa = { nome, args ->
-          val id = res.getIdentifier(nome, "string", context.packageName)
+          val id = res.getIdentifier(nome, "string", c.packageName)
           // sempre con gli argomenti, anche vuoti: cosi' "%%" diventa "%"
           if (id == 0) null else res.getString(id, *args)
         },

@@ -420,4 +420,13 @@
     <string name="sis_linea_appreso" formatted="true">Línea: necesidad %1$s (aprendida de tus noches). Barras grises: noches no registradas, no cuentan. Una noche más larga que la necesidad reduce el déficit.</string>
     <string name="sis_linea_8h" formatted="true">Línea: necesidad %1$s (8 h mientras haya menos de 14 noches: %2$s/14). Barras grises: noches no registradas, no cuentan. Una noche más larga que la necesidad reduce el déficit.</string>
     <string name="sis_notti_n_su" formatted="true">%1$s/%2$s noches</string>
+    <string name="sis_prep_gara">Preparación de carrera: como máximo el 10% del tiempo de bici y carrera por encima del umbral</string>
+    <string name="sis_piano_rimodulato_n" formatted="true">🗓️ Plan semanal — ajuste del %1$s, banda %2$s:</string>
+    <string name="sis_piano_settimanale_n">🗓️ Plan semanal</string>
+    <string name="sis_banda_verde_min">verde</string>
+    <string name="sis_banda_gialla_min">amarilla</string>
+    <string name="sis_banda_arancione_min">naranja</string>
+    <string name="sis_banda_rossa_min">roja</string>
+    <string name="sis_banda_grigia_min">gris</string>
+    <string name="sis_piano_n_sedute" formatted="true">Plan de la semana: %1$s sesiones</string>
 </resources>

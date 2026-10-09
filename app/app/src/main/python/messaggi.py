@@ -94,6 +94,50 @@ CATALOGO = [
     ("seduta_rimossa", r"(?P<seduta>.+) rimossa — (?P<motivo>.+)"),
     ("seduta_resa_aerobica", r"(?P<seduta>.+) convertita in aerobica — (?P<motivo>.+)"),
 ]
+# ── campi del riepilogo mostrati dall'app (13d bis, 09/10/2026, richiesta della Parte 3) ──
+# Riconosciuti solo con il loro "tipo" (vedi TIPI_CAMPO): un testo breve come "stabile" o
+# "Riposo" non deve mai essere scambiato per un motivo.
+_N = r"-?\d+(?:\.\d+)?"
+_NOTA_SAT = (r"(?P<nota_saturazione> NOTA: media 7gg oltre \+1 SD sopra la baseline: se coincide con FC riposo "
+             r"bassa e gambe pesanti, leggila come possibile saturazione parasimpatica \(overreaching\), non come "
+             r"freschezza garantita\.)?")
+_NOTA_CV = (r"(?P<nota_cv> NOTA: la variabilita' giorno-per-giorno dell'HRV si e' quasi azzerata\. In un atleta "
+            r"allenato un CV in collasso non e' stabilita' ma uno dei marcatori di overreaching non funzionale "
+            r"\(Plews 2013\): non aumentare il carico questa settimana anche se la banda e' verde\.)?")
+CATALOGO += [
+    ("decisione_recupero", r"🔴 RECUPERO"),
+    ("decisione_riduci", r"🟠 RIDUCI"),
+    ("decisione_rispetta_piano", r"🟢 RISPETTA IL PIANO"),
+    ("decisione_puoi_spingere", r"🔵 PUOI SPINGERE"),
+    ("motivo_banda_segue_piano", r"banda (?P<banda>\w+): si segue il piano"),
+    ("motivo_calibrazione_segue_piano", r"baseline in calibrazione: si segue il piano"),
+    ("biometria_procedi", rf"Procedi con la seduta pianificata \(media 7gg dentro il normal range (?P<min>{_N})-(?P<max>{_N})ms\)\.{_NOTA_SAT}{_NOTA_CV}"),
+    ("biometria_riduci", rf"Riduci intensita'/volume o converti la qualita' in Z1-Z2 \(media 7gg sotto il normal range: (?P<z>[+-]?{_N}) SD, limite inferiore (?P<limite>{_N})ms\)\.{_NOTA_SAT}{_NOTA_CV}"),
+    ("biometria_recupero", rf"Recupero attivo o riposo, specie se persistente su piu' giorni \(media 7gg (?P<z>[+-]?{_N}) SD sotto baseline, oltre una deviazione standard\)\.{_NOTA_SAT}{_NOTA_CV}"),
+    ("biometria_procedi_pct", r"Procedi con la seduta pianificata \(media 7gg entro -10% dalla baseline\)\."),
+    ("biometria_riduci_pct", r"Riduci intensita'/volume o converti la qualita' in Z1-Z2 \(media 7gg fra 10 e 20% sotto baseline\)\."),
+    ("biometria_recupero_pct", r"Recupero attivo o riposo, specie se persistente \(media 7gg oltre 20% sotto baseline\)\."),
+    ("biometria_dati_insufficienti", r"Dati insufficienti per una banda affidabile\."),
+    ("direzione_in_salita", r"in salita"), ("direzione_in_calo", r"in calo"),
+    ("direzione_stabile", r"stabile"), ("direzione_non_determinabile", r"non determinabile"),
+    ("zona_fresco", r"Fresco"), ("zona_ottimale", r"Ottimale"), ("zona_grigia", r"Grigia"),
+    ("zona_transizione", r"Transizione"), ("zona_alto_rischio", r"Alto rischio"),
+    ("fase_base", r"base"), ("fase_build", r"build"), ("fase_peak", r"peak"), ("fase_taper", r"taper"),
+    ("fase_gara", r"gara"), ("fase_recupero", r"recupero"), ("fase_senza_gara", r"senza_gara"),
+    ("regola_intensita_8020", r"polarizzazione 80/20: al massimo il 20% del tempo di bici e corsa sopra la soglia"),
+    ("regola_intensita_gara", r"preparazione gara: al massimo il 10% del tempo di bici e corsa sopra la soglia"),
+    ("oggi_riposo", r"Riposo"),
+]
+# tipo del campo -> codici ammessi (prefisso o elenco). "motivo_decisione" ammette anche tutti i
+# motivi normali (la decisione elenca i motivi uniti da "; ").
+TIPI_CAMPO = {"decisione": ("decisione_",), "fase": ("fase_",), "direzione": ("direzione_",),
+              "zona": ("zona_",), "regola_intensita": ("regola_intensita_",), "oggi": ("oggi_",),
+              "biometria_azione": ("biometria_",),
+              "biometria_nota": ("baseline_poche_notti", "baseline_date_illeggibili", "baseline_non_disponibile")}
+_SOLO_CAMPO = tuple(p for v in TIPI_CAMPO.values() for p in v if p.endswith("_")) + ("motivo_banda_segue_piano",
+                                                                                     "motivo_calibrazione_segue_piano")
+
+
 # notifiche (testi lunghi, multiriga): riconosciute dall'inizio
 NOTIFICHE = [
     ("piano_rimodulato", r"🗓️ Piano settimanale — rimodulazione del " + _D + r", banda (?P<banda>\w+):"),
@@ -110,12 +154,19 @@ def codifica(testo, tipo="motivo"):
     t = (testo or "").strip()
     if tipo == "avviso" and t.startswith("tag: "):
         t = t[5:]
-    elenco = _NOTIFICHE + _COMPILATI if tipo == "notifica" else _COMPILATI
+    if tipo in TIPI_CAMPO:
+        elenco = [(c, rx) for c, rx in _COMPILATI if c.startswith(TIPI_CAMPO[tipo])]
+    elif tipo == "motivo_decisione":
+        elenco = _COMPILATI
+    else:          # motivi, avvisi, notifiche: mai i codici riservati ai campi del riepilogo
+        elenco = [(c, rx) for c, rx in _COMPILATI if not c.startswith(_SOLO_CAMPO)]
+        if tipo == "notifica":
+            elenco = _NOTIFICHE + elenco
     for codice, rx in elenco:
         m = rx.match(t)
         if m:
-            return {"tipo": tipo, "codice": codice,
-                    "valori": {k: v for k, v in m.groupdict().items() if v is not None}, "testo": testo}
+            valori = {k: ("si" if k.startswith("nota_") else v) for k, v in m.groupdict().items() if v is not None}
+            return {"tipo": tipo, "codice": codice, "valori": valori, "testo": testo}
     if "; " in t:
         parti = [codifica(p, tipo) for p in t.split("; ")]
         if all(p["codice"] != NON_CODIFICATO for p in parti):
@@ -123,9 +174,32 @@ def codifica(testo, tipo="motivo"):
     return {"tipo": tipo, "codice": NON_CODIFICATO, "valori": {}, "testo": testo}
 
 
+CAMPI_RIEPILOGO = [("decisione.etichetta", "decisione"), ("decisione.motivo", "motivo_decisione"),
+                   ("fase", "fase"), ("biometria.azione", "biometria_azione"), ("biometria.nota", "biometria_nota"),
+                   ("biometria.direzione_7v7", "direzione"), ("forma.zona", "zona"), ("forma.zona_attesa", "zona"),
+                   ("intensita.regola", "regola_intensita"), ("oggi", "oggi")]
+
+
+def _campo(rie, percorso):
+    x = rie
+    for k in percorso.split("."):
+        x = x.get(k) if isinstance(x, dict) else None
+    return x
+
+
 def messaggi_riepilogo(rie, notifiche=()):
-    """Lista "messaggi" del riepilogo: motivi, righe degli avvisi, notifiche."""
+    """Lista "messaggi" del riepilogo: motivi, righe degli avvisi, notifiche e (13d bis) i
+    campi di testo mostrati dall'app, con "testo" identico al campo. "oggi" solo se "Riposo"
+    (altrimenti sono nomi di sedute, gia' nella lingua del calendario)."""
     out = [codifica(m, "motivo") for m in rie.get("motivi") or []]
     out += [codifica(r, "avviso") for r in (rie.get("avvisi") or "").splitlines() if r.strip()]
     out += [codifica(n, "notifica") for n in notifiche or []]
+    visti = set()
+    for percorso, tipo in CAMPI_RIEPILOGO:
+        testo = _campo(rie, percorso)
+        if not isinstance(testo, str) or not testo or (tipo == "oggi" and testo != "Riposo"):
+            continue
+        if (tipo, testo) not in visti:
+            visti.add((tipo, testo))
+            out.append(codifica(testo, tipo))
     return out

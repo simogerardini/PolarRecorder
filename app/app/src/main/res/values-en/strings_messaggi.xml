@@ -61,6 +61,40 @@
     <string name="msg_seduta_resa_aerobica" formatted="true">%1$s converted to aerobic — %2$s</string>
     <string name="msg_piano_rimodulato" formatted="true">🗓️ Weekly plan — adjusted on %1$s, band %2$s:</string>
     <string name="msg_piano_settimanale">🗓️ Weekly plan</string>
+    <string name="msg_decisione_recupero">🔴 RECOVERY</string>
+    <string name="msg_decisione_riduci">🟠 REDUCE</string>
+    <string name="msg_decisione_rispetta_piano">🟢 FOLLOW THE PLAN</string>
+    <string name="msg_decisione_puoi_spingere">🔵 YOU CAN PUSH</string>
+    <string name="msg_motivo_banda_segue_piano" formatted="true">%1$s band: follow the plan</string>
+    <string name="msg_motivo_calibrazione_segue_piano">baseline calibrating: follow the plan</string>
+    <string name="msg_biometria_procedi" formatted="true">Go ahead with the planned session (7-day average within the normal range %1$s-%2$s ms).%3$s</string>
+    <string name="msg_biometria_riduci" formatted="true">Reduce intensity/volume or turn quality into Z1-Z2 (7-day average below the normal range: %1$s SD, lower limit %2$s ms).%3$s</string>
+    <string name="msg_biometria_recupero" formatted="true">Active recovery or rest, especially if it persists for several days (7-day average %1$s SD below baseline, more than one standard deviation).%2$s</string>
+    <string name="msg_biometria_procedi_pct" formatted="true">Go ahead with the planned session (7-day average within -10%% of baseline).</string>
+    <string name="msg_biometria_riduci_pct" formatted="true">Reduce intensity/volume or turn quality into Z1-Z2 (7-day average 10-20%% below baseline).</string>
+    <string name="msg_biometria_recupero_pct" formatted="true">Active recovery or rest, especially if it persists (7-day average more than 20%% below baseline).</string>
+    <string name="msg_biometria_dati_insufficienti">Not enough data for a reliable band.</string>
+    <string name="msg_direzione_in_salita">rising</string>
+    <string name="msg_direzione_in_calo">falling</string>
+    <string name="msg_direzione_stabile">stable</string>
+    <string name="msg_direzione_non_determinabile">not determinable</string>
+    <string name="msg_zona_fresco">Fresh</string>
+    <string name="msg_zona_ottimale">Optimal</string>
+    <string name="msg_zona_grigia">Grey</string>
+    <string name="msg_zona_transizione">Transition</string>
+    <string name="msg_zona_alto_rischio">High risk</string>
+    <string name="msg_fase_base">base</string>
+    <string name="msg_fase_build">build</string>
+    <string name="msg_fase_peak">peak</string>
+    <string name="msg_fase_taper">taper</string>
+    <string name="msg_fase_gara">race</string>
+    <string name="msg_fase_recupero">recovery</string>
+    <string name="msg_fase_senza_gara">no race</string>
+    <string name="msg_regola_intensita_8020" formatted="true">80/20 polarisation: at most 20%% of cycling and running time above threshold</string>
+    <string name="msg_regola_intensita_gara" formatted="true">race preparation: at most 10%% of cycling and running time above threshold</string>
+    <string name="msg_oggi_riposo">Rest</string>
+    <string name="msg_frammento_nota_sat">" NOTE: 7-day average more than +1 SD above baseline: if it coincides with low resting HR and heavy legs, read it as possible parasympathetic saturation (overreaching), not as guaranteed freshness."</string>
+    <string name="msg_frammento_nota_cv">" NOTE: day-to-day HRV variability has almost vanished. In a trained athlete a collapsing CV is not stability but one of the markers of non-functional overreaching (Plews 2013): do not increase the load this week even if the band is green."</string>
     <string name="msg_frammento_caldo_tag">" (tag)"</string>
     <string name="msg_frammento_caldo_meteo" formatted="true">: %1$s °C, humidity %2$s%%</string>
     <string name="msg_frammento_alle" formatted="true">" at %1$s"</string>

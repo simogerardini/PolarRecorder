@@ -1,10 +1,15 @@
 package com.wboelens.polarrecorder.biosleep.lingua
 
 import android.content.Context
+import android.content.res.Configuration
+import com.wboelens.polarrecorder.biosleep.cervello.Lingua
+import java.util.Locale
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
+import com.wboelens.polarrecorder.biosleep.riepilogo.Messaggi
+import com.wboelens.polarrecorder.biosleep.riepilogo.TraduzioneMessaggi
 
 /**
  * 13d, testi di sistema: le frasi italiane che nascono nella logica (invio, avvio della notte,
@@ -55,6 +60,7 @@ object TestiSistema {
       Voce("si_attivera", "Si attiverà dopo %d notti di apprendimento (ora %d). Fino ad allora usa \"Avvia notte\"."),
       Voce("lingua_app_sedute", "Lingua dell'app e delle sedute che il coach scrive sul calendario e sull'orologio."),
       Voce("polarizzazione", "Polarizzazione 80/20: al massimo il 20% del tempo di bici e corsa sopra la soglia"),
+      Voce("prep_gara", "Preparazione gara: al massimo il 10% del tempo di bici e corsa sopra la soglia"),
       Voce("accesso_non_valido", "Accesso a Intervals.icu non valido: ricollega o controlla la API key (HTTP %d)"),
       Voce("collegamento_elettrodi", "Collegamento non riuscito: la fascia è indossata con gli elettrodi bagnati?"),
       Voce("ripianificazione_in_corso", "Ripianificazione in corso: il riepilogo arriverà con la notifica del coach"),
@@ -86,6 +92,7 @@ object TestiSistema {
       Voce("niente_hrv_ottico", "Niente HRV: solo frequenza cardiaca (sensore ottico)"),
       Voce("hrv_verificata", "HRV verificata nei primi 5 minuti della prima notte"),
       Voce("istr_xiaomi_2", "In Risparmio batteria scegli \"Nessuna restrizione\"."),
+      Voce("piano_rimodulato_n", "🗓️ Piano settimanale — rimodulazione del %s, banda %s:"),
       Voce("nessun_battito_da", "Nessun battito da %d minuti: la fascia è indossata?"),
       Voce("fiore_taratura", "Il fiore segue il tuo respiro · taratura in corso"),
       Voce("niente_hrv_verificato", "Niente HRV: solo frequenza cardiaca (verificato)"),
@@ -138,6 +145,7 @@ object TestiSistema {
       Voce("battito_senza_movimento", "Battito e HRV, senza movimento"),
       Voce("piano_settimana", "Piano della settimana: %d sedute%s"),
       Voce("salvato_parte", "Salvato: il coach parte adesso"),
+      Voce("piano_n_sedute", "Piano della settimana: %d sedute"),
       Voce("intervals_non_inviata", "Intervals.icu: non inviata (%s)"),
       Voce("campi_pronti_creati", "Campi %s pronti: %d (%d creati ora)"),
       Voce("ferie_malattia", "Ferie / Malattia / Infortunio"),
@@ -195,6 +203,7 @@ object TestiSistema {
       Voce("obiettivo_settimana", "obiettivo settimana %s"),
       Voce("lettura_battito", "Lettura del battito…"),
       Voce("segui_respiro", "Segui il mio respiro"),
+      Voce("piano_settimanale_n", "🗓️ Piano settimanale"),
       Voce("errore_database", "Errore del database"),
       Voce("analisi_della_notte", "Analisi della notte"),
       Voce("movimento_respiro", "movimento e respiro"),
@@ -338,6 +347,7 @@ object TestiSistema {
       Voce("da_curare", "Da curare"),
       Voce("c_rem", "Sonno REM"),
       Voce("cr_matt", "Mattutino"),
+      Voce("banda_arancione_min", "arancione"),
       Voce("indietro", "Indietro"),
       Voce("fc_media", "FC media"),
       Voce("aggiungi", "Aggiungi"),
@@ -405,6 +415,8 @@ object TestiSistema {
       Voce("ottimo", "Ottimo"),
       Voce("c_orario", "Orario"),
       Voce("cr_serale", "Serale"),
+      Voce("banda_gialla_min", "gialla"),
+      Voce("banda_grigia_min", "grigia"),
       Voce("notte", "Notte"),
       Voce("sonno", "Sonno"),
       Voce("anni", "%d anni"),
@@ -433,6 +445,8 @@ object TestiSistema {
       Voce("buono", "Buono"),
       Voce("l_basso", "BASSO"),
       Voce("l_basso_m", "Basso"),
+      Voce("banda_verde_min", "verde"),
+      Voce("banda_rossa_min", "rossa"),
       Voce("causa_minuti", "%s (%d')"),
       Voce("eta_app", "Età %s"),
       Voce("oggi", "Oggi"),
@@ -458,38 +472,56 @@ object TestiSistema {
    * attorno restano; una frase composta con " · " che non corrisponde a un modello intero si
    * traduce pezzo per pezzo (es. "Corsa · 48' · 47 TSS").
    */
-  fun traduci(testo: String, stringa: (String, Array<String>) -> String?): String {
+  fun traduci(testo: String, stringa: (String, Array<String>) -> String?, altro: (String) -> String? = { null }): String {
     if (testo.isBlank()) return testo
     val nucleo = testo.trim(' ')
     if (nucleo.length != testo.length) {
       val inizio = testo.substring(0, testo.indexOf(nucleo))
-      return inizio + traduci(nucleo, stringa) + testo.substring(inizio.length + nucleo.length)
+      return inizio + traduci(nucleo, stringa, altro) + testo.substring(inizio.length + nucleo.length)
     }
+    // prima i messaggi del cervello con codice (riepilogo letto): stesso testo, traduzione per codice
+    altro(testo)?.let { return it }
     // frase composta con " · ": solo i modelli composti la prendono intera; altrimenti pezzo per
     // pezzo (un modello corto come "FC %s" non deve "mangiarsi" tutta la riga)
     val composta = " · " in testo
     for (v in VOCI) {
       if (composta && " · " !in v.modello) continue
       val m = v.rx.matchEntire(testo) ?: continue
-      val argomenti = m.groupValues.drop(1).map { parte(it, stringa) }
+      val argomenti = m.groupValues.drop(1).map { parte(it, stringa, altro) }
       return stringa("sis_" + v.chiave, argomenti.toTypedArray()) ?: testo
     }
-    if (" · " in testo) return testo.split(" · ").joinToString(" · ") { traduci(it, stringa) }
+    if (" · " in testo) return testo.split(" · ").joinToString(" · ") { traduci(it, stringa, altro) }
     return testo
   }
 
-  private fun parte(g: String, stringa: (String, Array<String>) -> String?): String {
-    val t = traduci(g, stringa)
+  private fun parte(g: String, stringa: (String, Array<String>) -> String?, altro: (String) -> String?): String {
+    val t = traduci(g, stringa, altro)
     if (t != g) return t
-    return if ("; " in g) g.split("; ").joinToString("; ") { traduci(it, stringa) } else g
+    return if ("; " in g) g.split("; ").joinToString("; ") { traduci(it, stringa, altro) } else g
   }
 
-  fun traduci(context: Context, testo: String): String =
-      traduci(testo) { nome, args ->
-        val id = context.resources.getIdentifier(nome, "string", context.packageName)
-        // senza argomenti la stringa si usa com'e': formattarla romperebbe un "%" letterale
-        if (id == 0) null else if (args.isEmpty()) context.getString(id) else context.getString(id, *args)
-      }
+  /**
+   * Contesto nella lingua scelta per l'app. Le notifiche nascono anche in processi avviati in
+   * background (worker, servizio), dove non va dato per scontato che la configurazione abbia gia'
+   * la lingua dell'app: qui la si impone, cosi' notifiche e schermate parlano la stessa lingua.
+   */
+  fun localizzato(context: Context): Context {
+    if (!Lingua.perAppDisponibile()) return context
+    val codice = Lingua.scelta(context) ?: return context
+    val voluto = Locale.forLanguageTag(Lingua.tag(codice))
+    val attuale = context.resources.configuration.locales.get(0)
+    if (attuale != null && attuale.language == voluto.language) return context
+    return context.createConfigurationContext(Configuration(context.resources.configuration).apply { setLocale(voluto) })
+  }
+
+  fun traduci(context: Context, testo: String): String {
+    val c = localizzato(context)
+    return traduci(testo, { nome, args ->
+      val id = c.resources.getIdentifier(nome, "string", c.packageName)
+      // senza argomenti la stringa si usa com'e': formattarla romperebbe un "%" letterale
+      if (id == 0) null else if (args.isEmpty()) c.getString(id) else c.getString(id, *args)
+    }, { t -> if (Messaggi.per(t) != null) TraduzioneMessaggi.testo(c, t) else null })
+  }
 
   /** Testo di piu' righe (notifiche): prima intero, poi riga per riga. */
   fun righe(context: Context, testo: String): String {

@@ -1,5 +1,6 @@
 package com.wboelens.polarrecorder.biosleep.cervello
 
+import com.wboelens.polarrecorder.biosleep.training.Formato
 import com.wboelens.polarrecorder.biosleep.riepilogo.TraduzioneMessaggi
 import com.wboelens.polarrecorder.biosleep.lingua.TestiSistema
 import android.app.NotificationChannel
@@ -166,7 +167,9 @@ class CoachWorker(context: Context, params: WorkerParameters) : CoroutineWorker(
     Log.i(TAG, "Coach $data (tentativo $tentativo, senza_attesa=$senzaAttesa): ${r.esito} in ${durata / 1000} s")
     CoachStato(ctx).registra(data, r, durata, "auto")
 
-    r.notifiche.forEach { NotificheCoach.testo(ctx, it) }
+    val riepilogoLetto = r.riepilogoFile?.let { f -> runCatching { com.wboelens.polarrecorder.biosleep.riepilogo.RiepilogoParser.leggi(java.io.File(f).readText(Charsets.UTF_8)) }.getOrNull() }
+
+    r.notifiche.forEach { NotificheCoach.testo(ctx, it, riepilogoLetto) }
     r.riepilogoFile?.let { percorso -> salvaRiepilogo(ctx, percorso) }
 
     when (r.esito) {
@@ -265,8 +268,30 @@ object NotificheCoach {
   }
 
   /** Un elemento di "notifiche" del cervello (gli avvisi che prima andavano su Telegram). */
-  fun testo(context: Context, testo: String) {
-    val righe = testo.trim().lines()
+  fun testo(context: Context, testo: String, riepilogo: Riepilogo? = null) {
+    // Resoconto settimanale: testo libero italiano del cervello (righe senza codice). In un'altra
+    // lingua lo si ricompone dal riepilogo strutturato; in italiano resta quello completo.
+    if (riepilogo != null && Lingua.effettiva(context) != "it" && testo.trimStart().startsWith("\uD83D\uDDD3")) {
+      val obiettivo =
+          listOfNotNull(riepilogo.fase, riepilogo.oreTarget?.let { "obiettivo settimana ${Formato.durata((it * 3600).toInt())}" })
+              .joinToString(" · ")
+      val righe =
+          listOfNotNull(
+                  riepilogo.decisione.etichetta,
+                  riepilogo.decisione.motivo,
+                  obiettivo.ifBlank { null },
+                  "Piano della settimana: ${riepilogo.sedute.size} sedute",
+                  riepilogo.biometria?.azione)
+              .map { TestiSistema.traduci(context, it) }
+      mostra(context, testo.hashCode(), TestiSistema.traduci(context, "\uD83D\uDDD3\uFE0F Piano settimanale"), righe.joinToString("\n"), riepilogo.data)
+      return
+    }
+    // ogni riga nella lingua dell'app: intestazione e motivi arrivano dal cervello con un codice
+    val righe =
+        testo.trim().lines().map { riga ->
+          val inizio = Regex("^\\s*[-•*]\\s*").find(riga)?.value ?: ""
+          inizio + TestiSistema.traduci(context, riga.substring(inizio.length))
+        }
     val titolo = righe.first().take(60)
     val corpo = righe.drop(1).joinToString("\n").trim().ifEmpty { righe.first() }
     mostra(context, testo.hashCode(), titolo, corpo, null)

@@ -61,6 +61,40 @@
     <string name="msg_seduta_resa_aerobica" formatted="true">%1$s 改为有氧 — %2$s</string>
     <string name="msg_piano_rimodulato" formatted="true">🗓️ 周计划 — %1$s 调整，区间 %2$s：</string>
     <string name="msg_piano_settimanale">🗓️ 周计划</string>
+    <string name="msg_decisione_recupero">🔴 恢复</string>
+    <string name="msg_decisione_riduci">🟠 减量</string>
+    <string name="msg_decisione_rispetta_piano">🟢 按计划执行</string>
+    <string name="msg_decisione_puoi_spingere">🔵 可以加量</string>
+    <string name="msg_motivo_banda_segue_piano" formatted="true">%1$s区间：按计划执行</string>
+    <string name="msg_motivo_calibrazione_segue_piano">基线校准中：按计划执行</string>
+    <string name="msg_biometria_procedi" formatted="true">按计划进行训练 (7日均值在正常范围 %1$s-%2$s ms 内)。%3$s</string>
+    <string name="msg_biometria_riduci" formatted="true">降低强度/训练量，或将强度课改为 Z1-Z2 (7日均值低于正常范围：%1$s 个标准差，下限 %2$s ms)。%3$s</string>
+    <string name="msg_biometria_recupero" formatted="true">积极恢复或休息，尤其是持续多天时 (7日均值低于基线 %1$s 个标准差，超过一个标准差)。%2$s</string>
+    <string name="msg_biometria_procedi_pct" formatted="true">按计划进行训练 (7日均值在基线 -10%% 以内)。</string>
+    <string name="msg_biometria_riduci_pct" formatted="true">降低强度/训练量，或将强度课改为 Z1-Z2 (7日均值低于基线 10-20%%)。</string>
+    <string name="msg_biometria_recupero_pct" formatted="true">积极恢复或休息，尤其是持续时 (7日均值低于基线超过 20%%)。</string>
+    <string name="msg_biometria_dati_insufficienti">数据不足，无法得出可靠区间。</string>
+    <string name="msg_direzione_in_salita">上升</string>
+    <string name="msg_direzione_in_calo">下降</string>
+    <string name="msg_direzione_stabile">稳定</string>
+    <string name="msg_direzione_non_determinabile">无法判断</string>
+    <string name="msg_zona_fresco">新鲜</string>
+    <string name="msg_zona_ottimale">最佳</string>
+    <string name="msg_zona_grigia">灰色</string>
+    <string name="msg_zona_transizione">过渡</string>
+    <string name="msg_zona_alto_rischio">高风险</string>
+    <string name="msg_fase_base">基础期</string>
+    <string name="msg_fase_build">强化期</string>
+    <string name="msg_fase_peak">巅峰期</string>
+    <string name="msg_fase_taper">减量期</string>
+    <string name="msg_fase_gara">比赛期</string>
+    <string name="msg_fase_recupero">恢复期</string>
+    <string name="msg_fase_senza_gara">无比赛</string>
+    <string name="msg_regola_intensita_8020" formatted="true">80/20 极化：骑行和跑步时间中最多 20%% 高于阈值</string>
+    <string name="msg_regola_intensita_gara" formatted="true">备赛：骑行和跑步时间中最多 10%% 高于阈值</string>
+    <string name="msg_oggi_riposo">休息</string>
+    <string name="msg_frammento_nota_sat">" 注意：7日均值高于基线超过 +1 个标准差：如果同时出现静息心率偏低和腿部沉重，可能是副交感神经饱和（过度训练），而不一定代表状态良好。"</string>
+    <string name="msg_frammento_nota_cv">" 注意：HRV 的日间变异几乎消失。对训练有素的运动员而言，CV 骤降并非稳定，而是非功能性过度训练的标志之一（Plews 2013）：即使区间为绿色，本周也不要增加负荷。"</string>
     <string name="msg_frammento_caldo_tag">（标签）</string>
     <string name="msg_frammento_caldo_meteo" formatted="true">：%1$s °C，湿度 %2$s%%</string>
     <string name="msg_frammento_alle" formatted="true">（%1$s 时）</string>

@@ -50,7 +50,7 @@ from marchio import NOME_APP
 import campi
 import messaggi   # 07/10/2026 (punto 13a): codici dei messaggi per l'app
 
-VERSIONE = "2026.10.09-lingue13d"   # anche nel LEGGIMI del pacchetto
+VERSIONE = "2026.10.09-lingue13d2"   # anche nel LEGGIMI del pacchetto
 import contextlib, importlib, io, json, os, re, sys, traceback
 
 _VARIABILI_ESTERNE = ("GH_TOKEN", "GITHUB_REPOSITORY", "TELEGRAM_TOKEN", "TELEGRAM_CHAT_ID")
@@ -813,6 +813,7 @@ def _riepilogo(piano, esito, notifiche, oggi):
         sedute_out = []
         for s in sorted(piano["sedute"], key=lambda x: (x["giorno"], x["slot"])):
             for e in cs.payload_eventi(s, s["data"]):
+                e = cs.traduzioni.traduci_evento(e, cs.LINGUA)   # 13d: come sul calendario
                 sedute_out.append({"data": s["data"], "nome": e["name"], "tipo": e["type"],
                                    "durata_min": round((e.get("moving_time") or 0) / 60),
                                    "qualita": bool(s.get("qualita")),
