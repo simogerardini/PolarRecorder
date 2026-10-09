@@ -11,7 +11,7 @@ data class Componente(val nome: String, val descrizione: String, val licenza: St
  * dichiara il supporto ad AGP 9. Da aggiornare quando si aggiunge una libreria.
  */
 object Licenze {
-  const val PRIVACY_URL = "https://biosleep-oauth.simonegerardini.workers.dev/privacy"
+  const val PRIVACY_URL = "https://auth.noctalix.com/privacy"
 
   val ORIGINE =
       Componente(

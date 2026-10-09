@@ -99,7 +99,7 @@
 
                 <data
                     android:scheme="https"
-                    android:host="biosleep-oauth.simonegerardini.workers.dev"
+                    android:host="auth.noctalix.com"
                     android:path="/app" />
             </intent-filter>
         </activity>

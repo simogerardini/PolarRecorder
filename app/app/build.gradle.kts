@@ -40,8 +40,8 @@ android {
     // Collegamento OAuth a Intervals.icu: client_id e indirizzi non sono segreti (il client_secret
     // lo conosce solo il Worker). OAUTH_HOST = dominio dell'App Link verificato (assetlinks.json).
     buildConfigField("String", "INTERVALS_CLIENT_ID", "\"1235\"")
-    buildConfigField("String", "OAUTH_HOST", "\"biosleep-oauth.simonegerardini.workers.dev\"")
-    buildConfigField("String", "OAUTH_REDIRECT_URI", "\"https://biosleep-oauth.simonegerardini.workers.dev/callback\"")
+    buildConfigField("String", "OAUTH_HOST", "\"auth.noctalix.com\"")
+    buildConfigField("String", "OAUTH_REDIRECT_URI", "\"https://auth.noctalix.com/callback\"")
     ndk {
       // Solo telefoni a 64 bit ARM: ogni architettura in piu' porta un'altra copia di Python.
       // Per l'emulatore del Mac aggiungere "x86_64" (o "arm64-v8a" basta sui Mac con chip Apple).
