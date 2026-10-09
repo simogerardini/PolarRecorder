@@ -108,7 +108,10 @@ def aggiungi_import(testo: str, file: str) -> str:
     if file.endswith(".kt") and "BuildConfig.APP_NAME" in testo:
         imp = f"import {PKG_BUILDCONFIG}.BuildConfig"
         if imp not in testo and not re.search(rf"^package {re.escape(PKG_BUILDCONFIG)}$", testo, re.M):
-            testo = re.sub(r"^(import .*)$", imp + r"\n\1", testo, count=1, flags=re.M)
+            if re.search(r"^import ", testo, re.M):
+                testo = re.sub(r"^(import .*)$", imp + r"\n\1", testo, count=1, flags=re.M)
+            else:  # file senza import: subito dopo la riga package
+                testo = re.sub(r"^(package .*)$", r"\1\n\n" + imp, testo, count=1, flags=re.M)
     if file.endswith(".py") and "{NOME_APP}" in testo and "from marchio import NOME_APP" not in testo:
         righe = testo.split("\n")
         # PRIMA del primo import (mai dentro un import su piu' righe), ma dopo "from __future__"
@@ -180,7 +183,9 @@ def mostra_e_applica(piano: dict[str, str], applica: bool) -> None:
 
 
 def verifica() -> None:
-    restano = [(f, n, t) for f, n, t in git_grep() if "/src/test/" not in f]
+    # i test e gli strumenti della rinomina contengono il vecchio nome di proposito (dati, regole)
+    restano = [(f, n, t) for f, n, t in git_grep()
+               if "/src/test/" not in f and not f.endswith(("rename_noctalix.py", "inventario_rename.py"))]
     visibili = [(f, n, t) for f, n, t in restano
                 if (f.endswith(".kt") and riga_kotlin(t)) or (f.endswith(".py") and riga_python(t))]
     print(f"Righe con il vecchio nome: {len(restano)} (B e C 'mantenere' sono attese)")
