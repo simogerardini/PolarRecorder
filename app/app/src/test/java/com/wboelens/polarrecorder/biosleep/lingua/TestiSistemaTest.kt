@@ -76,6 +76,9 @@ class TestiSistemaTest {
     assertEquals("Hours: 2h54 of 6h35 · cap 10h00 · 3h42 left in 3 days", en("Ore: 2h54 di 6h35 · tetto 10h00 · restano 3h42 in 3 gg"))
     assertEquals("Gym: 7 days 32' · 28 days 2h56", en("Palestra: 7 gg 32' · 28 gg 2h56"))
     assertEquals("done 82%", en("svolta 82%"))
+    // una riga composta non va presa intera da un modello corto ("FC %s", "zona %s")
+    assertEquals("Resting HR 7 days 42.3 bpm · baseline 41.6 (+0.7)", en("FC a riposo 7 gg 42.3 bpm · baseline 41.6 (+0.7)"))
+    assertEquals("zone Grey · expected in this phase: Grey", en("zona Grigia · attesa in questa fase: Grigia"))
     assertEquals("Strap battery: 100% · read on 9 Oct 06:55", en("Batteria fascia: 100% · letta il 9 Oct 06:55"))
   }
 

@@ -465,7 +465,11 @@ object TestiSistema {
       val inizio = testo.substring(0, testo.indexOf(nucleo))
       return inizio + traduci(nucleo, stringa) + testo.substring(inizio.length + nucleo.length)
     }
+    // frase composta con " · ": solo i modelli composti la prendono intera; altrimenti pezzo per
+    // pezzo (un modello corto come "FC %s" non deve "mangiarsi" tutta la riga)
+    val composta = " · " in testo
     for (v in VOCI) {
+      if (composta && " · " !in v.modello) continue
       val m = v.rx.matchEntire(testo) ?: continue
       val argomenti = m.groupValues.drop(1).map { parte(it, stringa) }
       return stringa("sis_" + v.chiave, argomenti.toTypedArray()) ?: testo
