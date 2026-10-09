@@ -61,6 +61,7 @@ import soglie      # LTHR/FTP automatiche e test periodici (da intervals_coach)
 import palestra    # libreria delle schede di forza (documento di Simone, 06/10/2026)
 import caldo       # previsioni nel luogo del telefono e regole dei giorni caldi
 import detp        # protocollo DETP con sensore CORE 2 (punto 11)
+import traduzioni  # 13b: nomi e note delle sedute nella lingua dell'atleta
 from requests.adapters import HTTPAdapter
 from urllib3.util.retry import Retry
 
@@ -141,6 +142,8 @@ FC_DA_APP      = os.getenv("FC_DA_APP", "0") == "1"
 _GIORNI_ABBR   = ("lun", "mar", "mer", "gio", "ven", "sab", "dom")
 # 08/10/2026 ("+" sul calendario): minuti disponibili per una DATA precisa
 # {"YYYY-MM-DD": minuti}, 0 = non disponibile. Ha la precedenza sulla settimana tipo.
+# 08/10/2026 (13b): lingua del calendario (it/en/es; zh -> en sull'orologio)
+LINGUA = traduzioni.lingua_calendario(os.getenv("LINGUA"))
 DISPONIBILITA_DATE = {str(k): int(v) for k, v in
                       json.loads(os.getenv("DISPONIBILITA_DATE", "{}") or "{}").items()
                       if isinstance(v, (int, float)) and v >= 0}
@@ -2978,6 +2981,7 @@ def eventi_del_coach(eventi):
 
 
 def scrivi_evento(payload, esistente, dry=False):
+    payload = traduzioni.traduci_evento(payload, LINGUA)   # 13b: unico punto di scrittura
     if evento_allineato(esistente, payload):
         print(f"    = {payload['start_date_local'][:10]} — {payload['name']} (invariato)")
         return "invariato"

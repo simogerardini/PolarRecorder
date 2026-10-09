@@ -15,6 +15,7 @@ config (JSON):
                   ("Ripianifica questa settimana"); le sedute passate non si toccano
   tag             facoltativo: {"giorni": {"YYYY-MM-DD": [chiavi]}, "sedute": {"<id attivita'>": [chiavi]}}
                   vocabolario in coach_settimanale.TAG_GIORNO / TAG_SEDUTA
+  lingua          facoltativo: "it"|"en"|"es"|"zh" (sedute sul calendario; zh -> en)
   disponibilita_date  facoltativo: {"YYYY-MM-DD": minuti} dal "+" del calendario
                   (0 = giorno non disponibile; vince sulla settimana tipo)
   posizione       facoltativo: {"lat", "lon"} dal telefono (meteo per i giorni caldi;
@@ -49,7 +50,7 @@ from marchio import NOME_APP
 import campi
 import messaggi   # 07/10/2026 (punto 13a): codici dei messaggi per l'app
 
-VERSIONE = "2026.10.08-calendario"   # anche nel LEGGIMI del pacchetto
+VERSIONE = "2026.10.08-lingue13b"   # anche nel LEGGIMI del pacchetto
 import contextlib, importlib, io, json, os, re, sys, traceback
 
 _VARIABILI_ESTERNE = ("GH_TOKEN", "GITHUB_REPOSITORY", "TELEGRAM_TOKEN", "TELEGRAM_CHAT_ID")
@@ -722,8 +723,8 @@ def _adesso(cfg):
 
 def _carica_moduli():
     global cs
-    import sedute, biometria, carico, soglie, palestra, caldo, detp, coach_settimanale
-    for m in (sedute, biometria, carico, soglie, palestra, caldo, detp, coach_settimanale):
+    import sedute, biometria, carico, soglie, palestra, caldo, detp, traduzioni, coach_settimanale
+    for m in (sedute, biometria, carico, soglie, palestra, caldo, detp, traduzioni, coach_settimanale):
         importlib.reload(m)
     cs = coach_settimanale
     return sedute
@@ -849,7 +850,7 @@ def esegui_app(config_json):
     # mano che raccoglie dati) valgono piu' di quelle su Intervals.icu; disponibilita' per
     # giorno in minuti (0 = non disponibile); tetto ore cardio settimanale.
     for k in ("FCMAX", "FCREST", "FC_DA_APP", "MAX_ORE_CARDIO_SETT", "DISPONIBILITA", "SETTIMANA_TIPO",
-              "PALESTRA", "CALDO", "DETP", "DISPONIBILITA_DATE"):
+              "PALESTRA", "CALDO", "DETP", "DISPONIBILITA_DATE", "LINGUA"):
         os.environ.pop(k, None)
     prof = cfg.get("profilo") or {}
     if prof.get("fc_max") and prof.get("fc_riposo"):
@@ -859,6 +860,8 @@ def esegui_app(config_json):
         os.environ["MAX_ORE_CARDIO_SETT"] = str(float(prof["tetto_ore"]))
     if prof.get("disponibilita"):
         os.environ["DISPONIBILITA"] = json.dumps(prof["disponibilita"])
+    if cfg.get("lingua"):     # 08/10/2026 (13b): lingua del calendario (zh -> en sull'orologio)
+        os.environ["LINGUA"] = str(cfg["lingua"])
     if cfg.get("disponibilita_date"):   # 08/10/2026: minuti per data dal "+" del calendario
         os.environ["DISPONIBILITA_DATE"] = json.dumps(cfg["disponibilita_date"])
     if prof.get("detp"):          # 07/10/2026: CORE 2 e protocollo DETP (punto 11)
