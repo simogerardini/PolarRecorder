@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Cinese semplificato: DA RIVEDERE da un madrelingua (closed testing). Traduzione iniziale della Parte 3, ottobre 2026. -->
+<resources>
+    <string name="info_informazioni">关于</string>
+    <string name="info_licenze_open_source">开源许可</string>
+    <string name="info_componenti_usati">使用的组件</string>
+    <string name="info_chiudi">关闭</string>
+    <string name="info_sito_del_progetto">项目网站</string>
+</resources>

@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Inglese: DA RIVEDERE da un madrelingua (closed testing). Traduzione iniziale della Parte 3, ottobre 2026. -->
+<resources>
+    <string name="coach_settings_3_coach">3. Coach</string>
+    <string name="coach_settings_il_coach_gira_nell">The coach runs in the app right after the night is sent, and at 10:30 if the night has not arrived. It uses the same Intervals.icu API key.</string>
+    <string name="coach_settings_id_atleta_per_la">Athlete ID for the API key (0 = the API key\'s own)</string>
+    <string name="coach_settings_il_coach_non_ha">The coach has not run on this phone yet</string>
+    <string name="coach_settings_ultimo_run_del_coach" formatted="true">Last coach run failed (%1$s): tap for the log</string>
+    <string name="coach_settings_ultimo_run_in" formatted="true">Last run (%1$s): %2$s in %3$s</string>
+    <string name="coach_settings_durata_di_un_run" formatted="true">Duration of a weekly run: %1$s</string>
+    <string name="coach_settings_profilo_atleta_fc_ore">Athlete profile: HR, max hours, availability</string>
+    <string name="coach_settings_gare">Races</string>
+    <string name="coach_settings_misura_un_run_settimanale">Time a weekly run (test, writes nothing)</string>
+    <string name="coach_settings_log_del_coach">Coach log</string>
+    <string name="coach_settings_chiudi">Close</string>
+</resources>

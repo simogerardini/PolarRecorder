@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Spagnolo: DA RIVEDERE da un madrelingua (closed testing). Traduzione iniziale della Parte 3, ottobre 2026. -->
+<resources>
+    <string name="profilo_profilo_atleta">Perfil del atleta</string>
+    <string name="profilo_il_coach_usa_questi">El coach usa estos valores en lugar de los de Intervals.icu. Un campo vacío no se envía.</string>
+    <string name="profilo_gare_in_programma">Carreras programadas</string>
+    <string name="profilo_frequenza_cardiaca">Frecuencia cardíaca</string>
+    <string name="profilo_con_almeno_5_notti" formatted="true">Con al menos 5 noches de %1$s la app propone la FC en reposo medida (ahora %2$s).</string>
+    <string name="profilo_volume">Volumen</string>
+    <string name="profilo_ore_cardio_massime_a">Horas máximas de cardio por semana (gimnasio excluido)</string>
+    <string name="profilo_disponibilita">Disponibilidad</string>
+    <string name="profilo_minuti_disponibili_per_giorno">Minutos disponibles por día. 0 = día no disponible, vacío = sin límite.</string>
+    <string name="profilo_nessun_limite">sin límite</string>
+    <string name="profilo_min">min</string>
+    <string name="profilo_settimana_tipo">Semana tipo</string>
+    <string name="profilo_nei_giorni_feriali_il">Entre semana el coach programa como máximo una sesión de cardio, más la fuerza.</string>
+    <string name="profilo_palestra">Gimnasio</string>
+    <string name="profilo_attrezzatura_disponibile_il_coach">Equipamiento disponible: el coach elige las sesiones de fuerza entre las que puedes hacer.</string>
+    <string name="profilo_livello">Nivel</string>
+    <string name="profilo_principiante_le_prime_4">Principiante: las primeras 4 semanas, una sesión de adaptación.</string>
+    <string name="profilo_caldo">Calor</string>
+    <string name="profilo_nei_giorni_caldi_trasforma">En los días calurosos, convertir la carrera suave en bici indoor</string>
+    <string name="profilo_di_solito_mi_alleno">Suelo entrenar a las…</string>
+    <string name="profilo_il_coach_legge_la">El coach consulta la previsión para esta hora.</string>
+    <string name="profilo_posizione_approssimativa_consentita_il">Ubicación aproximada permitida: el coach usa la previsión del lugar donde estás.</string>
+    <string name="profilo_serve_per_le_previsioni">Sirve para la previsión del tiempo: en los días calurosos el coach adapta las carreras. Sin ella el coach funciona igual, sin las reglas del calor.</string>
+    <string name="profilo_consenti_la_posizione_approssimativa">Permitir ubicación aproximada</string>
+    <string name="profilo_se_android_non_la" formatted="true">Si Android ya no la pide: Ajustes de Android → Aplicaciones → %1$s → Permisos → Ubicación.</string>
+    <string name="profilo_sensori">Sensores</string>
+    <string name="profilo_ho_uno_stryd">Tengo un Stryd</string>
+    <string name="profilo_le_sedute_di_qualita">Las sesiones de calidad de carrera (cuestas, series, umbral) usarán la potencia. Se necesita la CP en Intervals.icu (campo FTP de carrera): el coach la actualiza solo con tus carreras con Stryd.</string>
+    <string name="profilo_ho_un_sensore_core">Tengo un sensor CORE 2</string>
+    <string name="profilo_applica_il_protocollo_detp">Aplicar el protocolo DETP</string>
+    <string name="profilo_con_il_detp_il">Con DETP el coach añade sesiones de adaptación al calor (heat blocks) y objetivos HSI a los entrenamientos. Detente siempre ante los primeros síntomas (mareo, náuseas, escalofríos). No apto en caso de enfermedad o problemas cardiovasculares.</string>
+    <string name="profilo_salva">Guardar</string>
+    <string name="profilo_valori_fuori_dai_limiti">Valores fuera de los límites: FC máxima 120–230, FC en reposo 30–100, horas 1–30, minutos 0–600.</string>
+    <string name="profilo_ripianifica_questa_settimana">Replanificar esta semana</string>
+    <string name="profilo_ripianificazione_in_corso_richiede">Replanificación en curso: tarda unos minutos, puedes salir de esta pantalla.</string>
+    <string name="profilo_ripianificare_la_settimana">¿Replanificar la semana?</string>
+    <string name="profilo_le_sedute_da_oggi">Las sesiones de hoy al domingo se recalcularán con este perfil. Las sesiones pasadas no cambian.</string>
+    <string name="profilo_ripianifica">Replanificar</string>
+    <string name="profilo_annulla">Cancelar</string>
+    <string name="profilo_nessuno">Ninguno</string>
+    <string name="profilo_usa">Usar</string>
+</resources>

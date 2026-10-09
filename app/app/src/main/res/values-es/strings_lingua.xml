@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Spagnolo: DA RIVEDERE da un madrelingua (closed testing). Traduzione iniziale della Parte 3, ottobre 2026. -->
+<resources>
+    <string name="lingua_lingua">Idioma</string>
+    <string name="lingua_come_il_telefono">Como el teléfono</string>
+    <string name="lingua_le_sedute_sull_orologio">Las sesiones en el reloj estarán en inglés: muchos relojes no muestran caracteres chinos.</string>
+    <string name="lingua_aggiorno_il_piano_della">¿Actualizo el plan de la semana en el nuevo idioma?</string>
+    <string name="lingua_le_sedute_da_oggi">Las sesiones de hoy al domingo se reescribirán. Los días pasados no se tocan.</string>
+    <string name="lingua_si_aggiorna">Sí, actualizar</string>
+    <string name="lingua_no">No</string>
+</resources>

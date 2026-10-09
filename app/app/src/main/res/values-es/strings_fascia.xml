@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Spagnolo: DA RIVEDERE da un madrelingua (closed testing). Traduzione iniziale della Parte 3, ottobre 2026. -->
+<resources>
+    <string name="fascia_fascia">Banda</string>
+    <string name="fascia_nessuna_fascia_collegata_collegala">Ninguna banda conectada: conéctala desde la pestaña Noche.</string>
+    <string name="fascia_per_cambiare_fascia_scheda">Para cambiar de banda: pestaña Noche → Cambiar banda.</string>
+    <string name="fascia_rapporto_fascia_dell_ultima">Informe de la banda de la última noche</string>
+    <string name="fascia_disponibile_dopo_la_prima">Disponible tras la primera noche registrada.</string>
+    <string name="fascia_descrive_la_fascia_e">Describe la banda y la calidad de la conexión, sin datos de salud: sirve a los testers para informar de problemas.</string>
+    <string name="fascia_condividi_il_rapporto">Compartir el informe</string>
+</resources>

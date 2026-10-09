@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Cinese semplificato: DA RIVEDERE da un madrelingua (closed testing). Traduzione iniziale della Parte 3, ottobre 2026. -->
+<resources>
+    <string name="intervals_settings_impostazioni">设置</string>
+    <string name="intervals_settings_1_intervals_icu">1. Intervals.icu</string>
+    <string name="intervals_settings_scollega">断开连接</string>
+    <string name="intervals_settings_collega_il_tuo_account" formatted="true">连接你的账户：%1$s 将能发送睡眠数据、读取训练和日历，并自动创建 %2$s 字段。连接前请阅读哪些数据会发送到 Intervals.icu。</string>
+    <string name="intervals_settings_collega_intervals_icu">连接 Intervals.icu</string>
+    <string name="intervals_settings_il_collegamento_non_ha">当前连接没有创建字段的权限（SETTINGS:WRITE）：请重新连接并接受所有权限。</string>
+    <string name="intervals_settings_ricollega">重新连接</string>
+    <string name="intervals_settings_riprova">重试</string>
+    <string name="intervals_settings_prepara_i_campi" formatted="true">准备 %1$s 字段</string>
+    <string name="intervals_settings_invia_automaticamente_ogni_notte">每晚停止记录后自动发送</string>
+    <string name="intervals_settings_alternativa_al_collegamento_utile">连接的替代方式（在应用获得 Intervals.icu 批准前有用）。如果已连接，以连接为准。</string>
+    <string name="intervals_settings_api_key_settings_developer">API key（Settings → Developer Settings）</string>
+    <string name="intervals_settings_salva_e_prova_connessione">保存并测试连接</string>
+    <string name="intervals_settings_protezione_notturna">夜间保护</string>
+    <string name="intervals_settings_fascia">心率带</string>
+    <string name="intervals_settings_dati">数据</string>
+    <string name="intervals_settings_backup_e_ripristino">备份与恢复</string>
+    <string name="intervals_settings_esporta_notti">导出睡眠记录</string>
+</resources>

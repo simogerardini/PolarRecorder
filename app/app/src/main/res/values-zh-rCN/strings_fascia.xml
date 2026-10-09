@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Cinese semplificato: DA RIVEDERE da un madrelingua (closed testing). Traduzione iniziale della Parte 3, ottobre 2026. -->
+<resources>
+    <string name="fascia_fascia">心率带</string>
+    <string name="fascia_nessuna_fascia_collegata_collegala">未连接心率带：请在“夜间”页连接。</string>
+    <string name="fascia_per_cambiare_fascia_scheda">更换心率带：“夜间”页 → 更换心率带。</string>
+    <string name="fascia_rapporto_fascia_dell_ultima">最近一晚的心率带报告</string>
+    <string name="fascia_disponibile_dopo_la_prima">记录第一晚后可用。</string>
+    <string name="fascia_descrive_la_fascia_e">描述心率带和连接质量，不含健康数据：供测试人员报告问题。</string>
+    <string name="fascia_condividi_il_rapporto">分享报告</string>
+</resources>

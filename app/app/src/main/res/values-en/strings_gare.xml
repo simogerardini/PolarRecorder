@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Inglese: DA RIVEDERE da un madrelingua (closed testing). Traduzione iniziale della Parte 3, ottobre 2026. -->
+<resources>
+    <string name="gare_gare">Races</string>
+    <string name="gare_il_collegamento_non_permette">The connection does not allow reading the calendar: reconnect Intervals.icu.</string>
+    <string name="gare_ricollega_intervals_icu">Reconnect Intervals.icu</string>
+    <string name="gare_riprova">Try again</string>
+    <string name="gare_nessuna_gara_in_programma">No races scheduled: the coach follows the continuous cycle. Add one with +.</string>
+    <string name="gare_aggiorno_subito_il_piano">Update this week\'s plan now?</string>
+    <string name="gare_le_sedute_da_oggi">Sessions from today to Sunday will be recalculated taking the races into account. Past sessions stay unchanged.</string>
+    <string name="gare_si_ripianifica">Yes, replan</string>
+    <string name="gare_no">No</string>
+    <string name="gare_gara" formatted="true">%1$s race</string>
+    <string name="gare_detta_la_preparazione">Sets the training</string>
+    <string name="gare_distanza_non_riconosciuta_tocca">Distance not recognised: tap to set it, the coach uses it for training</string>
+    <string name="gare_nome">Name</string>
+    <string name="gare_priorita">Priority</string>
+    <string name="gare_distanza">Distance</string>
+    <string name="gare_gara_calda_prevista_con">Hot race (heat expected)</string>
+    <string name="gare_il_collegamento_non_permette_2">The connection does not allow writing to the calendar.</string>
+    <string name="gare_elimina">Delete</string>
+    <string name="gare_salva">Save</string>
+    <string name="gare_annulla">Cancel</string>
+    <string name="gare_ok">OK</string>
+    <string name="gare_eliminare_la_gara">Delete the race?</string>
+    <string name="gare_sparisce_dal_calendario_di" formatted="true">%1$s will be removed from the Intervals.icu calendar.</string>
+</resources>

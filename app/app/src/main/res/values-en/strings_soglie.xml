@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Inglese: DA RIVEDERE da un madrelingua (closed testing). Traduzione iniziale della Parte 3, ottobre 2026. -->
+<resources>
+    <string name="soglie_soglie_non_controllabili">Thresholds cannot be checked</string>
+    <string name="soglie_il_collegamento_a_intervals">The Intervals.icu connection does not allow reading the settings: reconnect and accept all permissions.</string>
+    <string name="soglie_ricollega_intervals_icu">Reconnect Intervals.icu</string>
+    <string name="soglie_soglie_da_completare">Thresholds to complete</string>
+    <string name="soglie_apri_intervals_icu">Open Intervals.icu</string>
+    <string name="soglie_soglie_su_intervals_icu">Thresholds on Intervals.icu</string>
+    <string name="soglie_ultimo_test" formatted="true">Last test: %1$s, %2$s</string>
+    <string name="soglie_consigliato" formatted="true">%1$s (recommended): %2$s</string>
+</resources>

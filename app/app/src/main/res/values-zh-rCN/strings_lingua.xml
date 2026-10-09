@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Cinese semplificato: DA RIVEDERE da un madrelingua (closed testing). Traduzione iniziale della Parte 3, ottobre 2026. -->
+<resources>
+    <string name="lingua_lingua">语言</string>
+    <string name="lingua_come_il_telefono">跟随手机</string>
+    <string name="lingua_le_sedute_sull_orologio">手表上的训练将显示为英文：许多手表无法显示中文字符。</string>
+    <string name="lingua_aggiorno_il_piano_della">用新语言更新本周计划？</string>
+    <string name="lingua_le_sedute_da_oggi">从今天到周日的训练将被重写。已过去的日子不受影响。</string>
+    <string name="lingua_si_aggiorna">是，更新</string>
+    <string name="lingua_no">否</string>
+</resources>

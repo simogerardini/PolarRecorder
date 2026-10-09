@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Spagnolo: DA RIVEDERE da un madrelingua (closed testing). Traduzione iniziale della Parte 3, ottobre 2026. -->
+<resources>
+    <string name="gare_gare">Carreras</string>
+    <string name="gare_il_collegamento_non_permette">La conexión no permite leer el calendario: vuelve a conectar Intervals.icu.</string>
+    <string name="gare_ricollega_intervals_icu">Volver a conectar Intervals.icu</string>
+    <string name="gare_riprova">Reintentar</string>
+    <string name="gare_nessuna_gara_in_programma">Ninguna carrera programada: el coach sigue el ciclo continuo. Añade una con +.</string>
+    <string name="gare_aggiorno_subito_il_piano">¿Actualizo ahora el plan de la semana?</string>
+    <string name="gare_le_sedute_da_oggi">Las sesiones de hoy al domingo se recalcularán teniendo en cuenta las carreras. Las sesiones pasadas no cambian.</string>
+    <string name="gare_si_ripianifica">Sí, replanificar</string>
+    <string name="gare_no">No</string>
+    <string name="gare_gara" formatted="true">Carrera %1$s</string>
+    <string name="gare_detta_la_preparazione">Marca la preparación</string>
+    <string name="gare_distanza_non_riconosciuta_tocca">Distancia no reconocida: toca para indicarla, el coach la usa para la preparación</string>
+    <string name="gare_nome">Nombre</string>
+    <string name="gare_priorita">Prioridad</string>
+    <string name="gare_distanza">Distancia</string>
+    <string name="gare_gara_calda_prevista_con">Carrera calurosa (se espera calor)</string>
+    <string name="gare_il_collegamento_non_permette_2">La conexión no permite escribir en el calendario.</string>
+    <string name="gare_elimina">Eliminar</string>
+    <string name="gare_salva">Guardar</string>
+    <string name="gare_annulla">Cancelar</string>
+    <string name="gare_ok">Aceptar</string>
+    <string name="gare_eliminare_la_gara">¿Eliminar la carrera?</string>
+    <string name="gare_sparisce_dal_calendario_di" formatted="true">%1$s desaparecerá del calendario de Intervals.icu.</string>
+</resources>

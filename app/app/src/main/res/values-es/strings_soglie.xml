@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Spagnolo: DA RIVEDERE da un madrelingua (closed testing). Traduzione iniziale della Parte 3, ottobre 2026. -->
+<resources>
+    <string name="soglie_soglie_non_controllabili">No se pueden comprobar los umbrales</string>
+    <string name="soglie_il_collegamento_a_intervals">La conexión con Intervals.icu no permite leer los ajustes: vuelve a conectar y acepta todos los permisos.</string>
+    <string name="soglie_ricollega_intervals_icu">Volver a conectar Intervals.icu</string>
+    <string name="soglie_soglie_da_completare">Umbrales por completar</string>
+    <string name="soglie_apri_intervals_icu">Abrir Intervals.icu</string>
+    <string name="soglie_soglie_su_intervals_icu">Umbrales en Intervals.icu</string>
+    <string name="soglie_ultimo_test" formatted="true">Último test: %1$s, %2$s</string>
+    <string name="soglie_consigliato" formatted="true">%1$s (recomendado): %2$s</string>
+</resources>

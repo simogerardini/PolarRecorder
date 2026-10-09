@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Cinese semplificato: DA RIVEDERE da un madrelingua (closed testing). Traduzione iniziale della Parte 3, ottobre 2026. -->
+<resources>
+    <string name="coach_settings_3_coach">3. 教练</string>
+    <string name="coach_settings_il_coach_gira_nell">夜间数据发送后，教练会立即在应用中运行；若 10:30 仍未收到夜间数据也会运行。使用相同的 Intervals.icu API key。</string>
+    <string name="coach_settings_id_atleta_per_la">API key 对应的运动员 ID（0 = API key 本身的账户）</string>
+    <string name="coach_settings_il_coach_non_ha">教练尚未在此手机上运行</string>
+    <string name="coach_settings_ultimo_run_del_coach" formatted="true">上次教练运行失败（%1$s）：点按查看日志</string>
+    <string name="coach_settings_ultimo_run_in" formatted="true">上次运行（%1$s）：%2$s，用时 %3$s</string>
+    <string name="coach_settings_durata_di_un_run" formatted="true">每周运行耗时：%1$s</string>
+    <string name="coach_settings_profilo_atleta_fc_ore">运动员资料：心率、最长时间、可用时间</string>
+    <string name="coach_settings_gare">比赛</string>
+    <string name="coach_settings_misura_un_run_settimanale">测量一次每周运行（测试，不写入任何内容）</string>
+    <string name="coach_settings_log_del_coach">教练日志</string>
+    <string name="coach_settings_chiudi">关闭</string>
+</resources>

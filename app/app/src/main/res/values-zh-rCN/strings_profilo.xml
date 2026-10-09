@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Cinese semplificato: DA RIVEDERE da un madrelingua (closed testing). Traduzione iniziale della Parte 3, ottobre 2026. -->
+<resources>
+    <string name="profilo_profilo_atleta">运动员资料</string>
+    <string name="profilo_il_coach_usa_questi">教练会使用这些值代替 Intervals.icu 中的值。空字段不会发送。</string>
+    <string name="profilo_gare_in_programma">已安排的比赛</string>
+    <string name="profilo_frequenza_cardiaca">心率</string>
+    <string name="profilo_con_almeno_5_notti" formatted="true">有至少 5 晚 %1$s 数据后，应用会建议实测的静息心率（目前 %2$s 晚）。</string>
+    <string name="profilo_volume">训练量</string>
+    <string name="profilo_ore_cardio_massime_a">每周最长有氧时间（不含健身房）</string>
+    <string name="profilo_disponibilita">可用时间</string>
+    <string name="profilo_minuti_disponibili_per_giorno">每天可用分钟数。0 = 当天不可用，留空 = 不限。</string>
+    <string name="profilo_nessun_limite">不限</string>
+    <string name="profilo_min">分钟</string>
+    <string name="profilo_settimana_tipo">标准周</string>
+    <string name="profilo_nei_giorni_feriali_il">工作日教练最多安排一次有氧训练，另加力量训练。</string>
+    <string name="profilo_palestra">健身房</string>
+    <string name="profilo_attrezzatura_disponibile_il_coach">可用器械：教练会从你能完成的力量训练中选择。</string>
+    <string name="profilo_livello">水平</string>
+    <string name="profilo_principiante_le_prime_4">初学者：前 4 周为适应性训练。</string>
+    <string name="profilo_caldo">高温</string>
+    <string name="profilo_nei_giorni_caldi_trasforma">高温天将轻松跑改为室内骑行</string>
+    <string name="profilo_di_solito_mi_alleno">我通常训练的时间…</string>
+    <string name="profilo_il_coach_legge_la">教练会读取这个时段的天气预报。</string>
+    <string name="profilo_posizione_approssimativa_consentita_il">已允许大致位置：教练会使用你所在地的天气预报。</string>
+    <string name="profilo_serve_per_le_previsioni">用于天气预报：高温天教练会调整跑步训练。不授权时教练照常工作，只是不使用高温规则。</string>
+    <string name="profilo_consenti_la_posizione_approssimativa">允许大致位置</string>
+    <string name="profilo_se_android_non_la" formatted="true">如果 Android 不再询问：Android 设置 → 应用 → %1$s → 权限 → 位置信息。</string>
+    <string name="profilo_sensori">传感器</string>
+    <string name="profilo_ho_uno_stryd">我有 Stryd</string>
+    <string name="profilo_le_sedute_di_qualita">跑步强度课（坡道、间歇、阈值）将使用功率。需要在 Intervals.icu 设置 CP（跑步 FTP 字段）：教练会根据使用 Stryd 的跑步自动更新。</string>
+    <string name="profilo_ho_un_sensore_core">我有 CORE 2 传感器</string>
+    <string name="profilo_applica_il_protocollo_detp">使用 DETP 方案</string>
+    <string name="profilo_con_il_detp_il">启用 DETP 后，教练会加入热适应训练（heat block），并在训练中加入 HSI 目标。一旦出现症状（头晕、恶心、寒战）请立即停止。生病或有心血管问题时不适用。</string>
+    <string name="profilo_salva">保存</string>
+    <string name="profilo_valori_fuori_dai_limiti">数值超出范围：最大心率 120–230，静息心率 30–100，小时 1–30，分钟 0–600。</string>
+    <string name="profilo_ripianifica_questa_settimana">重新规划本周</string>
+    <string name="profilo_ripianificazione_in_corso_richiede">正在重新规划：需要几分钟，你可以离开此页面。</string>
+    <string name="profilo_ripianificare_la_settimana">重新规划本周？</string>
+    <string name="profilo_le_sedute_da_oggi">从今天到周日的训练将按此资料重新计算。已过去的训练保持不变。</string>
+    <string name="profilo_ripianifica">重新规划</string>
+    <string name="profilo_annulla">取消</string>
+    <string name="profilo_nessuno">无</string>
+    <string name="profilo_usa">使用</string>
+</resources>

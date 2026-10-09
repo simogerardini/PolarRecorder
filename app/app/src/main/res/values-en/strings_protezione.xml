@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Inglese: DA RIVEDERE da un madrelingua (closed testing). Traduzione iniziale della Parte 3, ottobre 2026. -->
+<resources>
+    <string name="protezione_protezione_notturna_incompleta">Night protection incomplete</string>
+    <string name="protezione_sistema">Fix</string>
+    <string name="protezione_registrazione_interrotta_per_minuti" formatted="true">Recording interrupted for %1$s minutes (%2$s)</string>
+    <string name="protezione_succede_soprattutto_quando_il">This happens mostly when the system closes background apps to save battery.</string>
+    <string name="protezione_istruzioni_per" formatted="true">Instructions for %1$s</string>
+    <string name="protezione_chiudi">Close</string>
+    <string name="protezione_protezione_notturna">Night protection</string>
+    <string name="protezione_registra_per_8_ore" formatted="true">%1$s records for 8 hours with the screen off. Android tends to close apps that work in the background for a long time: these settings prevent it.</string>
+    <string name="protezione_apri_le_impostazioni_di" formatted="true">Open %1$s settings</string>
+    <string name="protezione_su_questa_versione_la">On this version the screen cannot be opened directly: follow the guide.</string>
+    <string name="protezione_guida_dettagliata_su_dontkillmyapp">Detailed guide on dontkillmyapp.com</string>
+</resources>

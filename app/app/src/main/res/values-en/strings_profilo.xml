@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Inglese: DA RIVEDERE da un madrelingua (closed testing). Traduzione iniziale della Parte 3, ottobre 2026. -->
+<resources>
+    <string name="profilo_profilo_atleta">Athlete profile</string>
+    <string name="profilo_il_coach_usa_questi">The coach uses these values instead of the Intervals.icu ones. An empty field is not sent.</string>
+    <string name="profilo_gare_in_programma">Upcoming races</string>
+    <string name="profilo_frequenza_cardiaca">Heart rate</string>
+    <string name="profilo_con_almeno_5_notti" formatted="true">With at least 5 %1$s nights the app suggests the measured resting HR (now %2$s).</string>
+    <string name="profilo_volume">Volume</string>
+    <string name="profilo_ore_cardio_massime_a">Maximum cardio hours per week (gym excluded)</string>
+    <string name="profilo_disponibilita">Availability</string>
+    <string name="profilo_minuti_disponibili_per_giorno">Minutes available per day. 0 = day not available, empty = no limit.</string>
+    <string name="profilo_nessun_limite">no limit</string>
+    <string name="profilo_min">min</string>
+    <string name="profilo_settimana_tipo">Typical week</string>
+    <string name="profilo_nei_giorni_feriali_il">On weekdays the coach schedules at most one cardio session, plus strength.</string>
+    <string name="profilo_palestra">Gym</string>
+    <string name="profilo_attrezzatura_disponibile_il_coach">Available equipment: the coach picks strength sessions among those you can do.</string>
+    <string name="profilo_livello">Level</string>
+    <string name="profilo_principiante_le_prime_4">Beginner: an adaptation session for the first 4 weeks.</string>
+    <string name="profilo_caldo">Heat</string>
+    <string name="profilo_nei_giorni_caldi_trasforma">On hot days, turn easy runs into indoor rides</string>
+    <string name="profilo_di_solito_mi_alleno">I usually train at…</string>
+    <string name="profilo_il_coach_legge_la">The coach reads the forecast for this time.</string>
+    <string name="profilo_posizione_approssimativa_consentita_il">Approximate location allowed: the coach uses the forecast for where you are.</string>
+    <string name="profilo_serve_per_le_previsioni">Needed for the weather forecast: on hot days the coach adapts your runs. Without it the coach works the same, without the heat rules.</string>
+    <string name="profilo_consenti_la_posizione_approssimativa">Allow approximate location</string>
+    <string name="profilo_se_android_non_la" formatted="true">If Android no longer asks: Android Settings → Apps → %1$s → Permissions → Location.</string>
+    <string name="profilo_sensori">Sensors</string>
+    <string name="profilo_ho_uno_stryd">I have a Stryd</string>
+    <string name="profilo_le_sedute_di_qualita">Quality running sessions (hills, intervals, threshold) will use power. You need the CP on Intervals.icu (running FTP field): the coach updates it by itself from your runs with Stryd.</string>
+    <string name="profilo_ho_un_sensore_core">I have a CORE 2 sensor</string>
+    <string name="profilo_applica_il_protocollo_detp">Apply the DETP protocol</string>
+    <string name="profilo_con_il_detp_il">With DETP the coach adds heat adaptation sessions (heat blocks) and HSI targets to workouts. Always stop at the first symptoms (dizziness, nausea, chills). Not suitable if you are ill or have cardiovascular problems.</string>
+    <string name="profilo_salva">Save</string>
+    <string name="profilo_valori_fuori_dai_limiti">Values out of range: max HR 120–230, resting HR 30–100, hours 1–30, minutes 0–600.</string>
+    <string name="profilo_ripianifica_questa_settimana">Replan this week</string>
+    <string name="profilo_ripianificazione_in_corso_richiede">Replanning in progress: it takes a few minutes, you can leave this screen.</string>
+    <string name="profilo_ripianificare_la_settimana">Replan the week?</string>
+    <string name="profilo_le_sedute_da_oggi">Sessions from today to Sunday will be recalculated with this profile. Past sessions stay unchanged.</string>
+    <string name="profilo_ripianifica">Replan</string>
+    <string name="profilo_annulla">Cancel</string>
+    <string name="profilo_nessuno">None</string>
+    <string name="profilo_usa">Use</string>
+</resources>

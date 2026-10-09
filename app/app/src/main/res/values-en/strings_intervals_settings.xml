@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Inglese: DA RIVEDERE da un madrelingua (closed testing). Traduzione iniziale della Parte 3, ottobre 2026. -->
+<resources>
+    <string name="intervals_settings_impostazioni">Settings</string>
+    <string name="intervals_settings_1_intervals_icu">1. Intervals.icu</string>
+    <string name="intervals_settings_scollega">Disconnect</string>
+    <string name="intervals_settings_collega_il_tuo_account" formatted="true">Connect your account: %1$s will be able to send your nights, read sessions and calendar, and create the %2$s fields on its own. Before connecting, read which data goes to Intervals.icu.</string>
+    <string name="intervals_settings_collega_intervals_icu">Connect Intervals.icu</string>
+    <string name="intervals_settings_il_collegamento_non_ha">The connection does not have permission to create fields (SETTINGS:WRITE): reconnect and accept all permissions.</string>
+    <string name="intervals_settings_ricollega">Reconnect</string>
+    <string name="intervals_settings_riprova">Try again</string>
+    <string name="intervals_settings_prepara_i_campi" formatted="true">Prepare the %1$s fields</string>
+    <string name="intervals_settings_invia_automaticamente_ogni_notte">Send automatically every night after stopping</string>
+    <string name="intervals_settings_alternativa_al_collegamento_utile">Alternative to the connection (useful until the app is approved on Intervals.icu). If you are connected, the connection takes priority.</string>
+    <string name="intervals_settings_api_key_settings_developer">API key (Settings → Developer Settings)</string>
+    <string name="intervals_settings_salva_e_prova_connessione">Save and test connection</string>
+    <string name="intervals_settings_protezione_notturna">Night protection</string>
+    <string name="intervals_settings_fascia">Strap</string>
+    <string name="intervals_settings_dati">Data</string>
+    <string name="intervals_settings_backup_e_ripristino">Backup and restore</string>
+    <string name="intervals_settings_esporta_notti">Export nights</string>
+</resources>

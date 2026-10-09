@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Spagnolo: DA RIVEDERE da un madrelingua (closed testing). Traduzione iniziale della Parte 3, ottobre 2026. -->
+<resources>
+    <string name="protezione_protezione_notturna_incompleta">Protección nocturna incompleta</string>
+    <string name="protezione_sistema">Corregir</string>
+    <string name="protezione_registrazione_interrotta_per_minuti" formatted="true">Registro interrumpido durante %1$s minutos (%2$s)</string>
+    <string name="protezione_succede_soprattutto_quando_il">Ocurre sobre todo cuando el sistema cierra las apps en segundo plano para ahorrar batería.</string>
+    <string name="protezione_istruzioni_per" formatted="true">Instrucciones para %1$s</string>
+    <string name="protezione_chiudi">Cerrar</string>
+    <string name="protezione_protezione_notturna">Protección nocturna</string>
+    <string name="protezione_registra_per_8_ore" formatted="true">%1$s registra durante 8 horas con la pantalla apagada. Android tiende a cerrar las apps que trabajan mucho tiempo en segundo plano: estos ajustes lo evitan.</string>
+    <string name="protezione_apri_le_impostazioni_di" formatted="true">Abrir los ajustes de %1$s</string>
+    <string name="protezione_su_questa_versione_la">En esta versión la pantalla no se abre directamente: sigue la guía.</string>
+    <string name="protezione_guida_dettagliata_su_dontkillmyapp">Guía detallada en dontkillmyapp.com</string>
+</resources>

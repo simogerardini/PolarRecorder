@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Inglese: DA RIVEDERE da un madrelingua (closed testing). Traduzione iniziale della Parte 3, ottobre 2026. -->
+<resources>
+    <string name="lingua_lingua">Language</string>
+    <string name="lingua_come_il_telefono">Same as phone</string>
+    <string name="lingua_le_sedute_sull_orologio">Sessions on the watch will be in English: many watches cannot show Chinese characters.</string>
+    <string name="lingua_aggiorno_il_piano_della">Update this week\'s plan in the new language?</string>
+    <string name="lingua_le_sedute_da_oggi">Sessions from today to Sunday will be rewritten. Past days are not touched.</string>
+    <string name="lingua_si_aggiorna">Yes, update</string>
+    <string name="lingua_no">No</string>
+</resources>

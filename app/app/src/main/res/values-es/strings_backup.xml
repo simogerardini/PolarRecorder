@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Spagnolo: DA RIVEDERE da un madrelingua (closed testing). Traduzione iniziale della Parte 3, ottobre 2026. -->
+<resources>
+    <string name="backup_nessun_backup_delle_notti">Ninguna copia de seguridad de las noches en los últimos 30 días.</string>
+    <string name="backup_fai_il_backup">Hacer copia</string>
+    <string name="backup_backup_e_ripristino">Copia de seguridad y restauración</string>
+    <string name="backup_backup">Copia de seguridad</string>
+    <string name="backup_notti_stato_del_coach">Noches, estado del coach, perfil y etiquetas en un único archivo cifrado con una contraseña que eliges tú. Guárdalo donde quieras: Google Drive, memoria del teléfono, ordenador. No incluye la conexión con Intervals.icu: tras restaurar en un teléfono nuevo, vuelve a conectarla.</string>
+    <string name="backup_crea_backup">Crear copia</string>
+    <string name="backup_ripristino">Restauración</string>
+    <string name="backup_da_un_file_noctalix">Desde un archivo .noctalix (o .biosleep, de copias hechas antes del cambio de nombre). Antes de restaurar verás cuántas noches contiene y podrás cancelar.</string>
+    <string name="backup_ripristina_da_un_backup">Restaurar desde una copia</string>
+    <string name="backup_esporta_notti">Exportar noches</string>
+    <string name="backup_un_csv_con_una">Un CSV con una fila por noche, para abrir en una hoja de cálculo. El archivo NO está cifrado: quien lo abra verá tus datos de sueño y frecuencia cardíaca.</string>
+    <string name="backup_aggiungi_gli_intervalli_rr">Añadir los intervalos RR de cada noche (archivo zip, más grande)</string>
+    <string name="backup_esporta">Exportar</string>
+    <string name="backup_serve_per_riaprire_il">Sirve para volver a abrir la copia. Si la olvidas, la copia ya no se podrá abrir: nadie puede recuperarla.</string>
+    <string name="backup_password_almeno_caratteri" formatted="true">Contraseña (al menos %1$s caracteres)</string>
+    <string name="backup_ripeti_la_password">Repite la contraseña</string>
+    <string name="backup_continua">Continuar</string>
+    <string name="backup_annulla">Cancelar</string>
+    <string name="backup_ripristinare_questo_backup">¿Restaurar esta copia?</string>
+    <string name="backup_backup_del_con_notti" formatted="true">Copia del %1$s (%2$s %3$s), con %4$s noches.\n\nLas noches de este teléfono se sustituirán por las de la copia, junto con el estado del coach, el perfil y las etiquetas.</string>
+    <string name="backup_sostituisci">Sustituir</string>
+</resources>

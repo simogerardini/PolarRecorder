@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Cinese semplificato: DA RIVEDERE da un madrelingua (closed testing). Traduzione iniziale della Parte 3, ottobre 2026. -->
+<resources>
+    <string name="backup_nessun_backup_delle_notti">最近 30 天没有备份睡眠数据。</string>
+    <string name="backup_fai_il_backup">立即备份</string>
+    <string name="backup_backup_e_ripristino">备份与恢复</string>
+    <string name="backup_backup">备份</string>
+    <string name="backup_notti_stato_del_coach">睡眠记录、教练状态、个人资料和标签保存在一个用你自选密码加密的文件中。可保存在任意位置：Google Drive、手机存储或电脑。文件不包含 Intervals.icu 连接：在新手机上恢复后需重新连接。</string>
+    <string name="backup_crea_backup">创建备份</string>
+    <string name="backup_ripristino">恢复</string>
+    <string name="backup_da_un_file_noctalix">从 .noctalix 文件恢复（或更名前创建的 .biosleep 备份）。恢复前会显示其中包含的夜晚数量，你可以取消。</string>
+    <string name="backup_ripristina_da_un_backup">从备份恢复</string>
+    <string name="backup_esporta_notti">导出睡眠记录</string>
+    <string name="backup_un_csv_con_una">CSV 文件，每晚一行，可用电子表格打开。文件未加密：任何打开它的人都能看到你的睡眠和心率数据。</string>
+    <string name="backup_aggiungi_gli_intervalli_rr">添加每晚的 RR 间期（zip 文件，较大）</string>
+    <string name="backup_esporta">导出</string>
+    <string name="backup_serve_per_riaprire_il">打开备份时需要此密码。如果忘记，备份将无法打开，任何人都无法找回。</string>
+    <string name="backup_password_almeno_caratteri" formatted="true">密码（至少 %1$s 个字符）</string>
+    <string name="backup_ripeti_la_password">再次输入密码</string>
+    <string name="backup_continua">继续</string>
+    <string name="backup_annulla">取消</string>
+    <string name="backup_ripristinare_questo_backup">恢复此备份？</string>
+    <string name="backup_backup_del_con_notti" formatted="true">%1$s 的备份（%2$s %3$s），包含 %4$s 晚。\n\n此手机上的睡眠记录将被备份中的记录替换，教练状态、个人资料和标签也会一并替换。</string>
+    <string name="backup_sostituisci">替换</string>
+</resources>

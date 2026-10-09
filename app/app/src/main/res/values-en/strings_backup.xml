@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Inglese: DA RIVEDERE da un madrelingua (closed testing). Traduzione iniziale della Parte 3, ottobre 2026. -->
+<resources>
+    <string name="backup_nessun_backup_delle_notti">No backup of your nights in the last 30 days.</string>
+    <string name="backup_fai_il_backup">Back up now</string>
+    <string name="backup_backup_e_ripristino">Backup and restore</string>
+    <string name="backup_backup">Backup</string>
+    <string name="backup_notti_stato_del_coach">Nights, coach state, profile and tags in a single file encrypted with a password you choose. Save it wherever you like: Google Drive, phone storage, computer. It does not include the Intervals.icu connection: after restoring on a new phone, connect it again.</string>
+    <string name="backup_crea_backup">Create backup</string>
+    <string name="backup_ripristino">Restore</string>
+    <string name="backup_da_un_file_noctalix">From a .noctalix file (or .biosleep, for backups made before the name change). Before restoring you will see how many nights it contains and can cancel.</string>
+    <string name="backup_ripristina_da_un_backup">Restore from a backup</string>
+    <string name="backup_esporta_notti">Export nights</string>
+    <string name="backup_un_csv_con_una">A CSV with one row per night, to open in a spreadsheet. The file is NOT encrypted: anyone who opens it can see your sleep and heart rate data.</string>
+    <string name="backup_aggiungi_gli_intervalli_rr">Add the RR intervals of each night (zip file, larger)</string>
+    <string name="backup_esporta">Export</string>
+    <string name="backup_serve_per_riaprire_il">You need it to open the backup again. If you forget it, the backup can no longer be opened: nobody can recover it.</string>
+    <string name="backup_password_almeno_caratteri" formatted="true">Password (at least %1$s characters)</string>
+    <string name="backup_ripeti_la_password">Repeat the password</string>
+    <string name="backup_continua">Continue</string>
+    <string name="backup_annulla">Cancel</string>
+    <string name="backup_ripristinare_questo_backup">Restore this backup?</string>
+    <string name="backup_backup_del_con_notti" formatted="true">Backup of %1$s (%2$s %3$s), with %4$s nights.\n\nThe nights on this phone will be replaced by those in the backup, together with the coach state, profile and tags.</string>
+    <string name="backup_sostituisci">Replace</string>
+</resources>

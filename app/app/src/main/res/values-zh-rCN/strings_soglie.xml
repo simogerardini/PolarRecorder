@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Cinese semplificato: DA RIVEDERE da un madrelingua (closed testing). Traduzione iniziale della Parte 3, ottobre 2026. -->
+<resources>
+    <string name="soglie_soglie_non_controllabili">无法检查阈值</string>
+    <string name="soglie_il_collegamento_a_intervals">Intervals.icu 连接无法读取设置：请重新连接并接受所有权限。</string>
+    <string name="soglie_ricollega_intervals_icu">重新连接 Intervals.icu</string>
+    <string name="soglie_soglie_da_completare">需补全的阈值</string>
+    <string name="soglie_apri_intervals_icu">打开 Intervals.icu</string>
+    <string name="soglie_soglie_su_intervals_icu">Intervals.icu 上的阈值</string>
+    <string name="soglie_ultimo_test" formatted="true">最近测试：%1$s，%2$s</string>
+    <string name="soglie_consigliato" formatted="true">%1$s（建议）：%2$s</string>
+</resources>

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Inglese: DA RIVEDERE da un madrelingua (closed testing). Traduzione iniziale della Parte 3, ottobre 2026. -->
+<resources>
+    <string name="fascia_fascia">Strap</string>
+    <string name="fascia_nessuna_fascia_collegata_collegala">No strap connected: connect it from the Night tab.</string>
+    <string name="fascia_per_cambiare_fascia_scheda">To change strap: Night tab → Change strap.</string>
+    <string name="fascia_rapporto_fascia_dell_ultima">Strap report for the last night</string>
+    <string name="fascia_disponibile_dopo_la_prima">Available after the first recorded night.</string>
+    <string name="fascia_descrive_la_fascia_e">Describes the strap and the connection quality, with no health data: it helps testers report problems.</string>
+    <string name="fascia_condividi_il_rapporto">Share the report</string>
+</resources>

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Cinese semplificato: DA RIVEDERE da un madrelingua (closed testing). Traduzione iniziale della Parte 3, ottobre 2026. -->
+<resources>
+    <string name="protezione_protezione_notturna_incompleta">夜间保护未完成设置</string>
+    <string name="protezione_sistema">去设置</string>
+    <string name="protezione_registrazione_interrotta_per_minuti" formatted="true">记录中断了 %1$s 分钟（%2$s）</string>
+    <string name="protezione_succede_soprattutto_quando_il">这通常发生在系统为省电而关闭后台应用时。</string>
+    <string name="protezione_istruzioni_per" formatted="true">%1$s 设置说明</string>
+    <string name="protezione_chiudi">关闭</string>
+    <string name="protezione_protezione_notturna">夜间保护</string>
+    <string name="protezione_registra_per_8_ore" formatted="true">%1$s 会在熄屏状态下记录 8 小时。Android 往往会关闭长时间在后台运行的应用：这些设置可以防止这种情况。</string>
+    <string name="protezione_apri_le_impostazioni_di" formatted="true">打开 %1$s 设置</string>
+    <string name="protezione_su_questa_versione_la">此版本无法直接打开该页面：请按指南操作。</string>
+    <string name="protezione_guida_dettagliata_su_dontkillmyapp">dontkillmyapp.com 上的详细指南</string>
+</resources>
