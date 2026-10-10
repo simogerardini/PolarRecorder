@@ -322,6 +322,11 @@ def get_activities(days=42):
         ATTIVITA_DEGRADATE = stato
         prima = (now_local() - timedelta(days=days + 1)).strftime("%Y-%m-%d")
         dati = degradato.ripara(dati, _get_icu("wellness", oldest=prima, newest=newest) or [])
+        if CHECKIN:   # 10/10/2026: con il check-in il carico ricostruito si divide tra le sedute
+            import checkin as _ck
+            previste = {e.get("external_id"): e.get("moving_time") for e in get_events(oldest, newest)
+                        if e.get("external_id")}
+            dati = _ck.ripartisci(dati, CHECKIN, previste)
     _CACHE[key] = dati or []
     return _CACHE[key]
 
@@ -2305,6 +2310,10 @@ TAG_GIORNI = {}     # "YYYY-MM-DD" -> [chiavi]          (impostati da cervello.e
 TAG_SEDUTE = {}     # "<id attivita'>" -> [chiavi]
 _MOTIVI_TAG = []    # decisioni prese per un tag in questo run (per il riepilogo)
 TAG_FATICA = ("fatica_alta", "gambe_pesanti", "malessere")
+# 10/10/2026 (check-in): pseudo-attivita' {"id": "checkin:<eid>", "start_date_local"} che datano
+# i tag del check-in (TAG_SEDUTE["checkin:<eid>"]), impostate da cervello.esegui_app
+CHECKIN_PSEUDO = []
+CHECKIN = {}             # voci valide del check-in (checkin.leggi)
 
 
 def _piu(d, n):
@@ -2351,7 +2360,7 @@ def effetti_tag(d, ref, tag_giorni, tag_sedute, activities):
     if "dolore_muscolare" in oggi_t:
         eff["no_qualita"] = True
         eff["motivi"].append(f"tag dolore muscolare del {d}: niente qualita'")
-    for a in activities or []:
+    for a in list(activities or []) + list(CHECKIN_PSEUDO or []):
         tags = (tag_sedute or {}).get(str(a.get("id"))) or []
         ad = (a.get("start_date_local") or "")[:10]
         if not tags or not ad:

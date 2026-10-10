@@ -16,6 +16,7 @@ config (JSON):
   tag             facoltativo: {"giorni": {"YYYY-MM-DD": [chiavi]}, "sedute": {"<id attivita'>": [chiavi]}}
                   vocabolario in coach_settimanale.TAG_GIORNO / TAG_SEDUTA
   lingua          facoltativo: "it"|"en"|"es"|"zh" (sedute sul calendario; zh -> en)
+  checkin         facoltativo: {"<external_id>": {"stato", "rpe", "minuti", "data", "tag"}}, 28 giorni
   disponibilita_date  facoltativo: {"YYYY-MM-DD": minuti} dal "+" del calendario
                   (0 = giorno non disponibile; vince sulla settimana tipo)
   posizione       facoltativo: {"lat", "lon"} dal telefono (meteo per i giorni caldi;
@@ -50,7 +51,7 @@ from marchio import NOME_APP
 import campi
 import messaggi   # 07/10/2026 (punto 13a): codici dei messaggi per l'app
 
-VERSIONE = "2026.10.10-nomi2"   # anche nel LEGGIMI del pacchetto
+VERSIONE = "2026.10.10-checkin"   # anche nel LEGGIMI del pacchetto
 import contextlib, importlib, io, json, os, re, sys, traceback
 
 # 09/10/2026: il cervello non usa piu' GitHub ne' Telegram; le variabili si tolgono comunque
@@ -782,8 +783,8 @@ def _adesso(cfg):
 
 def _carica_moduli():
     global cs
-    import sedute, biometria, carico, soglie, palestra, caldo, detp, traduzioni_palestra, traduzioni, degradato, nomi, coach_settimanale
-    for m in (sedute, biometria, carico, soglie, palestra, caldo, detp, traduzioni_palestra, traduzioni, degradato, nomi, coach_settimanale):
+    import sedute, biometria, carico, soglie, palestra, caldo, detp, traduzioni_palestra, traduzioni, degradato, nomi, checkin, coach_settimanale
+    for m in (sedute, biometria, carico, soglie, palestra, caldo, detp, traduzioni_palestra, traduzioni, degradato, nomi, checkin, coach_settimanale):
         importlib.reload(m)
     cs = coach_settimanale
     return sedute
@@ -955,6 +956,11 @@ def esegui_app(config_json):
             # 05/10/2026: tag dell'app (vocabolario fisso; chiavi sconosciute ignorate)
             tag_validi, tag_scartati = valida_tag(cfg.get("tag"))
             cs.TAG_GIORNI, cs.TAG_SEDUTE = tag_validi["giorni"], tag_validi["sedute"]
+            # 10/10/2026 (check-in della Parte 3): tag e fatica fuori scala come tag di seduta
+            import checkin as ck
+            cs.CHECKIN = ck.leggi(cfg.get("checkin"))
+            tag_ck, cs.CHECKIN_PSEUDO = ck.tag_sedute(cs.CHECKIN)
+            cs.TAG_SEDUTE = dict(cs.TAG_SEDUTE, **tag_ck)
             # Il riepilogo vive nell'app (riepilogo_<data>.json): nessuna NOTE di piano sul
             # calendario di Intervals.icu (coach silenzioso, decisione di Simone).
             cs.scrivi_nota = lambda *a, **k: None
@@ -1045,6 +1051,9 @@ def esegui_app(config_json):
                     if tag_scartati:
                         righe.append("tag sconosciuti ignorati: " + ", ".join(sorted(set(tag_scartati))))
                     rie["avvisi"] = "\n".join(x for x in [rie.get("avvisi") or ""] + righe if x)
+                if cs.CHECKIN:   # 10/10/2026: check-in degli ultimi 7 giorni
+                    import checkin as ck
+                    rie["checkin"] = ck.riepilogo(cs.CHECKIN, cs.now_local().strftime("%Y-%m-%d"))
                 # 07/10/2026 (punto 13a): messaggi con codice e valori, per la traduzione
                 rie["messaggi"] = messaggi.messaggi_riepilogo(rie, out["notifiche"])
                 rie["notifiche_righe"] = [cs.RIGHE_NOTIFICHE.get(n) or
