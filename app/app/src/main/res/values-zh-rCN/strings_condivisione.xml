@@ -32,4 +32,20 @@
   <string name="card_seduta_recupero">恢复</string>
   <string name="card_km">%1$s 公里</string>
   <string name="card_m">%1$s 米</string>
+  <string name="condivisione_dati_seduta">卡片上的数据：%1$d / %2$d</string>
+  <string name="condivisione_campo_ritmo">配速或速度</string>
+  <string name="card_seduta_passo">配速</string>
+  <string name="card_seduta_velocita">速度</string>
+  <string name="card_seduta_dislivello">爬升</string>
+  <string name="card_seduta_potenza">平均功率</string>
+  <string name="card_seduta_fc">平均心率</string>
+  <string name="card_seduta_calorie">卡路里</string>
+  <string name="card_seduta_piano">计划完成度</string>
+  <string name="card_passo_km">%1$s /公里</string>
+  <string name="card_passo_100m">%1$s /100米</string>
+  <string name="card_kmh">%1$s 公里/小时</string>
+  <string name="card_watt">%1$d 瓦</string>
+  <string name="card_bpm">%1$d 次/分</string>
+  <string name="card_kcal">%1$d 千卡</string>
+  <string name="card_percento">%1$d%%</string>
 </resources>

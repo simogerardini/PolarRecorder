@@ -18,6 +18,8 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.horizontalScroll
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
@@ -97,6 +99,16 @@ private fun SchermataCondivisione(card: CardCondivisibile, chiudi: () -> Unit) {
   var formato by rememberSaveable { mutableStateOf(Formato.STORIA) }
   var mostraDifferenza by rememberSaveable { mutableStateOf(false) }
   var mostraFasi by rememberSaveable { mutableStateOf(false) }
+  // Scelta dei valori della card seduta, ricordata tra una condivisione e l'altra
+  val preferenze = remember { context.getSharedPreferences(PREFERENZE, Context.MODE_PRIVATE) }
+  var campiTesto by rememberSaveable {
+    mutableStateOf(
+        if (card is CardSeduta) {
+          Calcoli.campiIniziali(preferenze.getString(CHIAVE_CAMPI, null), card.disponibili())
+              .joinToString(",") { it.name }
+        } else "")
+  }
+  val campiSeduta = Calcoli.campiDaTesto(campiTesto)
   var inCorso by remember { mutableStateOf(false) }
   val titoloMenu = stringResource(R.string.condivisione_scegli)
   val errore = stringResource(R.string.condivisione_errore)
@@ -114,13 +126,37 @@ private fun SchermataCondivisione(card: CardCondivisibile, chiudi: () -> Unit) {
           contentAlignment = Alignment.Center) {
         AnteprimaScalata(formato.geometria, layer,
             Modifier.clip(RoundedCornerShape(12.dp))) {
-          CardVista(card, formato, Opzioni(mostraDifferenza, mostraFasi), logo)
+          CardVista(card, formato, Opzioni(mostraDifferenza, mostraFasi, campiSeduta), logo)
         }
       }
       Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
         Formato.entries.forEach { f ->
           FilterChip(selected = f == formato, onClick = { formato = f },
               label = { Text(stringResource(etichettaFormato(f))) })
+        }
+      }
+      if (card is CardSeduta) {
+        val disponibili = card.disponibili()
+        if (disponibili.isNotEmpty()) {
+          Text(stringResource(R.string.condivisione_dati_seduta, campiSeduta.size,
+              CampoSeduta.MASSIMO),
+              Modifier.padding(top = 8.dp), style = MaterialTheme.typography.labelLarge)
+          Row(Modifier.fillMaxWidth().horizontalScroll(rememberScrollState()).padding(top = 4.dp),
+              horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            disponibili.forEach { campo ->
+              val acceso = campo in campiSeduta
+              FilterChip(
+                  selected = acceso,
+                  enabled = acceso || campiSeduta.size < CampoSeduta.MASSIMO,
+                  onClick = {
+                    val nuovi = Calcoli.alterna(campiSeduta, campo)
+                    campiTesto = nuovi.joinToString(",") { it.name }
+                    preferenze.edit().putString(CHIAVE_CAMPI, campiTesto).apply()
+                  },
+                  label = { Text(stringResource(etichettaCampo(campo))) },
+              )
+            }
+          }
         }
       }
       if (card is CardEta && card.differenza != null) {
@@ -209,6 +245,21 @@ private fun AnteprimaScalata(
       }
     }
   }
+}
+
+private const val PREFERENZE = "noctalix_condivisione"
+private const val CHIAVE_CAMPI = "campi_seduta"
+
+private fun etichettaCampo(c: CampoSeduta): Int = when (c) {
+  CampoSeduta.DISTANZA -> R.string.card_seduta_distanza
+  CampoSeduta.RITMO -> R.string.condivisione_campo_ritmo
+  CampoSeduta.TSS -> R.string.card_seduta_tss
+  CampoSeduta.RECUPERO -> R.string.card_seduta_recupero
+  CampoSeduta.POTENZA -> R.string.card_seduta_potenza
+  CampoSeduta.DISLIVELLO -> R.string.card_seduta_dislivello
+  CampoSeduta.PIANO -> R.string.card_seduta_piano
+  CampoSeduta.FC_MEDIA -> R.string.card_seduta_fc
+  CampoSeduta.CALORIE -> R.string.card_seduta_calorie
 }
 
 private fun etichettaFormato(f: Formato): Int = when (f) {

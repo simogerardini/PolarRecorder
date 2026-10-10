@@ -63,7 +63,11 @@ private val FASE_REM = Color(0xFF8FD3E8)
 private val FASE_VEGLIA = Color(0xFF7F97AA)
 
 /** Scelte fatte dall'utente nell'anteprima. */
-data class Opzioni(val mostraDifferenza: Boolean = false, val mostraFasi: Boolean = false)
+data class Opzioni(
+    val mostraDifferenza: Boolean = false,
+    val mostraFasi: Boolean = false,
+    val campiSeduta: List<CampoSeduta> = CampoSeduta.PREDEFINITI,
+)
 
 /**
  * Card a piena risoluzione: occupa g.w x g.h pixel. Si disegna con densità 1 e fontScale 1,
@@ -90,7 +94,7 @@ fun CardVista(card: CardCondivisibile, formato: Formato, opzioni: Opzioni, logo:
             g, logo, null,
             if (card.datiGarmin) stringResource(R.string.card_garmin) else null,
         ) {
-          ContenutoSeduta(card, g, locale)
+          ContenutoSeduta(card, g, locale, opzioni)
         }
       }
     }
@@ -278,7 +282,7 @@ private fun ColumnScope.ContenutoEta(c: CardEta, g: Geometria, locale: Locale, o
 }
 
 @Composable
-private fun ColumnScope.ContenutoSeduta(c: CardSeduta, g: Geometria, locale: Locale) {
+private fun ColumnScope.ContenutoSeduta(c: CardSeduta, g: Geometria, locale: Locale, o: Opzioni) {
   Etichetta(stringResource(R.string.card_seduta_etichetta, c.sport, data(c.giorno, locale)), g)
   Text(c.nome, maxLines = 2, overflow = TextOverflow.Ellipsis,
       style = testo(SpaceGrotesk, FontWeight.Bold, (g.secValore * 1.2f).toInt(),
@@ -286,21 +290,68 @@ private fun ColumnScope.ContenutoSeduta(c: CardSeduta, g: Geometria, locale: Loc
   Spacer(Modifier.height((g.secValore / 2).dp))
   NumeroGrande(c.durataMin.coerceAtLeast(0).toString(), g,
       stringResource(R.string.card_seduta_min))
+  val disponibili = c.disponibili()
+  val scelti = o.campiSeduta.filter { it in disponibili }.take(CampoSeduta.MASSIMO)
+  if (scelti.isEmpty()) return
   Spacer(Modifier.height(g.secValore.dp))
-  val valori = buildList {
-    c.distanzaKm?.takeIf { it > 0.0 }?.let { km ->
-      val (metri, testo) = Calcoli.distanza(km, locale)
-      add(stringResource(R.string.card_seduta_distanza) to
-          stringResource(if (metri) R.string.card_m else R.string.card_km, testo))
-    }
-    c.tss?.takeIf { it > 0 }?.let {
-      add(stringResource(R.string.card_seduta_tss) to it.toString())
-    }
-    c.recupero?.takeIf { it.isNotBlank() }?.let {
-      add(stringResource(R.string.card_seduta_recupero) to it)
+  // Valori brevi su una griglia a due colonne; il recupero, che è una frase, su riga intera
+  val brevi = scelti.filter { it != CampoSeduta.RECUPERO }.map { voceSeduta(c, it, locale) }
+  brevi.chunked(2).forEachIndexed { i, riga ->
+    if (i > 0) Spacer(Modifier.height((g.secValore / 2).dp))
+    Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(g.secValore.dp)) {
+      riga.forEach { Valore(it, g, Modifier.weight(1f)) }
+      if (riga.size == 1) Spacer(Modifier.weight(1f))
     }
   }
-  if (valori.isNotEmpty()) Valori(g, valori)
+  if (CampoSeduta.RECUPERO in scelti) {
+    if (brevi.isNotEmpty()) Spacer(Modifier.height((g.secValore / 2).dp))
+    Valore(voceSeduta(c, CampoSeduta.RECUPERO, locale), g, Modifier.fillMaxWidth())
+  }
+}
+
+private data class Voce(val nome: String, val valore: String, val colore: Color = NoctalixColori.text)
+
+@Composable
+private fun Valore(v: Voce, g: Geometria, modifier: Modifier) {
+  Column(modifier) {
+    Text(v.nome, maxLines = 1, overflow = TextOverflow.Ellipsis,
+        style = testo(Inter, FontWeight.Medium, g.secEtichetta, NoctalixColori.soft))
+    Text(v.valore, maxLines = 1, overflow = TextOverflow.Ellipsis,
+        style = testo(Inter, FontWeight.SemiBold, g.secValore, v.colore, cifre = true))
+  }
+}
+
+@Composable
+private fun voceSeduta(c: CardSeduta, campo: CampoSeduta, locale: Locale): Voce = when (campo) {
+  CampoSeduta.DISTANZA -> {
+    val (metri, t) = Calcoli.distanza(c.distanzaKm ?: 0.0, locale, c.sportCodice)
+    Voce(stringResource(R.string.card_seduta_distanza),
+        stringResource(if (metri) R.string.card_m else R.string.card_km, t))
+  }
+  CampoSeduta.RITMO -> {
+    val r = Calcoli.ritmo(c.sportCodice, c.distanzaKm, c.durataS ?: (c.durataMin * 60), locale)!!
+    when (r.tipo) {
+      Calcoli.TipoRitmo.PASSO_KM -> Voce(stringResource(R.string.card_seduta_passo),
+          stringResource(R.string.card_passo_km, r.testo))
+      Calcoli.TipoRitmo.PASSO_100M -> Voce(stringResource(R.string.card_seduta_passo),
+          stringResource(R.string.card_passo_100m, r.testo))
+      Calcoli.TipoRitmo.VELOCITA -> Voce(stringResource(R.string.card_seduta_velocita),
+          stringResource(R.string.card_kmh, r.testo))
+    }
+  }
+  CampoSeduta.TSS -> Voce(stringResource(R.string.card_seduta_tss), c.tss.toString())
+  CampoSeduta.DISLIVELLO -> Voce(stringResource(R.string.card_seduta_dislivello),
+      stringResource(R.string.card_m, c.dislivelloM.toString()))
+  CampoSeduta.POTENZA -> Voce(stringResource(R.string.card_seduta_potenza),
+      stringResource(R.string.card_watt, c.potenzaW ?: 0))
+  CampoSeduta.FC_MEDIA -> Voce(stringResource(R.string.card_seduta_fc),
+      stringResource(R.string.card_bpm, c.fcMedia ?: 0), NoctalixColori.coral)
+  CampoSeduta.CALORIE -> Voce(stringResource(R.string.card_seduta_calorie),
+      stringResource(R.string.card_kcal, c.calorie ?: 0))
+  CampoSeduta.PIANO -> Voce(stringResource(R.string.card_seduta_piano),
+      stringResource(R.string.card_percento, (c.pianoPct ?: 0).coerceIn(0, 999)))
+  CampoSeduta.RECUPERO -> Voce(stringResource(R.string.card_seduta_recupero), c.recupero.orEmpty(),
+      NoctalixColori.azure)
 }
 
 private fun data(giorno: LocalDate, locale: Locale): String =

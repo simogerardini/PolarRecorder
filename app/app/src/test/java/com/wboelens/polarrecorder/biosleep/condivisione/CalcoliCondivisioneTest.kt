@@ -64,6 +64,68 @@ class CalcoliCondivisioneTest {
   }
 
   @Test
+  fun distanza_nuotoSempreInMetri() {
+    assertEquals(true to "1500", Calcoli.distanza(1.5, Locale.ITALIAN, "NUOTO"))
+  }
+
+  @Test
+  fun ritmo_perSport() {
+    // 10 km in 45:00 -> 4:30 /km
+    assertEquals(Calcoli.Ritmo(Calcoli.TipoRitmo.PASSO_KM, "4:30"),
+        Calcoli.ritmo("CORSA", 10.0, 2700))
+    // 1500 m in 27:00 -> 1:48 /100 m
+    assertEquals(Calcoli.Ritmo(Calcoli.TipoRitmo.PASSO_100M, "1:48"),
+        Calcoli.ritmo("NUOTO", 1.5, 1620))
+    // 60 km in 2 h -> 30,0 km/h
+    assertEquals(Calcoli.Ritmo(Calcoli.TipoRitmo.VELOCITA, "30,0"),
+        Calcoli.ritmo("BICI", 60.0, 7200, Locale.ITALIAN))
+    assertNull(Calcoli.ritmo("PALESTRA", 5.0, 3600))
+    assertNull(Calcoli.ritmo("CORSA", null, 3600))
+    assertNull(Calcoli.ritmo("CORSA", 10.0, 0))
+  }
+
+  @Test
+  fun minSec_arrotondaSenzaSessanta() {
+    assertEquals("4:00", Calcoli.minSec(239.6))
+    assertEquals("5:01", Calcoli.minSec(300.6))
+  }
+
+  @Test
+  fun campiIniziali_predefinitiFiltratiSuIDisponibili() {
+    val disp = listOf(CampoSeduta.DISTANZA, CampoSeduta.TSS, CampoSeduta.POTENZA,
+        CampoSeduta.FC_MEDIA, CampoSeduta.CALORIE)
+    // senza scelta salvata: predefiniti disponibili, poi gli altri, FC esclusa
+    assertEquals(listOf(CampoSeduta.DISTANZA, CampoSeduta.TSS, CampoSeduta.POTENZA,
+        CampoSeduta.CALORIE), Calcoli.campiIniziali(null, disp))
+    // scelta salvata: rispettata, filtrata su cio' che la seduta ha
+    assertEquals(listOf(CampoSeduta.FC_MEDIA, CampoSeduta.TSS),
+        Calcoli.campiIniziali("FC_MEDIA,RITMO,TSS,XYZ", disp))
+  }
+
+  @Test
+  fun alterna_massimoQuattroEOrdineDeiChip() {
+    val quattro = listOf(CampoSeduta.DISTANZA, CampoSeduta.RITMO, CampoSeduta.TSS,
+        CampoSeduta.RECUPERO)
+    assertEquals(quattro, Calcoli.alterna(quattro, CampoSeduta.POTENZA))
+    assertEquals(listOf(CampoSeduta.DISTANZA, CampoSeduta.TSS, CampoSeduta.RECUPERO),
+        Calcoli.alterna(quattro, CampoSeduta.RITMO))
+    assertEquals(listOf(CampoSeduta.DISTANZA, CampoSeduta.TSS),
+        Calcoli.alterna(listOf(CampoSeduta.TSS), CampoSeduta.DISTANZA))
+  }
+
+  @Test
+  fun disponibili_soloCampiConDati() {
+    val corsa = CardSeduta(sport = "Corsa", nome = "Soglia", durataMin = 45,
+        giorno = java.time.LocalDate.of(2026, 10, 2), distanzaKm = 10.0, tss = 60,
+        sportCodice = "CORSA", fcMedia = 150, pianoPct = 0)
+    assertEquals(listOf(CampoSeduta.DISTANZA, CampoSeduta.RITMO, CampoSeduta.TSS,
+        CampoSeduta.FC_MEDIA), corsa.disponibili())
+    val palestra = CardSeduta(sport = "Palestra", nome = "Forza", durataMin = 40,
+        giorno = java.time.LocalDate.of(2026, 10, 2), sportCodice = "PALESTRA")
+    assertTrue(palestra.disponibili().isEmpty())
+  }
+
+  @Test
   fun nomeFile_soloAscii() {
     assertEquals("noctalix_eta_123.png", Calcoli.nomeFile("età", 123))
     assertEquals("noctalix_card_1.png", Calcoli.nomeFile("", 1))

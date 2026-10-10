@@ -32,4 +32,20 @@
   <string name="card_seduta_recupero">Recovery</string>
   <string name="card_km">%1$s km</string>
   <string name="card_m">%1$s m</string>
+  <string name="condivisione_dati_seduta">Data on the card: %1$d of %2$d</string>
+  <string name="condivisione_campo_ritmo">Pace or speed</string>
+  <string name="card_seduta_passo">Pace</string>
+  <string name="card_seduta_velocita">Speed</string>
+  <string name="card_seduta_dislivello">Elevation</string>
+  <string name="card_seduta_potenza">Avg power</string>
+  <string name="card_seduta_fc">Avg HR</string>
+  <string name="card_seduta_calorie">Calories</string>
+  <string name="card_seduta_piano">Plan completed</string>
+  <string name="card_passo_km">%1$s /km</string>
+  <string name="card_passo_100m">%1$s /100 m</string>
+  <string name="card_kmh">%1$s km/h</string>
+  <string name="card_watt">%1$d W</string>
+  <string name="card_bpm">%1$d bpm</string>
+  <string name="card_kcal">%1$d kcal</string>
+  <string name="card_percento">%1$d%%</string>
 </resources>

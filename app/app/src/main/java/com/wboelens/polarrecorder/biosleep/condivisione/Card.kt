@@ -56,9 +56,10 @@ data class CardEta(
 
 /**
  * Seduta svolta. [sport] (già tradotto) e [nome] dalla seduta pianificata dal coach;
- * [durataMin], [distanzaKm] e [tss] dall'attività svolta; [recupero] = banda HRV o
- * consiglio del mattino, già tradotto. [datiGarmin] = l'attività può venire da Garmin:
- * la card aggiunge l'attribuzione. Se l'origine non è certa, va passato true.
+ * i valori numerici dall'attività svolta; [recupero] = banda HRV o consiglio del mattino,
+ * già tradotto. [datiGarmin] = l'attività può venire da Garmin: la card aggiunge
+ * l'attribuzione. Se l'origine non è certa, va passato true.
+ * L'utente sceglie nell'anteprima quali valori mostrare (al massimo [CampoSeduta.MASSIMO]).
  */
 data class CardSeduta(
     val sport: String,
@@ -69,8 +70,44 @@ data class CardSeduta(
     val tss: Int? = null,
     val recupero: String? = null,
     val datiGarmin: Boolean = true,
+    /** Sport.name (CORSA, BICI, NUOTO…): serve per passo o velocità e per i metri nel nuoto. */
+    val sportCodice: String? = null,
+    /** Tempo in movimento in secondi: rende esatto il passo. Se null si usa durataMin. */
+    val durataS: Int? = null,
+    val dislivelloM: Int? = null,
+    val potenzaW: Int? = null,
+    val fcMedia: Int? = null,
+    val calorie: Int? = null,
+    /** Quanto la seduta svolta ha rispettato il piano, 0-100 (compliance di Intervals.icu). */
+    val pianoPct: Int? = null,
 ) : CardCondivisibile {
   override val tipo: String get() = "seduta"
+
+  /** Valori che questa seduta ha davvero, nell'ordine in cui compaiono tra le scelte. */
+  fun disponibili(): List<CampoSeduta> = CampoSeduta.entries.filter { campo ->
+    when (campo) {
+      CampoSeduta.DISTANZA -> (distanzaKm ?: 0.0) > 0.0
+      CampoSeduta.RITMO -> Calcoli.ritmo(sportCodice, distanzaKm, durataS ?: durataMin * 60) != null
+      CampoSeduta.TSS -> (tss ?: 0) > 0
+      CampoSeduta.DISLIVELLO -> (dislivelloM ?: 0) > 0
+      CampoSeduta.POTENZA -> (potenzaW ?: 0) > 0
+      CampoSeduta.FC_MEDIA -> (fcMedia ?: 0) > 0
+      CampoSeduta.CALORIE -> (calorie ?: 0) > 0
+      CampoSeduta.PIANO -> pianoPct != null && pianoPct > 0
+      CampoSeduta.RECUPERO -> !recupero.isNullOrBlank()
+    }
+  }
+}
+
+/** Valori facoltativi della card seduta. L'ordine è quello dei chip nell'anteprima. */
+enum class CampoSeduta {
+  DISTANZA, RITMO, TSS, RECUPERO, POTENZA, DISLIVELLO, PIANO, FC_MEDIA, CALORIE;
+
+  companion object {
+    const val MASSIMO = 4
+    /** Accesi alla prima condivisione. La FC resta spenta: è un dato del cuore. */
+    val PREDEFINITI = listOf(DISTANZA, RITMO, TSS, RECUPERO)
+  }
 }
 
 /** Formati dell'immagine, in pixel. Misure dalle linee grafiche della Parte 4. */
