@@ -33,6 +33,9 @@ data class AgeComponent(
     val label: String,
     val years: Double,
     val detail: String,
+    /** Valore misurato e unita' (es. 53.2, "ml/kg/min"), per la copia del web. */
+    val valore: Double? = null,
+    val unita: String? = null,
 )
 
 data class BioAgeResult(

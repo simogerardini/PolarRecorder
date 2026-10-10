@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Dispositivi collegati (Parte 1) -->
+<resources>
+    <string name="dispositivi_titolo">Dispositivos vinculados</string>
+    <string name="dispositivi_indietro">Atrás</string>
+    <string name="dispositivi_spiegazione">También puedes ver tus datos en noctalix.com desde el ordenador. El teléfono envía al navegador una copia cifrada: nadie más puede leerla.</string>
+    <string name="dispositivi_come_collegare">Abre noctalix.com en el navegador y enfoca el código QR con la cámara del teléfono, o usa el escáner de abajo.</string>
+    <string name="dispositivi_scansiona">Escanear el código QR</string>
+    <string name="dispositivi_inquadra">Enfoca el código QR que muestra el navegador</string>
+    <string name="dispositivi_qr_non_valido">Este código QR no es un enlace de %1$s</string>
+    <string name="dispositivi_codice_domanda">¿El código del navegador es el mismo?</string>
+    <string name="dispositivi_codice_si">Sí, vincular</string>
+    <string name="dispositivi_codice_no">No, cancelar</string>
+    <string name="dispositivi_collegato_ok">Navegador vinculado.</string>
+    <string name="dispositivi_elenco">Navegadores vinculados</string>
+    <string name="dispositivi_nessuno">Ningún navegador vinculado.</string>
+    <string name="dispositivi_browser_dal">Navegador vinculado el %1$s</string>
+    <string name="dispositivi_ultima_copia">Última copia: %1$s · %2$d KB</string>
+    <string name="dispositivi_nessuna_copia">Aún no se ha enviado ninguna copia</string>
+    <string name="dispositivi_scollega">Desvincular</string>
+    <string name="dispositivi_scollega_titolo">¿Desvincular este navegador?</string>
+    <string name="dispositivi_scollega_testo">El navegador dejará de recibir tus datos y borrará la copia. La conexión con Intervals.icu no se revoca: para revocarla, desconecta la app de Intervals.icu.</string>
+    <string name="dispositivi_annulla">Cancelar</string>
+</resources>

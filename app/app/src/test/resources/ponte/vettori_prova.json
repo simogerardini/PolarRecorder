@@ -1,0 +1,42 @@
+{
+  "nota": "Chiavi private deterministiche SOLO per i test. gzip con mtime=0 e JSON compatto: il browser e Android devono DECIFRARE le buste e ottenere gli oggetti; per la CIFRATURA basta la verifica a andata e ritorno (gzip di librerie diverse produce byte diversi).",
+  "sessione": "sess_prova_0001",
+  "pub_browser": "BGoXOtrobSAG5jKnDA1mRK7pwi_MXqgszmHgT60kWhA4rRFjZxnf8FJpChq8fz-Xtx6W7HL3ZIcdu3FEq4doS0I",
+  "pub_telefono": "BInqCV-ffTy8sdZYApCrcgOkkCT-VAyyqIhVr2eyxCCwT4ak0mmpsKJxJX-0G9kBLjmfQUh8EDuL_8FkyEOGnrQ",
+  "priv_browser_pkcs8": "MIGHAgEAMBMGByqGSM49AgEGCCqGSM49AwEHBG0wawIBAQQgMabF9KXMPgO6xU2_jctOVxGuaLxoenEW2X1x0Q0DTYKhRANCAARqFzra6G0gBuYypwwNZkSu6cIvzF6oLM5h4E-tJFoQOK0RY2cZ3_BSaQoavH8_l7celuxy92SHHbtxRKuHaEtC",
+  "priv_telefono_pkcs8": "MIGHAgEAMBMGByqGSM49AgEGCCqGSM49AwEHBG0wawIBAQQgBLv-xKcWCKOHGkYF4P3sVyOJnj2TLjuMkh6Bt2cS2D2hRANCAASJ6glfn308vLHWWAKQq3IDpJAk_lQMsqiIVa9nssQgsE-GpNJpqbCicSV_tBvZAS45n0FIfBA7i__BZMhDhp60",
+  "chiave_collegamento": "FzSVU3PEQ8rWggC6eOa2YYGw2i-zbWxVZIEIdIshMME",
+  "busta_collegamento": "AwMDAwMDAwMDAwMDjif4xFNLBkfMRVcmnpGMfbz_7b9BXjTVs9cUm7cu2iwEkcp4nS81D3UEFucV6KoBzcJbVwlcez7xOvkMQQnB5UODTnLDhApiZ6RXCFcRL_4wZORt0WsXUts5wOi1WTz3lbidMU9l5M-oFal17s82d6MHaD4nTOpMfxw5nQlw2dX1Ug0OFwC_mhtPrqNEGPZUGQTM4Hm_2HCBEJ9I214BJtjRjQrx3-F_2HLcQQzjCcBrbpWp6Ex9imLuvhgoeM8-NkpHvkPsS5ZdOamTjaA2KWdMpM4_",
+  "pacchetto_collegamento": {
+    "v": 1,
+    "id_collegamento": "col_prova",
+    "segreto_browser": "AQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQE",
+    "chiave_dati": "AgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgI",
+    "intervals": {
+      "athlete_id": "i000000",
+      "access_token": "token-di-prova",
+      "scope": "ACTIVITY:READ"
+    },
+    "telefono": {
+      "nome": "Pixel di prova",
+      "app_versione": "0.0.0"
+    }
+  },
+  "busta_snapshot": "BAQEBAQEBAQEBAQEG8fZDv5LkFqfXcqs90kblxdOkmcssXY6H7UH-RWtmFuDuFx6F8eFPPGnHPzQbiUlDXrMfOlsm6C3EZXw-xpi4CxRRwmCNR8He70ZASZTrVwTq7VM_n6xqba23iAyhpZCAUl6bE_obYS5QqCi6XnXYxY7OfpGLq9RozifyYFoWv_gut-3nhARYCShnjMetRfXrTqBuT2jvUy3oRsU1PejK9wGVrbKUg",
+  "snapshot": {
+    "v": 1,
+    "generato": "2026-10-10T07:00:00+02:00",
+    "app": {
+      "versione": "0.0.0",
+      "lingua": "it",
+      "fuso": "Europe/Rome"
+    },
+    "atleta": {
+      "intervals_id": "i000000"
+    },
+    "notti": [],
+    "riepiloghi": []
+  },
+  "codice_verifica": "237225",
+  "hash_segreto_browser": "cs1uhCLEB_ttCYaQ8RMLfe1-wvf14dML2dUh8BU2N5M"
+}

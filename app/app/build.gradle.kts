@@ -127,6 +127,9 @@ dependencies {
   implementation(libs.androidx.runtime.livedata)
 
   implementation(libs.gson)
+
+  // Scanner QR per collegare un browser (Apache 2.0, nessuna chiamata di rete)
+  implementation("com.journeyapps:zxing-android-embedded:4.3.0")
 }
 
 chaquopy {

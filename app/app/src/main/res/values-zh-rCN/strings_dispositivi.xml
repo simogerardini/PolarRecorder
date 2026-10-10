@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Dispositivi collegati (Parte 1) -->
+<resources>
+    <string name="dispositivi_titolo">已关联设备</string>
+    <string name="dispositivi_indietro">返回</string>
+    <string name="dispositivi_spiegazione">你也可以在电脑上通过 noctalix.com 查看数据。手机向浏览器发送加密副本：其他人无法读取。</string>
+    <string name="dispositivi_come_collegare">在浏览器中打开 noctalix.com，用手机相机扫描二维码，或使用下方的扫描器。</string>
+    <string name="dispositivi_scansiona">扫描二维码</string>
+    <string name="dispositivi_inquadra">对准浏览器中显示的二维码</string>
+    <string name="dispositivi_qr_non_valido">此二维码不是 %1$s 关联码</string>
+    <string name="dispositivi_codice_domanda">浏览器中的代码是否相同？</string>
+    <string name="dispositivi_codice_si">是，关联</string>
+    <string name="dispositivi_codice_no">否，取消</string>
+    <string name="dispositivi_collegato_ok">浏览器已关联。</string>
+    <string name="dispositivi_elenco">已关联的浏览器</string>
+    <string name="dispositivi_nessuno">没有已关联的浏览器。</string>
+    <string name="dispositivi_browser_dal">%1$s 关联的浏览器</string>
+    <string name="dispositivi_ultima_copia">最近副本：%1$s · %2$d KB</string>
+    <string name="dispositivi_nessuna_copia">尚未发送副本</string>
+    <string name="dispositivi_scollega">取消关联</string>
+    <string name="dispositivi_scollega_titolo">取消关联此浏览器？</string>
+    <string name="dispositivi_scollega_testo">浏览器将不再接收你的数据并删除副本。Intervals.icu 的授权不会被撤销：如需撤销，请在 Intervals.icu 中断开该应用。</string>
+    <string name="dispositivi_annulla">取消</string>
+</resources>
