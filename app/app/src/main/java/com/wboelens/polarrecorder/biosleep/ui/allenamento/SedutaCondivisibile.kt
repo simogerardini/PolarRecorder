@@ -43,6 +43,15 @@ object SedutaCondivisibile {
             tss = a.tss,
             recupero = recupero(context, repo, giorno, ::t),
             datiGarmin = origine == null || !origine.equals("MANUAL", ignoreCase = true),
+            // valori a scelta nell'anteprima (Parte 5): tutto quello che l'attivita' ha, null se manca
+            sportCodice = evento.sport.name,
+            durataS = a.durataS,                                   // moving_time
+            dislivelloM = a.dislivello?.toInt(),                   // total_elevation_gain
+            potenzaW = a.wattMedi,                                 // icu_average_watts (media, non normalizzata)
+            fcMedia = a.fcMedia,
+            calorie = a.calorie,
+            // compliance di Intervals.icu, gia' in percentuale (puo' superare 100)
+            pianoPct = (a.aderenza ?: PyJson.num(att.get("compliance"))?.v)?.takeIf { it > 0 }?.let { Math.round(it).toInt() },
         )
       } catch (e: Exception) {
         Log.w(TAG, "card della seduta non disponibile", e)
