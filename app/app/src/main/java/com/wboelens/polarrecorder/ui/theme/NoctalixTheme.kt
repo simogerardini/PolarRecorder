@@ -51,14 +51,14 @@ object NoctalixColori {
   val coralChiaro = Color(0xFFD93A4E)
 }
 
-private val Inter =
+internal val Inter =
     FontFamily(
         Font(R.font.inter_regular, FontWeight.Normal),
         Font(R.font.inter_medium, FontWeight.Medium),
         Font(R.font.inter_semibold, FontWeight.SemiBold),
     )
 
-private val SpaceGrotesk =
+internal val SpaceGrotesk =
     FontFamily(
         Font(R.font.space_grotesk_medium, FontWeight.Medium),
         Font(R.font.space_grotesk_bold, FontWeight.Bold),
