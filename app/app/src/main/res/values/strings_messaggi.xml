@@ -97,6 +97,8 @@
     <string name="msg_rm_riposo_biometrico">la curva biometrica prescrive riposo</string>
     <string name="msg_rm_banda_rossa_forza">banda rossa: recupero, niente circuito di forza</string>
     <string name="msg_rm_banda" formatted="true">banda %1$s</string>
+    <string name="msg_attivita_non_leggibili">attività non leggibili da Intervals.icu: carico ricostruito da CTL e ATL</string>
+    <string name="msg_soglie_automatiche_sospese">soglie automatiche sospese: attività non leggibili da Intervals.icu</string>
     <string name="msg_frammento_caldo_tag">" (tag)"</string>
     <string name="msg_frammento_caldo_meteo" formatted="true">: %1$s °C, umidità %2$s%%</string>
     <string name="msg_frammento_alle" formatted="true">" alle %1$s"</string>

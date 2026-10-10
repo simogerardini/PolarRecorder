@@ -98,6 +98,8 @@
     <string name="msg_rm_riposo_biometrico">la curva biométrica indica descanso</string>
     <string name="msg_rm_banda_rossa_forza">banda roja: recuperación, sin circuito de fuerza</string>
     <string name="msg_rm_banda" formatted="true">banda %1$s</string>
+    <string name="msg_attivita_non_leggibili">actividades no legibles desde Intervals.icu: carga reconstruida a partir de CTL y ATL</string>
+    <string name="msg_soglie_automatiche_sospese">umbrales automáticos en pausa: actividades no legibles desde Intervals.icu</string>
     <string name="msg_frammento_caldo_tag">" (etiqueta)"</string>
     <string name="msg_frammento_caldo_meteo" formatted="true">: %1$s °C, humedad %2$s%%</string>
     <string name="msg_frammento_alle" formatted="true">" a las %1$s"</string>

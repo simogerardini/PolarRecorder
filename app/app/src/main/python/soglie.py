@@ -749,6 +749,10 @@ SEDUTA_DEL_TEST = {"run_tt30": "corsa_chiave", "bike_ftp20": "bici_chiave",
                    "swim_css": "nuoto_chiave", "run_maf": "corsa_supporto"}
 
 
+NOMI_TEST = {"run_tt30": "RUN · Test · Time Trial 30min", "bike_ftp20": "BIKE · Test · FTP 20min",
+             "swim_css": "SWIM · Test · CSS 400+200m", "run_maf": "RUN · Test · MAF 8 km"}
+
+
 def eventi_test(test, data_str, stryd=False):
     sport, minuti, desc = _DESCRIZIONI_TEST[test["chiave"]]
     if stryd and test["chiave"] == "run_tt30":   # 07/10/2026 (punto 12)
@@ -757,8 +761,9 @@ def eventi_test(test, data_str, stryd=False):
     # Il "%" nelle note verrebbe letto da Intervals.icu come target in potenza: si scrive
     # "per cento" (test bici: "95% della potenza media" -> target misti HR/Power).
     note = (f"\n{test['protocollo']}\nMisura: {test['misura']}\n").replace("%", " per cento")
+    nome = NOMI_TEST.get(test["chiave"], test["nome"])     # 10/10/2026: DISCIPLINA · STIMOLO · FORMATO
     return [{"category": "WORKOUT", "start_date_local": f"{data_str}T00:00:00", "type": sport,
-             "name": test["nome"], "description": desc + note, "moving_time": minuti * 60,
+             "name": nome, "description": desc + note, "moving_time": minuti * 60,
              "external_id": f"coach:Test:{data_str}"}]
 
 

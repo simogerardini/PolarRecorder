@@ -50,7 +50,7 @@ from marchio import NOME_APP
 import campi
 import messaggi   # 07/10/2026 (punto 13a): codici dei messaggi per l'app
 
-VERSIONE = "2026.10.09-privacy2"   # anche nel LEGGIMI del pacchetto
+VERSIONE = "2026.10.10-nomi2"   # anche nel LEGGIMI del pacchetto
 import contextlib, importlib, io, json, os, re, sys, traceback
 
 # 09/10/2026: il cervello non usa piu' GitHub ne' Telegram; le variabili si tolgono comunque
@@ -782,8 +782,8 @@ def _adesso(cfg):
 
 def _carica_moduli():
     global cs
-    import sedute, biometria, carico, soglie, palestra, caldo, detp, traduzioni_palestra, traduzioni, coach_settimanale
-    for m in (sedute, biometria, carico, soglie, palestra, caldo, detp, traduzioni_palestra, traduzioni, coach_settimanale):
+    import sedute, biometria, carico, soglie, palestra, caldo, detp, traduzioni_palestra, traduzioni, degradato, nomi, coach_settimanale
+    for m in (sedute, biometria, carico, soglie, palestra, caldo, detp, traduzioni_palestra, traduzioni, degradato, nomi, coach_settimanale):
         importlib.reload(m)
     cs = coach_settimanale
     return sedute
@@ -848,6 +848,16 @@ def _aggiorna_soglie(piano, atleta, oggi, cfg_profilo=None):
                 righe.append(f"test in programma il {s['data']}: {s['test']['nome']}")
         cs.soglie.configura(cs.ICU, cs.ATHLETE_ID, atleta,
                             cs.get_activities(cs.soglie.LTHR_LOOKBACK_DAYS))
+        if cs.ATTIVITA_DEGRADATE:
+            # 10/10/2026 (modalita' degradata): senza attivita' e flussi leggibili niente stime
+            # automatiche; restano le soglie impostate su Intervals.icu. Il CSS (tempi
+            # inseriti nell'app) resta disponibile.
+            righe.append("soglie automatiche sospese: attivita' non leggibili da Intervals.icu")
+            t = stato.get("ultimo_test") or {}
+            if t.get("chiave") != "run_tt30":
+                righe += cs.soglie.elabora_test(stato, oggi)
+            cs.salva_stato(stato)
+            return righe
         righe += cs.soglie.elabora_test(stato, oggi)      # passo soglia dal test, CSS
         agg, _ = cs.soglie.aggiorna_lthr_automatico(stato, oggi)
         for a in agg:
@@ -1014,6 +1024,8 @@ def esegui_app(config_json):
                     rie["avvisi"] = "\n".join(x for x in [rie.get("avvisi") or "",
                                                          "settimana tipo non valida, uso quella predefinita: "
                                                          + "; ".join(errori_sett)] if x)
+                if cs.ATTIVITA_DEGRADATE:      # 10/10/2026: modalita' degradata
+                    soglie_agg = ["attivita' non leggibili da Intervals.icu: carico ricostruito da CTL e ATL"] + soglie_agg
                 if soglie_agg:
                     rie["avvisi"] = "\n".join(x for x in [rie.get("avvisi") or ""] + soglie_agg if x)
                 da_compl = cs.soglie.test_da_completare(cs.carica_stato())

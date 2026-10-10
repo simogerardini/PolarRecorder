@@ -78,6 +78,9 @@ CATALOGO = [
     ("passo_soglia_scrittura_fallita", rf"test di corsa del {_D}: scrittura del passo soglia non riuscita"),
     ("test_corsa_non_trovato", rf"test di corsa del {_D} non trovato tra le attivita': passo soglia invariato"),
     ("soglie_da_completare", r"soglie da completare su Intervals\.icu: (?P<elenco>.+)"),
+    # modalita' degradata (10/10/2026)
+    ("attivita_non_leggibili", r"attivita' non leggibili da Intervals\.icu: carico ricostruito da CTL e ATL"),
+    ("soglie_automatiche_sospese", r"soglie automatiche sospese: attivita' non leggibili da Intervals\.icu"),
     # ── profilo e sistema ─────────────────────────────────────────────────────────
     ("settimana_tipo_non_valida", r"settimana tipo non valida, uso quella predefinita: (?P<errori>.+)"),
     ("fuso_non_valido", r"fuso orario non valido \((?P<fuso>.+)\): uso Europe/Rome"),

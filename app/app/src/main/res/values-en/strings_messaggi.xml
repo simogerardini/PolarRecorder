@@ -98,6 +98,8 @@
     <string name="msg_rm_riposo_biometrico">the biometric curve calls for rest</string>
     <string name="msg_rm_banda_rossa_forza">red band: recovery, no strength circuit</string>
     <string name="msg_rm_banda" formatted="true">%1$s band</string>
+    <string name="msg_attivita_non_leggibili">activities not readable from Intervals.icu: load rebuilt from CTL and ATL</string>
+    <string name="msg_soglie_automatiche_sospese">automatic thresholds paused: activities not readable from Intervals.icu</string>
     <string name="msg_frammento_caldo_tag">" (tag)"</string>
     <string name="msg_frammento_caldo_meteo" formatted="true">: %1$s °C, humidity %2$s%%</string>
     <string name="msg_frammento_alle" formatted="true">" at %1$s"</string>

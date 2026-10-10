@@ -42,6 +42,13 @@ TITOLI = [
     ("Trazione, Rotazione & Assetto", "Pull, Rotation & Alignment", "Tracción, Rotación y Alineación"),
     ("Zero Attrezzatura / High Volume Resilienza", "Zero Equipment / High Volume Resilience", "Sin Material / Resiliencia de Alto Volumen"),
     ("Schema palestra", "Gym plan", "Plan de gimnasio"),
+    # stimoli nei nomi delle schede (10/10/2026: STR · STIMOLO · TITOLO)
+    ("Forza massimale", "Maximal strength", "Fuerza máxima"),
+    ("Forza resistente", "Strength endurance", "Fuerza resistencia"),
+    ("Equilibrio strutturale", "Structural balance", "Equilibrio estructural"),
+    ("Recupero attivo", "Active recovery", "Recuperación activa"),
+    ("Prevenzione", "Prevention", "Prevención"),
+    ("Potenza", "Power", "Potencia"),
     ("Forza", "Strength", "Fuerza"),
 ]
 

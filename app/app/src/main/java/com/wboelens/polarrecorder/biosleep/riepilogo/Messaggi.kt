@@ -121,6 +121,9 @@ object Messaggi {
           "rm_riposo_biometrico" to listOf(),
           "rm_banda_rossa_forza" to listOf(),
           "rm_banda" to listOf("banda"),
+          // modalita' degradata (cervello 2026.10.10-degradato)
+          "attivita_non_leggibili" to listOf(),
+          "soglie_automatiche_sospese" to listOf(),
           "piano_rimodulato" to listOf("data", "banda"),
           "piano_settimanale" to listOf(),
       )

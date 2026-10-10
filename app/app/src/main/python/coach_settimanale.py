@@ -63,6 +63,9 @@ import caldo       # previsioni nel luogo del telefono e regole dei giorni caldi
 import detp        # protocollo DETP con sensore CORE 2 (punto 11)
 import traduzioni  # 13b: nomi e note delle sedute nella lingua dell'atleta
 import messaggi    # 13d: codici per i testi del riepilogo
+import degradato   # 10/10/2026: attivita' non leggibili da Intervals.icu
+import nomi        # 10/10/2026: DISCIPLINA · STIMOLO · FORMATO
+ATTIVITA_DEGRADATE = None   # "bloccate" | "non_leggibili" quando il carico e' ricostruito
 from requests.adapters import HTTPAdapter
 from urllib3.util.retry import Retry
 
@@ -310,7 +313,16 @@ def get_activities(days=42):
         return _CACHE[key]
     oldest = (now_local() - timedelta(days=days)).strftime("%Y-%m-%d")
     newest = now_local().strftime("%Y-%m-%d")
-    _CACHE[key] = _get_icu("activities", oldest=oldest, newest=newest) or []
+    dati = _get_icu("activities", oldest=oldest, newest=newest)
+    # 10/10/2026 (modalita' degradata): attivita' bloccate o lista non leggibile -> il carico
+    # dei giorni illeggibili si ricostruisce dalla ATL della wellness (degradato.py).
+    stato = degradato.stato_attivita(dati)
+    if stato in ("bloccate", "non_leggibili"):
+        global ATTIVITA_DEGRADATE
+        ATTIVITA_DEGRADATE = stato
+        prima = (now_local() - timedelta(days=days + 1)).strftime("%Y-%m-%d")
+        dati = degradato.ripara(dati, _get_icu("wellness", oldest=prima, newest=newest) or [])
+    _CACHE[key] = dati or []
     return _CACHE[key]
 
 
@@ -2717,8 +2729,9 @@ PROFILO_CALDO = json.loads(os.getenv("CALDO", "{}") or "{}")
 
 def eventi_da_libreria(s):
     """Eventi Intervals.icu della seduta. 07/10/2026: con il DETP attivo note HSI brevi
-    sugli step di qualita' e brick, riga di idratazione su lunghi e brick."""
-    evs = _eventi_da_libreria(s)
+    sugli step di qualita' e brick, riga di idratazione su lunghi e brick.
+    10/10/2026: nome secondo la regola di Simone (nomi.titolo), mai la durata."""
+    evs = [dict(e, name=nomi.titolo(e, s)) for e in (_eventi_da_libreria(s) or [])] or None
     if not evs or not detp.attivo(PROFILO_DETP) or s.get("detp"):
         return evs
     evs = [detp.annota(e, s["key"], s.get("qualita"), s.get("distanza")) for e in evs]
@@ -2732,7 +2745,8 @@ def _eventi_da_libreria(s):
     """Eventi Intervals.icu della seduta, scritti da sedute.py. None per la mobilita'."""
     if s.get("detp") in ("heat", "sweat"):
         desc = detp.descrizione_heat(s["durata"]) if s["detp"] == "heat" else detp.descrizione_sweat_test()
-        nome = (f"Heat block CORE {s['durata']}min" if s["detp"] == "heat" else "Sweat test CORE 60min")
+        nome = ("BIKE · Heat block · Plateau HSI 7.2-7.8" if s["detp"] == "heat"
+                else "BIKE · Sweat test · Normotermico + Caldo")
         return [{"category": "WORKOUT", "start_date_local": f"{s['data']}T00:00:00", "type": "Ride",
                  "name": nome, "description": desc, "moving_time": s["durata"] * 60,
                  "external_id": f"coach:Detp:{s['data']}"}]

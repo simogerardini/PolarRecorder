@@ -877,25 +877,36 @@ def descrizione(scheda):
 
 def evento(scheda, data_str, nome=None):
     return {"category": "WORKOUT", "start_date_local": f"{data_str}T00:00:00",
-            "type": "WeightTraining", "name": nome or f"Forza — {scheda['titolo']} {scheda['durata']}min",
+            "type": "WeightTraining", "name": nome or nome_scheda(scheda),
             "description": descrizione(scheda), "moving_time": scheda["durata"] * 60,
             "external_id": f"coach:Gym:{data_str}"}
 
 
+STIMOLO_FOCUS = (("max_strength", "Forza massimale"), ("rate_of_force_development", "Potenza"),
+                 ("injury_prevention", "Prevenzione"), ("active_recovery", "Recupero attivo"),
+                 ("strength_endurance", "Forza resistente"), ("structural_balance", "Equilibrio strutturale"))
+
+
+def nome_scheda(scheda):
+    """10/10/2026 (regola di Simone): STR · <stimolo dal focus> · <titolo della scheda>."""
+    stim = next((n for f, n in STIMOLO_FOCUS if f in scheda["focus"]), "Forza")
+    return f"STR · {stim} · {scheda['titolo']}"
+
+
 def scheda_da_nome(nome):
-    """Scheda di un evento scritto da evento() ("Forza — <titolo>"), None altrimenti.
-    13c (08/10/2026): riconosce anche il nome tradotto in inglese e spagnolo."""
+    """Scheda di un evento scritto da evento(), None altrimenti. Riconosce il nome nella forma
+    "STR · <stimolo> · <titolo>" (anche tradotta in inglese e spagnolo) e, per compatibilita'
+    con gli eventi gia' a calendario, la vecchia forma "Forza — <titolo> NNmin"."""
     if not nome:
         return None
-    base = re.sub(r"\s+\d+min$", "", nome)
     import traduzioni
+    base = re.sub(r"\s+\d+min$", "", nome)
     for s in SCHEDE:
-        nomi = {f"Forza — {s['titolo']}"} | {traduzioni.traduci_palestra(f"Forza — {s['titolo']}", l)
-                                            for l in ("en", "es")}
-        if any(base.endswith(n.split(" — ", 1)[1]) or base == n for n in nomi):
+        candidati = {nome_scheda(s), f"Forza — {s['titolo']}"}
+        candidati |= {traduzioni.traduci_palestra(c, l) for c in list(candidati) for l in ("en", "es")}
+        if base in candidati or any(base.endswith(c.split(" · ")[-1]) and " · " in base for c in candidati):
             return s
     return None
-
 
 def e_companion(scheda):
     return bool(set(scheda["focus"]) & FOCUS_COMPANION) or scheda["id"] in COMPANION_EXTRA
