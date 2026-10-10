@@ -132,6 +132,8 @@ class CoachWorker(context: Context, params: WorkerParameters) : CoroutineWorker(
   }
 
   override suspend fun doWork(): Result {
+    // solo biometria: il coach di allenamento e' spento
+    if (!ModalitaCoach.attivo(applicationContext)) return Result.success()
     val data = inputData.getString(K_DATA) ?: return Result.success()
     val tentativo = inputData.getInt(K_TENTATIVO, 1)
     val senzaAttesa = inputData.getBoolean(K_SENZA_ATTESA, false)

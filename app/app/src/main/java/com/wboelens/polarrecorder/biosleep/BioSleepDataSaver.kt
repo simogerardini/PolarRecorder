@@ -1,5 +1,7 @@
 package com.wboelens.polarrecorder.biosleep
 
+import com.wboelens.polarrecorder.biosleep.cache.RiepilogoBio
+import com.wboelens.polarrecorder.biosleep.cervello.ModalitaCoach
 import com.wboelens.polarrecorder.BuildConfig
 import android.content.Context
 import android.database.SQLException
@@ -631,6 +633,10 @@ class BioSleepDataSaver(
       }
       buchi?.let { intervalsLine = "Interruzioni: $it" + (intervalsLine?.let { l -> "\n$l" } ?: "") }
 
+      // Solo biometria: semaforo del recupero (banda HRV come il coach, FC a riposo)
+      if (!ModalitaCoach.attivo(appContext)) {
+        RiepilogoBio.riga(appContext)?.let { r -> intervalsLine = r + (intervalsLine?.let { "\n$it" } ?: "") }
+      }
       // Riepilogo nella notifica: al mattino non serve aprire l'app
       NightNotifier.notifySummary(appContext, result.summary, stages, intervalsLine)
     } catch (e: Exception) {

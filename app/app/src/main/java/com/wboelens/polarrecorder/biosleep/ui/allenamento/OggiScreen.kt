@@ -1,5 +1,6 @@
 package com.wboelens.polarrecorder.biosleep.ui.allenamento
 
+import com.wboelens.polarrecorder.biosleep.ui.coachAttivo
 import com.wboelens.polarrecorder.biosleep.lingua.tr
 import com.wboelens.polarrecorder.R
 import androidx.compose.ui.res.stringResource
@@ -151,23 +152,27 @@ fun OggiScreen(
       // registrazione notturna: notte interrotta stamattina, protezione incompleta
       CardInterruzione(onApriProtezione)
       CardProtezione(onApriProtezione)
-      RiquadroRiepilogo(LocalDate.now(), onApriRiepilogo)
+      // solo biometria: niente coach, soglie, test, sedute, forma
+      val coach = coachAttivo()
+      if (coach) RiquadroRiepilogo(LocalDate.now(), onApriRiepilogo)
       // soglie mancanti su Intervals.icu: card solo se servono
-      SoglieOggi()
+      if (coach) SoglieOggi()
       // test periodici: test in programma questa settimana, tempi del test CSS
-      TestOggi()
+      if (coach) TestOggi()
       // DETP: dati dello sweat test, dal giorno del test
-      CardSweat()
-      MessaggioCss()
+      if (coach) CardSweat()
+      if (coach) MessaggioCss()
       RigaTagOggi(onApriTag)
       if (dati == null) {
         Box(Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) { CircularProgressIndicator() }
         return@Column
       }
-      Sezione(stringResource(R.string.oggi_prestazioni)) { RigaForma(dati.forma) }
+      if (coach) Sezione(stringResource(R.string.oggi_prestazioni)) { RigaForma(dati.forma) }
       Sezione(stringResource(R.string.oggi_analisi_del_recupero)) { Recupero(dati) }
-      Sezione(stringResource(R.string.oggi_allenamento_di_oggi)) { AllenamentoDiOggi(dati, onApriSeduta) }
-      Sezione(stringResource(R.string.oggi_settimana)) { Settimana(dati) }
+      if (coach) {
+        Sezione(stringResource(R.string.oggi_allenamento_di_oggi)) { AllenamentoDiOggi(dati, onApriSeduta) }
+        Sezione(stringResource(R.string.oggi_settimana)) { Settimana(dati) }
+      }
     }
   }
 }

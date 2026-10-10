@@ -229,7 +229,8 @@ fun IntervalsSettingsScreen(
 
       HorizontalDivider()
       // Il coach nell'app (cervello Python): id atleta per la API key, ultimo run, profilo, misura
-      SezioneCoach(onApriProfilo, onApriGare)
+      InterruttoreCoach()
+      if (coachAttivo()) SezioneCoach(onApriProfilo, onApriGare)
 
       HorizontalDivider()
       // Registrazione notturna: batteria, notifiche, Bluetooth, istruzioni per la marca

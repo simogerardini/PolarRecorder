@@ -1,5 +1,6 @@
 package com.wboelens.polarrecorder.biosleep.ui.allenamento
 
+import com.wboelens.polarrecorder.biosleep.ui.coachAttivo
 import com.wboelens.polarrecorder.biosleep.lingua.tr
 import com.wboelens.polarrecorder.R
 import androidx.compose.ui.res.stringResource
@@ -121,14 +122,15 @@ fun GraficiScreen(bottomBar: @Composable () -> Unit) {
       Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
         for (p in listOf(30, 90)) FilterChip(selected = p == periodo, onClick = { periodo = p }, label = { Text(stringResource(R.string.grafici_giorni, p.toString())) })
       }
-      Sezione(stringResource(R.string.grafici_forma_fisica_e_stanchezza)) {
+      val coach = coachAttivo()
+      if (coach) Sezione(stringResource(R.string.grafici_forma_fisica_e_stanchezza)) {
         GraficoLinee(
             d.giorni,
             listOf(SerieGrafico("CTL forma fisica", ColoriBio.ctl, d.ctl), SerieGrafico("ATL stanchezza", ColoriBio.atl, d.atl)),
             altezza)
         Nota(stringResource(R.string.grafici_quando_la_stanchezza_atl))
       }
-      Sezione(stringResource(R.string.grafici_forma_tsb_e_zone)) { FormaZone(d) }
+      if (coach) Sezione(stringResource(R.string.grafici_forma_tsb_e_zone)) { FormaZone(d) }
       Sezione(stringResource(R.string.grafici_hrv_notturno_rmssd_ms)) {
         GraficoLinee(
             d.giorni,

@@ -447,4 +447,14 @@
     <string name="sis_sc_eliminati" formatted="true">Deleted from Intervals.icu: %1$s events and %2$s fields.</string>
     <string name="sis_sc_parziale" formatted="true">Deleted %1$s of %2$s events and %3$s of %4$s fields: check the rest on Intervals.icu.</string>
     <string name="sis_sc_non_eliminato">Deletion failed: not disconnected. Try again.</string>
+    <string name="sis_hrv_norma">HRV within range</string>
+    <string name="sis_hrv_sotto">HRV below range</string>
+    <string name="sis_hrv_molto_sotto">HRV well below range</string>
+    <string name="sis_recupero_x" formatted="true">Recovery: %1$s</string>
+    <string name="sis_recupero_cal" formatted="true">Recovery: calibrating %1$s/%2$s nights</string>
+    <string name="sis_fc_sopra" formatted="true">Resting HR above usual (%1$s bpm)</string>
+    <string name="sis_coach_allenamento">Training coach</string>
+    <string name="sis_coach_acceso">On: the coach plans sessions on Intervals.icu and adapts them to your night data.</string>
+    <string name="sis_coach_spento">Off: only your night biometrics (HRV, resting HR, sleep, biological age) with their traffic lights. No sessions are written to Intervals.icu; those already written stay.</string>
+    <string name="sis_coach_riparte">The coach restarts with the next night, or right away with Replan from the athlete profile.</string>
 </resources>

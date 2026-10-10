@@ -1,5 +1,6 @@
 package com.wboelens.polarrecorder.biosleep.ui.allenamento
 
+import com.wboelens.polarrecorder.biosleep.ui.coachAttivo
 import com.wboelens.polarrecorder.biosleep.lingua.tr
 import com.wboelens.polarrecorder.R
 import androidx.compose.ui.res.stringResource
@@ -204,8 +205,9 @@ private val VOCI =
 fun BarraBioSleep(navController: NavController) {
   val voce by navController.currentBackStackEntryAsState()
   val corrente = voce?.destination?.route?.substringBefore('?')
+  val coach = coachAttivo()
   NavigationBar {
-    for (v in VOCI) {
+    for (v in VOCI.filter { coach || it.rotta != "calendario" }) {
       NavigationBarItem(
           selected = corrente == v.rotta,
           onClick = {

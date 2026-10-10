@@ -32,14 +32,19 @@ sealed interface Prontezza {
  * Lettura della cache per le schermate. Solo database locale: funziona offline e risponde subito.
  * Da chiamare fuori dal main thread (es. withContext(Dispatchers.IO) in una schermata).
  */
-class CacheRepo(private val db: CacheDb, private val tagGiorni: (LocalDate, LocalDate) -> Map<String, Set<String>> = { _, _ -> emptyMap() }) {
+class CacheRepo(
+    private val db: CacheDb,
+    private val tagGiorni: (LocalDate, LocalDate) -> Map<String, Set<String>> = { _, _ -> emptyMap() },
+    /** Notti registrate sul telefono come righe wellness (NottiLocali): servono senza Intervals.icu. */
+    private val locali: (LocalDate, LocalDate) -> List<JsonObject> = { _, _ -> emptyList() },
+) {
   companion object {
     /** BIOSLEEP_LOOKBACK_DAYS del coach: la banda si calcola sugli stessi 60 giorni. */
     const val GG_BANDA = 60L
 
     fun get(context: Context): CacheRepo {
       val tag = TagDb.get(context)
-      return CacheRepo(CacheDb.get(context)) { da, a -> tag.giorni(da, a) }
+      return CacheRepo(CacheDb.get(context), { da, a -> tag.giorni(da, a) }, { da, a -> NottiLocali.righe(context.applicationContext, da, a) })
     }
   }
 
@@ -61,7 +66,7 @@ class CacheRepo(private val db: CacheDb, private val tagGiorni: (LocalDate, Loca
 
   /** Banda biometrica come il coach: serie BioSleep degli ultimi 60 giorni, filtro qualita'. */
   fun baseline(oggi: LocalDate): BioBaseline {
-    val righe = oggetti(Tabella.WELLNESS, oggi.minusDays(GG_BANDA), oggi).map { PyJson.wellnessBio(it) }
+    val righe = wellness(oggi.minusDays(GG_BANDA), oggi).map { PyJson.wellnessBio(it) }
     // tag di giorno dell'app: quelli confondenti escludono la notte dalla baseline, come nel cervello
     val tag = tagGiorni(oggi.minusDays(GG_BANDA), oggi).mapValues { it.value.toList() }
     return BioBaselineCalc.calcola(BioSleepSeries.daWellness(righe, tag), oggi)
@@ -78,5 +83,6 @@ class CacheRepo(private val db: CacheDb, private val tagGiorni: (LocalDate, Loca
 
   fun attivita(da: LocalDate, a: LocalDate): List<JsonObject> = oggetti(Tabella.ATTIVITA, da, a)
 
-  fun wellness(da: LocalDate, a: LocalDate): List<JsonObject> = oggetti(Tabella.WELLNESS, da, a)
+  /** Wellness di Intervals.icu piu' le notti del telefono non ancora (o mai) inviate. */
+  fun wellness(da: LocalDate, a: LocalDate): List<JsonObject> = NottiLocali.unisci(oggetti(Tabella.WELLNESS, da, a), locali(da, a))
 }

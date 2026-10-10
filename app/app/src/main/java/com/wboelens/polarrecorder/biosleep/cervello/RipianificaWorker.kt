@@ -51,6 +51,8 @@ class RipianificaWorker(context: Context, params: WorkerParameters) : CoroutineW
   }
 
   override suspend fun doWork(): Result {
+    // solo biometria: il coach di allenamento e' spento
+    if (!ModalitaCoach.attivo(applicationContext)) return Result.success()
     val ctx = applicationContext
     NotificheCoach.canali(ctx)
     try {

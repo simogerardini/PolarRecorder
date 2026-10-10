@@ -446,4 +446,14 @@
     <string name="sis_sc_eliminati" formatted="true">Eliminati da Intervals.icu: %1$s eventi e %2$s campi.</string>
     <string name="sis_sc_parziale" formatted="true">Eliminati %1$s eventi su %2$s e %3$s campi su %4$s: controlla il resto su Intervals.icu.</string>
     <string name="sis_sc_non_eliminato">Eliminazione non riuscita: non ho scollegato. Riprova.</string>
+    <string name="sis_hrv_norma">HRV nella norma</string>
+    <string name="sis_hrv_sotto">HRV sotto il range</string>
+    <string name="sis_hrv_molto_sotto">HRV molto sotto il range</string>
+    <string name="sis_recupero_x" formatted="true">Recupero: %1$s</string>
+    <string name="sis_recupero_cal" formatted="true">Recupero: calibrazione %1$s/%2$s notti</string>
+    <string name="sis_fc_sopra" formatted="true">FC a riposo sopra l\'abituale (%1$s bpm)</string>
+    <string name="sis_coach_allenamento">Coach di allenamento</string>
+    <string name="sis_coach_acceso">Acceso: il coach pianifica le sedute su Intervals.icu e le adatta ai tuoi dati della notte.</string>
+    <string name="sis_coach_spento">Spento: solo i dati biometrici della notte (HRV, FC a riposo, sonno, età biologica) con i loro semafori. Nessuna seduta viene scritta su Intervals.icu; quelle già scritte restano.</string>
+    <string name="sis_coach_riparte">Il coach riparte con la prossima notte, o subito con Ripianifica dal profilo atleta.</string>
 </resources>

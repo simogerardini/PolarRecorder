@@ -447,4 +447,14 @@
     <string name="sis_sc_eliminati" formatted="true">已从 Intervals.icu 删除：%1$s 个事件和 %2$s 个字段。</string>
     <string name="sis_sc_parziale" formatted="true">已删除 %2$s 个事件中的 %1$s 个、%4$s 个字段中的 %3$s 个：请在 Intervals.icu 上检查其余部分。</string>
     <string name="sis_sc_non_eliminato">删除失败：未断开连接。请重试。</string>
+    <string name="sis_hrv_norma">HRV 在正常范围</string>
+    <string name="sis_hrv_sotto">HRV 低于范围</string>
+    <string name="sis_hrv_molto_sotto">HRV 远低于范围</string>
+    <string name="sis_recupero_x" formatted="true">恢复：%1$s</string>
+    <string name="sis_recupero_cal" formatted="true">恢复：校准中 %1$s/%2$s 晚</string>
+    <string name="sis_fc_sopra" formatted="true">静息心率高于平时（%1$s 次/分）</string>
+    <string name="sis_coach_allenamento">训练教练</string>
+    <string name="sis_coach_acceso">开启：教练在 Intervals.icu 上安排训练，并根据你的夜间数据调整。</string>
+    <string name="sis_coach_spento">关闭：仅显示夜间生理数据（HRV、静息心率、睡眠、生理年龄）及其信号灯。不会在 Intervals.icu 上写入训练；已写入的保留。</string>
+    <string name="sis_coach_riparte">教练将在下一晚重新启动，或在运动员资料中点击“重新规划”立即启动。</string>
 </resources>
