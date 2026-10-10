@@ -1,5 +1,8 @@
 package com.wboelens.polarrecorder.biosleep.ui.allenamento
 
+import com.wboelens.polarrecorder.biosleep.condivisione.Condivisione
+import com.wboelens.polarrecorder.biosleep.condivisione.CardSeduta
+import androidx.compose.material.icons.filled.Share
 import com.wboelens.polarrecorder.biosleep.lingua.tr
 import com.wboelens.polarrecorder.R
 import androidx.compose.ui.res.stringResource
@@ -79,11 +82,22 @@ fun AttivitaScreen(id: String, onBack: () -> Unit) {
   val context = LocalContext.current.applicationContext
   val esito by produceState<EsitoDettaglio?>(null, id) { value = withContext(Dispatchers.IO) { DettagliRepo.carica(context, id) } }
   val e = esito
+  // condivisione (Parte 5): card solo se c'e' la seduta pianificata abbinata
+  val cardSeduta by produceState<CardSeduta?>(null, e) {
+    value = (e as? EsitoDettaglio.Pronto)?.let { p -> withContext(Dispatchers.IO) { SedutaCondivisibile.carica(context, p.attivita) } }
+  }
   Scaffold(
       topBar = {
         TopAppBar(
             title = { Text(tr((e as? EsitoDettaglio.Pronto)?.attivita?.nome ?: "Seduta"), maxLines = 1) },
-            navigationIcon = { IconButton(onClick = onBack) { Icon(Icons.AutoMirrored.Filled.ArrowBack, tr("Indietro")) } })
+            navigationIcon = { IconButton(onClick = onBack) { Icon(Icons.AutoMirrored.Filled.ArrowBack, tr("Indietro")) } },
+            actions = {
+              cardSeduta?.let { c ->
+                IconButton(onClick = { Condivisione.apri(context, c) }) {
+                  Icon(Icons.Filled.Share, contentDescription = stringResource(R.string.condivisione_azione))
+                }
+              }
+            })
       },
   ) { padding ->
     when (e) {
