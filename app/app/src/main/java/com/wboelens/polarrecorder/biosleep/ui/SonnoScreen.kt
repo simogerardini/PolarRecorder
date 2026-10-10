@@ -1,5 +1,8 @@
 package com.wboelens.polarrecorder.biosleep.ui
 
+import com.wboelens.polarrecorder.biosleep.condivisione.Condivisione
+import com.wboelens.polarrecorder.biosleep.condivisione.CardSonno
+import androidx.compose.material.icons.filled.Share
 import com.wboelens.polarrecorder.biosleep.lingua.tr
 import com.wboelens.polarrecorder.R
 import androidx.compose.ui.res.stringResource
@@ -158,7 +161,19 @@ fun SonnoScreen(onBack: () -> Unit) {
       topBar = {
         TopAppBar(
             title = { Text(stringResource(R.string.sonno_sonno_2)) },
-            navigationIcon = { IconButton(onClick = onBack) { Icon(Icons.AutoMirrored.Filled.ArrowBack, tr("Indietro")) } })
+            navigationIcon = { IconButton(onClick = onBack) { Icon(Icons.AutoMirrored.Filled.ArrowBack, tr("Indietro")) } },
+            actions = {
+              // condivisione (Parte 5): solo con un punteggio valido
+              val ctx = LocalContext.current
+              val notte = s?.ultima
+              val punti = s?.punteggio
+              if (notte != null && punti != null) {
+                val fascia = tr(PunteggioSonno.etichetta(punti.totale))
+                IconButton(onClick = { Condivisione.apri(ctx, CardSonno.da(notte, punti, fascia)) }) {
+                  Icon(Icons.Filled.Share, contentDescription = stringResource(R.string.condivisione_azione))
+                }
+              }
+            })
       },
   ) { padding ->
     if (s == null) {

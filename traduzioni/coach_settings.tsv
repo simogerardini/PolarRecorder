@@ -1,0 +1,12 @@
+coach_settings_3_coach	3. Coach
+coach_settings_il_coach_gira_nell	Il coach gira nell'app subito dopo l'invio della notte, e alle 10:30 se la notte non è arrivata. Usa la stessa API key di Intervals.icu.
+coach_settings_id_atleta_per_la	Id atleta per la API key (0 = quello della API key)
+coach_settings_il_coach_non_ha	Il coach non ha ancora girato su questo telefono
+coach_settings_ultimo_run_del_coach	Ultimo run del coach non riuscito (%1$s): tocca per il log
+coach_settings_ultimo_run_in	Ultimo run (%1$s): %2$s in %3$s
+coach_settings_durata_di_un_run	Durata di un run settimanale: %1$s
+coach_settings_profilo_atleta_fc_ore	Profilo atleta: FC, ore massime, disponibilità
+coach_settings_gare	Gare
+coach_settings_misura_un_run_settimanale	Misura un run settimanale (prova, non scrive nulla)
+coach_settings_log_del_coach	Log del coach
+coach_settings_chiudi	Chiudi

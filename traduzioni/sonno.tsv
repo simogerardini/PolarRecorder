@@ -1,0 +1,12 @@
+sonno_sonno	Sonno · %1$s
+sonno_sonno_2	Sonno
+sonno_nessuna_notte_registrata_con	Nessuna notte registrata con le fasi del sonno.
+sonno_notte_del_di_sonno	Notte del %1$s · %2$s di sonno
+sonno_media_pesata_durata_rispetto	Media pesata: durata rispetto al tuo fabbisogno, efficienza, sonno profondo e REM, minuti svegli e orario. Profondo e REM sono stime da battito e respiro: pesano meno della durata.
+sonno_calibrazione_notti_negli_ultimi	Calibrazione: %1$s/%2$s notti negli ultimi 90 giorni. Servono anche alcune notti del weekend.
+sonno_stanotte_punto_centrale_alle	Stanotte: %1$s → %2$s, punto centrale alle %3$s
+sonno_il_punto_centrale_del	Il punto centrale del tuo sonno è caduto %1$s.
+sonno_anello_esterno_azzurro_la	Anello esterno (azzurro): la notte appena passata. Anello interno: gli orari ottimali per il tuo cronotipo.
+sonno_il_cronotipo_si_calcola	Il cronotipo si calcola dal punto centrale del sonno nei giorni liberi, dopo almeno %1$s notti (ora %2$s).
+sonno_orari_di_sonno_ottimali	Orari di sonno ottimali per te
+sonno_dal_punto_centrale_del	Dal punto centrale del sonno nelle notti libere (venerdì e sabato), corretto per il sonno recuperato nel weekend, sulle ultime %1$s notti. Sveglia e addormentamento: il punto centrale più e meno metà del tuo fabbisogno.

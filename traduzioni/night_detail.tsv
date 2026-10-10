@@ -1,0 +1,31 @@
+night_detail_eliminare_questa_notte	Eliminare questa notte?
+night_detail_riepilogo_grafici_e_battiti	Riepilogo, grafici e battiti registrati verranno cancellati definitivamente.
+night_detail_elimina	Elimina
+night_detail_annulla	Annulla
+night_detail_fc_minima	FC minima
+night_detail_fc_a_riposo	FC a riposo
+night_detail_fc_media	FC media
+night_detail_rmssd	rMSSD
+night_detail_sdnn	SDNN
+night_detail_pnn50	pNN50
+night_detail_l_hrv_di_questa	L'HRV di questa notte non è calcolata e non viene inviata a Intervals.icu.
+night_detail_frequenza_cardiaca_media_5	Frequenza cardiaca (media 5 minuti)
+night_detail_rmssd_5_minuti	rMSSD (5 minuti)
+night_detail_qualita_del_segnale	Qualità del segnale
+night_detail_affidabilita_notte_coperta_da	Affidabilità %1$s % (notte coperta da battiti validi) · %2$s battiti · buoni %3$s % · corretti %4$s % · scartati %5$s % · interruzioni %6$s · finestre valide %7$s/%8$s
+night_detail_intervals_icu	Intervals.icu
+night_detail_fasi_del_sonno	Fasi del sonno
+night_detail_non_disponibili_per_questa	Non disponibili per questa notte (registrazione troppo breve o segnale insufficiente).
+night_detail_sonno_effettivo	Sonno effettivo
+night_detail_efficienza	Efficienza
+night_detail_profondo	Profondo
+night_detail_rem	REM
+night_detail_leggero	Leggero
+night_detail_veglia_notturna	Veglia notturna
+night_detail_frequenza_cardiaca	Frequenza cardiaca
+night_detail_media_della_notte_bpm	Media della notte %1$s bpm · valori ogni 5 minuti
+night_detail_variabilita_cardiaca_hrv	Variabilità cardiaca (HRV)
+night_detail_pnn50_rmssd_ogni_5	pNN50 %1$s % · rMSSD ogni 5 minuti
+night_detail_registrazione	Registrazione
+night_detail_affidabilita_battiti_scartati_interruzioni	Affidabilità %1$s % · %2$s battiti · scartati %3$s % · interruzioni %4$s · finestre valide %5$s/%6$s
+night_detail_invia_ora	Invia ora
