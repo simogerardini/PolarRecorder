@@ -457,4 +457,19 @@
     <string name="sis_coach_acceso">开启：教练在 Intervals.icu 上安排训练，并根据你的夜间数据调整。</string>
     <string name="sis_coach_spento">关闭：仅显示夜间生理数据（HRV、静息心率、睡眠、生理年龄）及其信号灯。不会在 Intervals.icu 上写入训练；已写入的保留。</string>
     <string name="sis_coach_riparte">教练将在下一晚重新启动，或在运动员资料中点击“重新规划”立即启动。</string>
+    <string name="sis_cons_titolo">今日建议</string>
+    <string name="sis_cons_spingi">可以加强</string>
+    <string name="sis_cons_normale">按计划训练</string>
+    <string name="sis_cons_piano">轻松一点</string>
+    <string name="sis_cons_riposo">休息或积极恢复</string>
+    <string name="sis_cons_sp_spingi">HRV 高于你的平均值：适合进行高强度训练。</string>
+    <string name="sis_cons_sp_normale">HRV 在你的正常范围内：按原计划训练。</string>
+    <string name="sis_cons_sp_piano">降低强度和训练量：今天以 Z1-Z2 的轻松训练为宜。</string>
+    <string name="sis_cons_sp_riposo">身体需要恢复：休息或进行非常轻松的活动。</string>
+    <string name="sis_cons_sotto_gg" formatted="true">HRV 低于范围已 %1$s 天</string>
+    <string name="sis_cons_cv">HRV 变异几乎消失：最好不要增加负荷</string>
+    <string name="sis_cons_sat">HRV 远高于平均值：可能是饱和，最好不要加强</string>
+    <string name="sis_cons_calo">HRV 近 7 天呈下降趋势</string>
+    <string name="sis_cons_sonno" formatted="true">昨晚睡眠不足（%1$s）</string>
+    <string name="sis_cons_cal" formatted="true">校准中：%1$s 晚有效记录后提供建议（%2$s/%3$s）。</string>
 </resources>

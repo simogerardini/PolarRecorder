@@ -1,5 +1,6 @@
 package com.wboelens.polarrecorder.biosleep.ui.allenamento
 
+import com.wboelens.polarrecorder.biosleep.ui.CardConsiglio
 import com.wboelens.polarrecorder.biosleep.ui.coachAttivo
 import com.wboelens.polarrecorder.biosleep.lingua.tr
 import com.wboelens.polarrecorder.R
@@ -167,6 +168,8 @@ fun OggiScreen(
         Box(Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) { CircularProgressIndicator() }
         return@Column
       }
+      // solo biometria: consiglio del giorno dai dati della notte
+      if (!coach) CardConsiglio(dati.prontezza, dati.notti.lastOrNull { it.data == dati.oggi }?.sonnoOre)
       if (coach) Sezione(stringResource(R.string.oggi_prestazioni)) { RigaForma(dati.forma) }
       Sezione(stringResource(R.string.oggi_analisi_del_recupero)) { Recupero(dati) }
       if (coach) {

@@ -457,4 +457,19 @@
     <string name="sis_coach_acceso">Activado: el coach planifica las sesiones en Intervals.icu y las adapta a tus datos de la noche.</string>
     <string name="sis_coach_spento">Desactivado: solo los datos biométricos de la noche (HRV, FC en reposo, sueño, edad biológica) con sus semáforos. No se escribe ninguna sesión en Intervals.icu; las ya escritas se quedan.</string>
     <string name="sis_coach_riparte">El coach se reactiva con la próxima noche, o enseguida con Replanificar desde el perfil de atleta.</string>
+    <string name="sis_cons_titolo">Consejo de hoy</string>
+    <string name="sis_cons_spingi">Puedes apretar</string>
+    <string name="sis_cons_normale">Entrena como tenías previsto</string>
+    <string name="sis_cons_piano">Ve con calma</string>
+    <string name="sis_cons_riposo">Descanso o recuperación activa</string>
+    <string name="sis_cons_sp_spingi">HRV por encima de tu media: buen día para un entrenamiento intenso.</string>
+    <string name="sis_cons_sp_normale">HRV dentro de tu normalidad: entrena como tenías previsto.</string>
+    <string name="sis_cons_sp_piano">Reduce intensidad y volumen: hoy mejor trabajo suave, en Z1-Z2.</string>
+    <string name="sis_cons_sp_riposo">Tu cuerpo pide recuperación: descanso o actividad muy ligera.</string>
+    <string name="sis_cons_sotto_gg" formatted="true">HRV por debajo del rango desde hace %1$s días</string>
+    <string name="sis_cons_cv">Variabilidad de la HRV casi nula: mejor no aumentar la carga</string>
+    <string name="sis_cons_sat">HRV muy por encima de la media: posible saturación, mejor no apretar</string>
+    <string name="sis_cons_calo">HRV a la baja en los últimos 7 días</string>
+    <string name="sis_cons_sonno" formatted="true">Sueño corto anoche (%1$s)</string>
+    <string name="sis_cons_cal" formatted="true">En calibración: el consejo llega tras %1$s noches válidas (%2$s/%3$s).</string>
 </resources>

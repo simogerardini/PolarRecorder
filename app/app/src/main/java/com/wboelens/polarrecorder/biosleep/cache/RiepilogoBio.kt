@@ -1,35 +1,41 @@
 package com.wboelens.polarrecorder.biosleep.cache
 
 import android.content.Context
+import com.wboelens.polarrecorder.biosleep.intervals.CampiWellness
 import com.wboelens.polarrecorder.biosleep.lingua.TestiSistema
+import com.wboelens.polarrecorder.biosleep.readiness.Consiglio
 import com.wboelens.polarrecorder.biosleep.training.Formato
 import java.time.LocalDate
 
 /**
- * Riga "Recupero" della notifica del mattino in modalita' solo biometria: semaforo della banda HRV
- * (stesso calcolo del coach, su cache + notti locali) e FC a riposo sopra l'abituale.
+ * Riga della notifica del mattino in modalita' solo biometria: il consiglio del giorno (lo stesso
+ * della card in Oggi), la banda HRV e i motivi. Tradotta qui: gli emoji in testa non farebbero
+ * riconoscere la frase piu' tardi.
  */
 object RiepilogoBio {
   fun riga(context: Context, oggi: LocalDate = LocalDate.now()): String? =
       try {
-        // tradotta qui: gli emoji in testa non farebbero riconoscere la frase piu' tardi
         fun t(x: String) = TestiSistema.traduci(context, x)
-        when (val p = CacheRepo.get(context).prontezza(oggi)) {
+        val repo = CacheRepo.get(context)
+        when (val p = repo.prontezza(oggi)) {
           is Prontezza.Calibrazione -> t("Recupero: calibrazione ${p.notti}/${p.servono} notti")
           is Prontezza.Banda -> {
             val b = p.baseline
-            val (emoji, etichetta) =
+            val sonno =
+                repo.wellness(oggi, oggi).lastOrNull()?.get(CampiWellness.F_SLEEP_HOURS)?.takeIf { !it.isJsonNull }?.asDouble
+            val e = Consiglio.calcola(b, sonno)
+            val banda =
                 when (b.banda) {
-                  "verde" -> "🟢" to "HRV nella norma"
-                  "giallo" -> "🟡" to "HRV sotto il range"
-                  "rosso" -> "🔴" to "HRV molto sotto il range"
-                  else -> "⚪" to "Non valutabile"
+                  "verde" -> "HRV nella norma"
+                  "giallo" -> "HRV sotto il range"
+                  "rosso" -> "HRV molto sotto il range"
+                  else -> "Non valutabile"
                 }
-            val parti = mutableListOf("$emoji " + t("Recupero: $etichetta"))
+            val parti = mutableListOf<String>()
+            parti += if (e != null) "${Consiglio.emoji(e.livello)} " + t(Consiglio.titolo(e.livello)) else t(banda)
+            if (e != null) parti += t(banda)
             b.rolling7Hrv?.let { parti += t("media 7 gg ${Formato.decimale(it)} ms") }
-            b.fcRiposo?.takeIf { it.allarme }?.let { f ->
-              parti += "⚠️ " + t("FC a riposo sopra l'abituale (${f.delta?.let { Formato.conSegno(it) } ?: Formato.decimale(f.rolling7)} bpm)")
-            }
+            e?.motivi?.forEach { parti += t(it) }
             parti.joinToString(" · ")
           }
         }

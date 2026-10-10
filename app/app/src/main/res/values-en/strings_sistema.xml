@@ -457,4 +457,19 @@
     <string name="sis_coach_acceso">On: the coach plans sessions on Intervals.icu and adapts them to your night data.</string>
     <string name="sis_coach_spento">Off: only your night biometrics (HRV, resting HR, sleep, biological age) with their traffic lights. No sessions are written to Intervals.icu; those already written stay.</string>
     <string name="sis_coach_riparte">The coach restarts with the next night, or right away with Replan from the athlete profile.</string>
+    <string name="sis_cons_titolo">Today\'s advice</string>
+    <string name="sis_cons_spingi">You can push</string>
+    <string name="sis_cons_normale">Train as planned</string>
+    <string name="sis_cons_piano">Take it easy</string>
+    <string name="sis_cons_riposo">Rest or active recovery</string>
+    <string name="sis_cons_sp_spingi">HRV above your average: a good day for a hard session.</string>
+    <string name="sis_cons_sp_normale">HRV within your normal range: train as you had planned.</string>
+    <string name="sis_cons_sp_piano">Reduce intensity and volume: easy work in Z1-Z2 is better today.</string>
+    <string name="sis_cons_sp_riposo">Your body needs recovery: rest or very light activity.</string>
+    <string name="sis_cons_sotto_gg" formatted="true">HRV below range for %1$s days</string>
+    <string name="sis_cons_cv">HRV variability almost gone: better not to increase the load</string>
+    <string name="sis_cons_sat">HRV well above average: possible saturation, better not to push</string>
+    <string name="sis_cons_calo">HRV falling over the last 7 days</string>
+    <string name="sis_cons_sonno" formatted="true">Short sleep last night (%1$s)</string>
+    <string name="sis_cons_cal" formatted="true">Calibrating: advice starts after %1$s valid nights (%2$s/%3$s).</string>
 </resources>
