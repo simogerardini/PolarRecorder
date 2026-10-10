@@ -23,6 +23,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.Share
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -63,6 +64,8 @@ import com.wboelens.polarrecorder.biosleep.age.BioAgeOutcome
 import com.wboelens.polarrecorder.biosleep.age.BioAgeResult
 import com.wboelens.polarrecorder.biosleep.age.BioAgeScreenData
 import com.wboelens.polarrecorder.biosleep.age.Sex
+import com.wboelens.polarrecorder.biosleep.condivisione.CardEta
+import com.wboelens.polarrecorder.biosleep.condivisione.Condivisione
 import java.time.LocalDate
 import kotlin.math.abs
 import kotlinx.coroutines.Dispatchers
@@ -99,6 +102,16 @@ fun BioAgeScreen(onBack: () -> Unit) {
             navigationIcon = {
               IconButton(onClick = onBack) {
                 Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = tr("Indietro"))
+              }
+            },
+            actions = {
+              // Parte 5: condivisione, solo con l'eta' pronta (non in taratura)
+              val pronta = data?.outcome as? BioAgeOutcome.Ready
+              if (pronta != null && !editing) {
+                IconButton(onClick = { Condivisione.apri(context, cardEta(pronta.result)) }) {
+                  Icon(Icons.Filled.Share,
+                      contentDescription = stringResource(R.string.condivisione_azione))
+                }
               }
             },
         )
@@ -356,3 +369,17 @@ private fun MethodNote() {
       color = MaterialTheme.colorScheme.onSurfaceVariant,
   )
 }
+
+/**
+ * Card condivisibile (Parte 5): solo l'eta' con un decimale, come fmt(..., 1) negli anelli.
+ * La differenza compare solo se l'utente la attiva nell'anteprima. Componenti ed eta'
+ * anagrafica non escono da qui. vo2 e activity vengono dalle attivita' di Intervals.icu,
+ * che possono essere Garmin: in quel caso la card porta l'attribuzione.
+ */
+private fun cardEta(r: BioAgeResult) =
+    CardEta(
+        eta = r.age,
+        decimali = 1,
+        differenza = r.age - r.chronologicalAge,
+        datiGarmin = r.components.any { it.key == "vo2" || it.key == "activity" },
+    )

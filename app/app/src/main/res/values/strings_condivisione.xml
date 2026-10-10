@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Modulo condivisione (Parte 5). Le stesse chiavi in values, values-en, values-es, values-zh-rCN. -->
+<resources>
+  <string name="condivisione_azione">Condividi</string>
+  <string name="condivisione_scegli">Condividi con</string>
+  <string name="condivisione_chiudi">Chiudi</string>
+  <string name="condivisione_formato_storia">Storia</string>
+  <string name="condivisione_formato_post">Post</string>
+  <string name="condivisione_formato_verticale">Verticale 4:5</string>
+  <string name="condivisione_mostra_differenza">Mostra la differenza con la mia età reale</string>
+  <string name="condivisione_nota_privacy">L\'immagine viene creata sul telefono e va solo all\'app che scegli.</string>
+  <string name="condivisione_errore">Impossibile creare l\'immagine</string>
+  <string name="card_claim">Misurato di notte con la mia fascia cardio</string>
+  <string name="card_garmin">Include dati da dispositivi Garmin</string>
+  <string name="card_sonno_etichetta">Stanotte · %1$s</string>
+  <string name="card_sonno_durata">Sonno</string>
+  <string name="card_durata_hm">%1$d h %2$02d m</string>
+  <string name="card_fase_profondo">Profondo</string>
+  <string name="card_fase_leggero">Leggero</string>
+  <string name="card_fase_rem">REM</string>
+  <string name="card_fase_veglia">Veglia</string>
+  <string name="card_eta_etichetta">La mia Età %1$s</string>
+  <string name="card_eta_anni">anni</string>
+  <string name="card_eta_piu_giovane">%1$s anni meno della mia età reale</string>
+  <string name="card_eta_piu_vecchio">%1$s anni più della mia età reale</string>
+  <string name="card_eta_uguale">In linea con la mia età reale</string>
+  <string name="card_seduta_etichetta">La mia seduta · %1$s · %2$s</string>
+  <string name="card_seduta_min">min</string>
+  <string name="condivisione_mostra_fasi">Mostra le fasi del sonno</string>
+  <string name="card_seduta_distanza">Distanza</string>
+  <string name="card_seduta_tss">TSS</string>
+  <string name="card_seduta_recupero">Recupero</string>
+  <string name="card_km">%1$s km</string>
+  <string name="card_m">%1$s m</string>
+</resources>

@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Modulo condivisione (Parte 5). Le stesse chiavi in values, values-en, values-es, values-zh-rCN. -->
+<resources>
+  <string name="condivisione_azione">Compartir</string>
+  <string name="condivisione_scegli">Compartir con</string>
+  <string name="condivisione_chiudi">Cerrar</string>
+  <string name="condivisione_formato_storia">Historia</string>
+  <string name="condivisione_formato_post">Publicación</string>
+  <string name="condivisione_formato_verticale">Vertical 4:5</string>
+  <string name="condivisione_mostra_differenza">Mostrar la diferencia con mi edad real</string>
+  <string name="condivisione_nota_privacy">La imagen se crea en tu teléfono y solo va a la app que elijas.</string>
+  <string name="condivisione_errore">No se pudo crear la imagen</string>
+  <string name="card_claim">Medido por la noche con mi banda de pecho</string>
+  <string name="card_garmin">Incluye datos de dispositivos Garmin</string>
+  <string name="card_sonno_etichetta">Anoche · %1$s</string>
+  <string name="card_sonno_durata">Sueño</string>
+  <string name="card_durata_hm">%1$d h %2$02d m</string>
+  <string name="card_fase_profondo">Profundo</string>
+  <string name="card_fase_leggero">Ligero</string>
+  <string name="card_fase_rem">REM</string>
+  <string name="card_fase_veglia">Despierto</string>
+  <string name="card_eta_etichetta">Mi Edad %1$s</string>
+  <string name="card_eta_anni">años</string>
+  <string name="card_eta_piu_giovane">%1$s años menos que mi edad real</string>
+  <string name="card_eta_piu_vecchio">%1$s años más que mi edad real</string>
+  <string name="card_eta_uguale">Igual a mi edad real</string>
+  <string name="card_seduta_etichetta">Mi sesión · %1$s · %2$s</string>
+  <string name="card_seduta_min">min</string>
+  <string name="condivisione_mostra_fasi">Mostrar las fases del sueño</string>
+  <string name="card_seduta_distanza">Distancia</string>
+  <string name="card_seduta_tss">TSS</string>
+  <string name="card_seduta_recupero">Recuperación</string>
+  <string name="card_km">%1$s km</string>
+  <string name="card_m">%1$s m</string>
+</resources>

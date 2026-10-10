@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Modulo condivisione (Parte 5). Le stesse chiavi in values, values-en, values-es, values-zh-rCN. -->
+<resources>
+  <string name="condivisione_azione">Share</string>
+  <string name="condivisione_scegli">Share with</string>
+  <string name="condivisione_chiudi">Close</string>
+  <string name="condivisione_formato_storia">Story</string>
+  <string name="condivisione_formato_post">Post</string>
+  <string name="condivisione_formato_verticale">Portrait 4:5</string>
+  <string name="condivisione_mostra_differenza">Show the difference from my real age</string>
+  <string name="condivisione_nota_privacy">The image is created on your phone and goes only to the app you choose.</string>
+  <string name="condivisione_errore">Couldn\'t create the image</string>
+  <string name="card_claim">Measured overnight with my chest strap</string>
+  <string name="card_garmin">Includes Garmin device data</string>
+  <string name="card_sonno_etichetta">Last night · %1$s</string>
+  <string name="card_sonno_durata">Sleep</string>
+  <string name="card_durata_hm">%1$d h %2$02d m</string>
+  <string name="card_fase_profondo">Deep</string>
+  <string name="card_fase_leggero">Light</string>
+  <string name="card_fase_rem">REM</string>
+  <string name="card_fase_veglia">Awake</string>
+  <string name="card_eta_etichetta">My %1$s Age</string>
+  <string name="card_eta_anni">years</string>
+  <string name="card_eta_piu_giovane">%1$s years younger than my real age</string>
+  <string name="card_eta_piu_vecchio">%1$s years older than my real age</string>
+  <string name="card_eta_uguale">In line with my real age</string>
+  <string name="card_seduta_etichetta">My session · %1$s · %2$s</string>
+  <string name="card_seduta_min">min</string>
+  <string name="condivisione_mostra_fasi">Show sleep stages</string>
+  <string name="card_seduta_distanza">Distance</string>
+  <string name="card_seduta_tss">TSS</string>
+  <string name="card_seduta_recupero">Recovery</string>
+  <string name="card_km">%1$s km</string>
+  <string name="card_m">%1$s m</string>
+</resources>

@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Modulo condivisione (Parte 5). Le stesse chiavi in values, values-en, values-es, values-zh-rCN. -->
+<resources>
+  <string name="condivisione_azione">分享</string>
+  <string name="condivisione_scegli">分享到</string>
+  <string name="condivisione_chiudi">关闭</string>
+  <string name="condivisione_formato_storia">快拍</string>
+  <string name="condivisione_formato_post">帖子</string>
+  <string name="condivisione_formato_verticale">竖版 4:5</string>
+  <string name="condivisione_mostra_differenza">显示与实际年龄的差值</string>
+  <string name="condivisione_nota_privacy">图片在手机上生成，只会发送到你选择的应用。</string>
+  <string name="condivisione_errore">无法生成图片</string>
+  <string name="card_claim">夜间由我的心率带测量</string>
+  <string name="card_garmin">包含 Garmin 设备数据</string>
+  <string name="card_sonno_etichetta">昨晚 · %1$s</string>
+  <string name="card_sonno_durata">睡眠</string>
+  <string name="card_durata_hm">%1$d小时%2$02d分</string>
+  <string name="card_fase_profondo">深睡</string>
+  <string name="card_fase_leggero">浅睡</string>
+  <string name="card_fase_rem">REM</string>
+  <string name="card_fase_veglia">清醒</string>
+  <string name="card_eta_etichetta">我的 %1$s 年龄</string>
+  <string name="card_eta_anni">岁</string>
+  <string name="card_eta_piu_giovane">比实际年龄年轻 %1$s 岁</string>
+  <string name="card_eta_piu_vecchio">比实际年龄大 %1$s 岁</string>
+  <string name="card_eta_uguale">与实际年龄一致</string>
+  <string name="card_seduta_etichetta">我的训练 · %1$s · %2$s</string>
+  <string name="card_seduta_min">分钟</string>
+  <string name="condivisione_mostra_fasi">显示睡眠阶段</string>
+  <string name="card_seduta_distanza">距离</string>
+  <string name="card_seduta_tss">TSS</string>
+  <string name="card_seduta_recupero">恢复</string>
+  <string name="card_km">%1$s 公里</string>
+  <string name="card_m">%1$s 米</string>
+</resources>
