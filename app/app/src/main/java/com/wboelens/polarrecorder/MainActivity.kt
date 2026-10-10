@@ -1,5 +1,7 @@
 package com.wboelens.polarrecorder
 
+import com.wboelens.polarrecorder.biosleep.ui.DispositiviCollegatiScreen
+import com.wboelens.polarrecorder.biosleep.ponte.Ponte
 import android.content.res.Configuration
 import android.graphics.Color
 import android.os.Build
@@ -98,6 +100,8 @@ class MainActivity : ComponentActivity() {
 
   /** Notte da aprire perche' l'utente ha toccato la notifica del mattino (null = nessuna). */
   private val openNightRequest = MutableStateFlow<Long?>(null)
+  /** QR di noctalix.com (App Link): apri "Dispositivi collegati". */
+  private val apriDispositivi = MutableStateFlow(false)
 
   private fun handleOpenNight(intent: Intent?) {
     val id = intent?.getLongExtra(NightNotifier.EXTRA_SESSION_ID, -1L) ?: -1L
@@ -113,6 +117,7 @@ class MainActivity : ComponentActivity() {
     setIntent(intent)
     handleOpenNight(intent)
     RiepilogoLink.daIntent(intent) // tocco sulla notifica del riepilogo del coach
+    if (Ponte.daIntent(intent)) apriDispositivi.value = true
     gestisciRitornoOAuth(intent)
   }
 
@@ -151,6 +156,8 @@ class MainActivity : ComponentActivity() {
     super.onCreate(savedInstanceState)
     handleOpenNight(intent)
     RiepilogoLink.daIntent(intent) // app aperta dalla notifica "Piano pronto"
+    if (Ponte.daIntent(intent)) apriDispositivi.value = true
+    Ponte.allApertura(applicationContext) // comandi dal sito e copia nuova (solo se collegato)
     CoachWorker.assicuraRipiego(this) // coach di ripiego delle 10:30, se non e' gia' in coda
     gestisciRitornoOAuth(intent)
     OAuthIntervals.preparaSeAggiornata(this) // a ogni aggiornamento: campi BioSleep su Intervals.icu
@@ -200,6 +207,14 @@ class MainActivity : ComponentActivity() {
     setContent {
       NoctalixTheme {
         val navController = rememberNavController()
+        LaunchedEffect(Unit) {
+          apriDispositivi.collect { apri ->
+            if (apri) {
+              navController.navigate("dispositivi_collegati")
+              apriDispositivi.value = false
+            }
+          }
+        }
 
         // Get the snackbarHostState from the ErrorHandler
         val (snackbarHostState, currentLogType) =
@@ -300,6 +315,7 @@ class MainActivity : ComponentActivity() {
               ProfiloScreen(onBack = { navController.navigateUp() }, onApriGare = { navController.navigate("gare") })
             }
             composable("gare") { GareScreen(onBack = { navController.navigateUp() }) }
+            composable("dispositivi_collegati") { DispositiviCollegatiScreen(onBack = { navController.navigateUp() }) }
             composable("licenze") { LicenzeScreen(onBack = { navController.navigateUp() }) }
             composable("backup") { BackupScreen(onBack = { navController.navigateUp() }) }
             composable("protezione") { ProtezioneScreen(onBack = { navController.navigateUp() }) }
@@ -357,6 +373,7 @@ class MainActivity : ComponentActivity() {
                   onApriBackup = { navController.navigate("backup") },
                   onApriProtezione = { navController.navigate("protezione") },
                   onApriFascia = { navController.navigate("fascia") },
+                  onApriDispositivi = { navController.navigate("dispositivi_collegati") },
               )
             }
             composable(

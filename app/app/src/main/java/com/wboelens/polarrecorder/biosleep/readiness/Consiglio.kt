@@ -14,7 +14,11 @@ package com.wboelens.polarrecorder.biosleep.readiness
 object Consiglio {
   enum class Livello { SPINGI, NORMALE, PIANO, RIPOSO }
 
-  data class Esito(val livello: Livello, val motivi: List<String>)
+  /** [codici]: un codice stabile per ogni motivo, nello stesso ordine (copia per il web). */
+  data class Esito(val livello: Livello, val motivi: List<String>, val codici: List<String> = emptyList())
+
+  /** Livello come codice del contratto web (snapshot.ts): spingi, normale, piano, riposo. */
+  fun codice(l: Livello) = l.name.lowercase()
 
   const val SONNO_MIN_SPINGERE = 6.0
   private const val GG_SOTTO_RIPOSO = 3
@@ -22,9 +26,16 @@ object Consiglio {
   fun calcola(b: BioBaseline, sonnoStanotteOre: Double?): Esito? {
     if (!b.ok || b.banda == null || b.banda == "grigio") return null
     val motivi = mutableListOf<String>()
+    val codici = mutableListOf<String>()
     val fc = b.fcRiposo?.takeIf { it.allarme }
-    fc?.let { f -> motivi += "FC a riposo sopra l'abituale (${f.delta?.let { conSegno(it) } ?: uno(f.rolling7)} bpm)" }
-    if (b.persistenzaGgSotto >= 2) motivi += "HRV sotto il range da ${b.persistenzaGgSotto} giorni"
+    fc?.let { f ->
+      motivi += "FC a riposo sopra l'abituale (${f.delta?.let { conSegno(it) } ?: uno(f.rolling7)} bpm)"
+      codici += "fc_alta"
+    }
+    if (b.persistenzaGgSotto >= 2) {
+      motivi += "HRV sotto il range da ${b.persistenzaGgSotto} giorni"
+      codici += "hrv_sotto_gg"
+    }
     val livello =
         when {
           b.banda == "rosso" -> Livello.RIPOSO
@@ -32,17 +43,18 @@ object Consiglio {
           b.banda == "giallo" || fc != null -> Livello.PIANO
           else -> {
             val z = b.zLn
-            val ostacoli = mutableListOf<String>()
-            if (b.cvCollassato) ostacoli += "Variabilità dell'HRV quasi azzerata: meglio non aumentare il carico"
-            if (z != null && z > 1.0) ostacoli += "HRV molto sopra la media: possibile saturazione, meglio non spingere"
-            if (b.direzione7v7 == "in calo") ostacoli += "HRV in calo negli ultimi 7 giorni"
+            val ostacoli = mutableListOf<Pair<String, String>>()
+            if (b.cvCollassato) ostacoli += "cv_collassato" to "Variabilità dell'HRV quasi azzerata: meglio non aumentare il carico"
+            if (z != null && z > 1.0) ostacoli += "hrv_saturazione" to "HRV molto sopra la media: possibile saturazione, meglio non spingere"
+            if (b.direzione7v7 == "in calo") ostacoli += "hrv_in_calo" to "HRV in calo negli ultimi 7 giorni"
             if (sonnoStanotteOre != null && sonnoStanotteOre < SONNO_MIN_SPINGERE)
-                ostacoli += "Sonno corto stanotte (${durata(sonnoStanotteOre)})"
-            motivi += ostacoli
+                ostacoli += "sonno_corto" to "Sonno corto stanotte (${durata(sonnoStanotteOre)})"
+            motivi += ostacoli.map { it.second }
+            codici += ostacoli.map { it.first }
             if (z != null && z > 0.0 && ostacoli.isEmpty()) Livello.SPINGI else Livello.NORMALE
           }
         }
-    return Esito(livello, motivi)
+    return Esito(livello, motivi, codici)
   }
 
   fun titolo(l: Livello) =

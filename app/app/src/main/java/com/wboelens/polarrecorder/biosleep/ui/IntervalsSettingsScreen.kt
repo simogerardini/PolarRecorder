@@ -70,6 +70,7 @@ fun IntervalsSettingsScreen(
     onApriBackup: () -> Unit = {},
     onApriProtezione: () -> Unit = {},
     onApriFascia: () -> Unit = {},
+    onApriDispositivi: () -> Unit = {},
 ) {
   val context = LocalContext.current
   val settings = remember { IntervalsSettings(context) }
@@ -237,6 +238,7 @@ fun IntervalsSettingsScreen(
       // Registrazione notturna: batteria, notifiche, Bluetooth, istruzioni per la marca
       TextButton(onClick = onApriProtezione) { Text(stringResource(R.string.intervals_settings_protezione_notturna)) }
       TextButton(onClick = onApriFascia) { Text(stringResource(R.string.intervals_settings_fascia)) }
+      TextButton(onClick = onApriDispositivi) { Text(stringResource(R.string.dispositivi_titolo)) }
 
       HorizontalDivider()
       // Lingua delle sedute sul calendario e sull'orologio

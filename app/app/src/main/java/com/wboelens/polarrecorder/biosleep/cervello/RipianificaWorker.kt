@@ -1,5 +1,6 @@
 package com.wboelens.polarrecorder.biosleep.cervello
 
+import com.wboelens.polarrecorder.biosleep.ponte.Ponte
 import com.wboelens.polarrecorder.biosleep.checkin.Checkin
 import android.content.Context
 import android.content.pm.ServiceInfo
@@ -77,6 +78,7 @@ class RipianificaWorker(context: Context, params: WorkerParameters) : CoroutineW
     val riepilogoLetto = r.riepilogoFile?.let { f -> runCatching { com.wboelens.polarrecorder.biosleep.riepilogo.RiepilogoParser.leggi(java.io.File(f).readText(Charsets.UTF_8)) }.getOrNull() }
     r.riepilogoFile?.let { f -> runCatching { Checkin.notaRiepilogo(ctx, java.io.File(f)) } }
     r.notifiche.forEach { NotificheCoach.testo(ctx, it, riepilogoLetto) }
+    Ponte.richiediCopia(ctx) // web collegato: copia cifrata aggiornata (niente se non collegato)
     var data: String? = null
     r.riepilogoFile?.let { percorso ->
       try {

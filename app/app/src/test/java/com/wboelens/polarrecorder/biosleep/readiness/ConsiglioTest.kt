@@ -52,4 +52,13 @@ class ConsiglioTest {
     assertNull(Consiglio.calcola(BioBaseline(ok = false, nGiorniHrv = 5), 7.0))
     assertNull(Consiglio.calcola(b("grigio"), 7.0))
   }
+
+  @Test
+  fun codiciDeiMotivi() {
+    val e = Consiglio.calcola(b("verde", z = 1.4, dir = "in calo", fcAllarme = false), 5.0)!!
+    assertEquals(listOf("hrv_saturazione", "hrv_in_calo", "sonno_corto"), e.codici)
+    assertEquals(e.motivi.size, e.codici.size)
+    assertEquals(listOf("fc_alta"), Consiglio.calcola(b("verde", fcAllarme = true), 7.0)!!.codici)
+    assertEquals("normale", Consiglio.codice(Livello.NORMALE))
+  }
 }

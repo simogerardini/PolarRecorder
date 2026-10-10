@@ -1,5 +1,7 @@
 package com.wboelens.polarrecorder
 
+import com.wboelens.polarrecorder.biosleep.web.FontiParte3Noctalix
+import com.wboelens.polarrecorder.biosleep.ponte.Parte3Ponte
 import android.app.ActivityManager
 import android.app.Application
 import android.content.Context
@@ -46,6 +48,8 @@ class PolarRecorderApplication : Application() {
   override fun onCreate() {
     super.onCreate()
     preferencesManager = PreferencesManager(applicationContext)
+    // ponte web: i dati della Parte 3 per la copia cifrata e i comandi dal sito
+    Parte3Ponte.fonti = FontiParte3Noctalix
   }
 
   /**

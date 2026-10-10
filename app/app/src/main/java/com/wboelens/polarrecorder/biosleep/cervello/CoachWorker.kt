@@ -1,5 +1,6 @@
 package com.wboelens.polarrecorder.biosleep.cervello
 
+import com.wboelens.polarrecorder.biosleep.ponte.Ponte
 import com.wboelens.polarrecorder.biosleep.checkin.Checkin
 import com.wboelens.polarrecorder.biosleep.riepilogo.RigheNotifica
 import com.wboelens.polarrecorder.biosleep.training.Formato
@@ -175,6 +176,7 @@ class CoachWorker(context: Context, params: WorkerParameters) : CoroutineWorker(
     r.riepilogoFile?.let { f -> runCatching { Checkin.notaRiepilogo(ctx, java.io.File(f)) } }
 
     r.notifiche.forEach { NotificheCoach.testo(ctx, it, riepilogoLetto) }
+    Ponte.richiediCopia(ctx) // web collegato: copia cifrata aggiornata (niente se non collegato)
     r.riepilogoFile?.let { percorso -> salvaRiepilogo(ctx, percorso) }
 
     when (r.esito) {

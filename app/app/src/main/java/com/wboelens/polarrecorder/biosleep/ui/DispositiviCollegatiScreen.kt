@@ -47,6 +47,7 @@ import java.text.DateFormat
 import java.util.Date
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.withContext
 import androidx.activity.compose.rememberLauncherForActivityResult
 
@@ -58,7 +59,6 @@ fun DispositiviCollegatiScreen(onBack: () -> Unit) {
   val scope = rememberCoroutineScope()
   remember { ArchivioCollegamenti(context) } // carica lo stato
   val collegamenti by ArchivioCollegamenti.stato.collectAsState()
-  val link by Ponte.linkInArrivo.collectAsState()
   var inCorso by remember { mutableStateOf<Ponte.InCorso?>(null) }
   var attesa by remember { mutableStateOf(false) }
   var errore by remember { mutableStateOf<String?>(null) }
@@ -73,16 +73,18 @@ fun DispositiviCollegatiScreen(onBack: () -> Unit) {
       }
 
   // Arrivato un link (App Link o scanner): tempo a) del collegamento
-  LaunchedEffect(link) {
-    val l = link ?: return@LaunchedEffect
-    Ponte.linkInArrivo.value = null
-    errore = null
-    fatto = false
-    attesa = true
-    val r = withContext(Dispatchers.IO) { Ponte.avvia(l) }
-    inCorso = r.getOrNull()
-    errore = r.exceptionOrNull()?.message
-    attesa = false
+  // Un solo effetto per tutta la vita della schermata: azzerare linkInArrivo non lo annulla
+  LaunchedEffect(Unit) {
+    Ponte.linkInArrivo.filterNotNull().collect { l ->
+      Ponte.linkInArrivo.value = null
+      errore = null
+      fatto = false
+      attesa = true
+      val r = withContext(Dispatchers.IO) { Ponte.avvia(l) }
+      inCorso = r.getOrNull()
+      errore = r.exceptionOrNull()?.message
+      attesa = false
+    }
   }
 
   Scaffold(
