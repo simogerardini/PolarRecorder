@@ -29,6 +29,8 @@ data class ConfigCervello(
     val profilo: ProfiloAtleta? = null,
     /** {"giorni": {data: [chiavi]}, "sedute": {id: [chiavi]}} dal TagDb. */
     val tag: com.google.gson.JsonObject? = null,
+    /** Check-in delle sedute (ultimi 28 giorni): {external_id: {stato, rpe, minuti, data, tag}}. */
+    val checkin: com.google.gson.JsonObject? = null,
 ) {
   /** JSON costruito con Gson: le virgolette nella API key non possono rompere il formato. */
   fun json(): String =
@@ -57,6 +59,7 @@ data class ConfigCervello(
             }
             profilo?.let { add("profilo", it.json()) }
             tag?.let { add("tag", it) }
+            checkin?.let { add("checkin", it) }
           }
           .toString()
 

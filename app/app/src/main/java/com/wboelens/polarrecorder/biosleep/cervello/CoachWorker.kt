@@ -1,5 +1,6 @@
 package com.wboelens.polarrecorder.biosleep.cervello
 
+import com.wboelens.polarrecorder.biosleep.checkin.Checkin
 import com.wboelens.polarrecorder.biosleep.riepilogo.RigheNotifica
 import com.wboelens.polarrecorder.biosleep.training.Formato
 import com.wboelens.polarrecorder.biosleep.riepilogo.TraduzioneMessaggi
@@ -158,7 +159,7 @@ class CoachWorker(context: Context, params: WorkerParameters) : CoroutineWorker(
     val config =
         ConfigCervello(
             credenziali, Cervello.cartella(ctx).absolutePath, "auto", false, senzaAttesa,
-            profilo = ProfiloRepo.effettivo(ctx),
+            profilo = ProfiloRepo.effettivo(ctx), checkin = Checkin.perCervello(ctx),
             tag = runCatching { TagDb.get(ctx).perCervello() }.getOrNull(),
             posizione = PosizioneTelefono.ultima(ctx),
                           disponibilitaDate = DisponibilitaDate.perCervello(ctx),
@@ -171,6 +172,7 @@ class CoachWorker(context: Context, params: WorkerParameters) : CoroutineWorker(
     CoachStato(ctx).registra(data, r, durata, "auto")
 
     val riepilogoLetto = r.riepilogoFile?.let { f -> runCatching { com.wboelens.polarrecorder.biosleep.riepilogo.RiepilogoParser.leggi(java.io.File(f).readText(Charsets.UTF_8)) }.getOrNull() }
+    r.riepilogoFile?.let { f -> runCatching { Checkin.notaRiepilogo(ctx, java.io.File(f)) } }
 
     r.notifiche.forEach { NotificheCoach.testo(ctx, it, riepilogoLetto) }
     r.riepilogoFile?.let { percorso -> salvaRiepilogo(ctx, percorso) }

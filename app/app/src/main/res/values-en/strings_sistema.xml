@@ -472,4 +472,17 @@
     <string name="sis_cons_calo">HRV falling over the last 7 days</string>
     <string name="sis_cons_sonno" formatted="true">Short sleep last night (%1$s)</string>
     <string name="sis_cons_cal" formatted="true">Calibrating: advice starts after %1$s valid nights (%2$s/%3$s).</string>
+    <string name="sis_ck_come">How did it go?</string>
+    <string name="sis_ck_degradato">Intervals.icu cannot read your activities: the coach rebuilds the load from your answers.</string>
+    <string name="sis_ck_fatta">Done</string>
+    <string name="sis_ck_modificata">Changed</string>
+    <string name="sis_ck_saltata">Skipped</string>
+    <string name="sis_ck_rpe">Perceived effort (1 = very easy, 10 = maximal)</string>
+    <string name="sis_ck_minuti">Actual minutes</string>
+    <string name="sis_ck_dopo">Later</string>
+    <string name="sis_ck_salva">Save</string>
+    <string name="sis_ck_altre" formatted="true">%1$s more sessions to log</string>
+    <string name="sis_ck_interr">Ask for effort after every session</string>
+    <string name="sis_ck_acceso">On: after every coach session, Today asks whether you did it and how hard it felt.</string>
+    <string name="sis_ck_spento">Off: it only asks if Intervals.icu cannot read your activities.</string>
 </resources>

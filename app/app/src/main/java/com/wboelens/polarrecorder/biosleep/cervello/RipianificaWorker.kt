@@ -1,5 +1,6 @@
 package com.wboelens.polarrecorder.biosleep.cervello
 
+import com.wboelens.polarrecorder.biosleep.checkin.Checkin
 import android.content.Context
 import android.content.pm.ServiceInfo
 import android.os.Build
@@ -67,13 +68,14 @@ class RipianificaWorker(context: Context, params: WorkerParameters) : CoroutineW
     val config =
         ConfigCervello(
             credenziali, Cervello.cartella(ctx).absolutePath, modo = "settimanale", senzaAttesa = true, forza = true,
-            profilo = ProfiloRepo.effettivo(ctx), tag = runCatching { TagDb.get(ctx).perCervello() }.getOrNull(),
+            profilo = ProfiloRepo.effettivo(ctx), checkin = Checkin.perCervello(ctx), tag = runCatching { TagDb.get(ctx).perCervello() }.getOrNull(),
             posizione = PosizioneTelefono.ultima(ctx),
                           disponibilitaDate = DisponibilitaDate.perCervello(ctx),
                           lingua = Lingua.effettiva(ctx))
     val r = withContext(Dispatchers.IO) { Cervello.esegui(ctx, config) }
     Log.i("BioSleepCoach", "Ripianifica: ${r.esito}")
     val riepilogoLetto = r.riepilogoFile?.let { f -> runCatching { com.wboelens.polarrecorder.biosleep.riepilogo.RiepilogoParser.leggi(java.io.File(f).readText(Charsets.UTF_8)) }.getOrNull() }
+    r.riepilogoFile?.let { f -> runCatching { Checkin.notaRiepilogo(ctx, java.io.File(f)) } }
     r.notifiche.forEach { NotificheCoach.testo(ctx, it, riepilogoLetto) }
     var data: String? = null
     r.riepilogoFile?.let { percorso ->

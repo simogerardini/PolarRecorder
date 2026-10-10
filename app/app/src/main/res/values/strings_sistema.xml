@@ -471,4 +471,17 @@
     <string name="sis_cons_calo">HRV in calo negli ultimi 7 giorni</string>
     <string name="sis_cons_sonno" formatted="true">Sonno corto stanotte (%1$s)</string>
     <string name="sis_cons_cal" formatted="true">In calibrazione: il consiglio arriva dopo %1$s notti valide (%2$s/%3$s).</string>
+    <string name="sis_ck_come">Com\'è andata?</string>
+    <string name="sis_ck_degradato">Intervals.icu non legge le attività: il coach ricostruisce il carico dalle tue risposte.</string>
+    <string name="sis_ck_fatta">Fatta</string>
+    <string name="sis_ck_modificata">Modificata</string>
+    <string name="sis_ck_saltata">Saltata</string>
+    <string name="sis_ck_rpe">Fatica percepita (1 = facilissima, 10 = massimo sforzo)</string>
+    <string name="sis_ck_minuti">Minuti effettivi</string>
+    <string name="sis_ck_dopo">Più tardi</string>
+    <string name="sis_ck_salva">Salva</string>
+    <string name="sis_ck_altre" formatted="true">Altre %1$s sedute da registrare</string>
+    <string name="sis_ck_interr">Chiedi la fatica dopo ogni seduta</string>
+    <string name="sis_ck_acceso">Acceso: dopo ogni seduta del coach, Oggi chiede se l\'hai fatta e con che fatica.</string>
+    <string name="sis_ck_spento">Spento: la chiede solo se Intervals.icu non riesce a leggere le attività.</string>
 </resources>

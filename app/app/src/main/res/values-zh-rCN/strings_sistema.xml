@@ -472,4 +472,17 @@
     <string name="sis_cons_calo">HRV 近 7 天呈下降趋势</string>
     <string name="sis_cons_sonno" formatted="true">昨晚睡眠不足（%1$s）</string>
     <string name="sis_cons_cal" formatted="true">校准中：%1$s 晚有效记录后提供建议（%2$s/%3$s）。</string>
+    <string name="sis_ck_come">训练情况如何？</string>
+    <string name="sis_ck_degradato">Intervals.icu 无法读取活动：教练将根据你的回答重建训练负荷。</string>
+    <string name="sis_ck_fatta">已完成</string>
+    <string name="sis_ck_modificata">有调整</string>
+    <string name="sis_ck_saltata">已跳过</string>
+    <string name="sis_ck_rpe">主观疲劳（1 = 非常轻松，10 = 极限）</string>
+    <string name="sis_ck_minuti">实际分钟数</string>
+    <string name="sis_ck_dopo">稍后</string>
+    <string name="sis_ck_salva">保存</string>
+    <string name="sis_ck_altre" formatted="true">还有 %1$s 次训练待记录</string>
+    <string name="sis_ck_interr">每次训练后询问疲劳程度</string>
+    <string name="sis_ck_acceso">开启：每次教练安排的训练后，“今天”会询问你是否完成以及疲劳程度。</string>
+    <string name="sis_ck_spento">关闭：仅在 Intervals.icu 无法读取活动时询问。</string>
 </resources>

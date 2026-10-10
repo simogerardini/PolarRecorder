@@ -1,5 +1,6 @@
 package com.wboelens.polarrecorder.biosleep.ui.allenamento
 
+import com.wboelens.polarrecorder.biosleep.ui.CardCheckin
 import com.wboelens.polarrecorder.biosleep.ui.CardConsiglio
 import com.wboelens.polarrecorder.biosleep.ui.coachAttivo
 import com.wboelens.polarrecorder.biosleep.lingua.tr
@@ -156,6 +157,8 @@ fun OggiScreen(
       // solo biometria: niente coach, soglie, test, sedute, forma
       val coach = coachAttivo()
       if (coach) RiquadroRiepilogo(LocalDate.now(), onApriRiepilogo)
+      // check-in dopo la seduta: solo in modalita' degradata o se richiesto in Impostazioni
+      if (coach) CardCheckin()
       // soglie mancanti su Intervals.icu: card solo se servono
       if (coach) SoglieOggi()
       // test periodici: test in programma questa settimana, tempi del test CSS
