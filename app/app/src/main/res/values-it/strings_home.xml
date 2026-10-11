@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Testi di HomeScreen.kt (italiano, base). Generato da estrai_testi.py. -->
+<resources>
+    <string name="home_collega_la_tua_fascia">Collega la tua fascia</string>
+    <string name="home_1_bagna_gli_elettrodi" formatted="true">1. Bagna gli elettrodi e indossa la fascia: si accende da sola.\n2. Quando compare qui sotto, premi Connetti.\n%1$s imposta tutto da solo: battito e intervalli RR, e con la Polar H10 anche movimento e respiro. Funzionano anche le fasce cardio di altre marche (Garmin, Wahoo, Coospo…): con queste niente accelerometro, e gli RR vengono verificati nei primi minuti di registrazione.</string>
+    <string name="home_ricerca_della_fascia">Ricerca della fascia…</string>
+    <string name="home_connetti">Connetti</string>
+    <string name="home_pronta_per_la_notte">Pronta per la notte</string>
+    <string name="home_invia_rapporto_fascia">Invia rapporto fascia</string>
+    <string name="home_avvio_non_riuscito" formatted="true">Avvio non riuscito: %1$s</string>
+    <string name="home_le_mie_notti">Le mie notti</string>
+    <string name="home_cambia_fascia">Cambia fascia</string>
+    <string name="home_cambiare_fascia">Cambiare fascia?</string>
+    <string name="home_le_notti_registrate_restano">Le notti registrate restano. Poi collegherai la nuova fascia.</string>
+    <string name="home_cambia">Cambia</string>
+    <string name="home_annulla">Annulla</string>
+    <string name="home_notte_in_corso">Notte in corso</string>
+    <string name="home_da_iniziata_alle" formatted="true">Da %1$s · iniziata alle %2$s</string>
+    <string name="home_mostra_il_fiore">Mostra il fiore</string>
+    <string name="home_termina_notte">Termina notte</string>
+    <string name="home_terminare_la_notte">Terminare la notte?</string>
+    <string name="home_la_registrazione_si_ferma">La registrazione si ferma e la notte viene analizzata.</string>
+    <string name="home_termina">Termina</string>
+    <string name="home_continua">Continua</string>
+</resources>

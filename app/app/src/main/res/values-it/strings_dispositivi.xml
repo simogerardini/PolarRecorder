@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Dispositivi collegati (Parte 1) -->
+<resources>
+    <string name="dispositivi_titolo">Dispositivi collegati</string>
+    <string name="dispositivi_indietro">Indietro</string>
+    <string name="dispositivi_spiegazione">Puoi vedere i tuoi dati anche su noctalix.com dal computer. Il telefono invia al browser una copia cifrata: nessun altro può leggerla.</string>
+    <string name="dispositivi_come_collegare">Apri noctalix.com nel browser e inquadra il QR con la fotocamera del telefono, oppure usa lo scanner qui sotto.</string>
+    <string name="dispositivi_scansiona">Scansiona il QR</string>
+    <string name="dispositivi_inquadra">Inquadra il QR mostrato nel browser</string>
+    <string name="dispositivi_qr_non_valido">Questo QR non è un collegamento di %1$s</string>
+    <string name="dispositivi_codice_domanda">Il codice nel browser è lo stesso?</string>
+    <string name="dispositivi_codice_si">Sì, collega</string>
+    <string name="dispositivi_codice_no">No, annulla</string>
+    <string name="dispositivi_collegato_ok">Browser collegato.</string>
+    <string name="dispositivi_elenco">Browser collegati</string>
+    <string name="dispositivi_nessuno">Nessun browser collegato.</string>
+    <string name="dispositivi_browser_dal">Browser collegato il %1$s</string>
+    <string name="dispositivi_ultima_copia">Ultima copia: %1$s · %2$d KB</string>
+    <string name="dispositivi_nessuna_copia">Nessuna copia ancora inviata</string>
+    <string name="dispositivi_scollega">Scollega</string>
+    <string name="dispositivi_scollega_titolo">Scollegare questo browser?</string>
+    <string name="dispositivi_scollega_testo">Il browser non riceverà più i tuoi dati e cancellerà la copia. Il collegamento a Intervals.icu non viene revocato: per revocarlo scollega l\'app da Intervals.icu.</string>
+    <string name="dispositivi_annulla">Annulla</string>
+</resources>

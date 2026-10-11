@@ -1,3 +1,5 @@
+import java.io.File
+import java.util.Properties
 import io.gitlab.arturbosch.detekt.Detekt
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
@@ -49,13 +51,36 @@ android {
     }
   }
 
+  // Lingue incluse (Parte 7): solo quelle dell'app, le altre arrivavano dalle librerie.
+  // en-rXA / ar-rXB sono le pseudo-lingue di prova della build debug.
+  androidResources {
+    localeFilters += listOf("en", "it", "es", "zh-rCN", "en-rXA", "ar-rXB")
+  }
+
+  // Firma di rilascio (Parte 7): chiave di caricamento fuori dal progetto, mai in git.
+  val firmaFile = File(System.getProperty("user.home"), "NoctaliX-firma/keystore.properties")
+  val firmaProps = Properties()
+  if (firmaFile.exists()) firmaFile.inputStream().use { firmaProps.load(it) }
+  signingConfigs {
+    if (firmaFile.exists()) {
+      create("release") {
+        storeFile = File(firmaProps.getProperty("storeFile"))
+        storePassword = firmaProps.getProperty("storePassword")
+        keyAlias = firmaProps.getProperty("keyAlias")
+        keyPassword = firmaProps.getProperty("keyPassword")
+      }
+    }
+  }
+
   buildTypes {
     debug {
       isDebuggable = true
       isPseudoLocalesEnabled = true // en-XA / ar-XB per provare l'impaginazione
     }
     release {
-      isMinifyEnabled = false
+      if (firmaFile.exists()) signingConfig = signingConfigs.getByName("release")
+      isMinifyEnabled = true // R8 (Parte 7)
+      isShrinkResources = true
       proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
       ndk { debugSymbolLevel = "SYMBOL_TABLE" }
     }

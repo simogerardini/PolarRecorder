@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Testi di CoachSettingsSection.kt (italiano, base). Generato da estrai_testi.py. -->
+<resources>
+    <string name="coach_settings_3_coach">3. Coach</string>
+    <string name="coach_settings_il_coach_gira_nell">Il coach gira nell\'app subito dopo l\'invio della notte, e alle 10:30 se la notte non è arrivata. Usa la stessa API key di Intervals.icu.</string>
+    <string name="coach_settings_id_atleta_per_la">Id atleta per la API key (0 = quello della API key)</string>
+    <string name="coach_settings_il_coach_non_ha">Il coach non ha ancora girato su questo telefono</string>
+    <string name="coach_settings_ultimo_run_del_coach" formatted="true">Ultimo run del coach non riuscito (%1$s): tocca per il log</string>
+    <string name="coach_settings_ultimo_run_in" formatted="true">Ultimo run (%1$s): %2$s in %3$s</string>
+    <string name="coach_settings_durata_di_un_run" formatted="true">Durata di un run settimanale: %1$s</string>
+    <string name="coach_settings_profilo_atleta_fc_ore">Profilo atleta: FC, ore massime, disponibilità</string>
+    <string name="coach_settings_gare">Gare</string>
+    <string name="coach_settings_misura_un_run_settimanale">Misura un run settimanale (prova, non scrive nulla)</string>
+    <string name="coach_settings_log_del_coach">Log del coach</string>
+    <string name="coach_settings_chiudi">Chiudi</string>
+</resources>

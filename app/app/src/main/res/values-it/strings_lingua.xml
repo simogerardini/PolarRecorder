@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Testi di LinguaUi.kt (italiano, base). Generato da estrai_testi.py. -->
+<resources>
+    <string name="lingua_lingua">Lingua</string>
+    <string name="lingua_come_il_telefono">Come il telefono</string>
+    <string name="lingua_le_sedute_sull_orologio">Le sedute sull\'orologio saranno in inglese: molti orologi non mostrano i caratteri cinesi.</string>
+    <string name="lingua_aggiorno_il_piano_della">Aggiorno il piano della settimana nella nuova lingua?</string>
+    <string name="lingua_le_sedute_da_oggi">Le sedute da oggi a domenica verranno riscritte. I giorni passati non si toccano.</string>
+    <string name="lingua_si_aggiorna">Sì, aggiorna</string>
+    <string name="lingua_no">No</string>
+</resources>

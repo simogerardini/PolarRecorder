@@ -11,7 +11,7 @@ import org.junit.jupiter.api.Test
  * con lo stesso numero di argomenti; la traduzione rimette i valori al posto giusto.
  */
 class MessaggiTest {
-  private val lingue = listOf("values", "values-en", "values-es", "values-zh-rCN")
+  private val lingue = listOf("values-it", "values", "values-en", "values-es", "values-zh-rCN")
 
   /** Stringhe di un file, come le restituirebbe Android (apici e virgolette tolti). */
   private fun stringhe(cartella: String): Map<String, String> =
@@ -46,7 +46,7 @@ class MessaggiTest {
 
   private fun traduttore(cartella: String): (Messaggio) -> String {
     val s = stringhe(cartella)
-    val loc = if (cartella == "values") Locale.ITALY else Locale.ENGLISH
+    val loc = if (cartella == "values-it") Locale.ITALY else Locale.ENGLISH
     return { m ->
       Messaggi.traduci(
           m,
@@ -58,7 +58,7 @@ class MessaggiTest {
 
   @Test
   fun valoriAlPostoGiusto() {
-    val it = traduttore("values")
+    val it = traduttore("values-it")
     val caldo = Messaggio("motivo", "caldo_corsa_convertita", mapOf("data" to "2026-07-14", "temp" to "31", "umidita" to "60", "ora" to "18", "minuti" to "50", "fattore" to "1.2"), emptyList(), "x")
     assertEquals("caldo del 14/07: 31 °C, umidità 60% alle 18: corsa facile convertita in bici indoor 50' (x1.2)", it(caldo))
     val daTag = caldo.copy(valori = mapOf("data" to "2026-07-14", "minuti" to "50", "fattore" to "1.2"))

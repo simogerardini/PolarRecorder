@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Testi di InfoUi.kt (italiano, base). Generato da estrai_testi.py. -->
+<resources>
+    <string name="info_informazioni">Informazioni</string>
+    <string name="info_licenze_open_source">Licenze open source</string>
+    <string name="info_componenti_usati">Componenti usati</string>
+    <string name="info_chiudi">Chiudi</string>
+    <string name="info_sito_del_progetto">Sito del progetto</string>
+</resources>

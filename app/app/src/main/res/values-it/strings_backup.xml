@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Testi di BackupScreen.kt (italiano, base). Generato da estrai_testi.py. -->
+<resources>
+    <string name="backup_nessun_backup_delle_notti">Nessun backup delle notti negli ultimi 30 giorni.</string>
+    <string name="backup_fai_il_backup">Fai il backup</string>
+    <string name="backup_backup_e_ripristino">Backup e ripristino</string>
+    <string name="backup_backup">Backup</string>
+    <string name="backup_notti_stato_del_coach">Notti, stato del coach, profilo e tag in un unico file cifrato con una password che scegli tu. Lo salvi dove vuoi: Google Drive, memoria del telefono, computer. Non contiene il collegamento a Intervals.icu: dopo un ripristino su un telefono nuovo va ricollegato.</string>
+    <string name="backup_crea_backup">Crea backup</string>
+    <string name="backup_ripristino">Ripristino</string>
+    <string name="backup_da_un_file_noctalix">Da un file .noctalix (o .biosleep, dei backup fatti prima del cambio di nome). Prima del ripristino vedrai quante notti contiene e potrai annullare.</string>
+    <string name="backup_ripristina_da_un_backup">Ripristina da un backup</string>
+    <string name="backup_esporta_notti">Esporta notti</string>
+    <string name="backup_un_csv_con_una">Un CSV con una riga per notte, da aprire in un foglio di calcolo. Il file NON è cifrato: chiunque lo apra vede i tuoi dati di sonno e frequenza cardiaca.</string>
+    <string name="backup_aggiungi_gli_intervalli_rr">Aggiungi gli intervalli RR di ogni notte (file zip, più grande)</string>
+    <string name="backup_esporta">Esporta</string>
+    <string name="backup_serve_per_riaprire_il">Serve per riaprire il backup. Se la dimentichi il backup non si può più aprire: nessuno può recuperarla.</string>
+    <string name="backup_password_almeno_caratteri" formatted="true">Password (almeno %1$s caratteri)</string>
+    <string name="backup_ripeti_la_password">Ripeti la password</string>
+    <string name="backup_continua">Continua</string>
+    <string name="backup_annulla">Annulla</string>
+    <string name="backup_ripristinare_questo_backup">Ripristinare questo backup?</string>
+    <string name="backup_backup_del_con_notti" formatted="true">Backup del %1$s (%2$s %3$s), con %4$s notti.\n\nLe notti di questo telefono verranno sostituite da quelle del backup, insieme allo stato del coach, al profilo e ai tag.</string>
+    <string name="backup_sostituisci">Sostituisci</string>
+</resources>

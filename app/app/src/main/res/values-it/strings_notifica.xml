@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 13d ter: righe delle notifiche del coach (RigheNotifica.kt). %%: percento letterale nelle stringhe con argomenti. -->
+<resources>
+    <string name="nr_int_continuo_carico" formatted="true">🗓️ Piano settimanale — senza gara — ciclo continuo, blocco %1$s, carico %2$s/4</string>
+    <string name="nr_int_continuo_scarico" formatted="true">🗓️ Piano settimanale — senza gara — ciclo continuo, blocco %1$s, scarico</string>
+    <string name="nr_int_fase" formatted="true">🗓️ Piano settimanale — %1$s %2$s/%3$s%4$s — %5$s settimane a %6$s</string>
+    <string name="nr_frammento_scarico">" (scarico)"</string>
+    <string name="nr_int_taper" formatted="true">🗓️ Piano settimanale — taper, %1$s settimane alla gara</string>
+    <string name="nr_int_gara" formatted="true">🗓️ Piano settimanale — settimana di gara — %1$s</string>
+    <string name="nr_int_recupero" formatted="true">🗓️ Piano settimanale — recupero post-%1$s (%2$s)</string>
+    <string name="nr_distanza" formatted="true">Distanza obiettivo: %1$s · fase %2$s%3$s</string>
+    <string name="nr_frammento_scarico_maiusc">" · SCARICO"</string>
+    <string name="nd_olimpico">olimpico</string>
+    <string name="nd_70_3">70.3</string>
+    <string name="nd_full">full</string>
+    <string name="nr_volume" formatted="true">Volume cardio: %1$sh%2$s (target %3$sh, fattore biometrico %4$s)</string>
+    <string name="nr_ripartizione" formatted="true">Ripartizione: nuoto %1$s%% · bici %2$s%% · corsa %3$s%%</string>
+    <string name="nr_alta_intensita" formatted="true">Alta intensità: %1$s\' su %2$s\' bici+corsa (%3$s%%, tetto %4$s%%)</string>
+    <string name="nr_banda" formatted="true">Banda biometrica: %1$s</string>
+    <string name="nr_hrv" formatted="true">HRV media 7gg %1$s ms su baseline %2$s ms (range %3$s-%4$s ms), %5$s</string>
+    <string name="nr_forma" formatted="true">CTL %1$s · ATL %2$s · TSB %3$s</string>
+    <string name="nr_forma_rampa" formatted="true">CTL %1$s · ATL %2$s · TSB %3$s · rampa 7gg %4$s</string>
+    <string name="nr_motivi" formatted="true">Motivi: %1$s</string>
+    <string name="nr_riposo_consigliato" formatted="true">RIPOSO consigliato: %1$s — lo chiedono i biometrici, non il calendario.</string>
+    <string name="nr_giorno_riposo" formatted="true">%1$s %2$s: riposo</string>
+    <string name="nr_giorno_sedute" formatted="true">%1$s %2$s: %3$s</string>
+    <string name="nr_seduta" formatted="true">%1$s %2$s\'</string>
+    <string name="nr_frammento_aerobica">" [aerobica]"</string>
+    <string name="nr_rimodulazione" formatted="true">🗓️ Piano settimanale — rimodulazione del %1$s, banda %2$s: %3$s</string>
+    <string name="nr_az_rimossa" formatted="true">%1$s rimossa — %2$s</string>
+    <string name="nr_az_resa_aerobica" formatted="true">%1$s convertita in aerobica — %2$s</string>
+    <string name="nr_az_rimossa_disponibilita" formatted="true">%1$s rimossa — disponibilità del giorno</string>
+    <string name="nr_az_accorciata_disponibilita" formatted="true">%1$s accorciata a %2$s\' — disponibilità del giorno</string>
+    <string name="ng_lun">Lunedì</string>
+    <string name="ng_mar">Martedì</string>
+    <string name="ng_mer">Mercoledì</string>
+    <string name="ng_gio">Giovedì</string>
+    <string name="ng_ven">Venerdì</string>
+    <string name="ng_sab">Sabato</string>
+    <string name="ng_dom">Domenica</string>
+    <string name="ns_nuoto_chiave">Nuoto chiave progressivo</string>
+    <string name="ns_nuoto_supporto">Nuoto endurance e ritmo</string>
+    <string name="ns_nuoto_rigenerante">Nuoto rigenerante</string>
+    <string name="ns_bici_chiave">Bici chiave</string>
+    <string name="ns_bici_supporto">Bici supporto + opener</string>
+    <string name="ns_corsa_supporto">Corsa di supporto</string>
+    <string name="ns_corsa_chiave">Corsa qualità</string>
+    <string name="ns_lungo_corsa">Lungo corsa</string>
+    <string name="ns_brick_bici">Brick — bici</string>
+    <string name="ns_brick_corsa">Brick — corsa a seguire</string>
+    <string name="ns_lungo_bici">Lungo bici</string>
+    <string name="ns_forza">Forza</string>
+    <string name="ns_mobilita">Mobilità e core</string>
+    <string name="ns_gara_richiami">Richiami a ritmo gara</string>
+    <string name="ns_gara_nuoto">Nuoto pre-gara</string>
+    <string name="ns_gara_bici_facile">Bici sciolta</string>
+    <string name="ns_gara_attivazione">Attivazione pre-gara</string>
+</resources>

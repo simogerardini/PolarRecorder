@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Testi di AttivitaScreen.kt (italiano, base). Generato da estrai_testi.py. -->
+<!-- Inglese: DA RIVEDERE da un madrelingua (closed testing). Traduzione iniziale della Parte 3, ottobre 2026. -->
 <resources>
-    <string name="attivita_seduta_non_disponibile" formatted="true">Seduta non disponibile: %1$s</string>
-    <string name="attivita_le_fasce_chiare_sono">Le fasce chiare sono gli intervalli di lavoro.</string>
-    <string name="attivita_riepilogo">Riepilogo</string>
-    <string name="attivita_andamento">Andamento</string>
-    <string name="attivita_zone_di_potenza">Zone di potenza</string>
-    <string name="attivita_zone_di_frequenza_cardiaca">Zone di frequenza cardiaca</string>
-    <string name="attivita_zone_di_passo">Zone di passo</string>
-    <string name="attivita_intervalli">Intervalli</string>
+    <string name="attivita_seduta_non_disponibile" formatted="true">Session not available: %1$s</string>
+    <string name="attivita_le_fasce_chiare_sono">The light bands are the work intervals.</string>
+    <string name="attivita_riepilogo">Summary</string>
+    <string name="attivita_andamento">Trend</string>
+    <string name="attivita_zone_di_potenza">Power zones</string>
+    <string name="attivita_zone_di_frequenza_cardiaca">Heart rate zones</string>
+    <string name="attivita_zone_di_passo">Pace zones</string>
+    <string name="attivita_intervalli">Intervals</string>
 </resources>

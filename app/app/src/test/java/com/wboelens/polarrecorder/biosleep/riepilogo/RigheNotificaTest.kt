@@ -71,7 +71,7 @@ class RigheNotificaTest {
     val codici = Regex(""""(nr_[a-z_0-9]+)"\s*:""").findAll(blocco).map { it.groupValues[1] }.toSet()
     assertTrue(codici.size >= 20, "RIGHE_NOTIFICA non letto (${codici.size})")
     assertTrue((codici - RigheNotifica.CODICI).isEmpty(), "righe del cervello che l'app non sa comporre: ${codici - RigheNotifica.CODICI}")
-    for (c in listOf("values", "values-en", "values-es", "values-zh-rCN")) {
+    for (c in listOf("values-it", "values", "values-en", "values-es", "values-zh-rCN")) {
       val s = stringhe(c)
       for (k in listOf("nuoto_chiave", "nuoto_supporto", "nuoto_rigenerante", "bici_chiave", "bici_supporto", "corsa_supporto",
           "corsa_chiave", "lungo_corsa", "brick_bici", "brick_corsa", "lungo_bici", "forza", "mobilita", "gara_richiami",

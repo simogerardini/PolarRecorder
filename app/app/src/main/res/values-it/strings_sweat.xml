@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Testi di SweatUi.kt (italiano, base). Generato da estrai_testi.py. -->
+<resources>
+    <string name="sweat_inserisci_i_dati_dello">Inserisci i dati dello sweat test</string>
+    <string name="sweat_test_del_pesi_nudo" formatted="true">Test del %1$s. Pesi nudo e asciutto, borraccia piena e a fine test.</string>
+    <string name="sweat_salva">Salva</string>
+</resources>

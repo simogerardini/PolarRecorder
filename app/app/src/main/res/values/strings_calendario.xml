@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Testi di CalendarioScreen.kt (italiano, base). Generato da estrai_testi.py. -->
+<!-- Inglese: DA RIVEDERE da un madrelingua (closed testing). Traduzione iniziale della Parte 3, ottobre 2026. -->
 <resources>
-    <string name="calendario_calendario">Calendario</string>
-    <string name="calendario_settimana_dal_tss_svolto" formatted="true">Settimana dal %1$s · TSS %2$s svolto / %3$s pianificato</string>
-    <string name="calendario_seduta_su_garmin_connect">Seduta su Garmin Connect: la guida strutturata e\' sull\'orologio.</string>
-    <string name="calendario_non_svolta">Non svolta</string>
-    <string name="calendario_non_pianificata" formatted="true">%1$s · %2$s · non pianificata</string>
-    <string name="calendario_analisi_della_seduta">Analisi della seduta</string>
-    <string name="calendario_durata">Durata</string>
+    <string name="calendario_calendario">Calendar</string>
+    <string name="calendario_settimana_dal_tss_svolto" formatted="true">Week from %1$s · TSS %2$s done / %3$s planned</string>
+    <string name="calendario_seduta_su_garmin_connect">Session on Garmin Connect: the structured workout is on the watch.</string>
+    <string name="calendario_non_svolta">Not done</string>
+    <string name="calendario_non_pianificata" formatted="true">%1$s · %2$s · not planned</string>
+    <string name="calendario_analisi_della_seduta">Session analysis</string>
+    <string name="calendario_durata">Duration</string>
     <string name="calendario_tss">TSS</string>
-    <string name="calendario_distanza">Distanza</string>
-    <string name="calendario_aderenza">Aderenza</string>
+    <string name="calendario_distanza">Distance</string>
+    <string name="calendario_aderenza">Adherence</string>
 </resources>

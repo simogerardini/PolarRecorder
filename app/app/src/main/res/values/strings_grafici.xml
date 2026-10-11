@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Testi di GraficiScreen.kt (italiano, base). Generato da estrai_testi.py. -->
+<!-- Inglese: DA RIVEDERE da un madrelingua (closed testing). Traduzione iniziale della Parte 3, ottobre 2026. -->
 <resources>
-    <string name="grafici_grafici">Grafici</string>
-    <string name="grafici_giorni" formatted="true">%1$s giorni</string>
-    <string name="grafici_quando_la_stanchezza_atl">Quando la stanchezza (ATL) supera la forma fisica (CTL), la forma (TSB) scende sotto zero.</string>
-    <string name="grafici_forma_fisica_e_stanchezza">Forma fisica e stanchezza</string>
-    <string name="grafici_forma_tsb_e_zone">Forma (TSB) e zone</string>
-    <string name="grafici_hrv_notturno_rmssd_ms">HRV notturno (rMSSD, ms)</string>
-    <string name="grafici_fc_a_riposo_media">FC a riposo (media notte, bpm)</string>
-    <string name="grafici_sonno_ore">Sonno (ore)</string>
+    <string name="grafici_grafici">Charts</string>
+    <string name="grafici_giorni" formatted="true">%1$s days</string>
+    <string name="grafici_quando_la_stanchezza_atl">When fatigue (ATL) exceeds fitness (CTL), form (TSB) drops below zero.</string>
+    <string name="grafici_forma_fisica_e_stanchezza">Fitness and fatigue</string>
+    <string name="grafici_forma_tsb_e_zone">Form (TSB) and zones</string>
+    <string name="grafici_hrv_notturno_rmssd_ms">Night HRV (rMSSD, ms)</string>
+    <string name="grafici_fc_a_riposo_media">Resting HR (night average, bpm)</string>
+    <string name="grafici_sonno_ore">Sleep (hours)</string>
 </resources>

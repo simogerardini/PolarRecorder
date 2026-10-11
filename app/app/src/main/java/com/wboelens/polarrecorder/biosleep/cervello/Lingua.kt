@@ -2,6 +2,7 @@ package com.wboelens.polarrecorder.biosleep.cervello
 
 import android.app.LocaleManager
 import android.content.Context
+import android.content.res.Configuration
 import android.os.Build
 import android.os.LocaleList
 import java.util.Locale
@@ -22,6 +23,18 @@ object Lingua {
 
   /** Lingua del telefono se supportata, altrimenti inglese. */
   fun daLocale(lingua: String): String = lingua.lowercase().takeIf { l -> LINGUE.any { it.first == l } } ?: "en"
+
+  /**
+   * Locale per date e numeri: quello del telefono (o dell'app) se la lingua e' supportata,
+   * altrimenti inglese, come le risorse (values/ = inglese). Mai l'italiano come ripiego.
+   */
+  fun localeSupportato(l: Locale): Locale = if (LINGUE.any { it.first == l.language }) l else Locale.ENGLISH
+
+  /** Allinea Locale.getDefault() (DateIt, Formato, String.format) alla lingua mostrata. */
+  fun allineaLocale(config: Configuration) {
+    val l = config.locales.get(0) ?: return
+    Locale.setDefault(localeSupportato(l))
+  }
 
   /** Tag per Android: il cinese e' semplificato (zh-CN). */
   fun tag(codice: String) = if (codice == "zh") "zh-CN" else codice

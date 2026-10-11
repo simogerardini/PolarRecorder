@@ -1,33 +1,33 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Testi di RiepilogoScreen.kt (italiano, base). Generato da estrai_testi.py. -->
+<!-- Inglese: DA RIVEDERE da un madrelingua (closed testing). Traduzione iniziale della Parte 3, ottobre 2026. -->
 <resources>
-    <string name="riepilogo_ci_sono_avvisi_apri">Ci sono avvisi: apri il riepilogo</string>
+    <string name="riepilogo_ci_sono_avvisi_apri">There are warnings: open the summary</string>
     <string name="riepilogo_coach" formatted="true">Coach · %1$s</string>
-    <string name="riepilogo_riepilogo_non_disponibile_per">Riepilogo non disponibile per questa data</string>
-    <string name="riepilogo_riposo">Riposo</string>
-    <string name="riepilogo_apri_nel_calendario">Apri nel calendario</string>
-    <string name="riepilogo_avvisi">Avvisi</string>
-    <string name="riepilogo_sedute_che_il_coach">Sedute che il coach non è riuscito a scrivere a calendario:</string>
-    <string name="riepilogo_baseline_in_calibrazione">Baseline in calibrazione</string>
+    <string name="riepilogo_riepilogo_non_disponibile_per">Summary not available for this date</string>
+    <string name="riepilogo_riposo">Rest</string>
+    <string name="riepilogo_apri_nel_calendario">Open in calendar</string>
+    <string name="riepilogo_avvisi">Warnings</string>
+    <string name="riepilogo_sedute_che_il_coach">Sessions the coach could not write to the calendar:</string>
+    <string name="riepilogo_baseline_in_calibrazione">Baseline calibrating</string>
     <string name="riepilogo_range_ms" formatted="true">range %1$s–%2$s ms</string>
-    <string name="riepilogo_fuori_dalla_fascia_attesa">Fuori dalla fascia attesa</string>
-    <string name="riepilogo_oggi" formatted="true">oggi %1$s</string>
-    <string name="riepilogo_domenica_previsto" formatted="true">domenica %1$s (previsto)</string>
-    <string name="riepilogo_facile" formatted="true">Facile %1$s%%</string>
-    <string name="riepilogo_intenso" formatted="true">Intenso %1$s%%</string>
-    <string name="riepilogo_la_linea_segna_l">La linea segna l\'80%: con la regola 80/20 il verde dovrebbe arrivare fin lì.</string>
-    <string name="riepilogo_di_alta_intensita" formatted="true">%1$s%% di alta intensità</string>
-    <string name="riepilogo_intensi_su_di_bici" formatted="true">%1$s\' intensi su %2$s\' di bici e corsa</string>
-    <string name="riepilogo_tetto" formatted="true">tetto %1$s%%</string>
-    <string name="riepilogo_pieno_fatto_chiaro_con">Pieno = fatto · chiaro = con le sedute ancora in calendario · linea = obiettivo · rosso = tetto</string>
-    <string name="riepilogo_soglie_aggiornate">Soglie aggiornate</string>
-    <string name="riepilogo_oggi_2">Oggi</string>
-    <string name="riepilogo_biometria">Biometria</string>
-    <string name="riepilogo_forma">Forma</string>
-    <string name="riepilogo_discipline">Discipline</string>
-    <string name="riepilogo_intensita">Intensità</string>
-    <string name="riepilogo_settimana">Settimana</string>
-    <string name="riepilogo_sedute_della_settimana">Sedute della settimana</string>
+    <string name="riepilogo_fuori_dalla_fascia_attesa">Outside the expected range</string>
+    <string name="riepilogo_oggi" formatted="true">today %1$s</string>
+    <string name="riepilogo_domenica_previsto" formatted="true">Sunday %1$s (forecast)</string>
+    <string name="riepilogo_facile" formatted="true">Easy %1$s%%</string>
+    <string name="riepilogo_intenso" formatted="true">Hard %1$s%%</string>
+    <string name="riepilogo_la_linea_segna_l">The line marks 80%: with the 80/20 rule, green should reach that far.</string>
+    <string name="riepilogo_di_alta_intensita" formatted="true">%1$s%% high intensity</string>
+    <string name="riepilogo_intensi_su_di_bici" formatted="true">%1$s\' hard out of %2$s\' of cycling and running</string>
+    <string name="riepilogo_tetto" formatted="true">cap %1$s%%</string>
+    <string name="riepilogo_pieno_fatto_chiaro_con">Solid = done · light = with sessions still in the calendar · line = target · red = cap</string>
+    <string name="riepilogo_soglie_aggiornate">Thresholds updated</string>
+    <string name="riepilogo_oggi_2">Today</string>
+    <string name="riepilogo_biometria">Biometrics</string>
+    <string name="riepilogo_forma">Form</string>
+    <string name="riepilogo_discipline">Disciplines</string>
+    <string name="riepilogo_intensita">Intensity</string>
+    <string name="riepilogo_settimana">Week</string>
+    <string name="riepilogo_sedute_della_settimana">This week\'s sessions</string>
     <string name="riepilogo_ctl">CTL</string>
     <string name="riepilogo_atl">ATL</string>
     <string name="riepilogo_tsb">TSB</string>

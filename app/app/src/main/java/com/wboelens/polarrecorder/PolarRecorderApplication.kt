@@ -6,6 +6,8 @@ import com.wboelens.polarrecorder.biosleep.auto.StatoRegistrazione
 import android.app.ActivityManager
 import android.app.Application
 import android.content.Context
+import android.content.res.Configuration
+import com.wboelens.polarrecorder.biosleep.cervello.Lingua
 import com.wboelens.polarrecorder.dataSavers.DataSavers
 import com.wboelens.polarrecorder.managers.PolarManager
 import com.wboelens.polarrecorder.managers.PreferencesManager
@@ -46,8 +48,15 @@ class PolarRecorderApplication : Application() {
   // Service connection for recording control
   private var _serviceConnection: RecordingServiceConnection? = null
 
+  override fun onConfigurationChanged(newConfig: Configuration) {
+    super.onConfigurationChanged(newConfig)
+    Lingua.allineaLocale(newConfig)
+  }
+
   override fun onCreate() {
     super.onCreate()
+    // lingua non coperta dal telefono: date e numeri in inglese come l'interfaccia
+    Lingua.allineaLocale(resources.configuration)
     preferencesManager = PreferencesManager(applicationContext)
     // ponte web: i dati della Parte 3 per la copia cifrata e i comandi dal sito
     Parte3Ponte.fonti = FontiParte3Noctalix

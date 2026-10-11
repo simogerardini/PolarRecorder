@@ -1,0 +1,495 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Testi di sistema (lingua/TestiSistema.kt): frasi italiane della logica tradotte quando vengono mostrate. -->
+<resources>
+    <string name="sis_la_tua_notte">La tua notte</string>
+    <string name="sis_canale_riepilogo_notte">Riepilogo notte</string>
+    <string name="sis_notifica_sonno" formatted="true">Sonno %1$s · profondo %2$s · REM %3$s</string>
+    <string name="sis_notifica_ore" formatted="true">%1$s h registrate</string>
+    <string name="sis_notifica_fc" formatted="true">FC riposo %1$s · rMSSD %2$s ms</string>
+    <string name="sis_invio_in_corso">Invio a Intervals.icu in corso (parte appena c\'è rete)</string>
+    <string name="sis_interruzioni" formatted="true">Interruzioni: %1$s</string>
+    <string name="sis_minuti_persi" formatted="true">%1$s\' persi: %2$s</string>
+    <string name="sis_causa_bt_ora" formatted="true">Bluetooth spento alle %1$s</string>
+    <string name="sis_causa_app_ora" formatted="true">app chiusa dal sistema alle %1$s</string>
+    <string name="sis_causa_portata_ora" formatted="true">fascia fuori portata o spenta alle %1$s</string>
+    <string name="sis_causa_contatto_ora" formatted="true">nessun battito dalle %1$s (fascia spostata o senza contatto)</string>
+    <string name="sis_causa_bt">Bluetooth spento</string>
+    <string name="sis_causa_app">app chiusa dal sistema</string>
+    <string name="sis_causa_portata">fascia fuori portata</string>
+    <string name="sis_causa_contatto">fascia senza contatto</string>
+    <string name="sis_causa_altra_1" formatted="true">%1$s, +1 interruzione</string>
+    <string name="sis_causa_altre" formatted="true">%1$s, +%2$s interruzioni</string>
+    <string name="sis_causa_minuti" formatted="true">%1$s (%2$s\')</string>
+    <string name="sis_inviata" formatted="true">Inviata a Intervals.icu (%1$s)</string>
+    <string name="sis_connessione_non_riuscita" formatted="true">Connessione non riuscita: %1$s</string>
+    <string name="sis_campi_mancanti" formatted="true">Intervals non ha salvato: %1$s. Mancano i campi %2$s: in Impostazioni premi \"Prepara i campi\" e reinvia la notte.</string>
+    <string name="sis_connessione_riuscita">Connessione riuscita</string>
+    <string name="sis_connesso_come" formatted="true">Connesso come %1$s</string>
+    <string name="sis_accesso_non_valido" formatted="true">Accesso a Intervals.icu non valido: ricollega o controlla la API key (HTTP %1$s)</string>
+    <string name="sis_dati_rifiutati" formatted="true">Dati rifiutati da Intervals (HTTP 422): %1$s</string>
+    <string name="sis_errore_http" formatted="true">Errore Intervals HTTP %1$s: %2$s</string>
+    <string name="sis_notte_non_inviata">Notte non inviata a Intervals.icu</string>
+    <string name="sis_puoi_reinviarla">Puoi reinviarla dalla scheda della notte.</string>
+    <string name="sis_non_collegato">Intervals.icu non collegato</string>
+    <string name="sis_inviata_il" formatted="true">✓ Inviata il %1$s</string>
+    <string name="sis_non_inviata" formatted="true">Non inviata: %1$s</string>
+    <string name="sis_non_ancora_inviata">Non ancora inviata</string>
+    <string name="sis_invia_di_nuovo">Invia di nuovo</string>
+    <string name="sis_intervals_inviata_il" formatted="true">Intervals.icu: ✓ inviata il %1$s</string>
+    <string name="sis_intervals_non_inviata" formatted="true">Intervals.icu: non inviata (%1$s)</string>
+    <string name="sis_intervals_non_ancora">Intervals.icu: non ancora inviata</string>
+    <string name="sis_notte">Notte</string>
+    <string name="sis_notte_non_trovata">Notte non trovata</string>
+    <string name="sis_errore_database">Errore del database</string>
+    <string name="sis_addormentamento_alle" formatted="true">Addormentamento alle %1$s</string>
+    <string name="sis_dopo_minuti" formatted="true">" (dopo %1$s\')"</string>
+    <string name="sis_risveglio_alle" formatted="true">" · risveglio alle %1$s"</string>
+    <string name="sis_stima_fc_acc">Stima dalla sola frequenza cardiaca e dal movimento: la fascia non fornisce RR affidabili. È indicativa: non sostituisce una polisonnografia.</string>
+    <string name="sis_stima_fc">Stima dalla sola frequenza cardiaca, senza dati di movimento: la fascia non fornisce RR affidabili. È indicativa: non sostituisce una polisonnografia.</string>
+    <string name="sis_stima_hrv_acc_resp">Stima da frequenza cardiaca, HRV, movimento e respiro (accelerometro H10). È indicativa: non sostituisce una polisonnografia.</string>
+    <string name="sis_stima_hrv_acc">Stima da frequenza cardiaca, HRV e movimento (accelerometro H10). È indicativa: non sostituisce una polisonnografia.</string>
+    <string name="sis_stima_senza_acc">Fasi stimate senza dati di movimento: frequenza cardiaca e HRV (fascia senza accelerometro). È indicativa: non sostituisce una polisonnografia.</string>
+    <string name="sis_indietro">Indietro</string>
+    <string name="sis_elimina_notte">Elimina notte</string>
+    <string name="sis_avvio_non_riuscito_titolo">Avvio della notte non riuscito</string>
+    <string name="sis_avvio_della_notte">Avvio della notte</string>
+    <string name="sis_collegamento_in_corso">Collegamento alla fascia in corso…</string>
+    <string name="sis_analisi_della_notte">Analisi della notte</string>
+    <string name="sis_calcolo_invio_punti">Calcolo e invio a Intervals.icu…</string>
+    <string name="sis_calcolo_invio">Calcolo e invio a Intervals.icu</string>
+    <string name="sis_notte_in_corso">Notte in corso</string>
+    <string name="sis_registrazione_da" formatted="true">Registrazione %1$s · si ferma da sola quando togli la fascia</string>
+    <string name="sis_da_durata" formatted="true">da %1$s</string>
+    <string name="sis_gestore_bt">Gestore Bluetooth non disponibile</string>
+    <string name="sis_salvataggi_nd">Salvataggi non disponibili</string>
+    <string name="sis_fascia_non_trovata" formatted="true">Fascia %1$s non trovata: è indossata e vicina?</string>
+    <string name="sis_collegamento_fallito">Collegamento alla fascia non riuscito</string>
+    <string name="sis_collegamento_fallito_std">Collegamento alla fascia non riuscito (anche con il driver standard)</string>
+    <string name="sis_stato_fascia_nd">Stato della fascia non disponibile</string>
+    <string name="sis_init_salvataggi_fallita">Inizializzazione dei salvataggi non riuscita</string>
+    <string name="sis_nessuna_impostazione">Nessuna impostazione salvata: fai prima una registrazione dalle schermate</string>
+    <string name="sis_registrazione_non_partita">La registrazione non è partita, controlla l\'app</string>
+    <string name="sis_fascia_associata">Fascia associata</string>
+    <string name="sis_associazione_fallita" formatted="true">Associazione non riuscita: %1$s</string>
+    <string name="sis_annullata">annullata</string>
+    <string name="sis_associazione_rimossa">Associazione rimossa</string>
+    <string name="sis_richiede_android13">Richiede Android 13 o successivo.</string>
+    <string name="sis_prima_registrazione">Fai prima una registrazione: serve sapere quale fascia usare.</string>
+    <string name="sis_associa_una_volta">Associa la fascia una volta sola: Android avviserà l\'app quando la indossi. Indossala ora (elettrodi bagnati) e premi il pulsante.</string>
+    <string name="sis_attivo">Attivo</string>
+    <string name="sis_disattivato">Disattivato</string>
+    <string name="sis_parte_da_sola" formatted="true">Parte da sola tra %1$s e %2$s quando indossi la fascia e il telefono è in carica vicino a te.</string>
+    <string name="sis_si_attivera" formatted="true">Si attiverà dopo %1$s notti di apprendimento (ora %2$s). Fino ad allora usa \"Avvia notte\".</string>
+    <string name="sis_non_legge_funzioni">Collegata, ma non riesco a leggere le funzioni della fascia. Riprova.</string>
+    <string name="sis_collegamento_elettrodi">Collegamento non riuscito: la fascia è indossata con gli elettrodi bagnati?</string>
+    <string name="sis_fascia_non_risponde">La fascia non risponde. Avvicinala al telefono e riprova.</string>
+    <string name="sis_movimento_respiro">movimento e respiro</string>
+    <string name="sis_battito_hrv">battito e HRV</string>
+    <string name="sis_indossa_e_premi">Indossa la fascia e premi Avvia notte. Al mattino si ferma da sola quando la togli.</string>
+    <string name="sis_letta_il" formatted="true">letta il %1$s</string>
+    <string name="sis_avvio_in_corso">Avvio in corso…</string>
+    <string name="sis_riprova">Riprova</string>
+    <string name="sis_avvia_notte">Avvia notte</string>
+    <string name="sis_segnale_ok">Segnale della fascia: OK</string>
+    <string name="sis_nessun_battito_da" formatted="true">Nessun battito da %1$s minuti: la fascia è indossata?</string>
+    <string name="sis_le_mie_notti">Le mie notti</string>
+    <string name="sis_eta_app" formatted="true">Età %1$s</string>
+    <string name="sis_impossibile_leggere_notti" formatted="true">Impossibile leggere le notti:\n%1$s</string>
+    <string name="sis_nessuna_notte">Nessuna notte ancora.\nLe notti compaiono qui dopo lo stop di una registrazione di almeno 10 minuti.</string>
+    <string name="sis_fc_riposo">FC riposo</string>
+    <string name="sis_sonno">Sonno</string>
+    <string name="sis_fc_media">FC media</string>
+    <string name="sis_impostazioni_intervals">Impostazioni Intervals.icu</string>
+    <string name="sis_anello_esterno">Esterno: fitness</string>
+    <string name="sis_anello_centro">Centro: allenamento</string>
+    <string name="sis_anello_interno">Interno: sonno</string>
+    <string name="sis_tra_anni" formatted="true">tra %1$s e %2$s anni</string>
+    <string name="sis_eta_anagrafica" formatted="true">Età anagrafica %1$s · %2$s</string>
+    <string name="sis_anni_in_meno" formatted="true">%1$s anni in meno</string>
+    <string name="sis_anni_in_piu" formatted="true">%1$s anni in più</string>
+    <string name="sis_non_disponibili" formatted="true">Non disponibili: %1$s</string>
+    <string name="sis_ritmo" formatted="true">%1$s anni biologici per anno di calendario %2$s</string>
+    <string name="sis_stai_rallentando">(stai rallentando)</string>
+    <string name="sis_stai_accelerando">(stai accelerando)</string>
+    <string name="sis_disponibile_90" formatted="true">Disponibile dopo 90 giorni di storico (ora %1$s giorni con una stima).</string>
+    <string name="sis_anni" formatted="true">%1$s anni</string>
+    <string name="sis_notti_valide">notti valide</string>
+    <string name="sis_comp_fitness">Fitness (VO2max)</string>
+    <string name="sis_comp_allenamento">Allenamento</string>
+    <string name="sis_comp_durata_sonno">Durata del sonno</string>
+    <string name="sis_comp_regolarita">Regolarita\' del sonno</string>
+    <string name="sis_det_vo2" formatted="true">VO2max %1$s (%2$s) contro %3$s tipico per eta\' e sesso</string>
+    <string name="sis_det_stimato" formatted="true">stimato da %1$s corse e %2$s uscite in bici, FC max %3$s</string>
+    <string name="sis_det_allenamento" formatted="true">%1$s min/settimana equivalenti (%2$sx il minimo raccomandato)</string>
+    <string name="sis_det_durata" formatted="true">mediana %1$s h di sonno</string>
+    <string name="sis_det_regolarita" formatted="true">orario del sonno variabile di +-%1$s minuti</string>
+    <string name="sis_mancante_vo2">VO2max (assente su Intervals.icu e non stimabile: servono almeno 3 corse in piano o uscite in bici con potenza, di 20+ minuti, negli ultimi 90 giorni)</string>
+    <string name="sis_mancante_allenamento">Allenamento (Intervals.icu non configurato o non raggiungibile)</string>
+    <string name="sis_errore_codice" formatted="true">errore %1$s</string>
+    <string name="sis_conn_non_riuscita">connessione non riuscita</string>
+    <string name="sis_risposta_non_valida">risposta non valida</string>
+    <string name="sis_movimento">Movimento</string>
+    <string name="sis_niente_hrv_verificato">Niente HRV: solo frequenza cardiaca (verificato)</string>
+    <string name="sis_niente_hrv_ottico">Niente HRV: solo frequenza cardiaca (sensore ottico)</string>
+    <string name="sis_hrv_verificata">HRV verificata nei primi 5 minuti della prima notte</string>
+    <string name="sis_battito_senza_movimento">Battito e HRV, senza movimento</string>
+    <string name="sis_avviso_senza_hrv">Questa fascia non misura l\'HRV in modo affidabile: avrai durata e fasi del sonno stimate dalla FC, ma niente HRV, prontezza e baseline.</string>
+    <string name="sis_consiglio_fascia">Per l\'HRV usa una fascia cardio da petto che trasmette gli intervalli tra i battiti, come la Polar H10.</string>
+    <string name="sis_voce_batteria">Batteria senza restrizioni</string>
+    <string name="sis_voce_batteria_sp">La registrazione dura 8 ore a schermo spento: con l\'ottimizzazione attiva Android può fermarla.</string>
+    <string name="sis_voce_notifiche">Notifiche consentite</string>
+    <string name="sis_voce_notifiche_sp">Servono per la notifica della notte in corso e per gli avvisi del coach.</string>
+    <string name="sis_voce_allarmi">Allarmi esatti consentiti</string>
+    <string name="sis_voce_allarmi_sp">Servono per avviare e fermare la notte all\'ora giusta.</string>
+    <string name="sis_voce_bt">Bluetooth attivo</string>
+    <string name="sis_voce_bt_sp">La fascia trasmette via Bluetooth per tutta la notte.</string>
+    <string name="sis_il_tuo_telefono">il tuo telefono</string>
+    <string name="sis_istr_xiaomi_1" formatted="true">Attiva l\'Avvio automatico per %1$s.</string>
+    <string name="sis_istr_xiaomi_2">In Risparmio batteria scegli \"Nessuna restrizione\".</string>
+    <string name="sis_istr_samsung_1" formatted="true">Togli %1$s da \"App in sospensione profonda\" e da \"App in sospensione\".</string>
+    <string name="sis_istr_samsung_2" formatted="true">Aggiungi %1$s ad \"App mai in sospensione\".</string>
+    <string name="sis_istr_huawei_1" formatted="true">In Gestione avvio porta %1$s su gestione manuale.</string>
+    <string name="sis_istr_huawei_2">Attiva tutte e tre le voci: avvio automatico, avvio secondario, esecuzione in background.</string>
+    <string name="sis_istr_oppo_1" formatted="true">In Ottimizzazione batteria scegli \"Non ottimizzare\" per %1$s.</string>
+    <string name="sis_istr_oppo_2">Attiva l\'Avvio automatico.</string>
+    <string name="sis_istr_pixel">Basta l\'ottimizzazione della batteria \"Senza restrizioni\".</string>
+    <string name="sis_istr_altra" formatted="true">Imposta la batteria di %1$s su \"Senza restrizioni\".</string>
+    <string name="sis_coach_al_lavoro">Coach al lavoro</string>
+    <string name="sis_coach_analisi">Analisi della notte e del piano</string>
+    <string name="sis_canale_coach">Coach</string>
+    <string name="sis_com_e_andata">Com\'è andata la notte?</string>
+    <string name="sis_aggiungi_tag" formatted="true">Aggiungi i tag: il coach li aspetta %1$s minuti</string>
+    <string name="sis_piano_pronto">Piano pronto</string>
+    <string name="sis_piano_settimana" formatted="true">Piano della settimana: %1$s sedute%2$s</string>
+    <string name="sis_seduta_aggiornata">Seduta di oggi aggiornata</string>
+    <string name="sis_addorm_completo" formatted="true">Addormentamento alle %1$s (dopo %2$s\') · risveglio alle %3$s</string>
+    <string name="sis_addorm_risveglio" formatted="true">Addormentamento alle %1$s · risveglio alle %2$s</string>
+    <string name="sis_numerato" formatted="true">%1$s. %2$s</string>
+    <string name="sis_nascondi_avanzate">Nascondi opzioni avanzate</string>
+    <string name="sis_opzioni_avanzate">Opzioni avanzate: API key personale</string>
+    <string name="sis_a_posto">A posto</string>
+    <string name="sis_da_sistemare">Da sistemare</string>
+    <string name="sis_invia_ora">Invia ora</string>
+    <string name="sis_collegato">Collegato</string>
+    <string name="sis_collegato_atleta" formatted="true">Collegato come atleta %1$s</string>
+    <string name="sis_campi_pronti" formatted="true">Campi %1$s pronti: %2$s</string>
+    <string name="sis_campi_pronti_creati" formatted="true">Campi %1$s pronti: %2$s (%3$s creati ora)</string>
+    <string name="sis_campi_non_preparati" formatted="true">Campi %1$s non preparati: %2$s</string>
+    <string name="sis_errore">errore</string>
+    <string name="sis_oggi">Oggi</string>
+    <string name="sis_calendario">Calendario</string>
+    <string name="sis_grafici">Grafici</string>
+    <string name="sis_impostazioni">Impostazioni</string>
+    <string name="sis_aggiorna_da_intervals">Aggiorna da Intervals.icu</string>
+    <string name="sis_aggiungi">Aggiungi</string>
+    <string name="sis_oggi_data" formatted="true">Oggi · %1$s</string>
+    <string name="sis_coach_ora" formatted="true">Coach · %1$s</string>
+    <string name="sis_non_valutabile">Non valutabile</string>
+    <string name="sis_media7_ms" formatted="true">Media 7 gg %1$s ms</string>
+    <string name="sis_range_ms" formatted="true">range %1$s–%2$s ms</string>
+    <string name="sis_ultima_notte_giorno" formatted="true">Ultima notte registrata: %1$s giorno fa</string>
+    <string name="sis_ultima_notte_giorni" formatted="true">Ultima notte registrata: %1$s giorni fa</string>
+    <string name="sis_hrv_stanotte">HRV stanotte</string>
+    <string name="sis_fc_riposo_stanotte">FC a riposo stanotte</string>
+    <string name="sis_sonno_stanotte">Sonno stanotte</string>
+    <string name="sis_media7" formatted="true">media 7 gg %1$s</string>
+    <string name="sis_abituale" formatted="true">abituale %1$s</string>
+    <string name="sis_svolta_pct" formatted="true">svolta %1$s%%</string>
+    <string name="sis_svolta">svolta</string>
+    <string name="sis_non_svolta">non svolta</string>
+    <string name="sis_da_fare">da fare</string>
+    <string name="sis_pianificata">pianificata</string>
+    <string name="sis_non_pianificata">non pianificata</string>
+    <string name="sis_forma_fisica">Forma fisica</string>
+    <string name="sis_stanchezza">Stanchezza</string>
+    <string name="sis_forma">Forma</string>
+    <string name="sis_zona_giorno" formatted="true">Zona %1$s da %2$s giorno</string>
+    <string name="sis_zona_giorni" formatted="true">Zona %1$s da %2$s giorni</string>
+    <string name="sis_range_normale">range normale</string>
+    <string name="sis_durata">Durata</string>
+    <string name="sis_distanza">Distanza</string>
+    <string name="sis_multisport">Multisport</string>
+    <string name="sis_transizione">Transizione</string>
+    <string name="sis_altro">Altro</string>
+    <string name="sis_corsa">Corsa</string>
+    <string name="sis_bici">Bici</string>
+    <string name="sis_nuoto">Nuoto</string>
+    <string name="sis_palestra">Palestra</string>
+    <string name="sis_seduta">Seduta</string>
+    <string name="sis_z_fresco">Fresco</string>
+    <string name="sis_z_grigia">Grigia</string>
+    <string name="sis_z_ottimale">Ottimale</string>
+    <string name="sis_z_alto_rischio">Alto rischio</string>
+    <string name="sis_pausa_sparita">La pausa non c\'è più su Intervals.icu: calendario aggiornato</string>
+    <string name="sis_varra_prossima">Varrà dalla prossima pianificazione</string>
+    <string name="sis_ripianificazione_in_corso">Ripianificazione in corso: il riepilogo arriverà con la notifica del coach</string>
+    <string name="sis_fino_al" formatted="true">fino al %1$s</string>
+    <string name="sis_da_intervals" formatted="true">%1$s (da Intervals.icu)</string>
+    <string name="sis_ferie">Ferie</string>
+    <string name="sis_malattia">Malattia</string>
+    <string name="sis_infortunio">Infortunio</string>
+    <string name="sis_pianificato">Pianificato</string>
+    <string name="sis_svolto">Svolto</string>
+    <string name="sis_analisi_seduta">Analisi della seduta</string>
+    <string name="sis_ctl_forma_fisica">CTL forma fisica</string>
+    <string name="sis_atl_stanchezza">ATL stanchezza</string>
+    <string name="sis_media_7gg">media 7 gg</string>
+    <string name="sis_range_media7">Il range si confronta con la media 7 gg, non con la singola notte.</string>
+    <string name="sis_range_dopo14">Il range compare dopo 14 notti valide.</string>
+    <string name="sis_oggi_tsb_giorno" formatted="true">Oggi TSB %1$s · zona %2$s da %3$s giorno</string>
+    <string name="sis_oggi_tsb_giorni" formatted="true">Oggi TSB %1$s · zona %2$s da %3$s giorni</string>
+    <string name="sis_oltre" formatted="true">oltre %1$s</string>
+    <string name="sis_da_a" formatted="true">da %1$s a %2$s</string>
+    <string name="sis_sotto" formatted="true">sotto %1$s</string>
+    <string name="sis_piano_della_settimana">Piano della settimana</string>
+    <string name="sis_gara_nome" formatted="true">gara: %1$s</string>
+    <string name="sis_obiettivo_settimana" formatted="true">obiettivo settimana %1$s</string>
+    <string name="sis_ore_ora" formatted="true">ore %1$s</string>
+    <string name="sis_senza_gara">senza_gara</string>
+    <string name="sis_hrv7" formatted="true">HRV 7 gg %1$s ms</string>
+    <string name="sis_fc7" formatted="true">FC a riposo 7 gg %1$s bpm</string>
+    <string name="sis_baseline" formatted="true">baseline %1$s</string>
+    <string name="sis_andamento" formatted="true">andamento %1$s</string>
+    <string name="sis_stabile">stabile</string>
+    <string name="sis_in_calo">in calo</string>
+    <string name="sis_in_aumento">in aumento</string>
+    <string name="sis_in_crescita">in crescita</string>
+    <string name="sis_sotto_range_gg" formatted="true">sotto il range da %1$s gg</string>
+    <string name="sis_ultima_notte_gg" formatted="true">ultima notte %1$s gg fa</string>
+    <string name="sis_b_verde">Verde</string>
+    <string name="sis_b_gialla">Gialla</string>
+    <string name="sis_b_arancione">Arancione</string>
+    <string name="sis_b_rossa">Rossa</string>
+    <string name="sis_b_grigio">Grigio</string>
+    <string name="sis_zona_x" formatted="true">zona %1$s</string>
+    <string name="sis_attesa_fase" formatted="true">attesa in questa fase: %1$s</string>
+    <string name="sis_obiettivo_domenica" formatted="true">Obiettivo a domenica: TSB %1$s</string>
+    <string name="sis_obiettivo_domenica_fascia" formatted="true">Obiettivo a domenica: TSB %1$s (fascia attesa %2$s / %3$s)</string>
+    <string name="sis_rampa" formatted="true">Rampa CTL %1$s/sett</string>
+    <string name="sis_rampa_max" formatted="true">Rampa CTL %1$s/sett (max %2$s)</string>
+    <string name="sis_linea_14">linea: ultimi 14 giorni</string>
+    <string name="sis_tratteggio">tratteggio: previsione del coach</string>
+    <string name="sis_riquadro">riquadro: fascia attesa a domenica</string>
+    <string name="sis_g7">7 gg</string>
+    <string name="sis_g28">28 gg</string>
+    <string name="sis_g7_val" formatted="true">7 gg %1$s</string>
+    <string name="sis_g28_val" formatted="true">28 gg %1$s</string>
+    <string name="sis_palestra_val" formatted="true">Palestra: %1$s</string>
+    <string name="sis_resto_aerobico">Il resto del volume è aerobico facile. La linea è il tetto che il coach non supera.</string>
+    <string name="sis_polarizzazione">Polarizzazione 80/20: al massimo il 20% del tempo di bici e corsa sopra la soglia</string>
+    <string name="sis_ore_di" formatted="true">Ore: %1$s di %2$s</string>
+    <string name="sis_tetto" formatted="true">tetto %1$s</string>
+    <string name="sis_restano" formatted="true">restano %1$s</string>
+    <string name="sis_restano_gg" formatted="true">restano %1$s in %2$s gg</string>
+    <string name="sis_tss_fatti" formatted="true">TSS: %1$s fatti</string>
+    <string name="sis_tss_fatti_di" formatted="true">TSS: %1$s fatti di %2$s</string>
+    <string name="sis_tss_calendario" formatted="true">%1$s con le sedute in calendario</string>
+    <string name="sis_qualita">qualità</string>
+    <string name="sis_alleggerita">alleggerita</string>
+    <string name="sis_dettp">DETP</string>
+    <string name="sis_caldo">Caldo</string>
+    <string name="sis_tag">Tag</string>
+    <string name="sis_aggiornata">Aggiornata</string>
+    <string name="sis_carico_tss">Carico (TSS)</string>
+    <string name="sis_intensita">Intensità</string>
+    <string name="sis_velocita">Velocità</string>
+    <string name="sis_passo">Passo</string>
+    <string name="sis_potenza_norm">Potenza norm.</string>
+    <string name="sis_potenza_media">Potenza media</string>
+    <string name="sis_fc_max">FC max</string>
+    <string name="sis_cadenza">Cadenza</string>
+    <string name="sis_dislivello">Dislivello</string>
+    <string name="sis_calorie">Calorie</string>
+    <string name="sis_disaccoppiamento">Disaccoppiamento</string>
+    <string name="sis_fattore_efficienza">Fattore di efficienza</string>
+    <string name="sis_fatica_percepita">Fatica percepita</string>
+    <string name="sis_aderenza_piano">Aderenza al piano</string>
+    <string name="sis_vasca">Vasca</string>
+    <string name="sis_tr_fc">Frequenza cardiaca (bpm)</string>
+    <string name="sis_tr_potenza">Potenza (W)</string>
+    <string name="sis_tr_velocita">Velocità (km/h)</string>
+    <string name="sis_tr_passo100">Passo (/100m)</string>
+    <string name="sis_tr_passokm">Passo (/km)</string>
+    <string name="sis_tr_altitudine">Altitudine (m)</string>
+    <string name="sis_tr_fc_breve" formatted="true">FC %1$s</string>
+    <string name="sis_tr_pot_breve" formatted="true">Pot. %1$s</string>
+    <string name="sis_tr_vel_breve" formatted="true">Vel. %1$s</string>
+    <string name="sis_tr_passo_breve" formatted="true">Passo %1$s</string>
+    <string name="sis_tr_cad_breve" formatted="true">Cad. %1$s</string>
+    <string name="sis_tr_alt_breve" formatted="true">Alt. %1$s</string>
+    <string name="sis_tocca_grafico">Tocca o trascina un grafico per leggere i valori in quel punto</string>
+    <string name="sis_lavoro">Lavoro</string>
+    <string name="sis_recupero">Recupero</string>
+    <string name="sis_fc_soglia_pct" formatted="true">%1$s FC soglia</string>
+    <string name="sis_fc_max_pct" formatted="true">%1$s FC max</string>
+    <string name="sis_passo_pct" formatted="true">%1$s passo</string>
+    <string name="sis_rampa_step" formatted="true">rampa %1$s</string>
+    <string name="sis_dal_al" formatted="true">Dal %1$s al %2$s</string>
+    <string name="sis_ferie_malattia">Ferie / Malattia / Infortunio</string>
+    <string name="sis_tag_del_giorno">Tag del giorno</string>
+    <string name="sis_gara">Gara</string>
+    <string name="sis_tempo_disponibile">Tempo disponibile</string>
+    <string name="sis_valori_non_validi">Valori non validi</string>
+    <string name="sis_non_riuscito" formatted="true">Non riuscito: %1$s. Riprova.</string>
+    <string name="sis_dal">Dal</string>
+    <string name="sis_al">Al</string>
+    <string name="sis_non_disponibile">Non disponibile</string>
+    <string name="sis_lingua_app_sedute">Lingua dell\'app e delle sedute che il coach scrive sul calendario e sull\'orologio.</string>
+    <string name="sis_lingua_sedute">Lingua delle sedute che il coach scrive sul calendario e sull\'orologio. L\'app segue la lingua del telefono.</string>
+    <string name="sis_informativa">Informativa sulla privacy</string>
+    <string name="sis_licenza_non_trovata" formatted="true">Testo della licenza non trovato (%1$s).</string>
+    <string name="sis_scelti" formatted="true">Scelti: %1$s</string>
+    <string name="sis_nessun_tag_oggi">Nessun tag per oggi</string>
+    <string name="sis_aggiungi_tag_btn">Aggiungi tag</string>
+    <string name="sis_modifica">Modifica</string>
+    <string name="sis_giorno_prima">Giorno prima</string>
+    <string name="sis_giorno_dopo">Giorno dopo</string>
+    <string name="sis_coach_aspetta" formatted="true">Il coach aspetta i tuoi tag fino alle %1$s: parte appena salvi.</string>
+    <string name="sis_coach_partito">Il coach di oggi è già partito: questi tag valgono dal prossimo run.</string>
+    <string name="sis_coach_prossimo">Il coach li userà al prossimo run.</string>
+    <string name="sis_sera">Sera</string>
+    <string name="sis_salute_contesto">Salute e contesto</string>
+    <string name="sis_corpo">Corpo</string>
+    <string name="sis_t_alcol">Alcol</string>
+    <string name="sis_t_cena">Cena tardiva</string>
+    <string name="sis_t_caffeina">Caffeina tardi</string>
+    <string name="sis_t_stress">Stress</string>
+    <string name="sis_t_viaggio">Viaggio</string>
+    <string name="sis_t_sonno">Sonno disturbato</string>
+    <string name="sis_t_altitudine">Altitudine</string>
+    <string name="sis_t_dolore">Dolore muscolare</string>
+    <string name="sis_t_fatica">Fatica alta</string>
+    <string name="sis_t_gambe">Gambe pesanti</string>
+    <string name="sis_t_malessere">Malessere</string>
+    <string name="sis_zc_ginocchio">Ginocchio</string>
+    <string name="sis_zc_caviglia">Caviglia</string>
+    <string name="sis_zc_piede">Piede</string>
+    <string name="sis_zc_polpaccio">Polpaccio</string>
+    <string name="sis_zc_anca">Anca</string>
+    <string name="sis_zc_schiena">Schiena</string>
+    <string name="sis_zc_spalla">Spalla</string>
+    <string name="sis_salvato_parte">Salvato: il coach parte adesso</string>
+    <string name="sis_salvato">Salvato</string>
+    <string name="sis_batt_al_collegamento">Batteria fascia: si legge al collegamento</string>
+    <string name="sis_batt_livello" formatted="true">Batteria fascia: %1$s%%</string>
+    <string name="sis_pila">Potrebbe spegnersi durante la notte: sostituisci la pila (CR2025).</string>
+    <string name="sis_chiudi">Chiudi</string>
+    <string name="sis_collegamento_breve">Collegamento alla fascia…</string>
+    <string name="sis_lettura_battito">Lettura del battito…</string>
+    <string name="sis_attesa_battito">In attesa del battito: la fascia è indossata?</string>
+    <string name="sis_fiore_guida">Inspira mentre si apre, espira mentre si chiude</string>
+    <string name="sis_fiore_seguira">Il fiore seguirà il tuo respiro appena la fascia è collegata</string>
+    <string name="sis_fiore_senza_rr">Questa fascia non misura gli intervalli RR: il fiore ti guida</string>
+    <string name="sis_fiore_dal_battito">Il fiore segue il tuo respiro, letto dal battito</string>
+    <string name="sis_fiore_attesa_respiro">In attesa del respiro dalla fascia</string>
+    <string name="sis_fiore_taratura">Il fiore segue il tuo respiro · taratura in corso</string>
+    <string name="sis_fiore_segue">Il fiore segue il tuo respiro</string>
+    <string name="sis_segui_respiro">Segui il mio respiro</string>
+    <string name="sis_guidami">Guidami</string>
+    <string name="sis_notte_in_corso_da" formatted="true">Notte in corso da %1$s</string>
+    <string name="sis_notte_min">notte</string>
+    <string name="sis_ottimo">Ottimo</string>
+    <string name="sis_buono">Buono</string>
+    <string name="sis_da_curare">Da curare</string>
+    <string name="sis_c_efficienza">Efficienza</string>
+    <string name="sis_c_profondo">Sonno profondo</string>
+    <string name="sis_c_rem">Sonno REM</string>
+    <string name="sis_c_continuita">Continuità</string>
+    <string name="sis_c_latenza">Latenza</string>
+    <string name="sis_c_orario">Orario</string>
+    <string name="sis_l_nessuno">NESSUNO</string>
+    <string name="sis_l_basso">BASSO</string>
+    <string name="sis_l_moderato">MODERATO</string>
+    <string name="sis_l_alto">ALTO</string>
+    <string name="sis_l_nessuno_m">Nessuno</string>
+    <string name="sis_l_basso_m">Basso</string>
+    <string name="sis_l_moderato_m">Moderato</string>
+    <string name="sis_l_alto_m">Alto</string>
+    <string name="sis_a_in_linea">In linea</string>
+    <string name="sis_a_anticipo">In anticipo</string>
+    <string name="sis_a_ritardo">In ritardo</string>
+    <string name="sis_cr_molto_matt">Decisamente mattutino</string>
+    <string name="sis_cr_matt">Mattutino</string>
+    <string name="sis_cr_intermedio">Intermedio</string>
+    <string name="sis_cr_serale">Serale</string>
+    <string name="sis_cr_molto_serale">Decisamente serale</string>
+    <string name="sis_sc_in_linea">in linea con il tuo cronotipo</string>
+    <string name="sis_sc_dopo" formatted="true">%1$s dopo rispetto al tuo cronotipo</string>
+    <string name="sis_sc_prima" formatted="true">%1$s prima rispetto al tuo cronotipo</string>
+    <string name="sis_linea_appreso" formatted="true">Linea: fabbisogno %1$s (appreso dalle tue notti). Barre grigie: notti non registrate, non contano. Una notte più lunga del fabbisogno riduce il deficit.</string>
+    <string name="sis_linea_8h" formatted="true">Linea: fabbisogno %1$s (8 h finché le notti sono meno di 14: %2$s/14). Barre grigie: notti non registrate, non contano. Una notte più lunga del fabbisogno riduce il deficit.</string>
+    <string name="sis_notti_n_su" formatted="true">%1$s/%2$s notti</string>
+    <string name="sis_prep_gara">Preparazione gara: al massimo il 10% del tempo di bici e corsa sopra la soglia</string>
+    <string name="sis_piano_rimodulato_n" formatted="true">🗓️ Piano settimanale — rimodulazione del %1$s, banda %2$s:</string>
+    <string name="sis_piano_settimanale_n">🗓️ Piano settimanale</string>
+    <string name="sis_banda_verde_min">verde</string>
+    <string name="sis_banda_gialla_min">gialla</string>
+    <string name="sis_banda_arancione_min">arancione</string>
+    <string name="sis_banda_rossa_min">rossa</string>
+    <string name="sis_banda_grigia_min">grigia</string>
+    <string name="sis_piano_n_sedute" formatted="true">Piano della settimana: %1$s sedute</string>
+    <string name="sis_sc_titolo">Scollega Intervals.icu</string>
+    <string name="sis_sc_controllo">Controllo di cosa c\'è su Intervals.icu…</string>
+    <string name="sis_sc_eventi" formatted="true">Eventi creati dall\'app da eliminare: %1$s</string>
+    <string name="sis_sc_per_tipo" formatted="true">%1$s sedute · %2$s gare · %3$s pause</string>
+    <string name="sis_sc_campi_n" formatted="true">Campi dell\'app nel profilo da eliminare: %1$s</string>
+    <string name="sis_sc_opz_campi" formatted="true">Elimina anche i campi %1$s dal mio profilo</string>
+    <string name="sis_sc_opz_passato">Anche lo storico passato</string>
+    <string name="sis_sc_soglie">Le soglie aggiornate dal coach (FTP, LTHR, passo, CSS) restano come sono: non tornano ai valori precedenti.</string>
+    <string name="sis_sc_niente">Niente da eliminare.</string>
+    <string name="sis_sc_permesso">Intervals.icu non permette di leggere il calendario: puoi scollegare senza eliminare.</string>
+    <string name="sis_sc_errore" formatted="true">Controllo non riuscito: %1$s</string>
+    <string name="sis_sc_elimina_scollega">Elimina e scollega</string>
+    <string name="sis_sc_solo">Scollega senza eliminare</string>
+    <string name="sis_annulla">Annulla</string>
+    <string name="sis_sc_in_corso">Eliminazione in corso…</string>
+    <string name="sis_sc_eliminati" formatted="true">Eliminati da Intervals.icu: %1$s eventi e %2$s campi.</string>
+    <string name="sis_sc_parziale" formatted="true">Eliminati %1$s eventi su %2$s e %3$s campi su %4$s: controlla il resto su Intervals.icu.</string>
+    <string name="sis_sc_non_eliminato">Eliminazione non riuscita: non ho scollegato. Riprova.</string>
+    <string name="sis_hrv_norma">HRV nella norma</string>
+    <string name="sis_hrv_sotto">HRV sotto il range</string>
+    <string name="sis_hrv_molto_sotto">HRV molto sotto il range</string>
+    <string name="sis_recupero_x" formatted="true">Recupero: %1$s</string>
+    <string name="sis_recupero_cal" formatted="true">Recupero: calibrazione %1$s/%2$s notti</string>
+    <string name="sis_fc_sopra" formatted="true">FC a riposo sopra l\'abituale (%1$s bpm)</string>
+    <string name="sis_coach_allenamento">Coach di allenamento</string>
+    <string name="sis_coach_acceso">Acceso: il coach pianifica le sedute su Intervals.icu e le adatta ai tuoi dati della notte.</string>
+    <string name="sis_coach_spento">Spento: solo i dati biometrici della notte (HRV, FC a riposo, sonno, età biologica) con i loro semafori. Nessuna seduta viene scritta su Intervals.icu; quelle già scritte restano.</string>
+    <string name="sis_coach_riparte">Il coach riparte con la prossima notte, o subito con Ripianifica dal profilo atleta.</string>
+    <string name="sis_cons_titolo">Consiglio di oggi</string>
+    <string name="sis_cons_spingi">Puoi spingere</string>
+    <string name="sis_cons_normale">Allenati come previsto</string>
+    <string name="sis_cons_piano">Vai piano</string>
+    <string name="sis_cons_riposo">Riposo o recupero attivo</string>
+    <string name="sis_cons_sp_spingi">HRV sopra la tua media: buona giornata per un allenamento intenso.</string>
+    <string name="sis_cons_sp_normale">HRV nella tua norma: allenati come avevi previsto.</string>
+    <string name="sis_cons_sp_piano">Riduci intensità e volume: oggi meglio lavoro facile, in Z1-Z2.</string>
+    <string name="sis_cons_sp_riposo">Il corpo chiede recupero: riposo o attività molto leggera.</string>
+    <string name="sis_cons_sotto_gg" formatted="true">HRV sotto il range da %1$s giorni</string>
+    <string name="sis_cons_cv">Variabilità dell\'HRV quasi azzerata: meglio non aumentare il carico</string>
+    <string name="sis_cons_sat">HRV molto sopra la media: possibile saturazione, meglio non spingere</string>
+    <string name="sis_cons_calo">HRV in calo negli ultimi 7 giorni</string>
+    <string name="sis_cons_sonno" formatted="true">Sonno corto stanotte (%1$s)</string>
+    <string name="sis_cons_cal" formatted="true">In calibrazione: il consiglio arriva dopo %1$s notti valide (%2$s/%3$s).</string>
+    <string name="sis_ck_come">Com\'è andata?</string>
+    <string name="sis_ck_degradato">Intervals.icu non legge le attività: il coach ricostruisce il carico dalle tue risposte.</string>
+    <string name="sis_ck_fatta">Fatta</string>
+    <string name="sis_ck_modificata">Modificata</string>
+    <string name="sis_ck_saltata">Saltata</string>
+    <string name="sis_ck_rpe">Fatica percepita (1 = facilissima, 10 = massimo sforzo)</string>
+    <string name="sis_ck_minuti">Minuti effettivi</string>
+    <string name="sis_ck_dopo">Più tardi</string>
+    <string name="sis_ck_salva">Salva</string>
+    <string name="sis_ck_altre" formatted="true">Altre %1$s sedute da registrare</string>
+    <string name="sis_ck_interr">Chiedi la fatica dopo ogni seduta</string>
+    <string name="sis_ck_acceso">Acceso: dopo ogni seduta del coach, Oggi chiede se l\'hai fatta e con che fatica.</string>
+    <string name="sis_ck_spento">Spento: la chiede solo se Intervals.icu non riesce a leggere le attività.</string>
+    <string name="sis_at_titolo">Attesa dei tag del mattino</string>
+    <string name="sis_at_spiega">Dopo l\'invio della notte il coach aspetta i tuoi tag prima di ripianificare; parte appena li salvi.</string>
+    <string name="sis_at_subito_sp">Subito: il coach parte senza aspettare e non chiede i tag; quelli aggiunti dopo valgono dal run successivo.</string>
+    <string name="sis_at_subito">Subito</string>
+    <string name="sis_at_min" formatted="true">%1$s min</string>
+    <string name="sis_provvisoria">provvisoria</string>
+    <string name="sis_media3_ms" formatted="true">Media ultime 3 notti %1$s ms</string>
+    <string name="sis_banda_provv_nota" formatted="true">Banda provvisoria: livello dalle tue %1$s notti su %2$s, variabilità da %3$s notti dello storico Intervals.icu. Si ricalibra da sola.</string>
+</resources>

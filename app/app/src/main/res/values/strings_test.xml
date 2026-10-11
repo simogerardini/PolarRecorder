@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Testi di TestUi.kt (italiano, base). Generato da estrai_testi.py. -->
+<!-- Inglese: DA RIVEDERE da un madrelingua (closed testing). Traduzione iniziale della Parte 3, ottobre 2026. -->
 <resources>
-    <string name="test_test_in_programma" formatted="true">Test in programma · %1$s</string>
-    <string name="test_il_protocollo_e_nella">Il protocollo è nella descrizione della seduta in calendario. Dopo il test il coach aggiorna le soglie da solo.</string>
-    <string name="test_inserisci_i_tempi_del">Inserisci i tempi del test CSS</string>
-    <string name="test_del_i_tempi_dei" formatted="true">%1$s del %2$s: i tempi dei 400 m e dei 200 m a tutta, in minuti e secondi.</string>
-    <string name="test_il_collegamento_non_permette">Il collegamento non permette di salvare il CSS: ricollega Intervals.icu.</string>
-    <string name="test_ricollega_intervals_icu">Ricollega Intervals.icu</string>
-    <string name="test_conferma">Conferma</string>
+    <string name="test_test_in_programma" formatted="true">Test scheduled · %1$s</string>
+    <string name="test_il_protocollo_e_nella">The protocol is in the session description in the calendar. After the test the coach updates the thresholds by itself.</string>
+    <string name="test_inserisci_i_tempi_del">Enter your CSS test times</string>
+    <string name="test_del_i_tempi_dei" formatted="true">%1$s on %2$s: your all-out 400 m and 200 m times, in minutes and seconds.</string>
+    <string name="test_il_collegamento_non_permette">The connection does not allow saving the CSS: reconnect Intervals.icu.</string>
+    <string name="test_ricollega_intervals_icu">Reconnect Intervals.icu</string>
+    <string name="test_conferma">Confirm</string>
 </resources>

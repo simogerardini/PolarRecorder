@@ -117,14 +117,15 @@ object DateIt {
   // Modelli scelti per ogni lingua: l'ordine giorno/mese e le parole cambiano (es. zh "10月9日").
   private fun modelli(l: Locale): Triple<String, String, String> =
       when (l.language) {
-        "en" -> Triple("EEE, MMM d", "EEEE, MMMM d", "MMM d")
         "es" -> Triple("EEE d MMM", "EEEE, d 'de' MMMM", "d MMM")
         "zh" -> Triple("M月d日 EEE", "M月d日 EEEE", "M月d日")
-        else -> Triple("EEE d MMM", "EEEE d MMMM", "d MMM")
+        "it" -> Triple("EEE d MMM", "EEEE d MMMM", "d MMM")
+        // lingua non coperta: come l'interfaccia, inglese
+        else -> Triple("EEE, MMM d", "EEEE, MMMM d", "MMM d")
       }
 
   private fun f(modello: (Triple<String, String, String>) -> String): DateTimeFormatter {
-    val l = Locale.getDefault()
+    val l = Locale.getDefault().let { if (it.language in setOf("it", "en", "es", "zh")) it else Locale.ENGLISH }
     return DateTimeFormatter.ofPattern(modello(modelli(l)), l)
   }
 

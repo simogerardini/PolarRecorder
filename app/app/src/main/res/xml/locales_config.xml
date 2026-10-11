@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Lingue dell'app (scelta per singola app, Android 13+). Base: italiano. -->
+<!-- Lingue dell'app (scelta per singola app, Android 13+). Base (lingue non coperte): inglese. -->
 <locale-config xmlns:android="http://schemas.android.com/apk/res/android">
     <locale android:name="it" />
     <locale android:name="en" />

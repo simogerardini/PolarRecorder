@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Testi di Comuni.kt (italiano, base). Generato da estrai_testi.py. -->
+<resources>
+    <string name="comuni_dati_non_aggiornati" formatted="true">Dati non aggiornati: %1$s</string>
+    <string name="comuni_aggiornato" formatted="true">Aggiornato: %1$s</string>
+    <string name="comuni_forma_non_disponibile_servono">Forma non disponibile: servono i dati di Intervals.icu</string>
+    <string name="comuni_dati_insufficienti_per_il">Dati insufficienti per il grafico</string>
+</resources>

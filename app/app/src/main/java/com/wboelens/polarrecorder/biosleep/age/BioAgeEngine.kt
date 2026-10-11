@@ -235,6 +235,6 @@ object BioAgeEngine {
         return sqrt(-2 * ln(u1)) * kotlin.math.cos(2 * Math.PI * u2)
     }
 
-    private fun fmt1(x: Double) = String.format(java.util.Locale.ITALY, "%.1f", x)
+    private fun fmt1(x: Double) = String.format(java.util.Locale.getDefault(), "%.1f", x)
 
 }

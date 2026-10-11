@@ -28,7 +28,7 @@ class TestiSistemaTest {
 
   @Test
   fun ogniModelloHaLaSuaStringa() {
-    for (l in listOf("values", "values-en", "values-es", "values-zh-rCN")) {
+    for (l in listOf("values-it", "values", "values-en", "values-es", "values-zh-rCN")) {
       val s = stringhe(l)
       for (v in TestiSistema.VOCI) assertTrue(s.containsKey("sis_" + v.chiave), "$l: manca sis_${v.chiave}")
     }
@@ -37,7 +37,7 @@ class TestiSistemaTest {
   @Test
   fun italianoInvariato() {
     // in italiano la stringa e' il modello stesso: il testo mostrato non cambia
-    val it = traduttore("values")
+    val it = traduttore("values-it")
     for (t in listOf(
         "Non inviata: Connessione non riuscita: timeout",
         "Interruzioni: 23' persi: app chiusa dal sistema alle 03:12 (18'); fascia fuori portata o spenta alle 05:40 (5')",
@@ -85,7 +85,7 @@ class TestiSistemaTest {
   @Test
   fun ogniStringaSiFormattaSenzaErrori() {
     // un "%" letterale in una stringa con argomenti va scritto "%%": altrimenti l'app si chiude
-    for (l in listOf("values", "values-en", "values-es", "values-zh-rCN")) {
+    for (l in listOf("values-it", "values", "values-en", "values-es", "values-zh-rCN")) {
       for ((k, t) in stringhe(l)) {
         val n = Regex("%(\\d+)\\${'$'}s").findAll(t).map { it.groupValues[1].toInt() }.maxOrNull() ?: 0
         if (n > 0) String.format(t, *Array(n) { "x" }) // lancia se il formato e' sbagliato

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Testi di ProtezioneUi.kt (italiano, base). Generato da estrai_testi.py. -->
+<resources>
+    <string name="protezione_protezione_notturna_incompleta">Protezione notturna incompleta</string>
+    <string name="protezione_sistema">Sistema</string>
+    <string name="protezione_registrazione_interrotta_per_minuti" formatted="true">Registrazione interrotta per %1$s minuti (%2$s)</string>
+    <string name="protezione_succede_soprattutto_quando_il">Succede soprattutto quando il sistema chiude le app in background per risparmiare batteria.</string>
+    <string name="protezione_istruzioni_per" formatted="true">Istruzioni per %1$s</string>
+    <string name="protezione_chiudi">Chiudi</string>
+    <string name="protezione_protezione_notturna">Protezione notturna</string>
+    <string name="protezione_registra_per_8_ore" formatted="true">%1$s registra per 8 ore con lo schermo spento. Android tende a chiudere le app che lavorano a lungo in background: queste impostazioni lo impediscono.</string>
+    <string name="protezione_apri_le_impostazioni_di" formatted="true">Apri le impostazioni di %1$s</string>
+    <string name="protezione_su_questa_versione_la">Su questa versione la schermata non si apre direttamente: segui la guida.</string>
+    <string name="protezione_guida_dettagliata_su_dontkillmyapp">Guida dettagliata su dontkillmyapp.com</string>
+</resources>
