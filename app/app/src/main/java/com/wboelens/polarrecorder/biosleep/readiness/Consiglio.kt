@@ -51,7 +51,7 @@ object Consiglio {
                 ostacoli += "sonno_corto" to "Sonno corto stanotte (${durata(sonnoStanotteOre)})"
             motivi += ostacoli.map { it.second }
             codici += ostacoli.map { it.first }
-            if (z != null && z > 0.0 && ostacoli.isEmpty()) Livello.SPINGI else Livello.NORMALE
+            if (z != null && z > 0.0 && ostacoli.isEmpty() && !b.provvisoria) Livello.SPINGI else Livello.NORMALE
           }
         }
     return Esito(livello, motivi, codici)

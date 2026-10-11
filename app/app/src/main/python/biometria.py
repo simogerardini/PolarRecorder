@@ -442,11 +442,27 @@ def calc_baseline_biometrici(oura_history_long, phase=None, today_str=None, arch
     base_ln, sd_ln = _bio_media_sd([ln(v) for v in base_pool])
     sd_ln = sd_ln or 0.0
     if prov:
-        # ampiezza provvisoria: SD = sqrt(w*SD_nx^2 + (1-w)*SD_arch^2), w = n/14
-        # (SD_nx su ln NoctaliX solo se n >= 3, altrimenti w = 0); poi gli stessi guard rail
+        # BANDA PROVVISORIA (11/10/2026, decisione di Simone). Con le regole della baseline,
+        # sotto le 14 notti il livello conteneva le stesse notti della finestra giudicata: fino a
+        # 8 notti z = 0 per costruzione e un calo acuto non frenava mai. Qui:
+        #   - livello = notti PRIMA delle ultime 3 (pulite; tutte se non ce ne sono di pulite);
+        #   - si giudica la media delle ULTIME 3 notti (rolling7_hrv ne riporta il valore,
+        #     n_giorni_finestra7 = 3);
+        #   - SD = sqrt(w*SD_liv^2 + (1-w)*SD_arch^2), w = n/14 (SD_liv solo con >= 3 notti
+        #     di livello, altrimenti w = 0); poi gli stessi guard rail.
         n_nx = len(hrv)
-        w = n_nx / NOCTALIX_NOTTI_MIN if n_nx >= 3 else 0.0
-        sd_ln = math.sqrt(w * sd_ln ** 2 + (1 - w) * prov[0] ** 2)
+        ult = [v for _, v, _ in hrv[-3:]]
+        liv = [v for _, v, c in hrv[:-3] if not c] or [v for _, v, _ in hrv[:-3]]
+        roll7_vals = ult
+        roll7 = sum(ult) / len(ult)
+        roll7_ln = sum(ln(v) for v in ult) / len(ult)
+        baseline, _sd_lin = _bio_media_sd(liv)
+        cv = round(_sd_lin / baseline * 100, 1) if baseline and _sd_lin else None
+        base_pool = liv
+        base_ln, sd_liv = _bio_media_sd([ln(v) for v in liv])
+        sd_liv = sd_liv or 0.0
+        w = n_nx / NOCTALIX_NOTTI_MIN if len(liv) >= 3 else 0.0
+        sd_ln = math.sqrt(w * sd_liv ** 2 + (1 - w) * prov[0] ** 2)
     #
     # (2) GUARD RAIL SULLA SWC. La SD e' una stima, e su 6 settimane di dati puo' uscire
     # implausibile in entrambi i versi — ed entrambi i versi fanno danno:

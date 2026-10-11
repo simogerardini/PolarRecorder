@@ -23,8 +23,9 @@ class CampiWellnessTest {
     val regex = Regex("(" + vecchi.joinToString("|") + ")\\b")
     val cartelle = listOf("src/main/java", "src/main/python", "src/test/java", "src/test/resources")
     val trovati =
-        // campi.py contiene di proposito la tabella vecchio -> nuovo usata dalla migrazione dello storico
-        cartelle.flatMap { c -> File(c).walkTopDown().filter { it.isFile && it.name != "campi.py" }.toList() }
+        // campi.py contiene di proposito la tabella vecchio -> nuovo; baseline_cases.json (generato dal
+        // cervello) ha i casi "adattatore" con lo storico nei vecchi codici, apposta
+        cartelle.flatMap { c -> File(c).walkTopDown().filter { it.isFile && it.name != "campi.py" && it.name != "baseline_cases.json" }.toList() }
             .flatMap { f -> f.readLines().mapIndexedNotNull { i, r -> if (regex.containsMatchIn(r)) "${f.path}:${i + 1}" else null } }
     assertTrue("Vecchi codici BioSleep* ancora presenti:\n" + trovati.joinToString("\n"), trovati.isEmpty())
   }

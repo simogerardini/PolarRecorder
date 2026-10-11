@@ -120,6 +120,8 @@ data class DatiParte3(
     fun biometria(b: BioBaseline): JsonObject =
         JsonObject().apply {
           addProperty("ok", b.ok)
+          addProperty("provvisoria", b.provvisoria)
+          if (b.provvisoria) addProperty("notti_archivio", b.nottiArchivio)
           b.banda?.let { addProperty("banda", it) }
           b.rolling7Hrv?.let { addProperty("hrv_7gg", it) }
           b.baselineHrv?.let { addProperty("hrv_baseline", it) }

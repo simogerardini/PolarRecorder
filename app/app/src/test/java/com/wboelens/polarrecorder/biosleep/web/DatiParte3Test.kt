@@ -19,7 +19,7 @@ class DatiParte3Test {
             fcRiposo = FcRiposo(41.6, 42.3, 0.7, false))
     val j = DatiParte3.biometria(b)
     assertEquals(
-        setOf("ok", "banda", "hrv_7gg", "hrv_baseline", "pct_vs_baseline", "z_ln", "range_ms", "direzione_7v7",
+        setOf("ok", "provvisoria", "banda", "hrv_7gg", "hrv_baseline", "pct_vs_baseline", "z_ln", "range_ms", "direzione_7v7",
             "gg_sotto_range", "fc_7gg", "fc_baseline", "fc_delta", "fc_allarme", "gg_ritardo"),
         j.keySet())
     assertEquals("verde", j.get("banda")!!.asString)

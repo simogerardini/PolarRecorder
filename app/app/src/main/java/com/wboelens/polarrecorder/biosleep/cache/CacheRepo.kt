@@ -7,6 +7,7 @@ import com.wboelens.polarrecorder.biosleep.readiness.BioBaseline
 import com.wboelens.polarrecorder.biosleep.readiness.BioBaselineCalc
 import com.wboelens.polarrecorder.biosleep.readiness.BioSleepSeries
 import com.wboelens.polarrecorder.biosleep.readiness.FormaCalc
+import com.wboelens.polarrecorder.biosleep.readiness.GiornoBio
 import com.wboelens.polarrecorder.biosleep.readiness.PyJson
 import com.wboelens.polarrecorder.biosleep.readiness.RigaForma
 import com.wboelens.polarrecorder.biosleep.readiness.StatoForma
@@ -69,12 +70,20 @@ class CacheRepo(
     val righe = wellness(oggi.minusDays(GG_BANDA), oggi).map { PyJson.wellnessBio(it) }
     // tag di giorno dell'app: quelli confondenti escludono la notte dalla baseline, come nel cervello
     val tag = tagGiorni(oggi.minusDays(GG_BANDA), oggi).mapValues { it.value.toList() }
-    return BioBaselineCalc.calcola(BioSleepSeries.daWellness(righe, tag), oggi)
+    // archivio esterno (campi standard hrv di Intervals.icu: Oura, Garmin...): solo per la banda
+    // provvisoria con 5-13 notti NoctaliX, mai mescolato alla serie (come il cervello)
+    val daArch = oggi.minusDays(BioBaselineCalc.ARCHIVIO_GIORNI)
+    val tagArch = tagGiorni(daArch, oggi).mapValues { it.value.toList() }
+    val archivio = wellness(daArch, oggi).mapNotNull { o ->
+      val d = PyJson.str(o.get("id"))?.take(10) ?: return@mapNotNull null
+      GiornoBio(data = d, hrvMs = PyJson.num(o.get("hrv")), restingHr = null, tags = tagArch[d].orEmpty())
+    }
+    return BioBaselineCalc.calcola(BioSleepSeries.daWellness(righe, tag), oggi, archivio)
   }
 
   fun prontezza(oggi: LocalDate): Prontezza {
     val b = baseline(oggi)
-    return if (!b.ok || b.nGiorniHrv < Prontezza.NOTTI_CALIBRAZIONE) Prontezza.Calibrazione(b.nGiorniHrv)
+    return if (!b.ok || (b.nGiorniHrv < Prontezza.NOTTI_CALIBRAZIONE && !b.provvisoria)) Prontezza.Calibrazione(b.nGiorniHrv)
     else Prontezza.Banda(b)
   }
 

@@ -33,7 +33,9 @@ object BaselineParity {
       } else {
         serie = c.getAsJsonArray("serie").map { giorno(it.asJsonObject) }
       }
-      confronta(nome, BioBaselineCalc.calcola(serie, oggi), c.getAsJsonObject("atteso"), diff)
+      // archivio esterno (banda provvisoria): presente solo nei casi che lo usano
+      val archivio = c.get("archivio")?.takeIf { it.isJsonArray }?.asJsonArray?.map { giorno(it.asJsonObject) }
+      confronta(nome, BioBaselineCalc.calcola(serie, oggi, archivio), c.getAsJsonObject("atteso"), diff)
     }
     val intest = "Python ${doc.get("python")!!.asString}, intervals_coach.py " +
         "${doc.get("sha256_intervals_coach")!!.asString}, generato ${doc.get("generato")!!.asString}"
@@ -137,6 +139,8 @@ object BaselineParity {
     eq("delta_7v7_pct", b.delta7v7Pct, dbl(a.get("delta_7v7_pct")))
     eq("gg_ritardo", b.ggRitardo, a.get("gg_ritardo")!!.asInt)
     eq("n_giorni_finestra7", b.nGiorniFinestra7, a.get("n_giorni_finestra7")!!.asInt)
+    eq("provvisoria", b.provvisoria, a.get("provvisoria")?.asBoolean ?: false)
+    eq("notti_archivio", b.nottiArchivio, a.get("notti_archivio")?.asInt ?: 0)
     val fc = a.get("fc_riposo")?.takeIf { it.isJsonObject }?.asJsonObject
     eq("fc_riposo presente", b.fcRiposo != null, fc != null)
     if (b.fcRiposo != null && fc != null) {
