@@ -21,6 +21,13 @@ from sedute import now_local
 # sarebbe letto come affaticamento. Notti senza il campo (registrate prima che esistesse)
 # restano nella serie, altrimenti si perde lo storico.
 NOCTALIX_QUALITA_MIN   = 80
+# 11/10/2026 (decisione di Simone): banda PROVVISORIA. Con 5-13 notti NoctaliX e uno storico
+# HRV esterno su Intervals.icu (campi standard hrv: Oura, Garmin, Whoop...) il LIVELLO viene
+# sempre e solo dalle notti NoctaliX; dall'archivio si prende solo la VARIABILITA' (SD su ln).
+NOCTALIX_NOTTI_MIN = 14
+NOCTALIX_NOTTI_PROVVISORIA = 5
+ARCHIVIO_NOTTI_MIN = 28
+ARCHIVIO_GIORNI = 90
 
 def noctalix_history_da_wellness(wellness, oura_history=None):
     """Serie NoctaliX nello stesso formato di get_oura_history, per calc_baseline_biometrici.
@@ -282,7 +289,34 @@ def _bio_media_sd(vals):
     sd = (sum((v - m) ** 2 for v in vals) / len(vals)) ** 0.5 if len(vals) > 1 else 0.0
     return m, sd
 
-def calc_baseline_biometrici(oura_history_long, phase=None, today_str=None):
+def sd_archivio(archivio, today_str=None):
+    """(SD di ln(hrv), notti) dell'archivio esterno: hrv > 0, giorni con tag confondenti
+    esclusi, ultimi ARCHIVIO_GIORNI giorni PRIMA di oggi (la notte esterna di oggi non entra
+    mai: non puo' cambiare ne' il livello ne' la decisione)."""
+    import math
+    try:
+        oggi = datetime.strptime(str(today_str)[:10], "%Y-%m-%d") if today_str else now_local()
+    except (TypeError, ValueError):
+        oggi = now_local()
+    oggi = oggi.replace(hour=0, minute=0, second=0, microsecond=0)
+    inizio = oggi - timedelta(days=ARCHIVIO_GIORNI)
+    vals = []
+    for d in archivio or []:
+        try:
+            g = datetime.strptime(str(d.get("data"))[:10], "%Y-%m-%d")
+        except (TypeError, ValueError):
+            continue
+        v = d.get("hrv_ms")
+        if not (inizio <= g < oggi) or not isinstance(v, (int, float)) or v <= 0:
+            continue
+        if any((t or "") in _BASELINE_TAG_CONFONDENTI for t in (d.get("tags") or [])):
+            continue
+        vals.append(math.log(v))
+    _, sd = _bio_media_sd(vals) if len(vals) >= 2 else (None, None)
+    return sd, len(vals)
+
+
+def calc_baseline_biometrici(oura_history_long, phase=None, today_str=None, archivio=None):
     """Baseline personale + media mobile 7gg + coefficiente di variazione per HRV
     e FC a riposo, con la BANDA DECISIONALE (verde/giallo/rosso). E' questo l'output
     che guida la pianificazione, NON il valore del singolo giorno. Vedi il commento
@@ -297,7 +331,13 @@ def calc_baseline_biometrici(oura_history_long, phase=None, today_str=None):
     rhr = [(d["data"], d.get("resting_hr"), has_conf(d.get("tags"))) for d in hist if d.get("resting_hr")]
 
     out = {"ok": False, "n_giorni_hrv": len(hrv)}
-    if len(hrv) < 7:
+    # 11/10/2026: banda provvisoria con 5-13 notti e un archivio esterno valido
+    prov = None
+    if archivio is not None and NOCTALIX_NOTTI_PROVVISORIA <= len(hrv) < NOCTALIX_NOTTI_MIN:
+        sd_a, n_a = sd_archivio(archivio, today_str)
+        if n_a >= ARCHIVIO_NOTTI_MIN and sd_a:
+            prov = (sd_a, n_a)
+    if len(hrv) < 7 and not prov:
         out["nota"] = (f"Solo {len(hrv)} giorni di HRV disponibili: servono ~14+ giorni "
                        f"per una baseline affidabile. Non prendere decisioni drastiche sul solo dato di oggi.")
         return out
@@ -401,6 +441,12 @@ def calc_baseline_biometrici(oura_history_long, phase=None, today_str=None):
     # piu' sensibile. Ora la SD si stima sui giorni piu' recenti del pool.
     base_ln, sd_ln = _bio_media_sd([ln(v) for v in base_pool])
     sd_ln = sd_ln or 0.0
+    if prov:
+        # ampiezza provvisoria: SD = sqrt(w*SD_nx^2 + (1-w)*SD_arch^2), w = n/14
+        # (SD_nx su ln NoctaliX solo se n >= 3, altrimenti w = 0); poi gli stessi guard rail
+        n_nx = len(hrv)
+        w = n_nx / NOCTALIX_NOTTI_MIN if n_nx >= 3 else 0.0
+        sd_ln = math.sqrt(w * sd_ln ** 2 + (1 - w) * prov[0] ** 2)
     #
     # (2) GUARD RAIL SULLA SWC. La SD e' una stima, e su 6 settimane di dati puo' uscire
     # implausibile in entrambi i versi — ed entrambi i versi fanno danno:
@@ -538,6 +584,7 @@ def calc_baseline_biometrici(oura_history_long, phase=None, today_str=None):
                      "delta": rhr_delta,
                      "allarme": bool(rhr_delta is not None and rhr_delta >= 5)}
 
+    out.update({"provvisoria": bool(prov), "notti_archivio": prov[1] if prov else 0})
     out.update({"ok": True, "baseline_hrv": base_out, "rolling7_hrv": r7_out,
                 "cv_pct": cv, "pct_vs_baseline": pct_out, "persistenza_gg_sotto": persist,
                 "z_ln": z, "sd_ln": round(sd_ln, 3), "normal_range_ms": (lo_out, nr_hi),

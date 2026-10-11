@@ -36,6 +36,8 @@ CATALOGO = [
     ("baseline_non_disponibile", r"baseline biometrica non disponibile"),
     # 11/10/2026: solo notti NoctaliX
     ("taratura_biometria", r"biometria in taratura: (?P<notti>\d+) notti \w+ valide su (?P<minimo>\d+)"),
+    ("banda_provvisoria", r"banda provvisoria: livello da (?P<notti>\d+) notti \w+ su (?P<minimo>\d+), "
+                          r"variabilita' da (?P<notti_archivio>\d+) notti dello storico Intervals\.icu"),
     ("notte_esclusa_qualita", rf"notte del {_D} esclusa per qualita': decide la banda dei giorni precedenti"),
     ("dato_biometrico_vecchio", r"ultimo dato biometrico di (?P<giorni>\d+) giorni fa"),
     # ── settimana e forza ─────────────────────────────────────────────────────────
@@ -117,6 +119,7 @@ CATALOGO += [
     ("decisione_puoi_spingere", r"🔵 PUOI SPINGERE"),
     ("motivo_banda_segue_piano", r"banda (?P<banda>\w+): si segue il piano"),
     ("motivo_calibrazione_segue_piano", r"baseline in calibrazione: si segue il piano"),
+    ("motivo_provvisoria_segue_piano", r"banda verde provvisoria: si segue il piano"),
     ("biometria_procedi", rf"Procedi con la seduta pianificata \(media 7gg dentro il normal range (?P<min>{_N})-(?P<max>{_N})ms\)\.{_NOTA_SAT}{_NOTA_CV}"),
     ("biometria_riduci", rf"Riduci intensita'/volume o converti la qualita' in Z1-Z2 \(media 7gg sotto il normal range: (?P<z>[+-]?{_N}) SD, limite inferiore (?P<limite>{_N})ms\)\.{_NOTA_SAT}{_NOTA_CV}"),
     ("biometria_recupero", rf"Recupero attivo o riposo, specie se persistente su piu' giorni \(media 7gg (?P<z>[+-]?{_N}) SD sotto baseline, oltre una deviazione standard\)\.{_NOTA_SAT}{_NOTA_CV}"),
@@ -140,9 +143,10 @@ TIPI_CAMPO = {"decisione": ("decisione_",), "fase": ("fase_",), "direzione": ("d
               "zona": ("zona_",), "regola_intensita": ("regola_intensita_",), "oggi": ("oggi_",),
               "biometria_azione": ("biometria_",),
               "biometria_nota": ("baseline_poche_notti", "baseline_date_illeggibili", "baseline_non_disponibile",
-                                 "taratura_biometria")}
+                                 "taratura_biometria", "banda_provvisoria")}
 _SOLO_CAMPO = tuple(p for v in TIPI_CAMPO.values() for p in v if p.endswith("_")) + ("motivo_banda_segue_piano",
-                                                                                     "motivo_calibrazione_segue_piano")
+                                                                                     "motivo_calibrazione_segue_piano",
+                                                                                     "motivo_provvisoria_segue_piano")
 
 
 # motivi della rimodulazione del mattino (coach_settimanale.rimodula_seduta)
@@ -150,6 +154,8 @@ CATALOGO += [
     ("rm_riposo_biometrico", r"la curva biometrica prescrive riposo"),
     ("rm_banda_rossa_forza", r"banda rossa: recupero, niente circuito di forza"),
     ("rm_banda", r"banda (?P<banda>verde|giallo|rosso|grigio)"),
+    ("rm_invariata_taratura", r"taratura: si segue il piano"),
+    ("rm_invariata_provvisoria", r"banda verde provvisoria: si segue il piano"),
 ]
 
 # ── righe delle notifiche del coach (13d ter, 09/10/2026): codificate DOVE NASCONO

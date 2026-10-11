@@ -429,17 +429,23 @@ def _finestra(serie, fine_dt, giorni):
     return [v for d, v in serie if _dt(d) and inizio <= _dt(d) <= fine_dt]
 
 
-def calc_baseline_hrv(oura_history, today_str=None):
+def calc_baseline_hrv(oura_history, today_str=None, archivio=None):
     """MODIFICA (04/10/2026 — decisione di Simone): una sola formula della banda, quella
     affinata in intervals_coach (biometria.calc_baseline_biometrici), la stessa della
     prontezza nell'app. Qui solo l'adattamento ai nomi che usa questo file. La formula
     storica di questo file e' stata rimossa: su 400 storie casuali dava una banda diversa
     in 1 caso (10 notti: verde invece di giallo)."""
-    b = dict(biometria.calc_baseline_biometrici(oura_history or [], today_str=today_str))
-    # 11/10/2026: sotto le NOCTALIX_NOTTI_MIN notti valide la biometria e' in taratura: banda
-    # grigia, nessuna decisione sulla biometria (come la prontezza dell'app in calibrazione)
+    # archivio esplicito: lo passano i run (ARCHIVIO_ESTERNO da storia_biometrica); senza,
+    # nessuna banda provvisoria (niente stato nascosto tra una chiamata e l'altra)
+    b = dict(biometria.calc_baseline_biometrici(oura_history or [], today_str=today_str, archivio=archivio))
+    # 11/10/2026: sotto le NOCTALIX_NOTTI_MIN notti valide: banda PROVVISORIA se c'e' un
+    # archivio esterno valido (livello NoctaliX, variabilita' dall'archivio), altrimenti
+    # taratura: banda grigia, nessuna decisione sulla biometria
     n = len([g for g in oura_history or [] if isinstance(g.get("hrv_ms"), (int, float))])
-    if n < NOCTALIX_NOTTI_MIN:
+    if n < NOCTALIX_NOTTI_MIN and b.get("provvisoria") and b.get("ok"):
+        b["nota"] = (f"banda provvisoria: livello da {n} notti {NOME_APP} su {NOCTALIX_NOTTI_MIN}, "
+                     f"variabilita' da {b['notti_archivio']} notti dello storico Intervals.icu")
+    elif n < NOCTALIX_NOTTI_MIN:
         b.update(ok=False, taratura=True, banda="grigio", azione="Dati insufficienti per una banda affidabile.",
                  nota=f"biometria in taratura: {n} notti {NOME_APP} valide su {NOCTALIX_NOTTI_MIN}")
     if not b.get("ok"):
@@ -456,7 +462,7 @@ def calc_baseline_hrv(oura_history, today_str=None):
     return b
 
 
-NOCTALIX_NOTTI_MIN = 14   # sotto queste notti la baseline NoctaliX non e' affidabile
+NOCTALIX_NOTTI_MIN = biometria.NOCTALIX_NOTTI_MIN   # sotto: provvisoria (con archivio) o taratura
 
 
 def storia_biometrica(wellness, tag_giorni=None):
@@ -468,8 +474,28 @@ def storia_biometrica(wellness, tag_giorni=None):
     di un'altra sorgente anche con la notte NoctaliX gia' su Intervals.icu."""
     tag_l = [{"data": d, "tags": list(v)} for d, v in (tag_giorni or {}).items() if v]
     bs = biometria.noctalix_history_da_wellness(wellness, tag_l)
+    # 11/10/2026: archivio esterno (campi standard) solo per la VARIABILITA' della banda
+    # provvisoria; mai mescolato alla serie NoctaliX. Usato da calc_baseline_hrv.
+    global ARCHIVIO_ESTERNO
+    ARCHIVIO_ESTERNO = archivio_esterno(wellness, tag_giorni)
     fonte = f"{NOME_APP}, {len(bs)} notti" + (" (taratura)" if len(bs) < NOCTALIX_NOTTI_MIN else "")
     return bs, fonte
+
+
+ARCHIVIO_ESTERNO = None
+
+
+def archivio_esterno(wellness, tag_giorni=None):
+    """Notti dei campi standard (hrv/restingHR di Oura, Garmin, Whoop...) con i tag di giorno:
+    servono SOLO a stimare la variabilita' (SD) nella banda provvisoria."""
+    out = []
+    for w in wellness or []:
+        d = str(w.get("id") or w.get("date") or "")[:10]
+        v = w.get("hrv")
+        if d and isinstance(v, (int, float)) and v > 0:
+            out.append({"data": d, "hrv_ms": v, "resting_hr": w.get("restingHR"),
+                        "tags": list((tag_giorni or {}).get(d) or [])})
+    return out
 
 
 def notte_di_oggi(wellness, oggi_str):
@@ -570,6 +596,7 @@ def modulazione_biometrica(baseline, forma, fase=""):
     b = baseline or {}
     banda = b.get("banda", "grigio")
     fattore = MOD_VOLUME.get(banda, 1.0)
+    provvisoria, taratura = bool(b.get("provvisoria")), bool(b.get("taratura"))
     if b.get("taratura"):
         # 11/10/2026 (decisione di Simone): in taratura nessuna decisione sulla biometria;
         # restano solo i freni del carico (rampa CTL, TSB), come la prontezza in calibrazione
@@ -624,7 +651,8 @@ def modulazione_biometrica(baseline, forma, fase=""):
 
     return {"banda": banda, "fattore_volume": round(fattore, 2),
             "max_qualita": max_qualita, "riposo": riposo,
-            "blocca_palestra": blocca_palestra, "motivi": mot}
+            "blocca_palestra": blocca_palestra, "motivi": mot,
+            "taratura": taratura, "provvisoria": provvisoria}
 
 
 # ═════════════════════════════════════════════════════════════════════════════
@@ -3333,7 +3361,7 @@ def costruisci_settimana(lunedi, races, oura_hist, wellness, activities,
 
     pos = posizione_ciclo(lunedi, races,
                           pause=pause if pause is not None else pause_da_eventi(eventi_settimana))
-    baseline = calc_baseline_hrv(oura_hist, lunedi)
+    baseline = calc_baseline_hrv(oura_hist, lunedi, archivio=ARCHIVIO_ESTERNO)
     forma = stato_forma(wellness)
     mod = modulazione_biometrica(baseline, forma, pos["fase"])
 
@@ -3427,7 +3455,7 @@ def esegui(lunedi, dry=False, solo_futuro=True, pre_lock=None, senza_attesa=Fals
     print(f"\n═══ COACH SETTIMANALE — settimana del {lunedi} ═══")
     races = get_races()
     print(f"  Gare a calendario: {len(races)}")
-    oura_hist, fonte_bio = storia_biometrica(get_wellness(60), TAG_GIORNI)
+    oura_hist, fonte_bio = storia_biometrica(get_wellness(90), TAG_GIORNI)
     print(f"  Biometria: {len(oura_hist)} notti ({fonte_bio})")
     wellness = get_wellness(42)
     activities = get_activities(42)
@@ -3517,7 +3545,14 @@ def rimodula_seduta(ev, mod, pos, ctx):
         # convertita in aerobica. La sessione e' gia' stata annunciata e magari gia'
         # scaricata sull'orologio: rimetterci dentro le ripetute a meta' mattina
         # sarebbe un cambio di programma, non una correzione.
-        return "tieni", "banda verde"
+        # 11/10/2026 (bug del log 11/10: "banda GRIGIO" ma "invariata (banda verde)"): il
+        # motivo dice la banda vera. Grigio e verde provvisorio tengono la seduta come il
+        # verde, ma non danno nessun via libera in piu' (rimodula_seduta solo riduce).
+        if mod.get("taratura"):
+            return "tieni", "taratura: si segue il piano"
+        if mod.get("provvisoria") and mod["banda"] == "verde":
+            return "tieni", "banda verde provvisoria: si segue il piano"
+        return "tieni", f"banda {mod['banda']}"
     if famiglia == "forza":
         return "tieni", "la palestra resta"
     if not CATALOGO[key]["qualita"]:
@@ -3536,11 +3571,11 @@ def esegui_giornaliero(dry=False, force=False, pre_lock=None):
     oggi = now_local().strftime("%Y-%m-%d")
     lunedi = lunedi_di(oggi)
     races = get_races()
-    oura_hist, _fonte_bio = storia_biometrica(get_wellness(60), TAG_GIORNI)
+    oura_hist, _fonte_bio = storia_biometrica(get_wellness(90), TAG_GIORNI)
     wellness = get_wellness(42)
     activities = get_activities(42)
     pos = posizione_ciclo(lunedi, races, pause=pause_recenti(lunedi))
-    baseline = calc_baseline_hrv(oura_hist, oggi)
+    baseline = calc_baseline_hrv(oura_hist, oggi, archivio=ARCHIVIO_ESTERNO)
     forma = stato_forma(wellness)
     # PRIMA di qualunque decisione: la notte NoctaliX di stamattina c'e'? (11/10/2026)
     if _notte_e_avvisi(oggi, oura_hist) == "mancante" and not force:
@@ -3768,7 +3803,9 @@ def blocchi_riepilogo(oggi_str, pos, baseline, mod, wellness, activities, eventi
         codice = "RIDUCI"
     else:
         codice = "RISPETTA"
+    provv = bool(b.get("provvisoria")) and b.get("ok")
     motivo = "; ".join(mod.get("motivi") or []) or (
+        "banda verde provvisoria: si segue il piano" if provv and banda == "verde" else
         f"banda {banda}: si segue il piano" if banda else "baseline in calibrazione: si segue il piano")
 
     reale = biometria.wellness_reale(wellness or [], activities or [])
@@ -3793,7 +3830,7 @@ def blocchi_riepilogo(oggi_str, pos, baseline, mod, wellness, activities, eventi
     tassi = carico.tassi_carico(activities, oggi_dt)
     _, info = carico.target_forma_settimana(
         fo, {"fase": fase_ic, "volume_target_h": ore_target}, activities, oggi_dt,
-        tetto=MAX_ORE_CARDIO, banda=banda, tetto_tss=tetto_tss)
+        tetto=MAX_ORE_CARDIO, banda=None if provv else banda, tetto_tss=tetto_tss)   # provvisoria: non spinge
     info = info or {}
     tasso = info.get("tasso") or tassi.get("medio")
     domenica = carico.tsb_domenica_da_calendario(fo, eventi_settimana, activities, oggi_dt, tasso) or {}
@@ -3818,9 +3855,12 @@ def blocchi_riepilogo(oggi_str, pos, baseline, mod, wellness, activities, eventi
         "fase_codice": pos.get("fase"),
         "decisione": {"codice": codice, "etichetta": DECISIONI[codice], "motivo": motivo,
                       "motivo_codice": ("motivi" if mod.get("motivi") else
+                                        "provvisoria_segue_piano" if provv and banda == "verde" else
                                         "banda_segue_piano" if banda else "calibrazione_segue_piano"),
-                      "motivo_valori": {"banda": banda} if banda and not mod.get("motivi") else {}},
+                      "motivo_valori": ({"banda": banda} if banda and not mod.get("motivi")
+                                        and not (provv and banda == "verde") else {})},
         "biometria": {"ok": bool(b.get("ok")), "banda": banda, "azione": b.get("azione"),
+                      "provvisoria": bool(provv),
                       "nota": b.get("nota"), "hrv_7gg": b.get("rolling7_hrv"),
                       "hrv_baseline": b.get("baseline_hrv"), "pct_vs_baseline": b.get("pct_vs_baseline"),
                       "z_ln": b.get("z_ln"),

@@ -51,7 +51,7 @@ from marchio import NOME_APP
 import campi
 import messaggi   # 07/10/2026 (punto 13a): codici dei messaggi per l'app
 
-VERSIONE = "2026.10.11-fonte-noctalix"   # anche nel LEGGIMI del pacchetto
+VERSIONE = "2026.10.11-provvisoria"   # anche nel LEGGIMI del pacchetto
 import contextlib, importlib, io, json, os, re, sys, traceback
 
 # 09/10/2026: il cervello non usa piu' GitHub ne' Telegram; le variabili si tolgono comunque
@@ -796,8 +796,8 @@ def _blocchi(oggi, ore_target):
     lun = cs.lunedi_di(oggi)
     dom = (cs._dt(lun) + cs.timedelta(days=6)).strftime("%Y-%m-%d")
     wellness60 = cs.get_wellness(60)
-    serie, _ = cs.storia_biometrica(wellness60, cs.TAG_GIORNI)
-    baseline = cs.calc_baseline_hrv(serie, oggi)
+    serie, _ = cs.storia_biometrica(cs.get_wellness(90), cs.TAG_GIORNI)   # 11/10: 90 gg per l'archivio
+    baseline = cs.calc_baseline_hrv(serie, oggi, archivio=cs.ARCHIVIO_ESTERNO)
     pos = cs.posizione_ciclo(lun, cs.get_races(), pause=cs.pause_recenti(lun))
     mod = cs.modulazione_biometrica(baseline, cs.stato_forma(wellness60), pos["fase"])
     cs._CACHE.pop(("events", lun, dom), None)

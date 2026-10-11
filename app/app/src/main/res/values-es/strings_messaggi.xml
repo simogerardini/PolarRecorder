@@ -18,6 +18,10 @@
     <string name="msg_dato_biometrico_vecchio" formatted="true">último dato biométrico de hace %1$s días</string>
     <string name="msg_taratura_biometria" formatted="true">biometría en calibración: %1$s noches %2$s válidas de %3$s</string>
     <string name="msg_notte_esclusa_qualita" formatted="true">noche del %1$s excluida por calidad: decide la banda de los días anteriores</string>
+    <string name="msg_banda_provvisoria" formatted="true">banda provisional: nivel a partir de %1$s noches %2$s de %3$s, variabilidad a partir de %4$s noches del historial de Intervals.icu</string>
+    <string name="msg_motivo_provvisoria_segue_piano">banda verde provisional: se sigue el plan</string>
+    <string name="msg_rm_invariata_taratura">calibración: se sigue el plan</string>
+    <string name="msg_rm_invariata_provvisoria">banda verde provisional: se sigue el plan</string>
     <string name="msg_settimana_senza_spazio" formatted="true">%1$s: no hay espacio en la semana tipo</string>
     <string name="msg_ripianificata_per_assenza" formatted="true">semana replanificada desde hoy: ausencia en el calendario desde el %1$s</string>
     <string name="msg_forza_tolta_tempo" formatted="true">fuerza del %1$s eliminada: menos de 30\' disponibles; ninguna sesión de fuerza cabe en 20\'</string>
