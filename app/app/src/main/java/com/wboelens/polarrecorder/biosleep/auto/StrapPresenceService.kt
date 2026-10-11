@@ -4,7 +4,6 @@ import android.companion.AssociationInfo
 import android.companion.CompanionDeviceService
 import android.companion.DevicePresenceEvent
 import android.os.Build
-import android.util.Log
 import androidx.annotation.RequiresApi
 
 /**
@@ -32,13 +31,14 @@ class StrapPresenceService : CompanionDeviceService() {
   }
 
   private fun appeared() {
-    Log.i("BioSleep", "Fascia rilevata")
+    AutoStart.registro(this, "Fascia rilevata da Android")
     AutoStartStore(this).strapPresent = true
     AutoStart.evaluateAsync(this, "fascia rilevata")
   }
 
   private fun disappeared() {
     // Normale anche durante la registrazione: collegata all'app, la fascia smette di "farsi vedere"
+    AutoStart.registro(this, "Fascia non piu' rilevata da Android")
     AutoStartStore(this).strapPresent = false
   }
 }

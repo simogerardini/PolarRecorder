@@ -50,6 +50,8 @@ class PolarRecorderApplication : Application() {
     preferencesManager = PreferencesManager(applicationContext)
     // ponte web: i dati della Parte 3 per la copia cifrata e i comandi dal sito
     Parte3Ponte.fonti = FontiParte3Noctalix
+    // avvio automatico: rinnova l'osservazione della fascia associata
+    com.wboelens.polarrecorder.biosleep.auto.AutoStart.assicuraOsservazione(this)
   }
 
   /**

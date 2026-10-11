@@ -18,6 +18,9 @@ import androidx.core.content.ContextCompat
 import com.wboelens.polarrecorder.PolarRecorderApplication
 import com.wboelens.polarrecorder.biosleep.SleepDb
 import com.wboelens.polarrecorder.services.RecordingService
+import java.io.File
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 import java.util.concurrent.Executors
 import java.util.regex.Pattern
 
@@ -83,6 +86,25 @@ object AutoStart {
 
   private val worker = Executors.newSingleThreadExecutor()
 
+  private val ORA = DateTimeFormatter.ofPattern("MM-dd HH:mm:ss")
+
+  /**
+   * Scrive anche nel registro su file (files/biosleep_autostop.log, lo stesso dello stop
+   * automatico): il logcat si sovrascrive in poche ore e una notte mancata non si diagnosticava.
+   */
+  fun registro(context: Context, testo: String) {
+    Log.i(TAG, testo)
+    @Suppress("TooGenericExceptionCaught")
+    try {
+      synchronized(this) {
+        File(context.applicationContext.filesDir, "biosleep_autostop.log")
+            .appendText("${LocalDateTime.now().format(ORA)} $testo\n")
+      }
+    } catch (e: Exception) {
+      Log.w(TAG, "Registro non scritto: ${e.message}")
+    }
+  }
+
   /** Valuta le condizioni in background (lettura del database inclusa). */
   fun evaluateAsync(context: Context, reason: String) {
     val app = context.applicationContext
@@ -92,6 +114,7 @@ object AutoStart {
         evaluate(app, reason)
       } catch (e: Exception) {
         Log.e(TAG, "Avvio automatico: valutazione fallita", e)
+        registro(app, "Avvio automatico ($reason): valutazione fallita: ${e.javaClass.simpleName} ${e.message}")
       }
     }
   }
@@ -99,24 +122,30 @@ object AutoStart {
   private fun evaluate(context: Context, reason: String) {
     val store = AutoStartStore(context)
     if (!store.enabled || !store.isAssociated || !store.strapPresent) {
+      registro(context, "Avvio automatico ($reason): fermo, attivo=${store.enabled}, " +
+          "associata=${store.isAssociated}, fascia presente=${store.strapPresent}")
       cancelRecheck(context)
       return
     }
     val now = System.currentTimeMillis()
     val habits = HabitLearner.learn(SleepDb.get(context).nightTimes(), now)
     if (!habits.learned && !TEST_MODE) {
-      Log.i(TAG, "Avvio automatico ($reason): abitudini non ancora apprese")
+      registro(context, "Avvio automatico ($reason): abitudini non ancora apprese")
       return
     }
     val app = context as? PolarRecorderApplication ?: context.applicationContext as PolarRecorderApplication
     if (app.isRecordingActive || (!TEST_MODE && now - store.lastAutoStartMs < COOLDOWN_MS)) {
+      registro(context, "Avvio automatico ($reason): fermo, registrazione in corso=${app.isRecordingActive}, " +
+          "ultimo avvio automatico ${(now - store.lastAutoStartMs) / 60_000} minuti fa")
       cancelRecheck(context)
       return
     }
     val nowNoon = HabitLearner.minutesAfterNoon(now, java.time.ZoneId.systemDefault())
     val inWindow = TEST_MODE || HabitLearner.isBedtime(now, habits)
     val charging = isCharging(context)
-    Log.i(TAG, "Avvio automatico ($reason): fascia=sì, orario=$inWindow, in carica=$charging")
+    registro(context, "Avvio automatico ($reason): fascia=sì, orario=$inWindow " +
+        "(fascia ${habits.bedtimeFromNoon?.let { HabitLearner.noonMinutesToClock(it) }}-" +
+        "${habits.bedtimeToNoon?.let { HabitLearner.noonMinutesToClock(it) }}), in carica=$charging")
 
     when {
       inWindow && charging -> {
@@ -125,7 +154,7 @@ object AutoStart {
         val intent =
             Intent(context, RecordingService::class.java).setAction(RecordingService.ACTION_START_NIGHT)
         ContextCompat.startForegroundService(context, intent)
-        Log.i(TAG, "Avvio automatico della notte")
+        registro(context, "Avvio automatico della notte")
       }
       TEST_MODE -> scheduleRecheck(context, now + RECHECK_MS)
       nowNoon < habits.bedtimeFromNoon!! -> {
@@ -195,6 +224,29 @@ object AutoStart {
           }
         },
     )
+  }
+
+  /**
+   * All'avvio dell'app: chiede di nuovo ad Android di osservare la fascia associata. La richiesta
+   * si ripete senza danni; copre i casi in cui l'osservazione si e' persa (aggiornamenti dell'app,
+   * riassociazioni) e scrive nel registro se l'associazione salvata non esiste piu'.
+   */
+  fun assicuraOsservazione(context: Context) {
+    if (!isSupported) return
+    val store = AutoStartStore(context)
+    if (!store.isAssociated) return
+    @Suppress("TooGenericExceptionCaught")
+    try {
+      val cdm = context.getSystemService(CompanionDeviceManager::class.java) ?: return
+      val info = cdm.myAssociations.firstOrNull { it.id == store.associationId }
+      if (info == null) {
+        registro(context, "Avvio automatico: l'associazione ${store.associationId} non esiste piu', va rifatta")
+        return
+      }
+      startObserving(context, info)
+    } catch (e: Exception) {
+      registro(context, "Avvio automatico: osservazione della fascia non riattivata: ${e.message}")
+    }
   }
 
   /** Chiede ad Android di avvisare l'app quando la fascia compare o scompare. */
