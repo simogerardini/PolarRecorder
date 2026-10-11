@@ -2,6 +2,7 @@ package com.wboelens.polarrecorder
 
 import com.wboelens.polarrecorder.biosleep.web.FontiParte3Noctalix
 import com.wboelens.polarrecorder.biosleep.ponte.Parte3Ponte
+import com.wboelens.polarrecorder.biosleep.auto.StatoRegistrazione
 import android.app.ActivityManager
 import android.app.Application
 import android.content.Context
@@ -82,15 +83,21 @@ class PolarRecorderApplication : Application() {
     return _serviceConnection!!
   }
 
-  /** Check if a recording is currently active by checking if the service is running. */
+  /**
+   * Registrazione in corso, dallo stato reale: quello del servizio se l'app e' collegata, altrimenti
+   * servizio vivo E una sessione aperta nel database. Il solo "servizio vivo" non basta: il servizio
+   * puo' essere in esecuzione senza registrare, e l'avvio automatico si fermava per questo.
+   */
   val isRecordingActive: Boolean
     get() {
-      // First check if we have a bound connection with state
-      _serviceConnection?.binder?.value?.let { binder ->
-        return binder.recordingState.value.isRecording
-      }
-      // Fall back to checking if service is running
-      return isServiceRunning(RecordingService::class.java)
+      val dalServizio = _serviceConnection?.binder?.value?.recordingState?.value?.isRecording
+      if (dalServizio != null) return dalServizio
+      val vivo = isServiceRunning(RecordingService::class.java)
+      if (!vivo) return false
+      val aperte =
+          runCatching { com.wboelens.polarrecorder.biosleep.SleepDb.get(this).openSessions().size }
+              .getOrElse { return true } // database illeggibile: meglio non avviare una seconda notte
+      return StatoRegistrazione.inCorso(null, vivo, aperte)
     }
 
   @Suppress("DEPRECATION")
