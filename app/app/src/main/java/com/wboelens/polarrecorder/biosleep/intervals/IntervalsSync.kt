@@ -1,5 +1,6 @@
 package com.wboelens.polarrecorder.biosleep.intervals
 
+import com.wboelens.polarrecorder.biosleep.cervello.AttesaTag
 import com.wboelens.polarrecorder.biosleep.cervello.ModalitaCoach
 import android.content.Context
 import android.database.SQLException
@@ -37,8 +38,9 @@ object IntervalsSync {
       if (data == LocalDate.now().toString()) {
         // Scelta B: il coach aspetta fino a 15 minuti i tag del mattino (parte prima se li salvi)
         if (ModalitaCoach.attivo(context)) {
-          CoachWorker.dopoNotte(context, data, CoachWorker.ATTESA_TAG_MS)
-          NotificheCoach.chiediTag(context, data)
+          val attesaMs = AttesaTag.ms(context)
+          CoachWorker.dopoNotte(context, data, attesaMs)
+          if (attesaMs > 0) NotificheCoach.chiediTag(context, data)
         }
       }
     }

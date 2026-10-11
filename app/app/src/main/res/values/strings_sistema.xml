@@ -158,7 +158,7 @@
     <string name="sis_coach_analisi">Analisi della notte e del piano</string>
     <string name="sis_canale_coach">Coach</string>
     <string name="sis_com_e_andata">Com\'è andata la notte?</string>
-    <string name="sis_aggiungi_tag">Aggiungi i tag: il coach li aspetta 15 minuti</string>
+    <string name="sis_aggiungi_tag" formatted="true">Aggiungi i tag: il coach li aspetta %1$s minuti</string>
     <string name="sis_piano_pronto">Piano pronto</string>
     <string name="sis_piano_settimana" formatted="true">Piano della settimana: %1$s sedute%2$s</string>
     <string name="sis_seduta_aggiornata">Seduta di oggi aggiornata</string>
@@ -484,4 +484,9 @@
     <string name="sis_ck_interr">Chiedi la fatica dopo ogni seduta</string>
     <string name="sis_ck_acceso">Acceso: dopo ogni seduta del coach, Oggi chiede se l\'hai fatta e con che fatica.</string>
     <string name="sis_ck_spento">Spento: la chiede solo se Intervals.icu non riesce a leggere le attività.</string>
+    <string name="sis_at_titolo">Attesa dei tag del mattino</string>
+    <string name="sis_at_spiega">Dopo l\'invio della notte il coach aspetta i tuoi tag prima di ripianificare; parte appena li salvi.</string>
+    <string name="sis_at_subito_sp">Subito: il coach parte senza aspettare e non chiede i tag; quelli aggiunti dopo valgono dal run successivo.</string>
+    <string name="sis_at_subito">Subito</string>
+    <string name="sis_at_min" formatted="true">%1$s min</string>
 </resources>

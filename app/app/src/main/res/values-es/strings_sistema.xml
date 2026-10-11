@@ -159,7 +159,7 @@
     <string name="sis_coach_analisi">Analizando la noche y el plan</string>
     <string name="sis_canale_coach">Coach</string>
     <string name="sis_com_e_andata">¿Qué tal la noche?</string>
-    <string name="sis_aggiungi_tag">Añade etiquetas: el coach las espera 15 minutos</string>
+    <string name="sis_aggiungi_tag" formatted="true">Añade etiquetas: el coach las espera %1$s minutos</string>
     <string name="sis_piano_pronto">Plan listo</string>
     <string name="sis_piano_settimana" formatted="true">Plan de la semana: %1$s sesiones%2$s</string>
     <string name="sis_seduta_aggiornata">Sesión de hoy actualizada</string>
@@ -485,4 +485,9 @@
     <string name="sis_ck_interr">Preguntar el esfuerzo tras cada sesión</string>
     <string name="sis_ck_acceso">Activado: tras cada sesión del coach, Hoy pregunta si la hiciste y con qué esfuerzo.</string>
     <string name="sis_ck_spento">Desactivado: solo lo pregunta si Intervals.icu no puede leer las actividades.</string>
+    <string name="sis_at_titolo">Espera de las etiquetas de la mañana</string>
+    <string name="sis_at_spiega">Tras enviar la noche, el coach espera tus etiquetas antes de replanificar; empieza en cuanto las guardes.</string>
+    <string name="sis_at_subito_sp">Inmediatamente: el coach empieza sin esperar y no pide etiquetas; las añadidas después valen desde la siguiente ejecución.</string>
+    <string name="sis_at_subito">Ya</string>
+    <string name="sis_at_min" formatted="true">%1$s min</string>
 </resources>

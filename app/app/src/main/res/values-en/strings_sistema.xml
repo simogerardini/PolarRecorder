@@ -159,7 +159,7 @@
     <string name="sis_coach_analisi">Analysing the night and the plan</string>
     <string name="sis_canale_coach">Coach</string>
     <string name="sis_com_e_andata">How was your night?</string>
-    <string name="sis_aggiungi_tag">Add tags: the coach waits 15 minutes for them</string>
+    <string name="sis_aggiungi_tag" formatted="true">Add tags: the coach waits %1$s minutes for them</string>
     <string name="sis_piano_pronto">Plan ready</string>
     <string name="sis_piano_settimana" formatted="true">Weekly plan: %1$s sessions%2$s</string>
     <string name="sis_seduta_aggiornata">Today\'s session updated</string>
@@ -485,4 +485,9 @@
     <string name="sis_ck_interr">Ask for effort after every session</string>
     <string name="sis_ck_acceso">On: after every coach session, Today asks whether you did it and how hard it felt.</string>
     <string name="sis_ck_spento">Off: it only asks if Intervals.icu cannot read your activities.</string>
+    <string name="sis_at_titolo">Wait for morning tags</string>
+    <string name="sis_at_spiega">After the night is sent, the coach waits for your tags before replanning; it starts as soon as you save them.</string>
+    <string name="sis_at_subito_sp">Immediately: the coach starts without waiting and does not ask for tags; tags added later apply from the next run.</string>
+    <string name="sis_at_subito">Now</string>
+    <string name="sis_at_min" formatted="true">%1$s min</string>
 </resources>

@@ -159,7 +159,7 @@
     <string name="sis_coach_analisi">正在分析夜间数据和计划</string>
     <string name="sis_canale_coach">教练</string>
     <string name="sis_com_e_andata">昨晚睡得怎么样？</string>
-    <string name="sis_aggiungi_tag">添加标签：教练会等待 15 分钟</string>
+    <string name="sis_aggiungi_tag" formatted="true">添加标签：教练会等待 %1$s 分钟</string>
     <string name="sis_piano_pronto">计划已就绪</string>
     <string name="sis_piano_settimana" formatted="true">本周计划：%1$s 次训练%2$s</string>
     <string name="sis_seduta_aggiornata">今日训练已更新</string>
@@ -485,4 +485,9 @@
     <string name="sis_ck_interr">每次训练后询问疲劳程度</string>
     <string name="sis_ck_acceso">开启：每次教练安排的训练后，“今天”会询问你是否完成以及疲劳程度。</string>
     <string name="sis_ck_spento">关闭：仅在 Intervals.icu 无法读取活动时询问。</string>
+    <string name="sis_at_titolo">等待早晨标签</string>
+    <string name="sis_at_spiega">夜间数据发送后，教练会等待你的标签再重新规划；保存后立即开始。</string>
+    <string name="sis_at_subito_sp">立即：教练不等待也不询问标签；之后添加的标签从下次运行起生效。</string>
+    <string name="sis_at_subito">立即</string>
+    <string name="sis_at_min" formatted="true">%1$s 分钟</string>
 </resources>

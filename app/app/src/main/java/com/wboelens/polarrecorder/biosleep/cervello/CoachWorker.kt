@@ -325,10 +325,10 @@ object NotificheCoach {
         NotificationCompat.Builder(context, CANALE)
             .setSmallIcon(R.drawable.ic_notifica_biosleep)
             .setContentTitle(TestiSistema.traduci(context, "Com'è andata la notte?"))
-            .setContentText(TestiSistema.traduci(context, "Aggiungi i tag: il coach li aspetta 15 minuti"))
+            .setContentText(TestiSistema.traduci(context, "Aggiungi i tag: il coach li aspetta ${AttesaTag.minuti(context)} minuti"))
             .setContentIntent(pi)
             .setAutoCancel(true)
-            .setTimeoutAfter(CoachWorker.ATTESA_TAG_MS)
+            .setTimeoutAfter(AttesaTag.ms(context))
             .build()
     NotificationManagerCompat.from(context).notify(("tag" + data).hashCode(), n)
   }
