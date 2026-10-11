@@ -489,4 +489,7 @@
     <string name="sis_at_subito_sp">Subito: il coach parte senza aspettare e non chiede i tag; quelli aggiunti dopo valgono dal run successivo.</string>
     <string name="sis_at_subito">Subito</string>
     <string name="sis_at_min" formatted="true">%1$s min</string>
+    <string name="sis_provvisoria">provvisoria</string>
+    <string name="sis_media3_ms" formatted="true">Media ultime 3 notti %1$s ms</string>
+    <string name="sis_banda_provv_nota" formatted="true">Banda provvisoria: livello dalle tue %1$s notti su %2$s, variabilità da %3$s notti dello storico Intervals.icu. Si ricalibra da sola.</string>
 </resources>

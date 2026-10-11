@@ -490,4 +490,7 @@
     <string name="sis_at_subito_sp">立即：教练不等待也不询问标签；之后添加的标签从下次运行起生效。</string>
     <string name="sis_at_subito">立即</string>
     <string name="sis_at_min" formatted="true">%1$s 分钟</string>
+    <string name="sis_provvisoria">临时</string>
+    <string name="sis_media3_ms" formatted="true">最近 3 晚平均 %1$s ms</string>
+    <string name="sis_banda_provv_nota" formatted="true">临时区间：水平来自你的 %1$s/%2$s 晚记录，变异性来自 Intervals.icu 历史中的 %3$s 晚。会自动重新校准。</string>
 </resources>

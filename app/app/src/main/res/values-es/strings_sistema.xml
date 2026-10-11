@@ -490,4 +490,7 @@
     <string name="sis_at_subito_sp">Inmediatamente: el coach empieza sin esperar y no pide etiquetas; las añadidas después valen desde la siguiente ejecución.</string>
     <string name="sis_at_subito">Ya</string>
     <string name="sis_at_min" formatted="true">%1$s min</string>
+    <string name="sis_provvisoria">provisional</string>
+    <string name="sis_media3_ms" formatted="true">Media últimas 3 noches %1$s ms</string>
+    <string name="sis_banda_provv_nota" formatted="true">Banda provisional: nivel a partir de tus %1$s noches de %2$s, variabilidad a partir de %3$s noches del historial de Intervals.icu. Se recalibra sola.</string>
 </resources>

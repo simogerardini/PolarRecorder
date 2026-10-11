@@ -490,4 +490,7 @@
     <string name="sis_at_subito_sp">Immediately: the coach starts without waiting and does not ask for tags; tags added later apply from the next run.</string>
     <string name="sis_at_subito">Now</string>
     <string name="sis_at_min" formatted="true">%1$s min</string>
+    <string name="sis_provvisoria">provisional</string>
+    <string name="sis_media3_ms" formatted="true">Last 3 nights average %1$s ms</string>
+    <string name="sis_banda_provv_nota" formatted="true">Provisional band: level from your %1$s nights out of %2$s, variability from %3$s nights of your Intervals.icu history. It recalibrates by itself.</string>
 </resources>

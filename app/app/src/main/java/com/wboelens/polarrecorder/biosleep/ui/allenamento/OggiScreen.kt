@@ -1,5 +1,6 @@
 package com.wboelens.polarrecorder.biosleep.ui.allenamento
 
+import com.wboelens.polarrecorder.biosleep.readiness.BioBaselineCalc
 import com.wboelens.polarrecorder.biosleep.ui.CardCheckin
 import com.wboelens.polarrecorder.biosleep.ui.CardConsiglio
 import com.wboelens.polarrecorder.biosleep.ui.coachAttivo
@@ -223,13 +224,30 @@ private fun Recupero(d: DatiOggi) {
         Box(Modifier.size(14.dp).background(ColoriBio.daNome(b.banda), CircleShape))
         Spacer(Modifier.width(8.dp))
         Text(tr(etichettaBanda(b.banda)), fontWeight = FontWeight.Bold)
+        if (b.provvisoria) {
+          Spacer(Modifier.width(8.dp))
+          Text(
+              tr("provvisoria"),
+              style = MaterialTheme.typography.labelSmall,
+              color = MaterialTheme.colorScheme.primary,
+              modifier =
+                  Modifier.border(1.dp, MaterialTheme.colorScheme.primary, RoundedCornerShape(50))
+                      .padding(horizontal = 8.dp, vertical = 2.dp))
+        }
       }
       val r = b.normalRangeMs
       Text(
-          tr("Media 7 gg ${b.rolling7Hrv?.let { Formato.decimale(it) } ?: "—"} ms" +
+          tr((if (b.provvisoria) "Media ultime 3 notti " else "Media 7 gg ") +
+              "${b.rolling7Hrv?.let { Formato.decimale(it) } ?: "—"} ms" +
               (r?.let { " · range ${Formato.decimale(it.first)}–${Formato.decimale(it.second)} ms" } ?: "")),
           style = stileNota)
       if (b.persistenzaGgSotto >= 2) Text(stringResource(R.string.oggi_sotto_il_range_da, b.persistenzaGgSotto.toString()), style = stileNota)
+      if (b.provvisoria)
+          Text(
+              tr("Banda provvisoria: livello dalle tue ${b.nGiorniHrv} notti su ${BioBaselineCalc.NOCTALIX_NOTTI_MIN}, " +
+                  "variabilità da ${b.nottiArchivio} notti dello storico Intervals.icu. Si ricalibra da sola."),
+              style = stileNota,
+              color = grigio)
     }
   }
   if (d.baseline.ok && d.baseline.ggRitardo >= 1) {
