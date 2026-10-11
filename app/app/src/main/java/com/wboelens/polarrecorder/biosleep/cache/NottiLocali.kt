@@ -6,6 +6,7 @@ import com.google.gson.JsonParser
 import com.wboelens.polarrecorder.biosleep.SleepDb
 import com.wboelens.polarrecorder.biosleep.intervals.CampiWellness
 import com.wboelens.polarrecorder.biosleep.intervals.IntervalsClient
+import com.wboelens.polarrecorder.biosleep.readiness.CampiStorici
 import java.time.LocalDate
 
 /**
@@ -47,7 +48,7 @@ object NottiLocali {
       val s = perGiorno[g]
       when {
         s == null -> perGiorno[g] = l
-        s.get(CampiWellness.F_RMSSD)?.takeIf { !it.isJsonNull } != null -> Unit
+        CampiStorici.leggi(s, CampiWellness.F_RMSSD) != null -> Unit
         else ->
             perGiorno[g] =
                 s.deepCopy().apply { for (k in CampiWellness.TUTTI) l.get(k)?.let { add(k, it) } }

@@ -42,6 +42,18 @@ object BioSleepSeries {
   }
 }
 
+/**
+ * Storico BioSleep*: prima della rinomina NoctaliX (08/10/2026) le notti stavano nei campi
+ * BioSleep<suffisso>. Come il cervello (campi.VECCHI): per ogni giorno e campo vale il codice
+ * Noctalix*, se manca il vecchio. I campi standard (hrv, restingHR, ...) non contano mai.
+ */
+object CampiStorici {
+  fun vecchio(codice: String): String = "BioSleep" + codice.removePrefix("Noctalix")
+
+  fun leggi(o: JsonObject, codice: String): JsonElement? =
+      o.get(codice)?.takeIf { !it.isJsonNull } ?: o.get(vecchio(codice))?.takeIf { !it.isJsonNull }
+}
+
 /** Lettura del JSON di Intervals.icu con la stessa distinzione intero/decimale di Python. */
 object PyJson {
 
@@ -62,8 +74,10 @@ object PyJson {
   fun wellnessBio(o: JsonObject) =
       WellnessBio(
           id = str(o.get("id")), date = str(o.get("date")),
-          rmssd = num(o.get(CampiWellness.F_RMSSD)), avgHr = num(o.get(CampiWellness.F_AVG_HR)),
-          quality = num(o.get(CampiWellness.F_QUALITY)), sleepHours = num(o.get(CampiWellness.F_SLEEP_HOURS)))
+          rmssd = num(CampiStorici.leggi(o, CampiWellness.F_RMSSD)),
+          avgHr = num(CampiStorici.leggi(o, CampiWellness.F_AVG_HR)),
+          quality = num(CampiStorici.leggi(o, CampiWellness.F_QUALITY)),
+          sleepHours = num(CampiStorici.leggi(o, CampiWellness.F_SLEEP_HOURS)))
 
   fun wellnessBio(a: JsonArray): List<WellnessBio> = a.filter { it.isJsonObject }.map { wellnessBio(it.asJsonObject) }
 
