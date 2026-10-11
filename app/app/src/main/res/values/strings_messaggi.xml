@@ -15,6 +15,8 @@
     <string name="msg_baseline_date_illeggibili">Date dei dati Oura illeggibili: baseline non calcolabile.</string>
     <string name="msg_baseline_non_disponibile">baseline biometrica non disponibile</string>
     <string name="msg_dato_biometrico_vecchio" formatted="true">ultimo dato biometrico di %1$s giorni fa</string>
+    <string name="msg_taratura_biometria" formatted="true">biometria in taratura: %1$s notti %2$s valide su %3$s</string>
+    <string name="msg_notte_esclusa_qualita" formatted="true">notte del %1$s esclusa per qualità: decide la banda dei giorni precedenti</string>
     <string name="msg_settimana_senza_spazio" formatted="true">%1$s: non c\'è spazio nella settimana tipo</string>
     <string name="msg_ripianificata_per_assenza" formatted="true">settimana ripianificata da oggi: assenza a calendario dal %1$s</string>
     <string name="msg_forza_tolta_tempo" formatted="true">forza del %1$s tolta: meno di 30\' disponibili: nessuna scheda di forza fino a 20\'</string>

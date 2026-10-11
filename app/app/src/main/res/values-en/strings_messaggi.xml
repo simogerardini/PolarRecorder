@@ -16,6 +16,8 @@
     <string name="msg_baseline_date_illeggibili">Oura data dates unreadable: baseline cannot be calculated.</string>
     <string name="msg_baseline_non_disponibile">biometric baseline not available</string>
     <string name="msg_dato_biometrico_vecchio" formatted="true">last biometric data from %1$s days ago</string>
+    <string name="msg_taratura_biometria" formatted="true">biometrics calibrating: %1$s valid %2$s nights out of %3$s</string>
+    <string name="msg_notte_esclusa_qualita" formatted="true">night of %1$s excluded for quality: the band of the previous days applies</string>
     <string name="msg_settimana_senza_spazio" formatted="true">%1$s: no room in the typical week</string>
     <string name="msg_ripianificata_per_assenza" formatted="true">week replanned from today: absence in the calendar from %1$s</string>
     <string name="msg_forza_tolta_tempo" formatted="true">strength on %1$s removed: less than 30\' available; no strength session fits in 20\'</string>

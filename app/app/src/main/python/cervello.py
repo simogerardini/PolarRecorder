@@ -51,7 +51,7 @@ from marchio import NOME_APP
 import campi
 import messaggi   # 07/10/2026 (punto 13a): codici dei messaggi per l'app
 
-VERSIONE = "2026.10.10-checkin"   # anche nel LEGGIMI del pacchetto
+VERSIONE = "2026.10.11-fonte-noctalix"   # anche nel LEGGIMI del pacchetto
 import contextlib, importlib, io, json, os, re, sys, traceback
 
 # 09/10/2026: il cervello non usa piu' GitHub ne' Telegram; le variabili si tolgono comunque
@@ -1030,6 +1030,8 @@ def esegui_app(config_json):
                     rie["avvisi"] = "\n".join(x for x in [rie.get("avvisi") or "",
                                                          "settimana tipo non valida, uso quella predefinita: "
                                                          + "; ".join(errori_sett)] if x)
+                if cs.AVVISI_BIOMETRIA:        # 11/10/2026: taratura, notte esclusa per qualita'
+                    soglie_agg = list(cs.AVVISI_BIOMETRIA) + soglie_agg
                 if cs.ATTIVITA_DEGRADATE:      # 10/10/2026: modalita' degradata
                     soglie_agg = ["attivita' non leggibili da Intervals.icu: carico ricostruito da CTL e ATL"] + soglie_agg
                 if soglie_agg:

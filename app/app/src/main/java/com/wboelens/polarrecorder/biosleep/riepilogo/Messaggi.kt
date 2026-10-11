@@ -1,6 +1,7 @@
 package com.wboelens.polarrecorder.biosleep.riepilogo
 
 import com.google.gson.JsonArray
+import com.wboelens.polarrecorder.BuildConfig
 import com.google.gson.JsonElement
 import java.util.concurrent.ConcurrentHashMap
 
@@ -41,6 +42,8 @@ object Messaggi {
           "baseline_date_illeggibili" to listOf(),
           "baseline_non_disponibile" to listOf(),
           "dato_biometrico_vecchio" to listOf("giorni"),
+          "taratura_biometria" to listOf("notti", "nome_app", "minimo"),
+          "notte_esclusa_qualita" to listOf("data"),
           "settimana_senza_spazio" to listOf("seduta"),
           "ripianificata_per_assenza" to listOf("data"),
           "forza_tolta_tempo" to listOf("data"),
@@ -183,6 +186,8 @@ object Messaggi {
             "note_opz" ->
                 (if (v["nota_saturazione"].isNullOrEmpty()) "" else stringa("msg_frammento_nota_sat", emptyArray()) ?: "") +
                     (if (v["nota_cv"].isNullOrEmpty()) "" else stringa("msg_frammento_nota_cv", emptyArray()) ?: "")
+            // il nome dell'app non si scrive a mano nelle stringhe (TraduzioniTest)
+            "nome_app" -> BuildConfig.APP_NAME
             else -> valore(k)
           }
         }

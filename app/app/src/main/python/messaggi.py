@@ -34,6 +34,9 @@ CATALOGO = [
                              r"baseline affidabile\. Non prendere decisioni drastiche sul solo dato di oggi\."),
     ("baseline_date_illeggibili", r"Date dei dati Oura illeggibili: baseline non calcolabile\."),
     ("baseline_non_disponibile", r"baseline biometrica non disponibile"),
+    # 11/10/2026: solo notti NoctaliX
+    ("taratura_biometria", r"biometria in taratura: (?P<notti>\d+) notti \w+ valide su (?P<minimo>\d+)"),
+    ("notte_esclusa_qualita", rf"notte del {_D} esclusa per qualita': decide la banda dei giorni precedenti"),
     ("dato_biometrico_vecchio", r"ultimo dato biometrico di (?P<giorni>\d+) giorni fa"),
     # ── settimana e forza ─────────────────────────────────────────────────────────
     ("settimana_senza_spazio", r"(?P<seduta>.+): non c'e' spazio nella settimana tipo"),
@@ -136,7 +139,8 @@ CATALOGO += [
 TIPI_CAMPO = {"decisione": ("decisione_",), "fase": ("fase_",), "direzione": ("direzione_",),
               "zona": ("zona_",), "regola_intensita": ("regola_intensita_",), "oggi": ("oggi_",),
               "biometria_azione": ("biometria_",),
-              "biometria_nota": ("baseline_poche_notti", "baseline_date_illeggibili", "baseline_non_disponibile")}
+              "biometria_nota": ("baseline_poche_notti", "baseline_date_illeggibili", "baseline_non_disponibile",
+                                 "taratura_biometria")}
 _SOLO_CAMPO = tuple(p for v in TIPI_CAMPO.values() for p in v if p.endswith("_")) + ("motivo_banda_segue_piano",
                                                                                      "motivo_calibrazione_segue_piano")
 

@@ -436,6 +436,12 @@ def calc_baseline_hrv(oura_history, today_str=None):
     storica di questo file e' stata rimossa: su 400 storie casuali dava una banda diversa
     in 1 caso (10 notti: verde invece di giallo)."""
     b = dict(biometria.calc_baseline_biometrici(oura_history or [], today_str=today_str))
+    # 11/10/2026: sotto le NOCTALIX_NOTTI_MIN notti valide la biometria e' in taratura: banda
+    # grigia, nessuna decisione sulla biometria (come la prontezza dell'app in calibrazione)
+    n = len([g for g in oura_history or [] if isinstance(g.get("hrv_ms"), (int, float))])
+    if n < NOCTALIX_NOTTI_MIN:
+        b.update(ok=False, taratura=True, banda="grigio", azione="Dati insufficienti per una banda affidabile.",
+                 nota=f"biometria in taratura: {n} notti {NOME_APP} valide su {NOCTALIX_NOTTI_MIN}")
     if not b.get("ok"):
         b["banda"] = "grigio"     # convenzione di questo file: nessuna banda = grigio
     b["persistenza_gg"] = b.get("persistenza_gg_sotto")
@@ -454,34 +460,49 @@ NOCTALIX_NOTTI_MIN = 14   # sotto queste notti la baseline NoctaliX non e' affid
 
 
 def storia_biometrica(wellness, tag_giorni=None):
-    """(serie, fonte) per la banda, dalla wellness di Intervals.icu. NoctaliX (campi
-    Noctalix*) decide solo con >= NOCTALIX_NOTTI_MIN notti valide; prima valgono i campi
-    standard (hrv/restingHR, sincronizzati da Oura o Garmin). Mai le due serie insieme:
-    fascia e anello/orologio hanno livelli assoluti diversi."""
-    # 05/10/2026: tag di giorno dell'app sulla serie (esclusione dei confondenti)
+    """(serie, fonte) per la banda: SOLO le notti NoctaliX (campi Noctalix*, con lo storico
+    nei vecchi BioSleep*). 11/10/2026 (decisione di Simone): mai i campi standard
+    hrv/restingHR/sleepSecs di altre sorgenti (Oura, Garmin): con meno di NOCTALIX_NOTTI_MIN
+    notti valide la biometria e' in taratura (banda grigia, vedi calc_baseline_hrv).
+    Prima si ripiegava sui campi standard e il mattino restava in attesa della sincronizzazione
+    di un'altra sorgente anche con la notte NoctaliX gia' su Intervals.icu."""
     tag_l = [{"data": d, "tags": list(v)} for d, v in (tag_giorni or {}).items() if v]
     bs = biometria.noctalix_history_da_wellness(wellness, tag_l)
-    if len(bs) >= NOCTALIX_NOTTI_MIN:
-        return bs, f"{NOME_APP}, {len(bs)} notti"
-    out = []
-    for w in wellness or []:
-        d = str(w.get("id") or w.get("date") or "")[:10]
-        hrv = w.get("hrv")
-        if not d or not isinstance(hrv, (int, float)) or hrv <= 0:
-            continue
-        sonno = w.get("sleepSecs")
-        if (tag_giorni or {}).get(d):
-            out.append({"data": d, "hrv_ms": hrv, "resting_hr": w.get("restingHR"),
-                        "tags": list(tag_giorni[d]),
-                        "sleep_h": round(w["sleepSecs"] / 3600, 1)
-                        if isinstance(w.get("sleepSecs"), (int, float)) and w["sleepSecs"] else None,
-                        "readiness": w.get("readiness")})
-            continue
-        out.append({"data": d, "hrv_ms": hrv, "resting_hr": w.get("restingHR"),
-                    "sleep_h": round(sonno / 3600, 1) if isinstance(sonno, (int, float)) and sonno else None,
-                    "readiness": w.get("readiness")})
-    return sorted(out, key=lambda x: x["data"]), f"wellness Intervals.icu, {len(out)} notti"
+    fonte = f"{NOME_APP}, {len(bs)} notti" + (" (taratura)" if len(bs) < NOCTALIX_NOTTI_MIN else "")
+    return bs, fonte
 
+
+def notte_di_oggi(wellness, oggi_str):
+    """"arrivata" se la wellness di oggi ha un campo NoctaliX della notte (anche BioSleep*),
+    "esclusa_qualita" se c'e' ma sotto la soglia di qualita' (o senza rMSSD), "mancante"
+    altrimenti. Solo "mancante" fa aspettare il run del mattino."""
+    import campi
+    riga = next((w for w in wellness or [] if str(w.get("id") or w.get("date") or "")[:10] == oggi_str), None)
+    if not riga:
+        return "mancante"
+    val = lambda k: riga.get(campi.CODICE[k]) if riga.get(campi.CODICE[k]) is not None \
+        else riga.get(campi.VECCHI[campi.CODICE[k]])
+    if all(val(k) is None for k in ("rmssd", "sleep_hours", "quality", "avg_hr")):
+        return "mancante"
+    q, r = val("quality"), val("rmssd")
+    if not isinstance(r, (int, float)) or r <= 0 or (isinstance(q, (int, float)) and q < biometria.NOCTALIX_QUALITA_MIN):
+        return "esclusa_qualita"
+    return "arrivata"
+
+
+# avvisi biometrici del run (taratura, notte esclusa), raccolti dal cervello nel riepilogo
+AVVISI_BIOMETRIA = []
+
+
+def _notte_e_avvisi(oggi, serie):
+    """Stato della notte di oggi e avviso della notte esclusa per qualita'."""
+    stato = notte_di_oggi(get_wellness(60), oggi)
+    if stato == "esclusa_qualita":
+        m = f"notte del {oggi} esclusa per qualita': decide la banda dei giorni precedenti"
+        if m not in AVVISI_BIOMETRIA:
+            AVVISI_BIOMETRIA.append(m)
+    # la taratura arriva negli avvisi dalla nota della baseline (blocchi_riepilogo)
+    return stato
 
 def stato_forma(wellness):
     """CTL/ATL/TSB e rampa settimanale del CTL dai dati Intervals.icu."""
@@ -549,6 +570,11 @@ def modulazione_biometrica(baseline, forma, fase=""):
     b = baseline or {}
     banda = b.get("banda", "grigio")
     fattore = MOD_VOLUME.get(banda, 1.0)
+    if b.get("taratura"):
+        # 11/10/2026 (decisione di Simone): in taratura nessuna decisione sulla biometria;
+        # restano solo i freni del carico (rampa CTL, TSB), come la prontezza in calibrazione
+        fattore = 1.0
+        b = {}
     blocca_qualita, blocca_palestra, freni = curva_peggioramento(b, forma)
     mot = list(freni)
     riposo = False
@@ -3415,13 +3441,13 @@ def esegui(lunedi, dry=False, solo_futuro=True, pre_lock=None, senza_attesa=Fals
     # sincronizzato si aspetta lo scatto dopo; all'ultimo scatto della finestra il
     # workflow passa senza_attesa e si pianifica comunque (meglio una settimana su
     # banda grigia che nessuna settimana).
-    baseline_probe = calc_baseline_hrv(oura_hist, now_local().strftime("%Y-%m-%d"))
-    ok_oura, motivo_oura = oura_utilizzabile(baseline_probe)
-    if not ok_oura and not senza_attesa:
-        print(f"  ⏳ {motivo_oura}. Pianificazione rimandata al prossimo scatto.")
+    # 11/10/2026: si aspetta solo la notte NoctaliX di oggi (non altre sorgenti)
+    stato_notte = _notte_e_avvisi(now_local().strftime("%Y-%m-%d"), oura_hist)
+    if stato_notte == "mancante" and not senza_attesa:
+        print("  ⏳ la notte NoctaliX di oggi non e' ancora su Intervals.icu. Pianificazione rimandata.")
         return "attesa"
-    if not ok_oura:
-        print(f"  ⚠️ {motivo_oura} — si pianifica lo stesso (ultimo scatto della finestra).")
+    if stato_notte == "mancante":
+        print("  ⚠️ notte NoctaliX di oggi mancante — si pianifica lo stesso (ultimo scatto della finestra).")
     if pre_lock:
         pre_lock()
 
@@ -3516,11 +3542,10 @@ def esegui_giornaliero(dry=False, force=False, pre_lock=None):
     pos = posizione_ciclo(lunedi, races, pause=pause_recenti(lunedi))
     baseline = calc_baseline_hrv(oura_hist, oggi)
     forma = stato_forma(wellness)
-    # PRIMA di qualunque decisione: il dato c'e' ed e' di stamattina?
-    ok_oura, motivo_oura = oura_utilizzabile(baseline, oggi)
-    if not ok_oura and not force:
-        print(f"  ⏳ {oggi}: {motivo_oura}. Nessuna rimodulazione, si riprova al "
-              f"prossimo giro della finestra del mattino.")
+    # PRIMA di qualunque decisione: la notte NoctaliX di stamattina c'e'? (11/10/2026)
+    if _notte_e_avvisi(oggi, oura_hist) == "mancante" and not force:
+        print(f"  ⏳ {oggi}: la notte NoctaliX non e' ancora su Intervals.icu. Nessuna rimodulazione, "
+              f"si riprova al prossimo giro della finestra del mattino.")
         return "attesa"
 
     if pre_lock:

@@ -33,14 +33,18 @@ def noctalix_history_da_wellness(wellness, oura_history=None):
         if not isinstance(w, dict):
             continue
         d = str(w.get("id") or w.get("date") or "")[:10]
-        hrv = num(w.get(campi.CODICE["rmssd"]))
+        # 11/10/2026 (decisione di Simone): per ogni campo il codice Noctalix*; se manca, il
+        # vecchio BioSleep* (storico di chi ha usato BioSleep, nessuna migrazione richiesta)
+        val = lambda chiave: w.get(campi.CODICE[chiave]) if w.get(campi.CODICE[chiave]) is not None \
+            else w.get(campi.VECCHI[campi.CODICE[chiave]])
+        hrv = num(val("rmssd"))
         if not d or hrv is None:
             continue
-        q = w.get(campi.CODICE["quality"])
+        q = val("quality")
         if isinstance(q, (int, float)) and q < NOCTALIX_QUALITA_MIN:
             continue
-        sonno = num(w.get(campi.CODICE["sleep_hours"]))
-        g = {"data": d, "hrv_ms": hrv, "resting_hr": num(w.get(campi.CODICE["avg_hr"])),
+        sonno = num(val("sleep_hours"))
+        g = {"data": d, "hrv_ms": hrv, "resting_hr": num(val("avg_hr")),
              "sleep_h": round(sonno, 1) if sonno else None}
         if tags.get(d):
             g["tags"] = list(tags[d])
