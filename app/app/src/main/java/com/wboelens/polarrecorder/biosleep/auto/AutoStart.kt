@@ -134,6 +134,11 @@ object AutoStart {
       return
     }
     val app = context as? PolarRecorderApplication ?: context.applicationContext as PolarRecorderApplication
+    if (NightStarter.inAvvio) {
+      // La fascia si collega anche quando la notte la sta avviando l'utente con "Avvia notte"
+      registro(context, "Avvio automatico ($reason): fermo, avvio della notte gia' in corso")
+      return
+    }
     if (app.isRecordingActive || (!TEST_MODE && now - store.lastAutoStartMs < COOLDOWN_MS)) {
       registro(context, "Avvio automatico ($reason): fermo, registrazione in corso=${app.isRecordingActive}, " +
           "ultimo avvio automatico ${(now - store.lastAutoStartMs) / 60_000} minuti fa")

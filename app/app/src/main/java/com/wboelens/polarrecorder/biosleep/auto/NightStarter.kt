@@ -28,6 +28,9 @@ class NightStarter(private val app: PolarRecorderApplication) {
   }
 
   companion object {
+    /** Vero mentre una notte si sta avviando: l'avvio automatico non ne fa partire una seconda. */
+    @Volatile var inAvvio = false
+
     private const val FIND_TIMEOUT_MS = 45_000L
     private const val CONNECT_TIMEOUT_MS = 90_000L
     private const val FLOW_TIMEOUT_MS = 10_000L
@@ -38,6 +41,16 @@ class NightStarter(private val app: PolarRecorderApplication) {
 
   @Suppress("ReturnCount")
   suspend fun prepare(profile: NightProfile): Result {
+    inAvvio = true
+    try {
+      return preparaNotte(profile)
+    } finally {
+      inAvvio = false
+    }
+  }
+
+  @Suppress("ReturnCount")
+  private suspend fun preparaNotte(profile: NightProfile): Result {
     app.ensureManagersInitialized()
     val polar = app.polarManager ?: return Result.Failed("Gestore Bluetooth non disponibile")
     val savers = app.dataSavers ?: return Result.Failed("Salvataggi non disponibili")
