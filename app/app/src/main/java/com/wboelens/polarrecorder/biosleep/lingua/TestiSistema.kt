@@ -129,6 +129,7 @@ object TestiSistema {
       Voce("init_salvataggi_fallita", "Inizializzazione dei salvataggi non riuscita"),
       Voce("det_stimato", "stimato da %d corse e %d uscite in bici, FC max %d"),
       Voce("aggiungi_tag", "Aggiungi i tag: il coach li aspetta %d minuti"),
+      Voce("grafici_esempio", "Grafici non disponibili nei dati di esempio"),
       Voce("fascia_non_trovata", "Fascia %s non trovata: è indossata e vicina?"),
       Voce("det_vo2", "VO2max %s (%s) contro %s tipico per eta' e sesso"),
       Voce("puoi_reinviarla", "Puoi reinviarla dalla scheda della notte."),

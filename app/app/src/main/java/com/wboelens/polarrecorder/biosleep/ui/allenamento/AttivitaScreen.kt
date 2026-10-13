@@ -1,5 +1,6 @@
 package com.wboelens.polarrecorder.biosleep.ui.allenamento
 
+import com.wboelens.polarrecorder.biosleep.demo.DemoParte3
 import com.wboelens.polarrecorder.biosleep.condivisione.Condivisione
 import com.wboelens.polarrecorder.biosleep.condivisione.CardSeduta
 import androidx.compose.material.icons.filled.Share
@@ -114,6 +115,12 @@ fun AttivitaScreen(id: String, onBack: () -> Unit) {
             Intestazione(e.attivita)
             Sezione(stringResource(R.string.attivita_riepilogo)) { Numeri(e.attivita) }
             e.flussi?.takeIf { it.serie.isNotEmpty() }?.let { f -> Sezione(stringResource(R.string.attivita_andamento)) { Grafici(e.attivita, f) } }
+            // modalita' demo: i grafici nel tempo esistono solo su Intervals.icu; niente errore, un testo
+            if (e.flussi?.serie.isNullOrEmpty() && DemoParte3.attiva(context))
+                Sezione(stringResource(R.string.attivita_andamento)) {
+                  Text(tr("Grafici non disponibili nei dati di esempio"), style = MaterialTheme.typography.bodyMedium,
+                      color = MaterialTheme.colorScheme.onSurfaceVariant)
+                }
             if (e.attivita.zonePotenza.isNotEmpty()) Sezione(stringResource(R.string.attivita_zone_di_potenza)) { Zone(e.attivita.zonePotenza) }
             if (e.attivita.zoneFc.any { it.secondi > 0 }) Sezione(stringResource(R.string.attivita_zone_di_frequenza_cardiaca)) { Zone(e.attivita.zoneFc) }
             if (e.attivita.zonePasso.any { it.secondi > 0 }) Sezione(stringResource(R.string.attivita_zone_di_passo)) { Zone(e.attivita.zonePasso) }

@@ -493,4 +493,5 @@
     <string name="sis_media3_ms" formatted="true">Media ultime 3 notti %1$s ms</string>
     <string name="sis_banda_provv_nota" formatted="true">Banda provvisoria: livello dalle tue %1$s notti su %2$s, variabilità da %3$s notti dello storico Intervals.icu. Si ricalibra da sola.</string>
     <string name="sis_fonte_esempio">dati di esempio</string>
+    <string name="sis_grafici_esempio">Grafici non disponibili nei dati di esempio</string>
 </resources>

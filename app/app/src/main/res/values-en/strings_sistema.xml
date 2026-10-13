@@ -494,4 +494,5 @@
     <string name="sis_media3_ms" formatted="true">Last 3 nights average %1$s ms</string>
     <string name="sis_banda_provv_nota" formatted="true">Provisional band: level from your %1$s nights out of %2$s, variability from %3$s nights of your Intervals.icu history. It recalibrates by itself.</string>
     <string name="sis_fonte_esempio">sample data</string>
+    <string name="sis_grafici_esempio">Charts not available in the sample data</string>
 </resources>

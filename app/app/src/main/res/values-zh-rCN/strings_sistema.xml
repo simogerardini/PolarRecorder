@@ -494,4 +494,5 @@
     <string name="sis_media3_ms" formatted="true">最近 3 晚平均 %1$s ms</string>
     <string name="sis_banda_provv_nota" formatted="true">临时区间：水平来自你的 %1$s/%2$s 晚记录，变异性来自 Intervals.icu 历史中的 %3$s 晚。会自动重新校准。</string>
     <string name="sis_fonte_esempio">示例数据</string>
+    <string name="sis_grafici_esempio">示例数据中没有图表</string>
 </resources>
