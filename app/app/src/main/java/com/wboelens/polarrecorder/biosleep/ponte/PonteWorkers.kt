@@ -4,10 +4,13 @@ import android.content.Context
 import android.util.Log
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
+import com.wboelens.polarrecorder.biosleep.demo.Demo
 
 /** Carica la copia cifrata per ogni browser collegato (lavoro unico "ponte-snapshot", REPLACE). */
 class CopiaWorker(ctx: Context, params: WorkerParameters) : CoroutineWorker(ctx, params) {
   override suspend fun doWork(): Result {
+    // In demo i dati della Parte 3 sono di esempio: nessuna copia per il browser
+    if (Demo.attiva(applicationContext)) return Result.success()
     val archivio = ArchivioCollegamenti(applicationContext)
     val collegamenti = archivio.elenco()
     if (collegamenti.isEmpty()) return Result.success()
@@ -41,6 +44,8 @@ class CopiaWorker(ctx: Context, params: WorkerParameters) : CoroutineWorker(ctx,
 /** Legge e applica i comandi del web; l'esito va nella copia successiva. */
 class ComandiWorker(ctx: Context, params: WorkerParameters) : CoroutineWorker(ctx, params) {
   override suspend fun doWork(): Result {
+    // In demo i comandi del web restano sul ponte: si applicano dopo l'uscita dalla demo
+    if (Demo.attiva(applicationContext)) return Result.success()
     val archivio = ArchivioCollegamenti(applicationContext)
     val collegamenti = archivio.elenco()
     if (collegamenti.isEmpty()) {

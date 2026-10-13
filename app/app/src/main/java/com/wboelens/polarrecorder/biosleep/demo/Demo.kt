@@ -92,6 +92,8 @@ object Demo {
     runCatching { parte3(context, false) }.onFailure { Log.w(TAG, "Demo Parte 3: ${it.message}") }
     prefs(context).edit().clear().apply()
     _stato.value = false
+    // Il ponte era fermo durante la demo: i browser collegati ricevono subito i dati veri
+    runCatching { com.wboelens.polarrecorder.biosleep.ponte.Ponte.richiediCopia(context) }
   }
 
   private fun cancellaNotti(db: SleepDb) {

@@ -12,6 +12,7 @@ import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
 import com.wboelens.polarrecorder.BuildConfig
+import com.wboelens.polarrecorder.biosleep.demo.Demo
 import java.util.concurrent.TimeUnit
 import kotlinx.coroutines.flow.MutableStateFlow
 
@@ -111,6 +112,7 @@ object Ponte {
    * dell'app, dopo i comandi. Senza collegamenti non fa nulla.
    */
   fun richiediCopia(context: Context) {
+    if (Demo.attiva(context)) return
     if (ArchivioCollegamenti(context).elenco().isEmpty()) return
     WorkManager.getInstance(context)
         .enqueueUniqueWork(LAVORO_COPIA, ExistingWorkPolicy.REPLACE,
@@ -130,6 +132,7 @@ object Ponte {
 
   /** All'apertura dell'app: comandi subito e copia aggiornata. */
   fun allApertura(context: Context) {
+    if (Demo.attiva(context)) return
     if (ArchivioCollegamenti(context).elenco().isEmpty()) return
     WorkManager.getInstance(context)
         .enqueueUniqueWork("$LAVORO_COMANDI-ora", ExistingWorkPolicy.KEEP,
