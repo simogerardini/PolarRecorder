@@ -146,14 +146,18 @@ object AutoStart {
       return
     }
     val nowNoon = HabitLearner.minutesAfterNoon(now, java.time.ZoneId.systemDefault())
-    val inWindow = TEST_MODE || HabitLearner.isBedtime(now, habits)
+    val daNoon = habits.bedtimeFromNoon ?: 0
+    val aNoon = habits.bedtimeToNoon ?: 0
+    val inWindow = TEST_MODE || RegoleAvvio.inOrario(nowNoon, daNoon, aNoon)
     val charging = isCharging(context)
+    val batteria = livelloBatteria(context)
     registro(context, "Avvio automatico ($reason): fascia=sì, orario=$inWindow " +
-        "(fascia ${habits.bedtimeFromNoon?.let { HabitLearner.noonMinutesToClock(it) }}-" +
-        "${habits.bedtimeToNoon?.let { HabitLearner.noonMinutesToClock(it) }}), in carica=$charging")
+        "(fascia ${HabitLearner.noonMinutesToClock(daNoon)}-${HabitLearner.noonMinutesToClock(aNoon)}, " +
+        "da ${RegoleAvvio.MARGINE_MIN}' prima), in carica=$charging, batteria=${batteria ?: "?"}%")
 
+    val fra = RegoleAvvio.fraMinuti(nowNoon, daNoon, aNoon)
     when {
-      inWindow && charging -> {
+      inWindow && RegoleAvvio.energiaOk(charging, batteria) -> {
         store.lastAutoStartMs = now
         cancelRecheck(context)
         val intent =
@@ -162,17 +166,19 @@ object AutoStart {
         registro(context, "Avvio automatico della notte")
       }
       TEST_MODE -> scheduleRecheck(context, now + RECHECK_MS)
-      nowNoon < habits.bedtimeFromNoon!! -> {
-        // Troppo presto: ricontrolla all'inizio della fascia serale
-        scheduleRecheck(context, now + (habits.bedtimeFromNoon - nowNoon) * 60_000L)
-      }
-      nowNoon <= habits.bedtimeToNoon!! -> scheduleRecheck(context, now + RECHECK_MS)
+      // Troppo presto (ricontrolla a inizio margine) o manca l'energia (fra 10 minuti)
+      fra != null -> scheduleRecheck(context, now + fra * 60_000L)
       else -> cancelRecheck(context) // fascia serale finita: niente avvio stanotte
     }
   }
 
   private fun isCharging(context: Context): Boolean =
       context.getSystemService(BatteryManager::class.java)?.isCharging == true
+
+  private fun livelloBatteria(context: Context): Int? =
+      context.getSystemService(BatteryManager::class.java)
+          ?.getIntProperty(BatteryManager.BATTERY_PROPERTY_CAPACITY)
+          ?.takeIf { it in 0..100 }
 
   private fun recheckIntent(context: Context): PendingIntent =
       PendingIntent.getBroadcast(

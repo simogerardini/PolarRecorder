@@ -5,6 +5,7 @@ import android.companion.CompanionDeviceService
 import android.companion.DevicePresenceEvent
 import android.os.Build
 import androidx.annotation.RequiresApi
+import com.wboelens.polarrecorder.PolarRecorderApplication
 
 /**
  * Android avvia questo servizio quando la fascia associata compare, si collega, scompare o si
@@ -30,6 +31,14 @@ class StrapPresenceService : CompanionDeviceService() {
   override fun onDevicePresenceEvent(event: DevicePresenceEvent) = evento(event.event)
 
   private fun evento(tipo: Int) {
+    val presente = PresenzaFascia.presente(tipo) ?: return
+    val app = applicationContext as? PolarRecorderApplication
+    if (NightStarter.inAvvio || app?.isRecordingActive == true) {
+      // Durante la registrazione la H10 "compare" e "scompare" ogni ~40 s: niente valutazioni ne'
+      // righe nel registro, solo lo stato
+      AutoStartStore(this).strapPresent = presente
+      return
+    }
     AutoStart.registro(this, "Fascia: ${PresenzaFascia.nome(tipo)} (evento Android)")
     when (PresenzaFascia.presente(tipo)) {
       true -> {
