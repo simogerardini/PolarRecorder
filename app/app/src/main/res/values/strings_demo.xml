@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!-- Modalità demo (Parte 1) -->
 <resources>
-    <string name="demo_prova">Prova senza fascia (dati di esempio)</string>
-    <string name="demo_titolo">Modalità demo</string>
-    <string name="demo_spiegazione">Le notti che vedi sono di esempio: non vengono inviate a Intervals.icu né al sito. Per registrare le tue notti esci dalla demo e collega una fascia cardio.</string>
-    <string name="demo_notti">Le notti di esempio</string>
-    <string name="demo_eta">Età %1$s</string>
-    <string name="demo_esci">Esci dalla demo</string>
+    <string name="demo_prova">Try without a strap (sample data)</string>
+    <string name="demo_titolo">Demo mode</string>
+    <string name="demo_spiegazione">The nights you see are sample data: they are never sent to Intervals.icu or to the website. To record your own nights, exit the demo and connect a heart-rate strap.</string>
+    <string name="demo_notti">Sample nights</string>
+    <string name="demo_eta">%1$s Age</string>
+    <string name="demo_esci">Exit demo</string>
 </resources>
