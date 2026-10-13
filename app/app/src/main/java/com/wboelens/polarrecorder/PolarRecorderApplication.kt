@@ -1,5 +1,6 @@
 package com.wboelens.polarrecorder
 
+import com.wboelens.polarrecorder.biosleep.demo.DemoParte3
 import com.wboelens.polarrecorder.biosleep.web.FontiParte3Noctalix
 import com.wboelens.polarrecorder.biosleep.ponte.Parte3Ponte
 import com.wboelens.polarrecorder.biosleep.auto.StatoRegistrazione
@@ -57,6 +58,8 @@ class PolarRecorderApplication : Application() {
     super.onCreate()
     // lingua non coperta dal telefono: date e numeri in inglese come l'interfaccia
     Lingua.allineaLocale(resources.configuration)
+    // modalita' demo (Parte 1): dati di esempio della Parte 3 per Oggi, Calendario, Grafici
+    com.wboelens.polarrecorder.biosleep.demo.Demo.parte3 = { c, attiva -> DemoParte3.cambia(c, attiva) }
     preferencesManager = PreferencesManager(applicationContext)
     // ponte web: i dati della Parte 3 per la copia cifrata e i comandi dal sito
     Parte3Ponte.fonti = FontiParte3Noctalix

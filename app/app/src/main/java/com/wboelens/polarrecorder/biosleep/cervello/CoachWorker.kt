@@ -1,5 +1,6 @@
 package com.wboelens.polarrecorder.biosleep.cervello
 
+import com.wboelens.polarrecorder.biosleep.demo.DemoParte3
 import com.wboelens.polarrecorder.biosleep.ponte.Ponte
 import com.wboelens.polarrecorder.biosleep.checkin.Checkin
 import com.wboelens.polarrecorder.biosleep.riepilogo.RigheNotifica
@@ -136,6 +137,8 @@ class CoachWorker(context: Context, params: WorkerParameters) : CoroutineWorker(
   override suspend fun doWork(): Result {
     // solo biometria: il coach di allenamento e' spento
     if (!ModalitaCoach.attivo(applicationContext)) return Result.success()
+    // modalita' demo: il coach non gira (Oggi mostra un riepilogo di esempio)
+    if (DemoParte3.attiva(applicationContext)) return Result.success()
     val data = inputData.getString(K_DATA) ?: return Result.success()
     val tentativo = inputData.getInt(K_TENTATIVO, 1)
     val senzaAttesa = inputData.getBoolean(K_SENZA_ATTESA, false)

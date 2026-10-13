@@ -1,5 +1,6 @@
 package com.wboelens.polarrecorder.biosleep.cache
 
+import com.wboelens.polarrecorder.biosleep.demo.DemoParte3
 import android.content.ContentValues
 import android.content.Context
 import android.database.sqlite.SQLiteDatabase
@@ -57,7 +58,9 @@ class CacheDb internal constructor(context: Context, nomeFile: String?) :
     @Volatile private var instance: CacheDb? = null
 
     fun get(context: Context): CacheDb =
-        instance
+        // modalita' demo: cache di esempio in memoria, la vera non si tocca
+        DemoParte3.cacheDb(context)
+            ?: instance
             ?: synchronized(this) {
               instance ?: CacheDb(context.applicationContext, DB_NAME).also { instance = it }
             }

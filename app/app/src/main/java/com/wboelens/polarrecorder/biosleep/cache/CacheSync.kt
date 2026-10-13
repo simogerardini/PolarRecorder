@@ -1,5 +1,6 @@
 package com.wboelens.polarrecorder.biosleep.cache
 
+import com.wboelens.polarrecorder.biosleep.demo.DemoParte3
 import android.content.Context
 import android.database.SQLException
 import android.util.Log
@@ -63,6 +64,11 @@ object CacheSync {
   }
 
   private fun aggiornaSeServe(app: Context, forza: Boolean) {
+    // modalita' demo: niente rete, dati di esempio rigenerati (date relative a oggi)
+    if (DemoParte3.attiva(app)) {
+      DemoParte3.ricarica(app)
+      return
+    }
     val db = CacheDb.get(app)
     val ultimoOk = leggiMeta(db, META_ULTIMO_OK)?.toLongOrNull()
     if (_stato.value.aggiornatoMs == null && ultimoOk != null) {

@@ -1,5 +1,6 @@
 package com.wboelens.polarrecorder.biosleep.riepilogo
 
+import com.wboelens.polarrecorder.biosleep.demo.DemoParte3
 import android.content.ContentValues
 import android.content.Context
 import android.database.sqlite.SQLiteDatabase
@@ -26,7 +27,9 @@ class RiepilogoDb internal constructor(context: Context, nomeFile: String?) :
     @Volatile private var instance: RiepilogoDb? = null
 
     fun get(context: Context): RiepilogoDb =
-        instance
+        // modalita' demo: riepiloghi di esempio in memoria, i veri non si toccano
+        DemoParte3.riepilogoDb(context)
+            ?: instance
             ?: synchronized(this) {
               instance ?: RiepilogoDb(context.applicationContext, NOME).also { instance = it }
             }
@@ -35,6 +38,9 @@ class RiepilogoDb internal constructor(context: Context, nomeFile: String?) :
 
     /** Cresce a ogni salvataggio o cambio di stato: le schermate la osservano e rileggono. */
     val versione: StateFlow<Int> = _versione.asStateFlow()
+
+    /** Le schermate rileggono (uscita dalla demo: si torna ai riepiloghi veri). */
+    fun avvisaCambio() = _versione.update { it + 1 }
   }
 
   override fun onCreate(db: SQLiteDatabase) {

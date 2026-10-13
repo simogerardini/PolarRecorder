@@ -1,5 +1,6 @@
 package com.wboelens.polarrecorder.biosleep.ui
 
+import com.wboelens.polarrecorder.biosleep.demo.DemoParte3
 import com.wboelens.polarrecorder.biosleep.lingua.tr
 import com.wboelens.polarrecorder.R
 import androidx.compose.ui.res.stringResource
@@ -280,7 +281,9 @@ private fun ComponentRow(c: AgeComponent) {
   Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
     Column(Modifier.weight(1f)) {
       Text(tr(c.label), style = MaterialTheme.typography.bodyMedium)
-      Text(tr(c.detail), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+      // modalita' demo: VO2max e allenamento sono di esempio, non di Intervals.icu
+      val dettaglio = if (DemoParte3.attiva(LocalContext.current)) c.detail.replace("(Intervals.icu)", "(dati di esempio)") else c.detail
+      Text(tr(dettaglio), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
     }
     Spacer(Modifier.width(12.dp))
     Text(

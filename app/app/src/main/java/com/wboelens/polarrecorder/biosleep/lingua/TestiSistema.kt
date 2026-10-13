@@ -305,6 +305,7 @@ object TestiSistema {
       Voce("tr_velocita", "Velocità (km/h)"),
       Voce("non_disponibile", "Non disponibile"),
       Voce("hrv_norma", "HRV nella norma"),
+      Voce("fonte_esempio", "dati di esempio"),
       Voce("interruzioni", "Interruzioni: %s"),
       Voce("connesso_come", "Connesso come %s"),
       Voce("invia_di_nuovo", "Invia di nuovo"),
