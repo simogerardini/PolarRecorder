@@ -7,10 +7,13 @@ import com.google.gson.JsonObject
 import com.wboelens.polarrecorder.biosleep.cache.CacheDb
 import com.wboelens.polarrecorder.biosleep.cache.CacheRepo
 import com.wboelens.polarrecorder.biosleep.cache.CacheSync
+import com.wboelens.polarrecorder.biosleep.cache.EsitoDettaglio
 import com.wboelens.polarrecorder.biosleep.cache.Lettura
 import com.wboelens.polarrecorder.biosleep.readiness.BioBaseline
 import com.wboelens.polarrecorder.biosleep.readiness.FormaCalc
+import com.wboelens.polarrecorder.biosleep.readiness.PyJson
 import com.wboelens.polarrecorder.biosleep.riepilogo.RiepilogoDb
+import com.wboelens.polarrecorder.biosleep.training.DettaglioParser
 import java.time.DayOfWeek
 import java.time.LocalDate
 
@@ -76,6 +79,17 @@ object DemoParte3 {
       val repo = CacheRepo.get(app) // in demo legge la cache di esempio appena scritta
       rie.salva(oggi.toString(), DatiDemo.riepilogo(oggi, repo.baseline(oggi), repo.forma(oggi).oggi, DatiDemo.sedute(oggi)))
     }.onFailure { Log.w(TAG, "Riepilogo di esempio: ${it.message}") }
+  }
+
+  /**
+   * Dettaglio di un'attivita' di esempio, senza Intervals.icu: numeri e zone dalla cache di
+   * esempio, niente grafici nel tempo (i flussi esistono solo sul server).
+   */
+  fun dettaglio(context: Context, id: String): EsitoDettaglio {
+    val oggi = LocalDate.now()
+    val o = CacheRepo.get(context).attivita(oggi.minusDays(35), oggi).firstOrNull { PyJson.str(it.get("id")) == id }
+    val a = o?.let { DettaglioParser.attivita(it) } ?: return EsitoDettaglio.Errore("demo: $id")
+    return EsitoDettaglio.Pronto(a, null)
   }
 
   /** "Esci dalla demo": via i database in memoria; le schermate rileggono quelli veri. */
@@ -175,6 +189,16 @@ internal object DatiDemo {
               addProperty("calories", (t.minuti * f * 10).toInt())
               addProperty("icu_intensity", r1(55.0 + t.tss * 100.0 / t.minuti / 3))
               addProperty("source", "MANUAL")
+              addProperty("average_speed", r1(t.metri / (t.minuti * 60.0) * 100) / 100)
+              // zone FC (soglie superiori in bpm) e tempo in zona, secondo il tipo di seduta
+              add("icu_hr_zones", JsonArray().apply { listOf(138, 151, 160, 169, 185).forEach { add(it) } })
+              val quote = when {
+                "VO2max" in t.nome -> listOf(0.30, 0.40, 0.10, 0.10, 0.10)
+                "Tempo" in t.nome -> listOf(0.25, 0.35, 0.35, 0.05, 0.0)
+                else -> listOf(0.25, 0.70, 0.05, 0.0, 0.0)
+              }
+              val sec = t.minuti * 60 * f
+              add("icu_hr_zone_times", JsonArray().apply { quote.forEach { q -> add((sec * q).toInt()) } })
               if (settimanaCorrente) {
                 addProperty("paired_event_id", "demo_e_$d")
                 addProperty("compliance", 97.0)

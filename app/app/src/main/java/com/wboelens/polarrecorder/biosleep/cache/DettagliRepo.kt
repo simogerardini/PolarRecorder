@@ -1,5 +1,6 @@
 package com.wboelens.polarrecorder.biosleep.cache
 
+import com.wboelens.polarrecorder.biosleep.demo.DemoParte3
 import android.content.Context
 import android.database.SQLException
 import com.wboelens.polarrecorder.biosleep.intervals.IntervalsAuth
@@ -21,6 +22,8 @@ sealed interface EsitoDettaglio {
  */
 object DettagliRepo {
   fun carica(context: Context, id: String): EsitoDettaglio {
+    // modalita' demo: numeri e zone dalla cache di esempio, niente Intervals.icu
+    if (DemoParte3.attiva(context)) return DemoParte3.dettaglio(context, id)
     val db = CacheDb.get(context)
     val salvato = try { db.dettaglio(id) } catch (e: SQLException) { null }
     if (salvato != null) {

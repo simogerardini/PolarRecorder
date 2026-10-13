@@ -5,6 +5,7 @@ import com.wboelens.polarrecorder.biosleep.readiness.BioBaseline
 import com.wboelens.polarrecorder.biosleep.readiness.StatoForma
 import com.wboelens.polarrecorder.biosleep.riepilogo.Messaggi
 import com.wboelens.polarrecorder.biosleep.riepilogo.RiepilogoParser
+import com.wboelens.polarrecorder.biosleep.training.DettaglioParser
 import java.time.LocalDate
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNotNull
@@ -60,5 +61,13 @@ class DemoParte3Test {
     val codici = JsonParser.parseString(json).asJsonObject.getAsJsonArray("messaggi").map { it.asJsonObject.get("codice").asString }
     assertEquals(emptyList<String>(), codici.filter { it !in Messaggi.ORDINE.keys }, "codici senza traduzione")
     assertTrue("biometria_procedi" in codici && "decisione_rispetta_piano" in codici)
+  }
+
+  @Test
+  fun dettaglioSenzaIntervals() {
+    val a = lista("activities", oggi.minusDays(7), oggi).first()
+    val d = DettaglioParser.attivita(a)
+    assertNotNull(d)
+    assertTrue(d!!.zoneFc.any { it.secondi > 0 }, "zone FC presenti")
   }
 }
