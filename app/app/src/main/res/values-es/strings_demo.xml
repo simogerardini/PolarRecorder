@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Modalità demo (Parte 1) -->
+<resources>
+    <string name="demo_prova">Probar sin banda (datos de ejemplo)</string>
+    <string name="demo_titolo">Modo demo</string>
+    <string name="demo_spiegazione">Las noches que ves son de ejemplo: nunca se envían a Intervals.icu ni al sitio web. Para registrar tus noches, sal de la demo y conecta una banda de frecuencia cardiaca.</string>
+    <string name="demo_notti">Noches de ejemplo</string>
+    <string name="demo_eta">Edad %1$s</string>
+    <string name="demo_esci">Salir de la demo</string>
+</resources>

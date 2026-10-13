@@ -51,6 +51,9 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import com.wboelens.polarrecorder.PolarRecorderApplication
 import com.wboelens.polarrecorder.biosleep.auto.NightProfile
+import com.wboelens.polarrecorder.biosleep.demo.Demo
+import com.wboelens.polarrecorder.biosleep.demo.DemoCard
+import com.wboelens.polarrecorder.biosleep.demo.DemoIngresso
 import com.wboelens.polarrecorder.biosleep.auto.NightProfileStore
 import com.wboelens.polarrecorder.biosleep.setup.BioSleepSetup
 import com.wboelens.polarrecorder.biosleep.hal.DriverRegistry
@@ -88,6 +91,7 @@ fun HomeScreen(
   val app = context.applicationContext as PolarRecorderApplication
   val profileStore = remember { NightProfileStore(context) }
   var profile by remember { mutableStateOf(profileStore.load()) }
+  val demo by Demo.stato(context).collectAsState()
 
   val binder by serviceConnection.binder.collectAsState()
   val recording = binder?.recordingState?.collectAsState()?.value
@@ -123,7 +127,7 @@ fun HomeScreen(
         TopAppBar(
             title = { Text(BuildConfig.APP_NAME) },
             actions = {
-              if (profile != null) {
+              if (profile != null || demo) {
                 IconButton(onClick = onOpenNights) { Icon(Icons.Filled.Bedtime, tr("Le mie notti")) }
                 IconButton(onClick = onOpenBioAge) { Icon(Icons.Filled.HourglassTop, tr("Età ${BuildConfig.APP_NAME}")) }
               }
@@ -140,7 +144,14 @@ fun HomeScreen(
         isRecording ->
             NightInProgress(
                 recording!!.recordingStartTime, app, serviceConnection, onNightStopped, batteria) { fiore = true }
-        p == null -> SetupStrap(polarManager, app) { profile = it }
+        demo -> {
+          DemoCard(onOpenNights, onOpenBioAge) { Demo.esciInBackground(context) }
+          RiquadroSonno(onOpenSleep)
+        }
+        p == null -> {
+          SetupStrap(polarManager, app) { profile = it }
+          DemoIngresso { Demo.entraInBackground(context) }
+        }
         else -> {
             ReadyCard(
                 p,

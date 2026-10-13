@@ -5,6 +5,7 @@ import android.database.SQLException
 import android.util.Log
 import com.wboelens.polarrecorder.biosleep.SleepDb
 import com.wboelens.polarrecorder.biosleep.auto.HabitLearner
+import com.wboelens.polarrecorder.biosleep.demo.Demo
 import com.wboelens.polarrecorder.biosleep.intervals.IntervalsAuth
 import com.wboelens.polarrecorder.biosleep.intervals.IntervalsClient
 import com.wboelens.polarrecorder.biosleep.intervals.IntervalsSettings
@@ -113,7 +114,12 @@ object AgeRepository {
     var vo2Sd = 0.05
     var weekly: List<Double>? = null
     var errore: String? = null
-    if (credenziali != null) {
+    val demo = Demo.attiva(context)
+    if (demo) {
+      // Modalita' demo: niente Intervals.icu, valori di esempio coerenti con le notti di esempio
+      vo2 = Demo.VO2_ESEMPIO
+      weekly = Demo.SETTIMANE_ESEMPIO
+    } else if (credenziali != null) {
       val auth = IntervalsAuth.header(credenziali)
       val wellnessLetto = fetchWellness(auth)
       val activitiesLette = fetchActivities(auth)
@@ -139,7 +145,7 @@ object AgeRepository {
             BioAgeInput(chrono, sex, sleepMinutes, midpoints, vo2, weekly, vo2Source, vo2Sd))
 
     val store = AgeProfileStore(context)
-    if (outcome is BioAgeOutcome.Ready) store.saveToday(outcome.result.age, chrono)
+    if (outcome is BioAgeOutcome.Ready && !demo) store.saveToday(outcome.result.age, chrono)
     val history = store.history()
     return BioAgeScreenData(outcome, recent.size, lowQuality, noStages, pace(history), history.size, errore)
   }

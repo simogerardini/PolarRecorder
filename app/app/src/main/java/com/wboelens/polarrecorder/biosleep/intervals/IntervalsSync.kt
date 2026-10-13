@@ -5,6 +5,7 @@ import com.wboelens.polarrecorder.biosleep.cervello.ModalitaCoach
 import android.content.Context
 import android.database.SQLException
 import com.wboelens.polarrecorder.biosleep.SleepDb
+import com.wboelens.polarrecorder.biosleep.demo.Demo
 import com.wboelens.polarrecorder.biosleep.cache.CacheSync
 import com.wboelens.polarrecorder.biosleep.cervello.CoachWorker
 import com.wboelens.polarrecorder.biosleep.cervello.NotificheCoach
@@ -13,6 +14,8 @@ import java.time.LocalDate
 /** Collega database e Intervals: invia una notte e salva l'esito. Da chiamare fuori dal main thread. */
 object IntervalsSync {
   fun syncNight(context: Context, sessionId: Long): IntervalsResult {
+    // Le notti di esempio della modalita' demo non escono mai dal telefono
+    if (Demo.eNotteDemo(context, sessionId)) return IntervalsResult.Failed("Notte di esempio: non viene inviata")
     val settings = IntervalsSettings(context)
     val credenziali = settings.credenziali ?: return IntervalsResult.Failed("Intervals.icu non collegato")
     val db = SleepDb.get(context)

@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Modalità demo (Parte 1) -->
+<resources>
+    <string name="demo_prova">无心率带试用（示例数据）</string>
+    <string name="demo_titolo">演示模式</string>
+    <string name="demo_spiegazione">你看到的夜间数据均为示例：不会发送到 Intervals.icu 或网站。要记录你自己的夜间数据，请退出演示并连接心率带。</string>
+    <string name="demo_notti">示例夜间记录</string>
+    <string name="demo_eta">%1$s 年龄</string>
+    <string name="demo_esci">退出演示</string>
+</resources>
