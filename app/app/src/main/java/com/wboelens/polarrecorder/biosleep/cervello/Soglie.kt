@@ -35,6 +35,34 @@ object Soglie {
 
   fun disciplina(d: String) = d.replaceFirstChar { it.uppercase() }
 
+  /** Etichetta del campo per lo schermo (testo di TestiSistema, tradotto con tr). */
+  fun campoIt(c: String, disciplina: String) = if (c == "sport") "Impostazioni sport" else campo(c, disciplina)
+
+  /**
+   * Conseguenza di una soglia mancante, dai codici (disciplina, campo): testi di TestiSistema,
+   * quindi tradotti. null = combinazione nuova del cervello: si mostra il suo testo.
+   */
+  fun effettoIt(m: SogliaMancante): String? =
+      when (m.campo) {
+        "lthr" -> when (m.disciplina) {
+          "corsa" -> "Le sedute di corsa in FC arrivano sull'orologio senza target"
+          "bici" -> "Le sedute di bici in FC arrivano sull'orologio senza target"
+          "nuoto" -> "Senza LTHR del nuoto il carico delle nuotate è stimato peggio"
+          else -> null
+        }
+        "passo_soglia" -> "Le ripetute brevi di corsa a passo arrivano sull'orologio senza target"
+        "css" -> "Le sedute di nuoto a passo arrivano sull'orologio senza target"
+        "ftp" -> "Senza FTP Intervals.icu stima peggio il carico (TSS) delle uscite senza FC"
+        "cp" -> "Senza CP (FTP corsa) le sedute restano in FC o passo: Stryd non viene usato"
+        "sport" -> when (m.disciplina) {
+          "corsa" -> "Nessuna impostazione per la corsa su Intervals.icu: le sedute arrivano sull'orologio senza target"
+          "bici" -> "Nessuna impostazione per la bici su Intervals.icu: le sedute arrivano sull'orologio senza target"
+          "nuoto" -> "Nessuna impostazione per il nuoto su Intervals.icu: le sedute arrivano sull'orologio senza target"
+          else -> null
+        }
+        else -> null
+      }
+
   fun campo(c: String, disciplina: String) =
       when (c) {
         "passo_soglia" -> "Passo soglia"

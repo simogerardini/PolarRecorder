@@ -495,4 +495,22 @@
     <string name="sis_banda_provv_nota" formatted="true">Provisional band: level from your %1$s nights out of %2$s, variability from %3$s nights of your Intervals.icu history. It recalibrates by itself.</string>
     <string name="sis_fonte_esempio">sample data</string>
     <string name="sis_grafici_esempio">Charts not available in the sample data</string>
+    <string name="sis_soglia_passo">Threshold pace</string>
+    <string name="sis_soglia_css">Swim CSS</string>
+    <string name="sis_soglia_lthr">Threshold HR (LTHR)</string>
+    <string name="sis_soglia_cp">Running CP (Stryd)</string>
+    <string name="sis_soglia_sport">Sport settings</string>
+    <string name="sis_consigliato">recommended</string>
+    <string name="sis_controllo_in_corso">Checking…</string>
+    <string name="sis_passo_soglia_val" formatted="true">threshold pace %1$s</string>
+    <string name="sis_eff_lthr_corsa">Running sessions in HR reach the watch without targets</string>
+    <string name="sis_eff_lthr_bici">Cycling sessions in HR reach the watch without targets</string>
+    <string name="sis_eff_lthr_nuoto">Without a swim LTHR, swim load is estimated less accurately</string>
+    <string name="sis_eff_passo">Short running repeats at pace reach the watch without targets</string>
+    <string name="sis_eff_css">Swim sessions at pace reach the watch without targets</string>
+    <string name="sis_eff_ftp">Without FTP, Intervals.icu estimates the load (TSS) of rides without HR less accurately</string>
+    <string name="sis_eff_cp">Without CP (running FTP) sessions stay in HR or pace: Stryd is not used</string>
+    <string name="sis_eff_sport_corsa">No running settings on Intervals.icu: sessions reach the watch without targets</string>
+    <string name="sis_eff_sport_bici">No cycling settings on Intervals.icu: sessions reach the watch without targets</string>
+    <string name="sis_eff_sport_nuoto">No swimming settings on Intervals.icu: sessions reach the watch without targets</string>
 </resources>

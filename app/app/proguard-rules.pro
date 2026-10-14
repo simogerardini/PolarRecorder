@@ -33,3 +33,8 @@
 # Attributi per generics (Gson TypeToken), annotazioni e numeri di riga negli errori.
 -keepattributes Signature,InnerClasses,EnclosingMethod,*Annotation*,SourceFile,LineNumberTable
 -renamesourcefileattribute SourceFile
+
+# ===== Room/WorkManager (correzione avvio, Parte 7) =====
+# Room crea i database generati (*_Impl, es. WorkDatabase_Impl di WorkManager) via reflection
+# con il costruttore senza argomenti: R8 lo eliminava e l'app si chiudeva all'avvio.
+-keep class * extends androidx.room.RoomDatabase { <init>(); }

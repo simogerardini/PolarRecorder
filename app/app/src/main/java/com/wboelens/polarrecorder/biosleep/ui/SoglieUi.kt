@@ -1,5 +1,7 @@
 package com.wboelens.polarrecorder.biosleep.ui
 
+import com.wboelens.polarrecorder.biosleep.lingua.tr
+import com.wboelens.polarrecorder.biosleep.cervello.SogliaMancante
 import com.wboelens.polarrecorder.R
 import androidx.compose.ui.res.stringResource
 import android.content.ActivityNotFoundException
@@ -43,6 +45,14 @@ private fun apri(context: Context, link: String) {
   }
 }
 
+/** "Corsa · Passo soglia" nella lingua dell'app, dai codici. */
+@Composable
+private fun titoloUi(m: SogliaMancante) = tr(Soglie.disciplina(m.disciplina)) + " · " + tr(Soglie.campoIt(m.campo, m.disciplina))
+
+/** Conseguenza nella lingua dell'app; per una combinazione nuova del cervello, il suo testo. */
+@Composable
+private fun effettoUi(m: SogliaMancante) = tr(Soglie.effettoIt(m) ?: m.effetto).replaceFirstChar { it.uppercase() }
+
 /** La riga degli avvisi di oggi sulle soglie ("soglie da completare su Intervals.icu: ..."). */
 @Composable
 private fun avvisoSoglieDiOggi(): String? {
@@ -85,17 +95,17 @@ fun CardSoglie(e: EsitoSoglie?, avviso: String? = null) {
             Text(stringResource(R.string.soglie_soglie_da_completare), style = MaterialTheme.typography.titleMedium, color = MaterialTheme.colorScheme.onErrorContainer)
             val mancanti = e?.takeIf { it.daCompletare }?.mancanti.orEmpty().sortedBy { !it.bloccante }
             if (mancanti.isEmpty()) {
-              avviso?.let { Text(it, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onErrorContainer) }
+              avviso?.let { Text(tr(it), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onErrorContainer) }
             }
             for (m in mancanti) {
               val colore = if (m.bloccante) MaterialTheme.colorScheme.onErrorContainer else MaterialTheme.colorScheme.onSurfaceVariant
               Column {
                 Text(
-                    m.titolo + if (m.bloccante) "" else " (consigliato)",
+                    titoloUi(m) + if (m.bloccante) "" else " (" + tr("consigliato") + ")",
                     style = MaterialTheme.typography.bodyMedium,
                     fontWeight = if (m.bloccante) FontWeight.Bold else FontWeight.Normal,
                     color = colore)
-                Text(m.effetto.replaceFirstChar { it.uppercase() }, style = MaterialTheme.typography.bodySmall, color = colore)
+                Text(effettoUi(m), style = MaterialTheme.typography.bodySmall, color = colore)
               }
             }
             Button(onClick = { apri(context, e?.link ?: "https://intervals.icu/settings") }) { Text(stringResource(R.string.soglie_apri_intervals_icu)) }
@@ -134,18 +144,18 @@ fun SezioneSoglie() {
     val e = stato
     if (e == null || e.esito == Soglie.ERRORE) {
       Text(
-          e?.errore?.let { "Controllo non riuscito: $it" } ?: "Controllo in corso…",
+          e?.errore?.let { tr("Controllo non riuscito: $it") } ?: tr("Controllo in corso…"),
           style = MaterialTheme.typography.bodySmall,
           color = MaterialTheme.colorScheme.onSurfaceVariant)
     }
     CardSoglie(e, avviso?.takeIf { e?.esito != Soglie.OK })
     if (e != null && e.esito == Soglie.OK) {
       for ((disciplina, campi) in e.valori) {
-        Text("${Soglie.disciplina(disciplina)}: ${Soglie.valoriLeggibili(campi)}", style = MaterialTheme.typography.bodyMedium)
+        Text(tr(Soglie.disciplina(disciplina)) + ": " + tr(Soglie.valoriLeggibili(campi)), style = MaterialTheme.typography.bodyMedium)
       }
       for (m in e.mancanti) {
         Text(
-            stringResource(R.string.soglie_consigliato, m.titolo.toString(), m.effetto.toString()),
+            stringResource(R.string.soglie_consigliato, titoloUi(m), effettoUi(m)),
             style = MaterialTheme.typography.bodySmall,
             color = MaterialTheme.colorScheme.onSurfaceVariant)
       }

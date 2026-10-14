@@ -495,4 +495,22 @@
     <string name="sis_banda_provv_nota" formatted="true">临时区间：水平来自你的 %1$s/%2$s 晚记录，变异性来自 Intervals.icu 历史中的 %3$s 晚。会自动重新校准。</string>
     <string name="sis_fonte_esempio">示例数据</string>
     <string name="sis_grafici_esempio">示例数据中没有图表</string>
+    <string name="sis_soglia_passo">阈值配速</string>
+    <string name="sis_soglia_css">游泳 CSS</string>
+    <string name="sis_soglia_lthr">阈值心率（LTHR）</string>
+    <string name="sis_soglia_cp">跑步 CP（Stryd）</string>
+    <string name="sis_soglia_sport">运动设置</string>
+    <string name="sis_consigliato">建议</string>
+    <string name="sis_controllo_in_corso">正在检查…</string>
+    <string name="sis_passo_soglia_val" formatted="true">阈值配速 %1$s</string>
+    <string name="sis_eff_lthr_corsa">按心率安排的跑步训练同步到手表时没有目标</string>
+    <string name="sis_eff_lthr_bici">按心率安排的骑行训练同步到手表时没有目标</string>
+    <string name="sis_eff_lthr_nuoto">没有游泳 LTHR 时，游泳负荷的估算会较不准确</string>
+    <string name="sis_eff_passo">按配速安排的跑步短间歇同步到手表时没有目标</string>
+    <string name="sis_eff_css">按配速安排的游泳训练同步到手表时没有目标</string>
+    <string name="sis_eff_ftp">没有 FTP 时，Intervals.icu 对无心率骑行的负荷（TSS）估算会较不准确</string>
+    <string name="sis_eff_cp">没有 CP（跑步 FTP）时，训练仍按心率或配速：不使用 Stryd</string>
+    <string name="sis_eff_sport_corsa">Intervals.icu 上没有跑步设置：训练同步到手表时没有目标</string>
+    <string name="sis_eff_sport_bici">Intervals.icu 上没有骑行设置：训练同步到手表时没有目标</string>
+    <string name="sis_eff_sport_nuoto">Intervals.icu 上没有游泳设置：训练同步到手表时没有目标</string>
 </resources>

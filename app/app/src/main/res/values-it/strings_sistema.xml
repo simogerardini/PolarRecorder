@@ -494,4 +494,22 @@
     <string name="sis_banda_provv_nota" formatted="true">Banda provvisoria: livello dalle tue %1$s notti su %2$s, variabilità da %3$s notti dello storico Intervals.icu. Si ricalibra da sola.</string>
     <string name="sis_fonte_esempio">dati di esempio</string>
     <string name="sis_grafici_esempio">Grafici non disponibili nei dati di esempio</string>
+    <string name="sis_soglia_passo">Passo soglia</string>
+    <string name="sis_soglia_css">CSS nuoto</string>
+    <string name="sis_soglia_lthr">FC soglia (LTHR)</string>
+    <string name="sis_soglia_cp">CP corsa (Stryd)</string>
+    <string name="sis_soglia_sport">Impostazioni sport</string>
+    <string name="sis_consigliato">consigliato</string>
+    <string name="sis_controllo_in_corso">Controllo in corso…</string>
+    <string name="sis_passo_soglia_val" formatted="true">passo soglia %1$s</string>
+    <string name="sis_eff_lthr_corsa">Le sedute di corsa in FC arrivano sull\'orologio senza target</string>
+    <string name="sis_eff_lthr_bici">Le sedute di bici in FC arrivano sull\'orologio senza target</string>
+    <string name="sis_eff_lthr_nuoto">Senza LTHR del nuoto il carico delle nuotate è stimato peggio</string>
+    <string name="sis_eff_passo">Le ripetute brevi di corsa a passo arrivano sull\'orologio senza target</string>
+    <string name="sis_eff_css">Le sedute di nuoto a passo arrivano sull\'orologio senza target</string>
+    <string name="sis_eff_ftp">Senza FTP Intervals.icu stima peggio il carico (TSS) delle uscite senza FC</string>
+    <string name="sis_eff_cp">Senza CP (FTP corsa) le sedute restano in FC o passo: Stryd non viene usato</string>
+    <string name="sis_eff_sport_corsa">Nessuna impostazione per la corsa su Intervals.icu: le sedute arrivano sull\'orologio senza target</string>
+    <string name="sis_eff_sport_bici">Nessuna impostazione per la bici su Intervals.icu: le sedute arrivano sull\'orologio senza target</string>
+    <string name="sis_eff_sport_nuoto">Nessuna impostazione per il nuoto su Intervals.icu: le sedute arrivano sull\'orologio senza target</string>
 </resources>
