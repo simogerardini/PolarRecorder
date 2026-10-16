@@ -468,11 +468,12 @@ class RecordingService : Service() {
 
   private fun stopServiceAfterRecordingEnded() {
     stopAutoStopMonitor()
-    // Ferma l'aggiornamento della notifica, altrimenti ricompare ogni minuto dopo lo stop
-    notificationUpdates?.cancel(false)
+    // Ferma l'aggiornamento della notifica, anche se sta scrivendo proprio adesso: altrimenti
+    // ripubblica "Notte in corso" dopo lo stop e la notifica resta finche' non la si tocca
+    notificationUpdates?.cancel(true)
     notificationUpdates = null
     if (!BioSleepDataSaver.analyzing.value) {
-      stopForeground(STOP_FOREGROUND_REMOVE)
+      togliNotifica()
       stopSelf()
       return
     }
@@ -485,9 +486,15 @@ class RecordingService : Service() {
     finalizeWaitJob =
         scope.launch {
           withTimeoutOrNull(FINALIZE_WAIT_MS) { BioSleepDataSaver.analyzing.first { !it } }
-          stopForeground(STOP_FOREGROUND_REMOVE)
+          togliNotifica()
           stopSelf()
         }
+  }
+
+  /** Toglie il primo piano e la notifica del servizio, anche se qualcuno l'aveva ripubblicata. */
+  private fun togliNotifica() {
+    stopForeground(STOP_FOREGROUND_REMOVE)
+    getSystemService(NotificationManager::class.java)?.cancel(NOTIFICATION_ID)
   }
 
   private fun scheduleNotificationUpdates() {
@@ -495,10 +502,13 @@ class RecordingService : Service() {
     notificationUpdates =
         executor.scheduleWithFixedDelay(
         {
-          val notification = createNotification()
-          val notificationManager =
-              getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-          notificationManager.notify(NOTIFICATION_ID, notification)
+          // Solo a registrazione attiva: un aggiornamento in ritardo non deve rimetterla dopo lo stop
+          if (orchestrator.recordingState.value.isRecording) {
+            val notification = createNotification()
+            val notificationManager =
+                getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+            notificationManager.notify(NOTIFICATION_ID, notification)
+          }
         },
         1,
         1,
@@ -555,7 +565,11 @@ class RecordingService : Service() {
     // A notte in corso il watchdog resta programmato: riavviera' il servizio e la notte
     stopAutoStopMonitor(annullaWatchdog = !inRegistrazione)
     AutoStopLog.write(this, "Servizio chiuso (registrazione attiva: $inRegistrazione)")
-    if (!inRegistrazione) EventiNotte.registra(this, TipoEvento.SERVIZIO_CHIUSO)
+    if (!inRegistrazione) {
+      EventiNotte.registra(this, TipoEvento.SERVIZIO_CHIUSO)
+      // Nessuna notifica "Notte in corso" sopravvive a un servizio chiuso senza registrazione
+      getSystemService(NotificationManager::class.java)?.cancel(NOTIFICATION_ID)
+    }
     try {
       unregisterReceiver(bluetoothReceiver)
     } catch (e: IllegalArgumentException) {
