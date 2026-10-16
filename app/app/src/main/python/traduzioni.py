@@ -205,6 +205,10 @@ FRAMMENTI = [
     ("Continuo", "Continuous", "Continuo"),
     ("Bici", "Bike", "Bicicleta"),
     ("Corsa", "Run", "Carrera"),
+    # sedute avanzate (13/10/2026)
+    ("sotto soglia, controllato", "sub-threshold, controlled", "bajo umbral, controlado"),
+    ("sprint in salita", "hill sprint", "sprint en subida"),
+    ("progressione", "progression", "progresión"),
     # parole degli step
     ("Sei battute per bracciata", "Six kicks per stroke", "Seis patadas por brazada"),
     ("Battute per bracciata", "Kicks per stroke", "Patadas por brazada"),

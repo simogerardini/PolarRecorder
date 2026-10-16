@@ -65,6 +65,7 @@ import traduzioni  # 13b: nomi e note delle sedute nella lingua dell'atleta
 import messaggi    # 13d: codici per i testi del riepilogo
 import degradato   # 10/10/2026: attivita' non leggibili da Intervals.icu
 import nomi        # 10/10/2026: DISCIPLINA · STIMOLO · FORMATO
+import avanzate    # 13/10/2026: sedute avanzate rimodulate per livello
 ATTIVITA_DEGRADATE = None   # "bloccate" | "non_leggibili" quando il carico e' ricostruito
 from requests.adapters import HTTPAdapter
 from urllib3.util.retry import Retry
@@ -2157,6 +2158,11 @@ def settimana_perpetua(pos, cfg=None, disponibili=None, escludi=None, disp=None)
             tab = QUALITA_PERPETUO[key]
             s["scelta"] = tab[w] if w in (0, 3, 4) else tab[pos.get("blocco", "A")]
             s["qualita"] = True
+            # 13/10/2026: sedute avanzate che si alternano a quella standard (W1 richiamo,
+            # W2-W3 focus del blocco; W4 ritmo gara e W5 scarico restano standard)
+            etichetta = "W1" if w == 0 else pos.get("blocco", "A") if w in (1, 2) else None
+            if etichetta:
+                s["varianti"] = avanzate.candidati(key, etichetta, s)
         elif key in AEROBICHE_PERPETUO:
             s["scelta"] = AEROBICHE_PERPETUO[key]
         if key in ("brick_bici", "brick_corsa"):
@@ -2765,14 +2771,31 @@ def rimodula_per_disponibilita(eventi_oggi, minuti):
 
 
 def scelta_seduta(s):
-    """(sessione_tipo, params) della libreria per questa seduta. Rotazione deterministica."""
+    """(sessione_tipo, params) della libreria per questa seduta. Rotazione deterministica.
+    13/10/2026: alle sedute standard si aggiungono quelle avanzate ammesse per chiave, fase,
+    distanza e livello (avanzate.py)."""
     rot = (_dt(s["data"]).isocalendar()[1] + s.get("giorno", 0)) if s.get("data") else 0
     if s.get("qualita") and s["key"] in LIBRERIA:
         per_fase = LIBRERIA[s["key"]]
-        cand = per_fase.get(s.get("fase")) or per_fase["*"]
+        cand = list(per_fase.get(s.get("fase")) or per_fase["*"])
+        cand += avanzate.candidati(s["key"], s.get("fase"), s)
     else:
-        cand = LIBRERIA_AEROBICA.get(s["key"]) or LIBRERIA.get(s["key"], {}).get("*")
+        cand = list(LIBRERIA_AEROBICA.get(s["key"]) or LIBRERIA.get(s["key"], {}).get("*"))
+        if s.get("fase") in ("build", "peak"):
+            cand += avanzate.candidati(s["key"], s.get("fase"), s)
     tipo, params = cand[rot % len(cand)]
+    return tipo, dict(params)
+
+
+def _standard(s):
+    """Seduta standard della libreria (ripiego quando l'avanzata non sta nello slot)."""
+    if s.get("scelta") and s["scelta"][0] != "Avanzata":
+        return s["scelta"][0], dict(s["scelta"][1])
+    if s.get("qualita") and s["key"] in LIBRERIA:
+        per_fase = LIBRERIA[s["key"]]
+        tipo, params = (per_fase.get(s.get("fase")) or per_fase["*"])[0]
+    else:
+        tipo, params = (LIBRERIA_AEROBICA.get(s["key"]) or LIBRERIA.get(s["key"], {}).get("*"))[0]
     return tipo, dict(params)
 
 
@@ -2830,19 +2853,42 @@ def _eventi_da_libreria(s):
         tot, rep_min = s["brick"]
         evs = sedute.eventi_seduta(s["data"], "Brick", "Brick", tot, "Ride", lthr,
                                    dict(params_bici, rep_min=rep_min), bike_lthr, swim_lthr, fase_ic)
-        return [e for e in evs if (e["type"] == "Run") == (s["key"] == "brick_corsa")]
+        evs = [e for e in evs if (e["type"] == "Run") == (s["key"] == "brick_corsa")]
+        if avanzate.brick_gara(s):
+            # 13/10/2026: brick specifico 70.3/full in build/peak (bici e corsa a ritmo gara)
+            for e in evs:
+                minuti = round((e.get("moving_time") or 0) / 60)
+                if e["type"] == "Ride":
+                    r = avanzate.descrizione("brick_bici_gara", minuti)
+                    if r:
+                        e["description"] = r[0].replace("[[tipo:BikeCross]]", "[[tipo:Brick]]")
+                elif e["type"] == "Run":
+                    d = avanzate.descrizione_corsa_brick(minuti)
+                    if d:
+                        e["description"] = d
+        return evs
     if s["key"] == "brick_bici" and not s.get("brick"):
         # 05/10/2026: corsa del brick tolta (es. tag infortunio): resta il lungo bici Z2
         tipo, params = "BikeCross", {"profilo": "recovery"}
     elif s.get("scelta") and (s.get("qualita") or s["key"] not in LIBRERIA):
         # 04/10/2026: seduta scelta dalla settimana tipo del ciclo continuo
         tipo, params = s["scelta"][0], dict(s["scelta"][1])
+        if s.get("varianti") and s.get("qualita") and s.get("data"):
+            # 13/10/2026: rotazione con le sedute avanzate (settimana ISO)
+            cand = [s["scelta"]] + list(s["varianti"])
+            tipo, params = cand[_dt(s["data"]).isocalendar()[1] % len(cand)]
+            params = dict(params)
     elif s["key"] == "brick_corsa":     # 15' a seguire il lungo bici: corsa facile
         # Recovery e non Easy: Easy ha riscaldamento e defaticamento propri e su 15' ne
         # scrive 20 (misurato il 03/10); Recovery e' un blocco unico della durata data.
         tipo, params = "Recovery", {}
     else:
         tipo, params = scelta_seduta(s)
+    if tipo == "Avanzata":
+        evs = avanzate.eventi(params["id"], s)
+        if evs:
+            return evs
+        tipo, params = _standard(s)       # il main set non sta nello slot: seduta standard
     if tipo == "BikeCross":
         params.update(params_bici)
         params = dimensiona_bici(params, s["durata"])

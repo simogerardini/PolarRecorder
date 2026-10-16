@@ -160,6 +160,8 @@ def titolo(ev, seduta=None):
         if tipo == "Run":
             return SEP.join(["BRICK", "Off-bike", "Corsa " + _minuscola(_continuo(blocchi))])
         stim = _intensita(main[1]) if main else "Endurance Z2"
+        if "(ritmo gara)" in desc:            # 13/10/2026: brick specifico 70.3/full
+            stim = "Ritmo gara"
         return SEP.join(["BRICK", stim, "Bici " + (f"{main[0]}x{_durata(main[1])}" if main else _minuscola(_continuo(blocchi)))])
     if tipo == "Run":
         stim = STIMOLO_CORSA.get(t_lib, "Aerobico")

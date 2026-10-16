@@ -512,4 +512,44 @@
     <string name="sis_eff_sport_corsa">Nessuna impostazione per la corsa su Intervals.icu: le sedute arrivano sull\'orologio senza target</string>
     <string name="sis_eff_sport_bici">Nessuna impostazione per la bici su Intervals.icu: le sedute arrivano sull\'orologio senza target</string>
     <string name="sis_eff_sport_nuoto">Nessuna impostazione per il nuoto su Intervals.icu: le sedute arrivano sull\'orologio senza target</string>
+    <string name="sis_pr_fc_max">FC massima (bpm)</string>
+    <string name="sis_pr_fc_riposo">FC a riposo (bpm)</string>
+    <string name="sis_pr_prop_max" formatted="true">Più alta nelle sedute degli ultimi 90 giorni: %1$s bpm (%2$s)</string>
+    <string name="sis_pr_prop_riposo" formatted="true">Mediana delle ultime %1$s notti %2$s: %3$s bpm. Se lasci vuoto, il coach usa questa.</string>
+    <string name="sis_pr_lungo_bici">Lungo in bici</string>
+    <string name="sis_pr_lungo_corsa">Lungo di corsa</string>
+    <string name="sis_pr_riposo">Riposo</string>
+    <string name="sis_g_lun">Lunedì</string>
+    <string name="sis_g_mar">Martedì</string>
+    <string name="sis_g_mer">Mercoledì</string>
+    <string name="sis_g_gio">Giovedì</string>
+    <string name="sis_g_ven">Venerdì</string>
+    <string name="sis_g_sab">Sabato</string>
+    <string name="sis_g_dom">Domenica</string>
+    <string name="sis_s_lun">Lun</string>
+    <string name="sis_s_mar">Mar</string>
+    <string name="sis_s_mer">Mer</string>
+    <string name="sis_s_gio">Gio</string>
+    <string name="sis_s_ven">Ven</string>
+    <string name="sis_s_sab">Sab</string>
+    <string name="sis_s_dom">Dom</string>
+    <string name="sis_pr_sed_nuoto">Sedute di nuoto</string>
+    <string name="sis_pr_sed_bici">Sedute in bici</string>
+    <string name="sis_pr_sed_corsa">Sedute di corsa</string>
+    <string name="sis_pr_sed_forza">Sedute di forza</string>
+    <string name="sis_at_bilanciere">Palestra con bilanciere</string>
+    <string name="sis_at_elastici">Elastici</string>
+    <string name="sis_at_corpo_libero">Corpo libero</string>
+    <string name="sis_at_hotel">Trasferta / hotel</string>
+    <string name="sis_sempre_incluso">sempre incluso</string>
+    <string name="sis_liv_principiante">Principiante</string>
+    <string name="sis_liv_avanzato">Avanzato</string>
+    <string name="sis_giorni_feriali">Giorni feriali</string>
+    <string name="sis_weekend">Weekend</string>
+    <string name="sis_come_posizione">Come viene usata la posizione</string>
+    <string name="sis_salvato_prossima">Salvato: vale dalla prossima pianificazione settimanale</string>
+    <string name="sis_ripian_fallita" formatted="true">Ripianificazione non riuscita: %1$s</string>
+    <string name="sis_libera_giorno">Libera un giorno (togli il riposo o sposta un lungo) oppure riduci le sedute.</string>
+    <string name="sis_liv_titolo">Livello di allenamento</string>
+    <string name="sis_liv_nota">Le sedute di qualità si adattano al tuo livello: da principiante circa metà delle ripetute, da avanzato tutte. Se non scegli, vale il livello della palestra.</string>
 </resources>

@@ -513,4 +513,44 @@
     <string name="sis_eff_sport_corsa">No running settings on Intervals.icu: sessions reach the watch without targets</string>
     <string name="sis_eff_sport_bici">No cycling settings on Intervals.icu: sessions reach the watch without targets</string>
     <string name="sis_eff_sport_nuoto">No swimming settings on Intervals.icu: sessions reach the watch without targets</string>
+    <string name="sis_pr_fc_max">Max HR (bpm)</string>
+    <string name="sis_pr_fc_riposo">Resting HR (bpm)</string>
+    <string name="sis_pr_prop_max" formatted="true">Highest in sessions of the last 90 days: %1$s bpm (%2$s)</string>
+    <string name="sis_pr_prop_riposo" formatted="true">Median of the last %1$s %2$s nights: %3$s bpm. If you leave it empty, the coach uses this.</string>
+    <string name="sis_pr_lungo_bici">Long ride</string>
+    <string name="sis_pr_lungo_corsa">Long run</string>
+    <string name="sis_pr_riposo">Rest</string>
+    <string name="sis_g_lun">Monday</string>
+    <string name="sis_g_mar">Tuesday</string>
+    <string name="sis_g_mer">Wednesday</string>
+    <string name="sis_g_gio">Thursday</string>
+    <string name="sis_g_ven">Friday</string>
+    <string name="sis_g_sab">Saturday</string>
+    <string name="sis_g_dom">Sunday</string>
+    <string name="sis_s_lun">Mon</string>
+    <string name="sis_s_mar">Tue</string>
+    <string name="sis_s_mer">Wed</string>
+    <string name="sis_s_gio">Thu</string>
+    <string name="sis_s_ven">Fri</string>
+    <string name="sis_s_sab">Sat</string>
+    <string name="sis_s_dom">Sun</string>
+    <string name="sis_pr_sed_nuoto">Swim sessions</string>
+    <string name="sis_pr_sed_bici">Bike sessions</string>
+    <string name="sis_pr_sed_corsa">Run sessions</string>
+    <string name="sis_pr_sed_forza">Strength sessions</string>
+    <string name="sis_at_bilanciere">Gym with barbell</string>
+    <string name="sis_at_elastici">Resistance bands</string>
+    <string name="sis_at_corpo_libero">Bodyweight</string>
+    <string name="sis_at_hotel">Travel / hotel</string>
+    <string name="sis_sempre_incluso">always included</string>
+    <string name="sis_liv_principiante">Beginner</string>
+    <string name="sis_liv_avanzato">Advanced</string>
+    <string name="sis_giorni_feriali">Weekdays</string>
+    <string name="sis_weekend">Weekend</string>
+    <string name="sis_come_posizione">How the location is used</string>
+    <string name="sis_salvato_prossima">Saved: applies from the next weekly planning</string>
+    <string name="sis_ripian_fallita" formatted="true">Replanning failed: %1$s</string>
+    <string name="sis_libera_giorno">Free up a day (remove the rest day or move a long session) or reduce the sessions.</string>
+    <string name="sis_liv_titolo">Training level</string>
+    <string name="sis_liv_nota">Quality sessions adapt to your level: about half the repeats as a beginner, all of them when advanced. If you don\'t choose, the gym level applies.</string>
 </resources>

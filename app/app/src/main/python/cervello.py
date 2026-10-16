@@ -51,7 +51,7 @@ from marchio import NOME_APP
 import campi
 import messaggi   # 07/10/2026 (punto 13a): codici dei messaggi per l'app
 
-VERSIONE = "2026.10.11-provvisoria3"   # anche nel LEGGIMI del pacchetto
+VERSIONE = "2026.10.13-avanzate"   # anche nel LEGGIMI del pacchetto
 import contextlib, importlib, io, json, os, re, sys, traceback
 
 # 09/10/2026: il cervello non usa piu' GitHub ne' Telegram; le variabili si tolgono comunque
@@ -783,8 +783,8 @@ def _adesso(cfg):
 
 def _carica_moduli():
     global cs
-    import sedute, biometria, carico, soglie, palestra, caldo, detp, traduzioni_palestra, traduzioni, degradato, nomi, checkin, coach_settimanale
-    for m in (sedute, biometria, carico, soglie, palestra, caldo, detp, traduzioni_palestra, traduzioni, degradato, nomi, checkin, coach_settimanale):
+    import sedute, biometria, carico, soglie, palestra, caldo, detp, traduzioni_palestra, traduzioni, degradato, nomi, checkin, avanzate, coach_settimanale
+    for m in (sedute, biometria, carico, soglie, palestra, caldo, detp, traduzioni_palestra, traduzioni, degradato, nomi, checkin, avanzate, coach_settimanale):
         importlib.reload(m)
     cs = coach_settimanale
     return sedute
@@ -921,7 +921,7 @@ def esegui_app(config_json):
     # mano che raccoglie dati) valgono piu' di quelle su Intervals.icu; disponibilita' per
     # giorno in minuti (0 = non disponibile); tetto ore cardio settimanale.
     for k in ("FCMAX", "FCREST", "FC_DA_APP", "MAX_ORE_CARDIO_SETT", "DISPONIBILITA", "SETTIMANA_TIPO",
-              "PALESTRA", "CALDO", "DETP", "DISPONIBILITA_DATE", "LINGUA"):
+              "PALESTRA", "CALDO", "DETP", "DISPONIBILITA_DATE", "LINGUA", "LIVELLO"):
         os.environ.pop(k, None)
     prof = cfg.get("profilo") or {}
     if prof.get("fc_max") and prof.get("fc_riposo"):
@@ -935,6 +935,11 @@ def esegui_app(config_json):
         os.environ["LINGUA"] = str(cfg["lingua"])
     if cfg.get("disponibilita_date"):   # 08/10/2026: minuti per data dal "+" del calendario
         os.environ["DISPONIBILITA_DATE"] = json.dumps(cfg["disponibilita_date"])
+    # 13/10/2026: livello dell'atleta (impostazioni dell'app) per le sedute avanzate;
+    # se manca, quello della palestra
+    liv = prof.get("livello") or (prof.get("palestra") or {}).get("livello")
+    if liv:
+        os.environ["LIVELLO"] = str(liv)
     if prof.get("detp"):          # 07/10/2026: CORE 2 e protocollo DETP (punto 11)
         os.environ["DETP"] = json.dumps(prof["detp"])
     if prof.get("caldo"):         # 06/10/2026: preferenze per i giorni caldi (punto 7)

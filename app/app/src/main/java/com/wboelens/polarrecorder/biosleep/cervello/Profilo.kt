@@ -129,6 +129,11 @@ data class ProfiloAtleta(
     val detp: Detp = Detp(),
     /** Stryd: qualita' di corsa in potenza (serve la CP su Intervals.icu). Sempre mandato. */
     val stryd: Boolean = false,
+    /**
+     * Livello dell'atleta per le sedute avanzate (principiante, intermedio, avanzato).
+     * null = non scelto: non si manda e il cervello usa quello della palestra.
+     */
+    val livello: String? = null,
 ) {
   /** Il blocco "profilo" del configJson (contiene sempre almeno la settimana tipo). */
   fun json(): JsonObject {
@@ -144,6 +149,7 @@ data class ProfiloAtleta(
       add("caldo", caldo.json())
       add("detp", detp.json())
       addProperty("stryd", stryd)
+      livello?.let { addProperty("livello", it) }
     }
   }
 
@@ -153,6 +159,15 @@ data class ProfiloAtleta(
     val LIMITI_MINUTI = 0..600
     const val TETTO_MIN = 1.0
     const val TETTO_MAX = 30.0
+    val LIVELLI = listOf("principiante" to "Principiante", "intermedio" to "Intermedio", "avanzato" to "Avanzato")
+
+    /** Il livello della palestra (in inglese) come livello dell'atleta: quello proposto se non scelto. */
+    fun daPalestra(l: String) =
+        when (l) {
+          "beginner" -> "principiante"
+          "advanced" -> "avanzato"
+          else -> "intermedio"
+        }
   }
 }
 
@@ -205,6 +220,7 @@ class ProfiloStore(context: Context) {
                   oraWeekend = prefs.getInt("caldo_ora_weekend", 10)),
           detp = Detp(core2 = prefs.getBoolean("core2", false), detp = prefs.getBoolean("detp", false)),
           stryd = prefs.getBoolean("stryd", false),
+          livello = prefs.getString("livello_atleta", null),
       )
 
   fun salva(p: ProfiloAtleta) {
@@ -225,6 +241,7 @@ class ProfiloStore(context: Context) {
       putBoolean("core2", p.detp.core2)
       putBoolean("detp", p.detp.attivo)
       putBoolean("stryd", p.stryd)
+      if (p.livello != null) putString("livello_atleta", p.livello) else remove("livello_atleta")
     }.apply()
   }
 }

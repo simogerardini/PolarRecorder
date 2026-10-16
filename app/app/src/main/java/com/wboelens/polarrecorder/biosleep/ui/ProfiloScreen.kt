@@ -1,5 +1,6 @@
 package com.wboelens.polarrecorder.biosleep.ui
 
+import com.wboelens.polarrecorder.biosleep.lingua.tr
 import com.wboelens.polarrecorder.R
 import androidx.compose.ui.res.stringResource
 import com.wboelens.polarrecorder.BuildConfig
@@ -120,6 +121,7 @@ fun ProfiloScreen(onBack: () -> Unit, onApriGare: () -> Unit = {}) {
   var core2 by remember { mutableStateOf(iniziale.detp.core2) }
   var detp by remember { mutableStateOf(iniziale.detp.attivo) }
   var stryd by remember { mutableStateOf(iniziale.stryd) }
+  var livelloAtleta by remember { mutableStateOf(iniziale.livello) }
   var strydSalvato by remember { mutableStateOf(iniziale.stryd) }
   val chiediPosizione =
       rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission()) { ok ->
@@ -161,13 +163,14 @@ fun ProfiloScreen(onBack: () -> Unit, onApriGare: () -> Unit = {}) {
           palestra = palestra,
           caldo = Caldo(converti, oraFeriale, oraWeekend),
           detp = Detp(core2, detp),
-          stryd = stryd)
+          stryd = stryd,
+          livello = livelloAtleta)
 
   Scaffold(
       topBar = {
         TopAppBar(
             title = { Text(stringResource(R.string.profilo_profilo_atleta)) },
-            navigationIcon = { IconButton(onClick = onBack) { Icon(Icons.AutoMirrored.Filled.ArrowBack, "Indietro") } })
+            navigationIcon = { IconButton(onClick = onBack) { Icon(Icons.AutoMirrored.Filled.ArrowBack, tr("Indietro")) } })
       },
   ) { padding ->
     Column(
@@ -184,6 +187,15 @@ fun ProfiloScreen(onBack: () -> Unit, onApriGare: () -> Unit = {}) {
 
       // Soglie di corsa, bici e nuoto su Intervals.icu (controllate a ogni apertura)
       SezioneSoglie()
+
+      // Livello per le sedute di qualita' avanzate (cervello: profilo.livello)
+      Text(tr("Livello di allenamento"), style = MaterialTheme.typography.titleSmall)
+      Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+        val mostrato = livelloAtleta ?: ProfiloAtleta.daPalestra(livello)
+        for ((k, etichetta) in ProfiloAtleta.LIVELLI)
+            FilterChip(selected = mostrato == k, onClick = { livelloAtleta = k; esito = null }, label = { Text(tr(etichetta)) })
+      }
+      Nota(tr("Le sedute di qualità si adattano al tuo livello: da principiante circa metà delle ripetute, da avanzato tutte. Se non scegli, vale il livello della palestra."))
 
       Text(stringResource(R.string.profilo_frequenza_cardiaca), style = MaterialTheme.typography.titleSmall)
       CampoNumero(fcMax, { fcMax = it; esito = null }, "FC massima (bpm)", errFcMax)
@@ -214,7 +226,7 @@ fun ProfiloScreen(onBack: () -> Unit, onApriGare: () -> Unit = {}) {
       Nota(stringResource(R.string.profilo_minuti_disponibili_per_giorno))
       for (g in GIORNI) {
         Row(verticalAlignment = Alignment.CenterVertically) {
-          Text(NOMI_GIORNI.getValue(g), Modifier.width(110.dp))
+          Text(tr(NOMI_GIORNI.getValue(g)), Modifier.width(110.dp))
           OutlinedTextField(
               value = minuti.getValue(g),
               onValueChange = { v -> minuti = minuti + (g to v); esito = null },
@@ -239,13 +251,13 @@ fun ProfiloScreen(onBack: () -> Unit, onApriGare: () -> Unit = {}) {
       }
       // Avvisi del coach sull'ultima pianificazione
       ultimo?.avvisi?.lines()?.filter { it.contains("settimana tipo non valida", ignoreCase = true) }?.forEach {
-        Text(it.trim(), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.error)
+        Text(tr(it.trim()), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.error)
       }
       val senzaSpazio = ultimo?.motivi?.filter { it.contains("spazio nella settimana tipo", ignoreCase = true) }.orEmpty()
       if (senzaSpazio.isNotEmpty()) {
         Text(
-            senzaSpazio.joinToString("\n") { "• " + it.trim() } +
-                "\nLibera un giorno (togli il riposo o sposta un lungo) oppure riduci le sedute.",
+            senzaSpazio.map { "• " + tr(it.trim()) }.joinToString("\n") +
+                "\n" + tr("Libera un giorno (togli il riposo o sposta un lungo) oppure riduci le sedute."),
             style = MaterialTheme.typography.bodySmall,
             color = ColoriBio.giallo)
       }
@@ -260,17 +272,17 @@ fun ProfiloScreen(onBack: () -> Unit, onApriGare: () -> Unit = {}) {
               checked = sempre || k in attrezzi,
               onCheckedChange = { on -> attrezzi = if (on) attrezzi + k else attrezzi - k; esito = null },
               enabled = !sempre)
-          Text(etichetta + if (sempre) " (sempre incluso)" else "")
+          Text(tr(etichetta) + if (sempre) " (" + tr("sempre incluso") + ")" else "")
         }
       }
       Text(stringResource(R.string.profilo_livello), style = MaterialTheme.typography.labelLarge)
       Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
-        for ((k, etichetta) in Palestra.LIVELLI) FilterChip(selected = livello == k, onClick = { livello = k; esito = null }, label = { Text(etichetta) })
+        for ((k, etichetta) in Palestra.LIVELLI) FilterChip(selected = livello == k, onClick = { livello = k; esito = null }, label = { Text(tr(etichetta)) })
       }
       Nota(stringResource(R.string.profilo_principiante_le_prime_4))
       // nel riepilogo piu' recente: sedute di forza tolte dal coach (e perche')
       ultimo?.motivi?.filter { Regex("""forza del .* tolta""", RegexOption.IGNORE_CASE).containsMatchIn(it) }?.forEach {
-        Text("• " + it.trim(), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+        Text("• " + tr(it.trim()), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
       }
 
       // --- Caldo --------------------------------------------------------------------------------
@@ -287,7 +299,7 @@ fun ProfiloScreen(onBack: () -> Unit, onApriGare: () -> Unit = {}) {
         Nota(stringResource(R.string.profilo_posizione_approssimativa_consentita_il))
       } else {
         Nota(stringResource(R.string.profilo_serve_per_le_previsioni))
-        RigaInformativa("Come viene usata la posizione")
+        RigaInformativa(tr("Come viene usata la posizione"))
         OutlinedButton(onClick = { chiediPosizione.launch(Manifest.permission.ACCESS_COARSE_LOCATION) }) {
           Text(stringResource(R.string.profilo_consenti_la_posizione_approssimativa))
         }
@@ -338,7 +350,7 @@ fun ProfiloScreen(onBack: () -> Unit, onApriGare: () -> Unit = {}) {
             style = MaterialTheme.typography.bodySmall,
             color = MaterialTheme.colorScheme.error)
       }
-      esito?.let { Text(it, color = MaterialTheme.colorScheme.primary) }
+      esito?.let { Text(tr(it), color = MaterialTheme.colorScheme.primary) }
 
       // --- Ripianifica subito (solo su richiesta) -------------------------------------------------
       val inCorso = lavoro?.state == WorkInfo.State.RUNNING || lavoro?.state == WorkInfo.State.ENQUEUED
@@ -349,7 +361,7 @@ fun ProfiloScreen(onBack: () -> Unit, onApriGare: () -> Unit = {}) {
           val e = lavoro.outputData.getString(RipianificaWorker.K_ESITO)
           if (e != RisultatoCervello.PIANIFICATA) {
             Text(
-                "Ripianificazione non riuscita: " + (lavoro.outputData.getString(RipianificaWorker.K_ERRORE) ?: e ?: "errore"),
+                tr("Ripianificazione non riuscita: " + (lavoro.outputData.getString(RipianificaWorker.K_ERRORE) ?: e ?: "errore")),
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.error)
           }
@@ -389,7 +401,7 @@ private val SIGLE = mapOf("lun" to "Lun", "mar" to "Mar", "mer" to "Mer", "gio" 
 @Composable
 private fun SceltaGiorno(titolo: String, scelto: String?, vietati: Set<String>, facoltativo: Boolean = false, onScegli: (String?) -> Unit) {
   Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
-    Text(titolo, style = MaterialTheme.typography.labelLarge)
+    Text(tr(titolo), style = MaterialTheme.typography.labelLarge)
     FlowRow(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
       if (facoltativo) FilterChip(selected = scelto == null, onClick = { onScegli(null) }, label = { Text(stringResource(R.string.profilo_nessuno)) })
       for (g in GIORNI) {
@@ -397,7 +409,7 @@ private fun SceltaGiorno(titolo: String, scelto: String?, vietati: Set<String>, 
             selected = scelto == g,
             onClick = { onScegli(g) },
             enabled = g !in vietati || scelto == g,
-            label = { Text(SIGLE.getValue(g)) })
+            label = { Text(tr(SIGLE.getValue(g))) })
       }
     }
   }
@@ -407,7 +419,7 @@ private fun SceltaGiorno(titolo: String, scelto: String?, vietati: Set<String>, 
 @Composable
 private fun OraAllenamento(titolo: String, ora: Int, onCambia: (Int) -> Unit) {
   Row(verticalAlignment = Alignment.CenterVertically) {
-    Text(titolo, Modifier.weight(1f))
+    Text(tr(titolo), Modifier.weight(1f))
     OutlinedButton(onClick = { onCambia(ora - 1) }, enabled = ora > Caldo.ORE.first) { Text("−") }
     Text("%02d:00".format(ora), Modifier.width(64.dp), style = MaterialTheme.typography.titleMedium, textAlign = TextAlign.Center)
     OutlinedButton(onClick = { onCambia(ora + 1) }, enabled = ora < Caldo.ORE.last) { Text("+") }
@@ -418,7 +430,7 @@ private fun OraAllenamento(titolo: String, ora: Int, onCambia: (Int) -> Unit) {
 @Composable
 private fun Contatore(titolo: String, valore: Int, limiti: IntRange, onCambia: (Int) -> Unit) {
   Row(verticalAlignment = Alignment.CenterVertically) {
-    Text(titolo, Modifier.weight(1f))
+    Text(tr(titolo), Modifier.weight(1f))
     OutlinedButton(onClick = { onCambia(valore - 1) }, enabled = valore > limiti.first) { Text("−") }
     Text("$valore", Modifier.width(36.dp), style = MaterialTheme.typography.titleMedium, textAlign = TextAlign.Center)
     OutlinedButton(onClick = { onCambia(valore + 1) }, enabled = valore < limiti.last) { Text("+") }
@@ -430,7 +442,7 @@ private fun CampoNumero(valore: String, onCambia: (String) -> Unit, etichetta: S
   OutlinedTextField(
       value = valore,
       onValueChange = onCambia,
-      label = { Text(etichetta) },
+      label = { Text(tr(etichetta)) },
       singleLine = true,
       isError = errore,
       keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
@@ -440,7 +452,7 @@ private fun CampoNumero(valore: String, onCambia: (String) -> Unit, etichetta: S
 @Composable
 private fun Proposta(testo: String, onUsa: () -> Unit) {
   Row(verticalAlignment = Alignment.CenterVertically) {
-    Text(testo, Modifier.weight(1f), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+    Text(tr(testo), Modifier.weight(1f), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
     TextButton(onClick = onUsa) { Text(stringResource(R.string.profilo_usa)) }
   }
 }
