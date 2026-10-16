@@ -16,6 +16,7 @@ import com.wboelens.polarrecorder.biosleep.SleepStages
 import com.wboelens.polarrecorder.biosleep.ui.fmt
 import com.wboelens.polarrecorder.biosleep.ui.hm
 import com.wboelens.polarrecorder.R
+import com.wboelens.polarrecorder.biosleep.watchdog.AutoStopLog
 
 /** Notifiche BioSleep: riepilogo del mattino e avvisi se l'avvio della notte non riesce. */
 object NightNotifier {
@@ -43,15 +44,50 @@ object NightNotifier {
     post(context, ALERT_ID, title, text, icona = R.drawable.ic_notifica_avviso)
   }
 
+  /**
+   * Pubblica e scrive l'esito nel registro (files/biosleep_autostop.log): se una notifica non
+   * compare, il registro dice perche' (permesso, canale spento, errore) invece di tacere.
+   */
   private fun post(context: Context, id: Int, title: String, text: String, sessionId: Long? = null, icona: Int) {
+    val nome = if (id == SUMMARY_ID) "riepilogo" else "avviso"
     if (
       Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU &&
       ContextCompat.checkSelfPermission(context, Manifest.permission.POST_NOTIFICATIONS) !=
       PackageManager.PERMISSION_GRANTED
     ) {
+      AutoStopLog.write(context, "Notifica $nome non mostrata: permesso notifiche non concesso")
       return // notifiche non permesse: si vede tutto comunque nell'app
     }
     ensureChannel(context)
+    bloccata(context)?.let {
+      AutoStopLog.write(context, "Notifica $nome non mostrata: $it")
+      return
+    }
+    @Suppress("TooGenericExceptionCaught")
+    try {
+      pubblica(context, id, title, text, sessionId, icona)
+      AutoStopLog.write(context, "Notifica $nome pubblicata")
+    } catch (e: Exception) {
+      // Un testo non traducibile non deve far perdere il riepilogo: si pubblica senza traduzione
+      AutoStopLog.write(context, "Notifica $nome: errore ${e.javaClass.simpleName} (${e.message}), ripubblico semplice")
+      runCatching { pubblica(context, id, title, text, sessionId, icona, traduci = false) }
+          .onFailure { AutoStopLog.write(context, "Notifica $nome non mostrata: ${it.javaClass.simpleName}") }
+    }
+  }
+
+  /** Motivo per cui Android non mostrerebbe la notifica, o null. */
+  private fun bloccata(context: Context): String? {
+    if (!NotificationManagerCompat.from(context).areNotificationsEnabled()) return "notifiche dell'app disattivate"
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+      val canale = context.getSystemService(NotificationManager::class.java).getNotificationChannel(CHANNEL_ID)
+      if (canale != null && canale.importance == NotificationManager.IMPORTANCE_NONE) return "canale \"$CHANNEL_ID\" disattivato"
+    }
+    return null
+  }
+
+  private fun pubblica(
+      context: Context, id: Int, title: String, text: String, sessionId: Long?, icona: Int, traduci: Boolean = true,
+  ) {
     val launchIntent =
         context.packageManager.getLaunchIntentForPackage(context.packageName)?.apply {
           if (sessionId != null) {
@@ -69,9 +105,9 @@ object NightNotifier {
         NotificationCompat.Builder(context, CHANNEL_ID)
             .setSmallIcon(icona)
             .setColor(ContextCompat.getColor(context, R.color.biosleep_notifica))
-            .setContentTitle(TestiSistema.traduci(context, title))
-            .setContentText(TestiSistema.righe(context, text).lineSequence().first())
-            .setStyle(NotificationCompat.BigTextStyle().bigText(TestiSistema.righe(context, text)))
+            .setContentTitle(if (traduci) TestiSistema.traduci(context, title) else title)
+            .setContentText((if (traduci) TestiSistema.righe(context, text) else text).lineSequence().first())
+            .setStyle(NotificationCompat.BigTextStyle().bigText(if (traduci) TestiSistema.righe(context, text) else text))
             .setContentIntent(openApp)
             .setAutoCancel(true)
             .build()
