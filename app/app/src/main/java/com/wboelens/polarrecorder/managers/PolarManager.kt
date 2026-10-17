@@ -17,6 +17,7 @@ import com.polar.sdk.api.model.PolarDeviceInfo
 import com.polar.sdk.api.model.PolarHealthThermometerData
 import com.polar.sdk.api.model.PolarSensorSetting
 import com.wboelens.polarrecorder.biosleep.hal.FasceGatt
+import com.wboelens.polarrecorder.biosleep.hal.HrPacket
 import com.wboelens.polarrecorder.state.ConnectionState
 import com.wboelens.polarrecorder.state.DeviceState
 import com.wboelens.polarrecorder.state.LogState
@@ -657,7 +658,7 @@ class PolarManager(
   ): Flowable<*> {
     if (FasceGatt.attivo(deviceId)) {
       return if (dataType == PolarDeviceDataType.HR) FasceGatt.flusso(deviceId)
-      else Flowable.error(IllegalArgumentException("$dataType non disponibile con il driver GATT"))
+      else Flowable.error<HrPacket>(IllegalArgumentException("$dataType non disponibile con il driver GATT"))
     }
     return when (dataType) {
       PolarDeviceDataType.HR -> api.startHrStreaming(deviceId)
