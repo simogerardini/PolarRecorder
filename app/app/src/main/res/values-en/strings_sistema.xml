@@ -558,4 +558,5 @@
     <string name="sis_tn_domanda">Recalculate the assessment?</string>
     <string name="sis_tn_ricalcola">Recalculate</string>
     <string name="sis_tn_in_corso">Recalculating: the summary will arrive with the coach notification</string>
+    <string name="sis_demo_non_disp">Not available in the sample data</string>
 </resources>

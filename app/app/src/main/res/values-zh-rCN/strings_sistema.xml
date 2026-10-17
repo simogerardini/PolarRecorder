@@ -558,4 +558,5 @@
     <string name="sis_tn_domanda">重新计算评估？</string>
     <string name="sis_tn_ricalcola">重新计算</string>
     <string name="sis_tn_in_corso">正在重新计算：摘要会随教练通知送达</string>
+    <string name="sis_demo_non_disp">示例数据中不可用</string>
 </resources>

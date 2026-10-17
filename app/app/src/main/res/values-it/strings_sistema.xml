@@ -557,4 +557,5 @@
     <string name="sis_tn_domanda">Ricalcolo la valutazione?</string>
     <string name="sis_tn_ricalcola">Ricalcola</string>
     <string name="sis_tn_in_corso">Ricalcolo in corso: il riepilogo arriverà con la notifica del coach</string>
+    <string name="sis_demo_non_disp">Non disponibile nei dati di esempio</string>
 </resources>

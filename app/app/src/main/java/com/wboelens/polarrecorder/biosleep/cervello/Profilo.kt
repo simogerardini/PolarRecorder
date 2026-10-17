@@ -1,5 +1,6 @@
 package com.wboelens.polarrecorder.biosleep.cervello
 
+import com.wboelens.polarrecorder.biosleep.demo.DemoParte3
 import android.content.Context
 import com.google.gson.JsonNull
 import com.google.gson.JsonObject
@@ -192,6 +193,7 @@ object SuggerimentiProfilo {
 
 /** Il profilo salvato sul telefono (non e' un dato sensibile come la API key: niente cifratura). */
 class ProfiloStore(context: Context) {
+  private val app = context.applicationContext
   private val prefs = context.applicationContext.getSharedPreferences("biosleep_profilo", Context.MODE_PRIVATE)
 
   fun leggi(): ProfiloAtleta =
@@ -224,6 +226,7 @@ class ProfiloStore(context: Context) {
       )
 
   fun salva(p: ProfiloAtleta) {
+    if (DemoParte3.attiva(app)) return // modalita' demo: il profilo vero non si tocca
     prefs.edit().apply {
       if (p.fcMax != null) putInt("fc_max", p.fcMax) else remove("fc_max")
       if (p.fcRiposo != null) putInt("fc_riposo", p.fcRiposo) else remove("fc_riposo")

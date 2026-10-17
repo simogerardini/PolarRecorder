@@ -169,6 +169,7 @@ object TestiSistema {
       Voce("varra_prossima", "Varrà dalla prossima pianificazione"),
       Voce("licenza_non_trovata", "Testo della licenza non trovato (%s)."),
       Voce("fc_sopra", "FC a riposo sopra l'abituale (%s bpm)"),
+      Voce("demo_non_disp", "Non disponibile nei dati di esempio"),
       Voce("collegamento_in_corso", "Collegamento alla fascia in corso…"),
       Voce("stato_fascia_nd", "Stato della fascia non disponibile"),
       Voce("riquadro", "riquadro: fascia attesa a domenica"),

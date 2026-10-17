@@ -130,6 +130,10 @@ object IntervalsClient {
 
   /** auth = valore completo dell'header Authorization ("Bearer ..." o "Basic ..."). */
   internal fun request(method: String, url: String, auth: String, body: String?): Pair<Int, String> {
+    // modalita' demo: niente scritture su Intervals.icu (errore riconoscibile, nessuna connessione)
+    if (method != "GET" && com.wboelens.polarrecorder.biosleep.demo.DemoParte3.scrittureBloccate()) {
+      throw com.wboelens.polarrecorder.biosleep.demo.DemoNonConsentito()
+    }
     val conn = URL(url).openConnection() as HttpURLConnection
     try {
       conn.requestMethod = method

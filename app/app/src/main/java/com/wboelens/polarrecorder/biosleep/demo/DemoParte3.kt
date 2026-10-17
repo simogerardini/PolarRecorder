@@ -46,6 +46,19 @@ object DemoParte3 {
     if (attiva) prepara(context.applicationContext, LocalDate.now()) else esci(context.applicationContext)
   }
 
+  /** All'avvio del processo (Application.onCreate): lo stato della demo e' noto anche senza Context. */
+  fun inizializza(context: Context) {
+    if (qui == null) qui = Demo.attiva(context)
+  }
+
+  /** Scritture verso Intervals.icu vietate (IntervalsClient, che non ha un Context). */
+  fun scrittureBloccate(): Boolean = qui == true
+
+  /** Solo per i test. */
+  internal fun perTest(attiva: Boolean?) {
+    qui = attiva
+  }
+
   /** Demo attiva per la Parte 3 (cache, riepiloghi, coach). */
   fun attiva(context: Context): Boolean = qui ?: Demo.attiva(context)
 
@@ -342,3 +355,6 @@ internal object DatiDemo {
 
   private fun r1(x: Double) = Math.round(x * 10) / 10.0
 }
+
+/** Scrittura verso Intervals.icu rifiutata in modalita' demo (nessuna connessione aperta). */
+class DemoNonConsentito : java.io.IOException("Non disponibile nei dati di esempio")

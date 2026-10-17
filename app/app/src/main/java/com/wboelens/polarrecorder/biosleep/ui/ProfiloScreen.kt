@@ -1,5 +1,6 @@
 package com.wboelens.polarrecorder.biosleep.ui
 
+import com.wboelens.polarrecorder.biosleep.demo.DemoParte3
 import com.wboelens.polarrecorder.biosleep.lingua.tr
 import com.wboelens.polarrecorder.R
 import androidx.compose.ui.res.stringResource
@@ -335,7 +336,7 @@ fun ProfiloScreen(onBack: () -> Unit, onApriGare: () -> Unit = {}) {
               strydSalvato = stryd
               scope.launch(Dispatchers.IO) { SoglieRepo.controlla(context, forza = true) }
             }
-            esito = "Salvato: vale dalla prossima pianificazione settimanale"
+            esito = if (DemoParte3.attiva(context)) "Non disponibile nei dati di esempio" else "Salvato: vale dalla prossima pianificazione settimanale"
             // palestra cambiata: le schede della settimana sono gia' scritte, si propone di rifarle
             if (palestra != palestraSalvata) conferma = true
             palestraSalvata = palestra

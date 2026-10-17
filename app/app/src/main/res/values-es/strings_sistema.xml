@@ -558,4 +558,5 @@
     <string name="sis_tn_domanda">¿Recalculo la valoración?</string>
     <string name="sis_tn_ricalcola">Recalcular</string>
     <string name="sis_tn_in_corso">Recalculando: el resumen llegará con la notificación del coach</string>
+    <string name="sis_demo_non_disp">No disponible en los datos de ejemplo</string>
 </resources>

@@ -1,5 +1,6 @@
 package com.wboelens.polarrecorder.biosleep.cervello
 
+import com.wboelens.polarrecorder.biosleep.demo.DemoParte3
 import android.content.Context
 import com.chaquo.python.PyException
 import com.chaquo.python.Python
@@ -140,6 +141,24 @@ data class EsitoPrepara(val esito: String, val creati: List<String>, val esisten
 object Cervello {
   private val lucchetto = Any()
 
+  const val DEMO_NON_DISPONIBILE = "Non disponibile nei dati di esempio"
+
+  /**
+   * Unico punto di chiamata al cervello. In modalita' demo nessuna funzione parte: niente scritture
+   * su Intervals.icu (gare, pause, soglie, pulizia, campi, coach) ne' sullo stato vero del coach.
+   */
+  private fun python(context: Context, funzione: String, argomento: Any): Any =
+      if (DemoParte3.attiva(context)) rispostaDemo(funzione)
+      else Python.getInstance().getModule("cervello").callAttr(funzione, argomento)
+
+  /** Risposta in demo: un errore normale per i parser, riconoscibile dal testo. */
+  fun rispostaDemo(funzione: String): String =
+      JsonObject().apply {
+        addProperty("esito", "errore")
+        addProperty("errore", DEMO_NON_DISPONIBILE)
+        addProperty("funzione", funzione)
+      }.toString()
+
   /** Cartella privata del coach: stato, flag, riepiloghi, log. */
   fun cartella(context: Context): File = File(context.filesDir, "coach").apply { mkdirs() }
 
@@ -160,7 +179,7 @@ object Cervello {
                 }
                 .toString()
         try {
-          EsitoPrepara.da(Python.getInstance().getModule("cervello").callAttr("prepara_account", cfg).toString())
+          EsitoPrepara.da(python(context, "prepara_account", cfg).toString())
         } catch (e: PyException) {
           EsitoPrepara(EsitoPrepara.ERRORE, emptyList(), emptyList(), "Python: ${e.message}")
         }
@@ -176,9 +195,7 @@ object Cervello {
         if (!Python.isStarted()) Python.start(AndroidPlatform(context.applicationContext))
         try {
           val testo =
-              Python.getInstance().getModule("cervello")
-                  // il profilo serve a sapere se la CP di corsa e' necessaria (Stryd)
-                  .callAttr("controlla_soglie", ConfigCervello(c, cartella(context).absolutePath, lingua = Lingua.effettiva(context), profilo = profilo).json()).toString()
+              python(context, "controlla_soglie", ConfigCervello(c, cartella(context).absolutePath, lingua = Lingua.effettiva(context), profilo = profilo).json()).toString()
           ultimaRispostaSoglie = testo
           Soglie.da(testo)
         } catch (e: PyException) {
@@ -194,7 +211,7 @@ object Cervello {
         cfg.addProperty("t400", t400)
         cfg.addProperty("t200", t200)
         try {
-          EsitoCss.da(Python.getInstance().getModule("cervello").callAttr("registra_css", cfg.toString()).toString())
+          EsitoCss.da(python(context, "registra_css", cfg.toString()).toString())
         } catch (e: PyException) {
           EsitoCss("errore", null, "Python: ${e.message}")
         }
@@ -206,7 +223,7 @@ object Cervello {
         if (!Python.isStarted()) Python.start(AndroidPlatform(context.applicationContext))
         val cfg = JsonParser.parseString(ConfigCervello(c, cartella(context).absolutePath, lingua = Lingua.effettiva(context)).json()).asJsonObject.apply(extra)
         try {
-          Python.getInstance().getModule("cervello").callAttr(funzione, cfg.toString()).toString()
+          python(context, funzione, cfg.toString()).toString()
         } catch (e: PyException) {
           null
         }
@@ -260,7 +277,7 @@ object Cervello {
               extra()
             }
         try {
-          JsonParser.parseString(Python.getInstance().getModule("cervello").callAttr(funzione, cfg.toString()).toString()).asJsonObject
+          JsonParser.parseString(python(context, funzione, cfg.toString()).toString()).asJsonObject
         } catch (e: PyException) {
           null
         } catch (e: RuntimeException) {
@@ -274,7 +291,7 @@ object Cervello {
         if (!Python.isStarted()) Python.start(AndroidPlatform(context.applicationContext))
         val cfg = d.json().apply { addProperty("cartella", cartella(context).absolutePath) }
         try {
-          EsitoSweat.da(Python.getInstance().getModule("cervello").callAttr("registra_sweat", cfg.toString()).toString())
+          EsitoSweat.da(python(context, "registra_sweat", cfg.toString()).toString())
         } catch (e: PyException) {
           EsitoSweat("errore", null, "Python: ${e.message}")
         }
@@ -314,7 +331,7 @@ object Cervello {
       synchronized(lucchetto) {
         if (!Python.isStarted()) Python.start(AndroidPlatform(context.applicationContext))
         try {
-          val testo = Python.getInstance().getModule("cervello").callAttr("esegui_app", config.json()).toString()
+          val testo = python(context, "esegui_app", config.json()).toString()
           RisultatoCervello.da(testo)
         } catch (e: PyException) {
           // esegui_app intercetta gia' i propri errori: qui arrivano solo quelli di import/avvio

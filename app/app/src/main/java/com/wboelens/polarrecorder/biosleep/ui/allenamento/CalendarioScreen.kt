@@ -1,5 +1,6 @@
 package com.wboelens.polarrecorder.biosleep.ui.allenamento
 
+import com.wboelens.polarrecorder.biosleep.demo.DemoParte3
 import com.wboelens.polarrecorder.biosleep.lingua.tr
 import com.wboelens.polarrecorder.R
 import androidx.compose.ui.res.stringResource
@@ -203,8 +204,9 @@ fun CalendarioScreen(
             pausa = pause.firstOrNull { it.contiene(g.data) },
             tempo = tempo[g.data.toString()],
             selezionato = selezionato,
-            onPiu = { modulo = ModuloCalendario.Menu(g.data, g.data) },
-            onPausa = { modulo = ModuloCalendario.ModificaPausa(it) })
+            // modalita' demo: niente pause, gare, tag o tempo disponibile nei dati veri
+            onPiu = { if (DemoParte3.attiva(context)) messaggio = "Non disponibile nei dati di esempio" else modulo = ModuloCalendario.Menu(g.data, g.data) },
+            onPausa = { if (DemoParte3.attiva(context)) messaggio = "Non disponibile nei dati di esempio" else modulo = ModuloCalendario.ModificaPausa(it) })
       }
     }
   }

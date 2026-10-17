@@ -60,6 +60,7 @@ class PolarRecorderApplication : Application() {
     Lingua.allineaLocale(resources.configuration)
     // modalita' demo (Parte 1): dati di esempio della Parte 3 per Oggi, Calendario, Grafici
     com.wboelens.polarrecorder.biosleep.demo.Demo.parte3 = { c, attiva -> DemoParte3.cambia(c, attiva) }
+    DemoParte3.inizializza(this)
     preferencesManager = PreferencesManager(applicationContext)
     // ponte web: i dati della Parte 3 per la copia cifrata e i comandi dal sito
     Parte3Ponte.fonti = FontiParte3Noctalix
