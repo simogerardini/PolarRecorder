@@ -23,7 +23,7 @@ enum class Disciplina(val id: String) {
 
 data class SedutaVocale(val disciplina: Disciplina, val minuti: Int? = null)
 
-/** Dati del riepilogo da leggere. Ogni campo null viene semplicemente saltato. */
+/** Pagina OGGI. Ogni campo null viene saltato. */
 data class DatiRiepilogoVocale(
     val sonnoMin: Int? = null,
     val profondoMin: Int? = null,
@@ -35,80 +35,16 @@ data class DatiRiepilogoVocale(
     val giornoDiRiposo: Boolean = false,
 )
 
-object FrasarioRiepilogo {
+/** Mattoni comuni a tutte le pagine. */
+object Mattoni {
     const val NUM_MAX = 200
-    private const val VIRGOLA = 180
-    private const val PUNTO = 380
+    const val VIRGOLA = 180
+    const val PUNTO = 380
 
-    fun componi(d: DatiRiepilogoVocale): List<Elemento> {
-        val e = mutableListOf<Elemento>()
-        e += Elemento.Seg("saluto"); e += Elemento.Pausa(PUNTO)
-
-        d.sonnoMin?.takeIf { it > 0 }?.let { sonno ->
-            e += Elemento.Seg("sonno_pre"); durata(e, sonno)
-            d.profondoMin?.takeIf { it > 0 }?.let { p ->
-                e += Elemento.Pausa(VIRGOLA)
-                e += Elemento.Seg("profondo_pre"); durata(e, p); e += Elemento.Seg("profondo_post")
-            }
-            e += Elemento.Pausa(PUNTO)
-        }
-
-        d.hrvMs?.takeIf { it in 1..NUM_MAX }?.let { hrv ->
-            e += Elemento.Seg("hrv_pre"); e += num(hrv); e += Elemento.Seg("u_ms")
-            d.hrvConfronto?.let { c ->
-                e += Elemento.Pausa(VIRGOLA)
-                e += Elemento.Seg(
-                    when (c) {
-                        Confronto.SOPRA -> "hrv_sopra"
-                        Confronto.NELLA -> "hrv_media"
-                        Confronto.SOTTO -> "hrv_sotto"
-                    }
-                )
-            }
-            e += Elemento.Pausa(PUNTO)
-        }
-
-        d.fcRiposo?.takeIf { it in 1..NUM_MAX }?.let { fc ->
-            e += Elemento.Seg("fc_pre"); e += num(fc); e += Elemento.Seg("fc_post")
-            e += Elemento.Pausa(PUNTO)
-        }
-
-        d.semaforo?.let { s ->
-            e += Elemento.Seg(
-                when (s) {
-                    Semaforo.VERDE -> "sem_verde"
-                    Semaforo.GIALLO -> "sem_giallo"
-                    Semaforo.ROSSO -> "sem_rosso"
-                    Semaforo.GRIGIO -> "sem_grigio"
-                }
-            )
-            e += Elemento.Pausa(PUNTO)
-        }
-
-        when {
-            d.giornoDiRiposo -> {
-                e += Elemento.Seg("seduta_riposo"); e += Elemento.Pausa(PUNTO)
-                e += Elemento.Seg("chiusura_giorno")
-            }
-            d.sedute.isNotEmpty() -> {
-                e += Elemento.Seg("seduta_pre")
-                d.sedute.forEachIndexed { i, s ->
-                    if (i > 0) { e += Elemento.Pausa(VIRGOLA); e += Elemento.Seg("c_poi") }
-                    e += Elemento.Seg(s.disciplina.id)
-                    s.minuti?.takeIf { it > 0 }?.let { m -> e += Elemento.Pausa(VIRGOLA); durata(e, m) }
-                }
-                e += Elemento.Pausa(PUNTO)
-                e += Elemento.Seg("chiusura_allenamento")
-            }
-            else -> e += Elemento.Seg("chiusura_giorno")
-        }
-        return e
-    }
-
-    private fun num(n: Int) = Elemento.Seg("n_$n")
+    fun num(n: Int) = Elemento.Seg("n_$n")
 
     /** "sette ore e ventiquattro minuti", "un'ora", "quaranta minuti"... */
-    private fun durata(e: MutableList<Elemento>, minutiTotali: Int) {
+    fun durata(e: MutableList<Elemento>, minutiTotali: Int) {
         val h = minutiTotali / 60
         val m = minutiTotali % 60
         when {
@@ -120,5 +56,83 @@ object FrasarioRiepilogo {
             m == 1 -> { e += num(1); e += Elemento.Seg("u_minuto") }
             m > 1 -> { e += num(m); e += Elemento.Seg("u_minuti") }
         }
+    }
+
+    fun hrv(e: MutableList<Elemento>, hrvMs: Int?, confronto: Confronto?) {
+        val v = hrvMs?.takeIf { it in 1..NUM_MAX } ?: return
+        e += Elemento.Seg("hrv_pre"); e += num(v); e += Elemento.Seg("u_ms")
+        confronto?.let { c ->
+            e += Elemento.Pausa(VIRGOLA)
+            e += Elemento.Seg(
+                when (c) {
+                    Confronto.SOPRA -> "hrv_sopra"
+                    Confronto.NELLA -> "hrv_media"
+                    Confronto.SOTTO -> "hrv_sotto"
+                }
+            )
+        }
+        e += Elemento.Pausa(PUNTO)
+    }
+
+    fun battiti(e: MutableList<Elemento>, pre: String, valore: Int?) {
+        val v = valore?.takeIf { it in 1..NUM_MAX } ?: return
+        e += Elemento.Seg(pre); e += num(v); e += Elemento.Seg("fc_post"); e += Elemento.Pausa(PUNTO)
+    }
+
+    fun semaforo(e: MutableList<Elemento>, s: Semaforo?) {
+        s ?: return
+        e += Elemento.Seg(
+            when (s) {
+                Semaforo.VERDE -> "sem_verde"
+                Semaforo.GIALLO -> "sem_giallo"
+                Semaforo.ROSSO -> "sem_rosso"
+                Semaforo.GRIGIO -> "sem_grigio"
+            }
+        )
+        e += Elemento.Pausa(PUNTO)
+    }
+
+    /** Sedute di oggi + chiusura. */
+    fun sedute(e: MutableList<Elemento>, sedute: List<SedutaVocale>, riposo: Boolean) {
+        when {
+            riposo -> {
+                e += Elemento.Seg("seduta_riposo"); e += Elemento.Pausa(PUNTO)
+                e += Elemento.Seg("chiusura_giorno")
+            }
+            sedute.isNotEmpty() -> {
+                e += Elemento.Seg("seduta_pre")
+                sedute.forEachIndexed { i, s ->
+                    if (i > 0) { e += Elemento.Pausa(VIRGOLA); e += Elemento.Seg("c_poi") }
+                    e += Elemento.Seg(s.disciplina.id)
+                    s.minuti?.takeIf { it > 0 }?.let { m -> e += Elemento.Pausa(VIRGOLA); durata(e, m) }
+                }
+                e += Elemento.Pausa(PUNTO)
+                e += Elemento.Seg("chiusura_allenamento")
+            }
+            else -> e += Elemento.Seg("chiusura_giorno")
+        }
+    }
+}
+
+/** Pagina OGGI. */
+object FrasarioRiepilogo {
+    const val NUM_MAX = Mattoni.NUM_MAX
+
+    fun componi(d: DatiRiepilogoVocale): List<Elemento> {
+        val e = mutableListOf<Elemento>()
+        e += Elemento.Seg("saluto"); e += Elemento.Pausa(Mattoni.PUNTO)
+        d.sonnoMin?.takeIf { it > 0 }?.let { sonno ->
+            e += Elemento.Seg("sonno_pre"); Mattoni.durata(e, sonno)
+            d.profondoMin?.takeIf { it > 0 }?.let { p ->
+                e += Elemento.Pausa(Mattoni.VIRGOLA)
+                e += Elemento.Seg("profondo_pre"); Mattoni.durata(e, p); e += Elemento.Seg("profondo_post")
+            }
+            e += Elemento.Pausa(Mattoni.PUNTO)
+        }
+        Mattoni.hrv(e, d.hrvMs, d.hrvConfronto)
+        Mattoni.battiti(e, "fc_pre", d.fcRiposo)
+        Mattoni.semaforo(e, d.semaforo)
+        Mattoni.sedute(e, d.sedute, d.giornoDiRiposo)
+        return e
     }
 }
