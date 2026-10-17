@@ -131,11 +131,26 @@ fun TagNotte(fineNotteMs: Long, conTitolo: Boolean = true) {
   val coach = remember { com.wboelens.polarrecorder.biosleep.cervello.ModalitaCoach.attivo(context) &&
       !com.wboelens.polarrecorder.biosleep.demo.DemoParte3.attiva(context) }
   Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
-    if (conTitolo) Text(tr("Tag della notte"), style = MaterialTheme.typography.titleSmall)
-    ChipTag(Vocabolario.NOTTE, scelti) { nuovi ->
-      scope.launch(Dispatchers.IO) { TagDb.get(context).impostaGiorno(data, nuovi) }
-      cambiati = true
-      avviato = false
+    if (conTitolo) Text(tr("Tag della notte"), style = MaterialTheme.typography.labelLarge)
+    // una riga sola che scorre di lato: confondenti per primi
+    LazyRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+      items(Vocabolario.NOTTE, key = { it }) { k ->
+        FilterChip(
+            selected = k in scelti,
+            onClick = {
+              val nuovi = if (k in scelti) scelti - k else scelti + k
+              scope.launch(Dispatchers.IO) { TagDb.get(context).impostaGiorno(data, nuovi) }
+              cambiati = true
+              avviato = false
+            },
+            label = { Text(tr(Vocabolario.etichetta(k))) })
+      }
+    }
+    if (scelti.isNotEmpty()) {
+      Text(
+          tr("Scelti: " + Vocabolario.NOTTE.filter { it in scelti }.joinToString(" · ") { Vocabolario.etichetta(it) }),
+          style = MaterialTheme.typography.bodySmall,
+          color = MaterialTheme.colorScheme.onSurfaceVariant)
     }
     Text(
         tr("La birra di ieri sera va sulla notte di stamattina."),

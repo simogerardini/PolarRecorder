@@ -188,11 +188,11 @@ private fun NightContent(
       )
     }
 
-    // Tag della notte (data = giorno del risveglio, come per il coach)
-    TagNotte(s.endMs)
-
     // Fase 7: fasi del sonno
     SleepStagesSection(detail.night)
+
+    // Tag della notte (data = giorno del risveglio, come per il coach)
+    TagNotte(s.endMs)
 
     Text(stringResource(R.string.night_detail_frequenza_cardiaca_media_5), style = MaterialTheme.typography.titleSmall)
     TimeLineChart(
