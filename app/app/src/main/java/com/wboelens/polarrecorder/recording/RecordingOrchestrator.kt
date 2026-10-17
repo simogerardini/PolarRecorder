@@ -1,6 +1,7 @@
 package com.wboelens.polarrecorder.recording
 
 import com.polar.sdk.api.PolarBleApi.PolarDeviceDataType
+import com.wboelens.polarrecorder.biosleep.hal.HrPacket
 import com.polar.sdk.api.model.PolarAccelerometerData
 import com.polar.sdk.api.model.PolarEcgData
 import com.polar.sdk.api.model.PolarGyroData
@@ -327,12 +328,14 @@ class RecordingOrchestrator(
               _lastData.value =
                   _lastData.value.toMutableMap().apply {
                     val deviceData = this[deviceId]?.toMutableMap() ?: mutableMapOf()
-                    deviceData[dataType] = getDataFragment(dataType, data)
+                    // Punto 10: dal driver GATT arrivano HrPacket invece dei tipi del Polar SDK
+                    deviceData[dataType] = if (data is HrPacket) data.hr.toFloat() else getDataFragment(dataType, data)
                     this[deviceId] = deviceData
                   }
 
               val batchData =
-                  when (dataType) {
+                  if (data is HrPacket) listOf(data)
+                  else when (dataType) {
                     PolarDeviceDataType.HR -> (data as PolarHrData).samples
                     PolarDeviceDataType.PPI -> (data as PolarPpiData).samples
                     PolarDeviceDataType.ACC -> (data as PolarAccelerometerData).samples

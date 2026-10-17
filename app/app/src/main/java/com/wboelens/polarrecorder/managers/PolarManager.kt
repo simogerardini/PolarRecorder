@@ -16,6 +16,7 @@ import com.polar.sdk.api.errors.PolarInvalidArgument
 import com.polar.sdk.api.model.PolarDeviceInfo
 import com.polar.sdk.api.model.PolarHealthThermometerData
 import com.polar.sdk.api.model.PolarSensorSetting
+import com.wboelens.polarrecorder.biosleep.hal.FasceGatt
 import com.wboelens.polarrecorder.state.ConnectionState
 import com.wboelens.polarrecorder.state.DeviceState
 import com.wboelens.polarrecorder.state.LogState
@@ -451,6 +452,8 @@ class PolarManager(
   }
 
   fun getDeviceCapabilities(deviceId: String): DeviceStreamCapabilities? {
+    // Driver GATT: solo battito (RR verificati durante la registrazione), niente accelerometro
+    if (FasceGatt.attivo(deviceId)) return DeviceStreamCapabilities(setOf(PolarDeviceDataType.HR), emptyMap())
     return deviceCapabilities[deviceId]
   }
 
@@ -480,6 +483,12 @@ class PolarManager(
   }
 
   fun connectToDevice(deviceId: String) {
+    // Punto 10: fasce di altre marche (e Polar in ripiego) con il driver GATT 0x180D
+    if (FasceGatt.isGatt(context, deviceId)) {
+      val nome = deviceState.allDevices.value.find { it.info.deviceId == deviceId }?.info?.name ?: deviceId
+      FasceGatt.collega(context, deviceState, logState, deviceId, nome)
+      return
+    }
     try {
       api.connectToDevice(deviceId)
     } catch (e: PolarInvalidArgument) {
@@ -489,6 +498,10 @@ class PolarManager(
   }
 
   fun disconnectDevice(deviceId: String) {
+    if (FasceGatt.attivo(deviceId)) {
+      FasceGatt.scollega(deviceState, deviceId)
+      return
+    }
     try {
       // Prima lo stato, poi la richiesta: se la fascia risponde subito, la disconnessione
       // risulta gia' "voluta" e non compare come errore
@@ -511,6 +524,7 @@ class PolarManager(
     scanDisposable =
         api.searchForDevice()
             .observeOn(AndroidSchedulers.mainThread())
+            .doOnSubscribe { FasceGatt.cerca(context, deviceState, SCAN_DURATION) }
             .subscribe(
                 { deviceInfo -> deviceState.addDevice(deviceInfo) },
                 { error ->
@@ -558,6 +572,7 @@ class PolarManager(
     scanTimer?.cancel()
     scanTimer = null
     scanDisposable?.dispose()
+    FasceGatt.ferma(context)
     scanDisposable = null
   }
 
@@ -630,6 +645,7 @@ class PolarManager(
 
   fun cleanup() {
     stopPeriodicScanning()
+    FasceGatt.scollegaTutte(deviceState)
     disposables.clear()
     api.cleanup()
   }
@@ -639,6 +655,10 @@ class PolarManager(
       dataType: PolarDeviceDataType,
       sensorSettings: PolarSensorSetting,
   ): Flowable<*> {
+    if (FasceGatt.attivo(deviceId)) {
+      return if (dataType == PolarDeviceDataType.HR) FasceGatt.flusso(deviceId)
+      else Flowable.error(IllegalArgumentException("$dataType non disponibile con il driver GATT"))
+    }
     return when (dataType) {
       PolarDeviceDataType.HR -> api.startHrStreaming(deviceId)
       PolarDeviceDataType.PPI -> api.startPpiStreaming(deviceId)

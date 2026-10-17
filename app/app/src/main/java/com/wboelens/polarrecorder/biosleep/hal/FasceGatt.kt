@@ -3,13 +3,11 @@ package com.wboelens.polarrecorder.biosleep.hal
 import android.annotation.SuppressLint
 import android.bluetooth.BluetoothManager
 import android.bluetooth.le.ScanCallback
-import android.bluetooth.le.ScanFilter
 import android.bluetooth.le.ScanResult
 import android.bluetooth.le.ScanSettings
 import android.content.Context
 import android.os.Handler
 import android.os.Looper
-import android.os.ParcelUuid
 import android.util.Log
 import com.polar.sdk.api.model.PolarDeviceInfo
 import com.wboelens.polarrecorder.state.ConnectionState
@@ -57,7 +55,12 @@ object FasceGatt {
 
   private var callbackScansione: ScanCallback? = null
 
-  /** Cerca per [durataMs] i dispositivi che pubblicizzano il servizio 0x180D (le Polar le trova gia' l'SDK). */
+  /**
+   * Cerca per [durataMs] le fasce non Polar (le Polar le trova gia' l'SDK). Senza filtro sul
+   * servizio: alcune fasce (es. CooSpo H808S) dichiarano 0x180D solo dopo il collegamento. Si
+   * accettano quelle che lo pubblicizzano oppure con un nome da sensore cardio
+   * (DriverRegistry.candidataGatt); il servizio si verifica al collegamento.
+   */
   fun cerca(context: Context, deviceState: DeviceState, durataMs: Long) {
     val scanner = context.getSystemService(BluetoothManager::class.java)?.adapter?.bluetoothLeScanner ?: return
     ferma(context)
@@ -65,8 +68,12 @@ object FasceGatt {
         object : ScanCallback() {
           override fun onScanResult(callbackType: Int, result: ScanResult) {
             val nome = result.scanRecord?.deviceName ?: result.device.name ?: return
-            if (nome.startsWith("Polar", ignoreCase = true)) return
+            val servizi = result.scanRecord?.serviceUuids.orEmpty().map { it.uuid.toString() }.toSet()
+            if (!DriverRegistry.candidataGatt(nome, servizi)) return
             val indirizzo = result.device.address
+            if (deviceState.allDevices.value.none { it.info.deviceId == indirizzo }) {
+              Log.i(TAG, "Fascia trovata: $nome (${if (servizi.isEmpty()) "nessun servizio dichiarato" else servizi.joinToString()})")
+            }
             registra(context, indirizzo, indirizzo)
             deviceState.addDevice(
                 PolarDeviceInfo(
@@ -75,10 +82,9 @@ object FasceGatt {
         }
     callbackScansione = cb
     try {
-      scanner.startScan(
-          listOf(ScanFilter.Builder().setServiceUuid(ParcelUuid(GattHrDriver.HR_SERVICE)).build()),
-          ScanSettings.Builder().setScanMode(ScanSettings.SCAN_MODE_LOW_LATENCY).build(),
-          cb)
+      // Nessun filtro: con un ScanFilter sul servizio 0x180D le fasce che non lo pubblicizzano
+      // restavano invisibili. Scansione attiva (LOW_LATENCY): include anche il nome di risposta.
+      scanner.startScan(null, ScanSettings.Builder().setScanMode(ScanSettings.SCAN_MODE_LOW_LATENCY).build(), cb)
       Handler(Looper.getMainLooper()).postDelayed({ ferma(context) }, durataMs)
     } catch (e: SecurityException) {
       Log.w(TAG, "Scansione 0x180D senza permesso: ${e.message}")

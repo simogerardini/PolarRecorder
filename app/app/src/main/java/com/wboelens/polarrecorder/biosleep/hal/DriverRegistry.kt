@@ -36,7 +36,18 @@ data class FasciaTrovata(
 object DriverRegistry {
   const val UUID_HR_SERVICE = "0000180d-0000-1000-8000-00805f9b34fb"
 
-  private val OTTICHE = listOf("verity", "oh1", "polar sense", "coros", "scosche", "rhythm", "whoop", "armband", "amazfit")
+  // Bracciali ottici: CooSpo H808S e HW7xx/HW9 sono da braccio (prima di "h8" delle fasce da petto)
+  private val OTTICHE = listOf("verity", "oh1", "polar sense", "coros", "scosche", "rhythm", "whoop", "armband", "amazfit",
+      "h808", "hw7", "hw8", "hw9", "hw10")
+
+  /**
+   * Nomi tipici dei sensori cardio: servono per le fasce che dichiarano il servizio 0x180D solo
+   * dopo il collegamento e non nel segnale di ricerca (es. alcuni bracciali CooSpo). Il servizio si
+   * verifica comunque al collegamento (GattHrDriver): un dispositivo senza 0x180D viene rifiutato.
+   */
+  private val NOMI_CARDIO = listOf("coospo", "heart", "hrm", "hr-", "hr ", " hr", "tickr", "wahoo", "garmin hr", "magene",
+      "xoss", "moofit", "igpsport", "suunto", "decathlon", "kalenji", "geonaute", "scosche", "rhythm", "verity", "coros",
+      "h808", "hw7", "hw8", "hw9", "hw10", "h6", "h7", "h9", "808s", "pulse", "puls", "cardio")
   private val PETTO = listOf("polar h", "hrm", "tickr", "wahoo", "coospo h", "h6", "h7", "h8", "h9", "h10", "magene", "xoss", "suunto", "dual", "stryd")
 
   fun catena(nome: String, serviziPubblicizzati: Set<String>): List<TipoDriver> {
@@ -47,6 +58,14 @@ object DriverRegistry {
       haHr -> listOf(TipoDriver.GATT_180D)
       else -> emptyList()
     }
+  }
+
+  /** Il dispositivo trovato in ricerca va proposto come fascia (driver GATT)? */
+  fun candidataGatt(nome: String, serviziPubblicizzati: Set<String>): Boolean {
+    if (nome.isBlank() || nome.startsWith("Polar", ignoreCase = true)) return false
+    if (serviziPubblicizzati.any { it.lowercase() == UUID_HR_SERVICE }) return true
+    val n = " ${nome.lowercase()} "
+    return NOMI_CARDIO.any { n.contains(it) }
   }
 
   fun tipo(nome: String): TipoFascia {

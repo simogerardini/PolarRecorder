@@ -32,6 +32,7 @@ import java.util.concurrent.Executors
 import java.util.concurrent.ScheduledFuture
 import java.util.concurrent.TimeUnit
 import com.wboelens.polarrecorder.biosleep.BioSleepDataSaver
+import com.wboelens.polarrecorder.biosleep.hal.FasceGatt
 import com.wboelens.polarrecorder.biosleep.SleepDb
 import com.wboelens.polarrecorder.biosleep.auto.Habits
 import com.wboelens.polarrecorder.biosleep.finalize.NightFinalizeWorker
@@ -467,6 +468,9 @@ class RecordingService : Service() {
           .build()
 
   private fun stopServiceAfterRecordingEnded() {
+    // Punto 10: una fascia GATT resta collegata finche' non la si scollega (il driver si ricollega
+    // da solo): a notte finita si chiude, come la H10 che si spegne da sola
+    FasceGatt.scollegaTutte(app.deviceState)
     stopAutoStopMonitor()
     // Ferma l'aggiornamento della notifica, anche se sta scrivendo proprio adesso: altrimenti
     // ripubblica "Notte in corso" dopo lo stop e la notifica resta finche' non la si tocca
