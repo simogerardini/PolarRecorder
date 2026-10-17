@@ -36,9 +36,9 @@ data class FasciaTrovata(
 object DriverRegistry {
   const val UUID_HR_SERVICE = "0000180d-0000-1000-8000-00805f9b34fb"
 
-  // Bracciali ottici: CooSpo H808S e HW7xx/HW9 sono da braccio (prima di "h8" delle fasce da petto)
+  // Bracciali ottici: CooSpo HW7xx, HW8xx e HW9 sono da braccio (prima di "h8" delle fasce da petto)
   private val OTTICHE = listOf("verity", "oh1", "polar sense", "coros", "scosche", "rhythm", "whoop", "armband", "amazfit",
-      "h808", "hw7", "hw8", "hw9", "hw10")
+      "hw7", "hw8", "hw9", "hw10")
 
   /**
    * Nomi tipici dei sensori cardio: servono per le fasce che dichiarano il servizio 0x180D solo

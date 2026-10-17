@@ -34,8 +34,8 @@ class DriverRegistryCoospoTest {
   }
 
   @Test
-  fun h808sEUnBraccialeOttico() {
-    assertEquals(TipoFascia.OTTICA, DriverRegistry.tipo("H808S 0123456"))
+  fun h808sDaPettoHwOttici() {
+    assertEquals(TipoFascia.PETTO, DriverRegistry.tipo("H808S 0123456"))
     assertEquals(TipoFascia.OTTICA, DriverRegistry.tipo("CooSpo HW807"))
     assertEquals(TipoFascia.PETTO, DriverRegistry.tipo("CooSpo H6M"))
     assertEquals(TipoFascia.PETTO, DriverRegistry.tipo("Polar H10 0F291832"))
