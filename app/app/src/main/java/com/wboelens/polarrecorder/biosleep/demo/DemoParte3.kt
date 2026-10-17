@@ -1,5 +1,6 @@
 package com.wboelens.polarrecorder.biosleep.demo
 
+import com.wboelens.polarrecorder.biosleep.tag.TagDb
 import android.content.Context
 import android.util.Log
 import com.google.gson.JsonArray
@@ -30,6 +31,7 @@ object DemoParte3 {
   private const val TAG = "NoctalixDemo3"
   @Volatile private var cache: CacheDb? = null
   @Volatile private var riepiloghi: RiepilogoDb? = null
+  @Volatile private var tag: TagDb? = null
   @Volatile private var giorno: LocalDate? = null
   /**
    * Stato visto dalla Parte 3: null all'avvio del processo (si segue Demo.attiva), poi quello
@@ -59,6 +61,13 @@ object DemoParte3 {
     if (!attiva(context)) return null
     prepara(context.applicationContext, LocalDate.now())
     return riepiloghi
+  }
+
+  /** I tag di esempio (null fuori dalla demo): TagDb.get li usa al posto di quelli veri. */
+  @Synchronized
+  fun tagDb(context: Context): TagDb? {
+    if (!attiva(context)) return null
+    return tag ?: TagDb.inMemoria(context.applicationContext).also { tag = it }
   }
 
   /** CacheSync in demo: nessuna rete, si rigenerano i dati di esempio (date relative a oggi). */
@@ -97,10 +106,13 @@ object DemoParte3 {
   fun esci(context: Context) {
     runCatching { cache?.close() }
     runCatching { riepiloghi?.close() }
+    runCatching { tag?.close() }
+    tag = null
     cache = null
     riepiloghi = null
     giorno = null
     RiepilogoDb.avvisaCambio()
+    TagDb.avvisaCambio()
     CacheSync.aggiornaInBackground(context.applicationContext, forza = true)
   }
 }

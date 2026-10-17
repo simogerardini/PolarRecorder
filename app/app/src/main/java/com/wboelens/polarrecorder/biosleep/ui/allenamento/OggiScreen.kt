@@ -1,5 +1,7 @@
 package com.wboelens.polarrecorder.biosleep.ui.allenamento
 
+import androidx.compose.ui.platform.LocalContext
+import com.wboelens.polarrecorder.biosleep.demo.DemoParte3
 import com.wboelens.polarrecorder.biosleep.readiness.BioBaselineCalc
 import com.wboelens.polarrecorder.biosleep.ui.CardCheckin
 import com.wboelens.polarrecorder.biosleep.ui.CardConsiglio
@@ -159,7 +161,8 @@ fun OggiScreen(
       val coach = coachAttivo()
       if (coach) RiquadroRiepilogo(LocalDate.now(), onApriRiepilogo)
       // check-in dopo la seduta: solo in modalita' degradata o se richiesto in Impostazioni
-      if (coach) CardCheckin()
+      // modalita' demo: le risposte andrebbero nell'archivio vero del check-in
+      if (coach && !DemoParte3.attiva(LocalContext.current)) CardCheckin()
       // soglie mancanti su Intervals.icu: card solo se servono
       if (coach) SoglieOggi()
       // test periodici: test in programma questa settimana, tempi del test CSS

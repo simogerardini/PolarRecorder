@@ -1,5 +1,6 @@
 package com.wboelens.polarrecorder.biosleep.tag
 
+import com.wboelens.polarrecorder.biosleep.demo.DemoParte3
 import android.content.ContentValues
 import android.content.Context
 import android.database.sqlite.SQLiteDatabase
@@ -81,15 +82,24 @@ object Vocabolario {
 }
 
 /** I tag salvati: sono dati tuoi, non si rileggono da Intervals.icu, quindi non stanno nella cache. */
-class TagDb private constructor(context: Context) : SQLiteOpenHelper(context, "biosleep_tag.db", null, 1) {
+class TagDb private constructor(context: Context, nomeFile: String?) : SQLiteOpenHelper(context, nomeFile, null, 1) {
   companion object {
     @Volatile private var instance: TagDb? = null
 
     fun get(context: Context): TagDb =
-        instance ?: synchronized(this) { instance ?: TagDb(context.applicationContext).also { instance = it } }
+        // modalita' demo: tag di esempio in memoria, quelli veri non si toccano
+        DemoParte3.tagDb(context)
+            ?: instance
+            ?: synchronized(this) { instance ?: TagDb(context.applicationContext, "biosleep_tag.db").also { instance = it } }
+
+    /** Database dei tag in memoria (modalita' demo): sparisce quando si chiude. */
+    internal fun inMemoria(context: Context) = TagDb(context.applicationContext, null)
 
     private val _versione = MutableStateFlow(0)
     val versione: StateFlow<Int> = _versione.asStateFlow()
+
+    /** Le schermate rileggono i tag (uscita dalla demo: si torna a quelli veri). */
+    fun avvisaCambio() = _versione.update { it + 1 }
   }
 
   override fun onCreate(db: SQLiteDatabase) {
