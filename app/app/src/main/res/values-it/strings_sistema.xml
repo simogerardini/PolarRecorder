@@ -552,4 +552,9 @@
     <string name="sis_libera_giorno">Libera un giorno (togli il riposo o sposta un lungo) oppure riduci le sedute.</string>
     <string name="sis_liv_titolo">Livello di allenamento</string>
     <string name="sis_liv_nota">Le sedute di qualità si adattano al tuo livello: da principiante circa metà delle ripetute, da avanzato tutte. Se non scegli, vale il livello della palestra.</string>
+    <string name="sis_tn_titolo">Tag della notte</string>
+    <string name="sis_tn_regola">La birra di ieri sera va sulla notte di stamattina.</string>
+    <string name="sis_tn_domanda">Ricalcolo la valutazione?</string>
+    <string name="sis_tn_ricalcola">Ricalcola</string>
+    <string name="sis_tn_in_corso">Ricalcolo in corso: il riepilogo arriverà con la notifica del coach</string>
 </resources>

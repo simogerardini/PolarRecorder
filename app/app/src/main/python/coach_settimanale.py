@@ -3890,7 +3890,13 @@ def blocchi_riepilogo(oggi_str, pos, baseline, mod, wellness, activities, eventi
         avvisi.append(f"FC a riposo +{fc.get('delta')} bpm sulla baseline")
     if non_scritte:
         avvisi.append(f"{len(non_scritte)} sedute non scritte a calendario")
-    if info.get("fascia") and domenica.get("tsb") is not None and not (
+    # 17/10/2026: con un'assenza (ferie, malattia, infortunio) da oggi a domenica il TSB sale
+    # per forza: la fascia attesa vale solo per le settimane di allenamento
+    lun = _dt(lunedi_di(oggi_str))
+    resto = [(lun + timedelta(days=i)).strftime("%Y-%m-%d") for i in range(7)]
+    resto = [d for d in resto if d >= oggi_str]
+    in_assenza = bool(giorni_non_disponibili(eventi_settimana or [], resto))
+    if info.get("fascia") and domenica.get("tsb") is not None and not in_assenza and not (
             info["fascia"][0] <= domenica["tsb"] <= info["fascia"][1]):
         avvisi.append(f"TSB previsto a domenica {domenica['tsb']} fuori dalla fascia attesa "
                       f"{info['fascia'][0]}/{info['fascia'][1]}")

@@ -188,6 +188,9 @@ private fun NightContent(
       )
     }
 
+    // Tag della notte (data = giorno del risveglio, come per il coach)
+    TagNotte(s.endMs)
+
     // Fase 7: fasi del sonno
     SleepStagesSection(detail.night)
 
@@ -366,6 +369,8 @@ fun RiepilogoNotte(sessionId: Long) {
         Text(nightTimes(s.startMs, s.endMs), style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
         SleepStagesSection(night, titolo = false)
       }
+
+      Sezione(tr("Tag della notte")) { TagNotte(s.endMs, conTitolo = false) }
 
       Sezione(stringResource(R.string.night_detail_frequenza_cardiaca)) {
         MetricRow(Metric(stringResource(R.string.night_detail_fc_a_riposo), fmt(s.restingHr), "bpm"), Metric(stringResource(R.string.night_detail_fc_minima), fmt(s.hrMin), "bpm"))

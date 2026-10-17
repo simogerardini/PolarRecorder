@@ -30,6 +30,14 @@ object Vocabolario {
 
   val GIORNO = GIORNO_SERA + GIORNO_NOTTE + GIORNO_CONTESTO + GIORNO_CORPO
 
+  /**
+   * Scheda Notte: prima i confondenti (gli stessi con cui il cervello esclude la notte dalla
+   * baseline, biometria.TAG_CONFONDENTI), poi il resto dei tag di giorno.
+   */
+  val NOTTE =
+      listOf("alcol", "cena_tardiva", "caffeina_tardi", "stress", "viaggio", "malattia", "sonno_disturbato", "caldo", "altitudine")
+          .let { c -> c + GIORNO.filter { it !in c } }
+
   private val ETICHETTE =
       mapOf(
           "alcol" to "Alcol", "cena_tardiva" to "Cena tardiva", "caffeina_tardi" to "Caffeina tardi",
@@ -49,6 +57,12 @@ object Vocabolario {
   /** Data dei tag della notte che sta per iniziare: la mattina del risveglio (come la wellness). */
   fun mattinaDellaNotte(adesso: LocalDateTime): LocalDate =
       if (adesso.hour >= 12) adesso.toLocalDate().plusDays(1) else adesso.toLocalDate()
+
+  /**
+   * Data dei tag di una notte registrata: il giorno del risveglio (fine della notte), come la
+   * wellness inviata e il coach. La notte tra il 16 e il 17 = il 17.
+   */
+  fun mattinaDaFine(fineMs: Long): LocalDate = java.time.Instant.ofEpochMilli(fineMs).atZone(java.time.ZoneId.systemDefault()).toLocalDate()
 
   /** Il blocco "tag" del configJson; null se non c'e' nessun tag. */
   fun json(giorni: Map<String, Set<String>>, sedute: Map<String, Set<String>>): JsonObject? {

@@ -553,4 +553,9 @@
     <string name="sis_libera_giorno">Libera un día (quita el descanso o mueve una sesión larga) o reduce las sesiones.</string>
     <string name="sis_liv_titolo">Nivel de entrenamiento</string>
     <string name="sis_liv_nota">Las sesiones de calidad se adaptan a tu nivel: como principiante, cerca de la mitad de las series; como avanzado, todas. Si no eliges, vale el nivel del gimnasio.</string>
+    <string name="sis_tn_titolo">Etiquetas de la noche</string>
+    <string name="sis_tn_regola">La cerveza de anoche va en la noche de esta mañana.</string>
+    <string name="sis_tn_domanda">¿Recalculo la valoración?</string>
+    <string name="sis_tn_ricalcola">Recalcular</string>
+    <string name="sis_tn_in_corso">Recalculando: el resumen llegará con la notificación del coach</string>
 </resources>

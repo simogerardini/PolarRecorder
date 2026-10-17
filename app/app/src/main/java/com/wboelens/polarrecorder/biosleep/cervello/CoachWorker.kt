@@ -64,6 +64,7 @@ class CoachWorker(context: Context, params: WorkerParameters) : CoroutineWorker(
     private const val K_DATA = "data"
     private const val K_TENTATIVO = "tentativo"
     private const val K_SENZA_ATTESA = "senza_attesa"
+    private const val K_FORZA = "forza_giornaliero"
     private const val RIPROVA_MIN = 15L
     private const val MAX_RIPROVE = 4
     private val ORA_RIPIEGO: LocalTime = LocalTime.of(10, 30)
@@ -71,13 +72,14 @@ class CoachWorker(context: Context, params: WorkerParameters) : CoroutineWorker(
 
     private fun nome(data: String) = "coach-$data"
 
-    private fun richiesta(data: String, tentativo: Int, senzaAttesa: Boolean, ritardoMs: Long) =
+    private fun richiesta(data: String, tentativo: Int, senzaAttesa: Boolean, ritardoMs: Long, forza: Boolean = false) =
         OneTimeWorkRequestBuilder<CoachWorker>()
             .setInputData(
                 Data.Builder()
                     .putString(K_DATA, data)
                     .putInt(K_TENTATIVO, tentativo)
                     .putBoolean(K_SENZA_ATTESA, senzaAttesa)
+                    .putBoolean(K_FORZA, forza)
                     .build())
             .setInitialDelay(ritardoMs.coerceAtLeast(0), TimeUnit.MILLISECONDS)
             .setConstraints(Constraints.Builder().setRequiredNetworkType(NetworkType.CONNECTED).build())
@@ -102,6 +104,16 @@ class CoachWorker(context: Context, params: WorkerParameters) : CoroutineWorker(
       if (inCorso) return
       wm.enqueueUniqueWork(nome(data), ExistingWorkPolicy.REPLACE, richiesta(data, 1, false, ritardoMs))
       CoachStato(context).attesaTagFinoMs = if (ritardoMs > 0) System.currentTimeMillis() + ritardoMs else 0L
+    }
+
+    /**
+     * "Ricalcolo la valutazione?" dopo un tag cambiato dalla scheda Notte: run giornaliero forzato
+     * di oggi (modo giornaliero, forza, senza attesa). Se il coach sta girando si accoda. Fuori dal
+     * main thread.
+     */
+    fun ricalcola(context: Context, oggi: String = LocalDate.now().toString()) {
+      WorkManager.getInstance(context)
+          .enqueueUniqueWork(nome(oggi), ExistingWorkPolicy.APPEND_OR_REPLACE, richiesta(oggi, 1, true, 0, forza = true))
     }
 
     /** Attesa dei tag del mattino dopo l'invio della notte (scelta B). */
@@ -142,6 +154,7 @@ class CoachWorker(context: Context, params: WorkerParameters) : CoroutineWorker(
     val data = inputData.getString(K_DATA) ?: return Result.success()
     val tentativo = inputData.getInt(K_TENTATIVO, 1)
     val senzaAttesa = inputData.getBoolean(K_SENZA_ATTESA, false)
+    val forza = inputData.getBoolean(K_FORZA, false)
     val ctx = applicationContext
     NotificheCoach.canali(ctx)
     try {
@@ -162,7 +175,8 @@ class CoachWorker(context: Context, params: WorkerParameters) : CoroutineWorker(
     }
     val config =
         ConfigCervello(
-            credenziali, Cervello.cartella(ctx).absolutePath, "auto", false, senzaAttesa,
+            credenziali, Cervello.cartella(ctx).absolutePath, if (forza) "giornaliero" else "auto", false, senzaAttesa,
+            forza = forza,
             profilo = ProfiloRepo.effettivo(ctx), checkin = Checkin.perCervello(ctx),
             tag = runCatching { TagDb.get(ctx).perCervello() }.getOrNull(),
             posizione = PosizioneTelefono.ultima(ctx),

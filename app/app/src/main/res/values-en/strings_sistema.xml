@@ -553,4 +553,9 @@
     <string name="sis_libera_giorno">Free up a day (remove the rest day or move a long session) or reduce the sessions.</string>
     <string name="sis_liv_titolo">Training level</string>
     <string name="sis_liv_nota">Quality sessions adapt to your level: about half the repeats as a beginner, all of them when advanced. If you don\'t choose, the gym level applies.</string>
+    <string name="sis_tn_titolo">Night tags</string>
+    <string name="sis_tn_regola">Last night\'s beer goes on this morning\'s night.</string>
+    <string name="sis_tn_domanda">Recalculate the assessment?</string>
+    <string name="sis_tn_ricalcola">Recalculate</string>
+    <string name="sis_tn_in_corso">Recalculating: the summary will arrive with the coach notification</string>
 </resources>

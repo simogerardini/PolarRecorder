@@ -115,6 +115,50 @@ fun TagSera() {
   }
 }
 
+/**
+ * Tag di una notte registrata (scheda Notte e storico). Data = giorno del risveglio. Si salvano a
+ * ogni tocco come i tag di giorno; dopo un cambio si propone di ricalcolare la valutazione di oggi
+ * (run giornaliero forzato del coach), perche' il tag cambia la baseline.
+ */
+@Composable
+fun TagNotte(fineNotteMs: Long, conTitolo: Boolean = true) {
+  val context = LocalContext.current.applicationContext
+  val data = remember(fineNotteMs) { Vocabolario.mattinaDaFine(fineNotteMs).toString() }
+  val scelti = rememberTagGiorno(data) ?: return
+  val scope = rememberCoroutineScope()
+  var cambiati by remember(data) { mutableStateOf(false) }
+  var avviato by remember(data) { mutableStateOf(false) }
+  val coach = remember { com.wboelens.polarrecorder.biosleep.cervello.ModalitaCoach.attivo(context) &&
+      !com.wboelens.polarrecorder.biosleep.demo.DemoParte3.attiva(context) }
+  Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
+    if (conTitolo) Text(tr("Tag della notte"), style = MaterialTheme.typography.titleSmall)
+    ChipTag(Vocabolario.NOTTE, scelti) { nuovi ->
+      scope.launch(Dispatchers.IO) { TagDb.get(context).impostaGiorno(data, nuovi) }
+      cambiati = true
+      avviato = false
+    }
+    Text(
+        tr("La birra di ieri sera va sulla notte di stamattina."),
+        style = MaterialTheme.typography.bodySmall,
+        color = MaterialTheme.colorScheme.onSurfaceVariant)
+    if (coach && cambiati && !avviato) {
+      Row(verticalAlignment = Alignment.CenterVertically) {
+        Text(tr("Ricalcolo la valutazione?"), Modifier.weight(1f), style = MaterialTheme.typography.bodyMedium)
+        androidx.compose.material3.TextButton(onClick = {
+          avviato = true
+          scope.launch(Dispatchers.IO) { com.wboelens.polarrecorder.biosleep.cervello.CoachWorker.ricalcola(context) }
+        }) { Text(tr("Ricalcola")) }
+      }
+    }
+    if (avviato) {
+      Text(
+          tr("Ricalcolo in corso: il riepilogo arriverà con la notifica del coach"),
+          style = MaterialTheme.typography.bodySmall,
+          color = MaterialTheme.colorScheme.onSurfaceVariant)
+    }
+  }
+}
+
 /** Riga nella schermata Oggi: i tag di oggi e il collegamento per modificarli. */
 @Composable
 fun RigaTagOggi(onApri: (String) -> Unit) {
