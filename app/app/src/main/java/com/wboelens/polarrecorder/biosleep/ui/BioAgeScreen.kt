@@ -1,5 +1,6 @@
 package com.wboelens.polarrecorder.biosleep.ui
 
+import com.wboelens.polarrecorder.biosleep.voce.AzioneVoceEta
 import com.wboelens.polarrecorder.biosleep.demo.DemoParte3
 import com.wboelens.polarrecorder.biosleep.lingua.tr
 import com.wboelens.polarrecorder.R
@@ -106,6 +107,10 @@ fun BioAgeScreen(onBack: () -> Unit) {
               }
             },
             actions = {
+              val prontaVoce = (data?.outcome as? BioAgeOutcome.Ready)?.takeIf { !editing }
+              AzioneVoceEta(
+                  prontaVoce?.result?.age?.let { (it as Number).toDouble() },
+                  prontaVoce?.result?.chronologicalAge?.let { (it as Number).toDouble() })
               // Parte 5: condivisione, solo con l'eta' pronta (non in taratura)
               val pronta = data?.outcome as? BioAgeOutcome.Ready
               if (pronta != null && !editing) {

@@ -1,5 +1,6 @@
 package com.wboelens.polarrecorder.biosleep.ui
 
+import com.wboelens.polarrecorder.biosleep.voce.AzioneVoceNotte
 import com.wboelens.polarrecorder.biosleep.lingua.tr
 import com.wboelens.polarrecorder.R
 import androidx.compose.ui.res.stringResource
@@ -123,6 +124,7 @@ fun NightDetailScreen(sessionId: Long, onBack: () -> Unit) {
               }
             },
             actions = {
+              AzioneVoceNotte((state as? LoadState.Ready<NightDetail>)?.data?.night)
               if (state is LoadState.Ready) {
                 IconButton(onClick = { askDelete = true }) {
                   Icon(Icons.Filled.Delete, contentDescription = tr("Elimina notte"))

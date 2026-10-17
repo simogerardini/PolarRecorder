@@ -1,5 +1,6 @@
 package com.wboelens.polarrecorder.biosleep.ui
 
+import com.wboelens.polarrecorder.biosleep.voce.SezioneVoce
 import com.wboelens.polarrecorder.biosleep.lingua.tr
 import com.wboelens.polarrecorder.R
 import androidx.compose.ui.res.stringResource
@@ -243,6 +244,10 @@ fun IntervalsSettingsScreen(
 
       HorizontalDivider()
       // Lingua delle sedute sul calendario e sull'orologio
+      SezioneVoce()
+
+      HorizontalDivider()
+
       SezioneLingua()
 
       HorizontalDivider()

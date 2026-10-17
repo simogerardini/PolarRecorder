@@ -559,4 +559,14 @@
     <string name="sis_tn_ricalcola">重新计算</string>
     <string name="sis_tn_in_corso">正在重新计算：摘要会随教练通知送达</string>
     <string name="sis_demo_non_disp">示例数据中不可用</string>
+    <string name="sis_vc_voce">语音</string>
+    <string name="sis_vc_femminile">女声</string>
+    <string name="sis_vc_maschile">男声</string>
+    <string name="sis_vc_disattivata">关闭</string>
+    <string name="sis_vc_ascolta">试听</string>
+    <string name="sis_vc_auto">自动朗读</string>
+    <string name="sis_vc_notti">夜间</string>
+    <string name="sis_vc_ripeti">再次朗读</string>
+    <string name="sis_vc_ferma">停止朗读</string>
+    <string name="sis_vc_nota">页面在首次打开新内容时朗读一次。扬声器按钮可再次朗读。</string>
 </resources>

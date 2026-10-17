@@ -1,5 +1,6 @@
 package com.wboelens.polarrecorder.biosleep.ui.allenamento
 
+import com.wboelens.polarrecorder.biosleep.voce.AzioneVoceOggi
 import androidx.compose.ui.platform.LocalContext
 import com.wboelens.polarrecorder.biosleep.demo.DemoParte3
 import com.wboelens.polarrecorder.biosleep.readiness.BioBaselineCalc
@@ -141,6 +142,7 @@ fun OggiScreen(
         TopAppBar(
             title = { Text(stringResource(R.string.oggi_oggi)) },
             actions = {
+              AzioneVoceOggi(coachAttivo())
               AzioneAggiorna()
               // Impostazioni di tutta l'app (Intervals.icu, coach, profilo atleta): dalla home
               IconButton(onClick = onApriImpostazioni) { Icon(Icons.Filled.Settings, tr("Impostazioni")) }

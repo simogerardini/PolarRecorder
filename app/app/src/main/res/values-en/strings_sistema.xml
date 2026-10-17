@@ -559,4 +559,14 @@
     <string name="sis_tn_ricalcola">Recalculate</string>
     <string name="sis_tn_in_corso">Recalculating: the summary will arrive with the coach notification</string>
     <string name="sis_demo_non_disp">Not available in the sample data</string>
+    <string name="sis_vc_voce">Voice</string>
+    <string name="sis_vc_femminile">Female</string>
+    <string name="sis_vc_maschile">Male</string>
+    <string name="sis_vc_disattivata">Off</string>
+    <string name="sis_vc_ascolta">Listen</string>
+    <string name="sis_vc_auto">Read automatically</string>
+    <string name="sis_vc_notti">Nights</string>
+    <string name="sis_vc_ripeti">Read aloud again</string>
+    <string name="sis_vc_ferma">Stop the voice</string>
+    <string name="sis_vc_nota">The page is read once, the first time it opens with new content. The speaker button repeats it.</string>
 </resources>
