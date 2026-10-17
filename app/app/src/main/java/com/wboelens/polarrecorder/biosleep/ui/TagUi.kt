@@ -152,10 +152,6 @@ fun TagNotte(fineNotteMs: Long, conTitolo: Boolean = true) {
           style = MaterialTheme.typography.bodySmall,
           color = MaterialTheme.colorScheme.onSurfaceVariant)
     }
-    Text(
-        tr("La birra di ieri sera va sulla notte di stamattina."),
-        style = MaterialTheme.typography.bodySmall,
-        color = MaterialTheme.colorScheme.onSurfaceVariant)
     if (coach && cambiati && !avviato) {
       Row(verticalAlignment = Alignment.CenterVertically) {
         Text(tr("Ricalcolo la valutazione?"), Modifier.weight(1f), style = MaterialTheme.typography.bodyMedium)
