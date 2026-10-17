@@ -343,7 +343,7 @@ class MainActivity : ComponentActivity() {
                   onStartNight = {
                     val intent =
                         Intent(this@MainActivity, RecordingService::class.java)
-                            .setAction(RecordingService.ACTION_START_NIGHT)
+                            .setAction(RecordingService.ACTION_START_NIGHT).putExtra(RecordingService.EXTRA_AVVIO_MANUALE, true)
                     ContextCompat.startForegroundService(this@MainActivity, intent)
                   },
                   onNightStopped = { navController.navigate("nights") },

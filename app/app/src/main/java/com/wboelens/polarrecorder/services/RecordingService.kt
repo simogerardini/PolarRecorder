@@ -33,6 +33,7 @@ import java.util.concurrent.ScheduledFuture
 import java.util.concurrent.TimeUnit
 import com.wboelens.polarrecorder.biosleep.BioSleepDataSaver
 import com.wboelens.polarrecorder.biosleep.hal.FasceGatt
+import com.wboelens.polarrecorder.voce.VoceNoctalix
 import com.wboelens.polarrecorder.biosleep.SleepDb
 import com.wboelens.polarrecorder.biosleep.auto.Habits
 import com.wboelens.polarrecorder.biosleep.finalize.NightFinalizeWorker
@@ -80,6 +81,8 @@ class RecordingService : Service() {
     const val EXTRA_DEVICE_IDS = "device_ids"
     // BioSleep: avvio della notte con un tocco (profilo salvato, nessuna schermata)
     const val ACTION_START_NIGHT = "com.wboelens.polarrecorder.START_NIGHT"
+    /** true solo dal pulsante "Avvia notte": l'avvio automatico non lo passa (niente voce). */
+    const val EXTRA_AVVIO_MANUALE = "avvio_manuale"
     // BioSleep: controllo dello stop automatico chiesto dall'allarme di riserva
     const val ACTION_CHECK_AUTOSTOP = "com.wboelens.polarrecorder.CHECK_AUTOSTOP"
     private const val AUTO_STOP_CHECK_S = 60L // timer del controllo, indipendente dai dati
@@ -254,7 +257,7 @@ class RecordingService : Service() {
         }
       }
       ACTION_STOP_RECORDING -> doStopRecording()
-      ACTION_START_NIGHT -> startNight()
+      ACTION_START_NIGHT -> startNight(manuale = intent.getBooleanExtra(EXTRA_AVVIO_MANUALE, false))
       ACTION_RESUME_NIGHT -> {
         AutoStopLog.write(this, "Ripresa della notte richiesta dal watchdog")
         startNight()
@@ -330,7 +333,7 @@ class RecordingService : Service() {
   // --- BioSleep: avvio con un tocco, profilo, stop automatico -------------------------------
 
   /** Prepara e avvia la notte con le impostazioni dell'ultima registrazione. */
-  private fun startNight() {
+  private fun startNight(manuale: Boolean = false) {
     if (orchestrator.recordingState.value.isRecording || nightStartJob?.isActive == true) return
     _avvioNotte.value = AvvioNotte.InCorso
     // Una notte non si ferma per una disconnessione momentanea: la fascia si ricollega da sola,
@@ -369,6 +372,9 @@ class RecordingService : Service() {
               doStartRecording(result.recordingName)
               if (!orchestrator.recordingState.value.isRecording) {
                 failNightStart("La registrazione non è partita, controlla l'app")
+              } else if (manuale) {
+                // Parte 10: solo per l'avvio a mano, e solo a registrazione davvero partita
+                runCatching { VoceNoctalix.annuncia(this@RecordingService, VoceNoctalix.Evento.REGISTRAZIONE_AVVIATA) }
               }
             }
             is NightStarter.Result.Failed -> failNightStart(result.reason)
