@@ -1,7 +1,6 @@
 package com.wboelens.polarrecorder.biosleep.voce
 
 import com.google.gson.JsonObject
-import com.google.gson.JsonParser
 import com.wboelens.polarrecorder.biosleep.cache.CacheRepo
 import com.wboelens.polarrecorder.biosleep.cache.Prontezza
 import com.wboelens.polarrecorder.biosleep.intervals.CampiWellness
@@ -47,39 +46,6 @@ object VoceDati {
   /** Seduta dal nome del coach ("BIKE · Soglia · 4x10min"): disciplina dalla sigla, minuti dalla durata. */
   fun seduta(nome: String?, minuti: Int?): SedutaVocale? =
       Disciplina.daSigla(nome?.substringBefore(" · ")?.substringBefore("·"))?.let { SedutaVocale(it, minuti?.takeIf { m -> m > 0 }) }
-
-  /** Campo "oggi" del riepilogo del coach: "RUN · Endurance Z2 (45min); BIKE · Endurance (45min)". */
-  fun seduteDaRiepilogo(oggi: String?): List<SedutaVocale> =
-      oggi.orEmpty().split(";").mapNotNull { pezzo ->
-        val p = pezzo.trim().takeIf { it.isNotEmpty() } ?: return@mapNotNull null
-        val minuti = Regex("""\((\d+)\s*min\)\s*$""").find(p)?.groupValues?.get(1)?.toIntOrNull()
-        seduta(p, minuti)
-      }
-
-  /**
-   * Codici da leggere nella pagina Coach, nell'ordine: dal riepilogo del cervello (messaggi di tipo
-   * decisione e motivo_decisione); senza file (es. demo) dalla sola decisione.
-   */
-  fun codiciCoach(json: String?, decisione: String?): List<String> {
-    val dalFile =
-        runCatching {
-              JsonParser.parseString(json ?: return@runCatching emptyList<String>()).asJsonObject.getAsJsonArray("messaggi")
-                  ?.mapNotNull { it.takeIf { e -> e.isJsonObject }?.asJsonObject }
-                  ?.filter { (it.get("tipo")?.asString ?: "") in setOf("decisione", "motivo_decisione") }
-                  ?.mapNotNull { it.get("codice")?.asString }
-                  .orEmpty()
-            }
-            .getOrDefault(emptyList())
-    if (dalFile.isNotEmpty()) return dalFile
-    return listOfNotNull(
-        when (decisione) {
-          "RISPETTA" -> "decisione_rispetta_piano"
-          "RIDUCI" -> "decisione_riduci"
-          "RECUPERO" -> "decisione_recupero"
-          "PUOI_SPINGERE", "SPINGI" -> "decisione_puoi_spingere"
-          else -> null
-        })
-  }
 
   /**
    * Pagina Oggi: (chiave del contenuto = data della notte piu' recente analizzata, dati vocali).

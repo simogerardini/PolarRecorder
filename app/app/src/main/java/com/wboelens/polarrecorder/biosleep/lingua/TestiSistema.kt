@@ -577,7 +577,6 @@ object TestiSistema {
       Voce("banda_rossa_min", "rossa"),
       Voce("ck_fatta", "Fatta"),
       Voce("ck_salva", "Salva"),
-      Voce("vc_notti", "Notti"),
       Voce("causa_minuti", "%s (%d')"),
       Voce("eta_app", "Età %s"),
       Voce("oggi", "Oggi"),

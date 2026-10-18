@@ -27,38 +27,21 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.compose.ui.platform.LocalLifecycleOwner
-import com.wboelens.polarrecorder.BuildConfig
-import com.wboelens.polarrecorder.R
-import com.wboelens.polarrecorder.biosleep.NightListItem
 import com.wboelens.polarrecorder.biosleep.cache.CacheRepo
-import com.wboelens.polarrecorder.biosleep.cervello.Cervello
 import com.wboelens.polarrecorder.biosleep.lingua.tr
-import com.wboelens.polarrecorder.biosleep.riepilogo.Riepilogo
-import com.wboelens.polarrecorder.biosleep.tag.Vocabolario
-import com.wboelens.polarrecorder.voce.DatiCoachVocale
-import com.wboelens.polarrecorder.voce.DatiEtaVocale
-import com.wboelens.polarrecorder.voce.DatiNotteVocale
 import com.wboelens.polarrecorder.voce.Elemento
-import com.wboelens.polarrecorder.voce.FrasarioCoach
-import com.wboelens.polarrecorder.voce.FrasarioEta
-import com.wboelens.polarrecorder.voce.FrasarioNotte
 import com.wboelens.polarrecorder.voce.FrasarioRiepilogo
 import com.wboelens.polarrecorder.voce.VoceNoctalix
-import java.io.File
 import java.time.LocalDate
-import kotlin.math.roundToInt
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
-private fun Any?.numero(): Double? = (this as? Number)?.toDouble()
-
 /**
- * Pulsante voce nella barra in alto + lettura alla prima apertura (Parte 10).
+ * Pulsante voce nella barra in alto + lettura alla prima apertura (Parte 10). Solo nella pagina Oggi.
  * - legge da sola solo se voce attiva, toggle della pagina acceso e contenuto mai letto
  *   (VoceNoctalix.leggiAllApertura);
  * - pulsante visibile solo con la voce attiva: altoparlante = ripeti, Stop = ferma;
@@ -105,72 +88,7 @@ fun AzioneVoceOggi(conSedute: Boolean) {
   AzioneVoce(VoceNoctalix.Pagina.OGGI, dati?.first, dati?.second)
 }
 
-/** Notti: la notte mostrata (data = giorno del risveglio), confronto HRV con la banda di quel giorno. */
-@Composable
-fun AzioneVoceNotte(night: NightListItem?) {
-  val ctx = LocalContext.current
-  val data = night?.let { Vocabolario.mattinaDaFine(it.summary.endMs) }
-  // (caricato, range): la lettura parte solo con il confronto pronto
-  val range by produceState<Pair<Boolean, Pair<Double, Double>?>>(false to null, data) {
-    value = true to data?.let { d -> withContext(Dispatchers.IO) { runCatching { CacheRepo.get(ctx).baseline(d).normalRangeMs }.getOrNull() } }
-  }
-  val elementi =
-      if (night == null || !range.first) null
-      else {
-        val s = night.summary
-        val st = night.stages
-        val rmssd = s.rmssd.numero()
-        FrasarioNotte.componi(
-            DatiNotteVocale(
-                sonnoMin = st?.tstMin.numero()?.roundToInt(),
-                profondoMin = st?.deepMin.numero()?.roundToInt(),
-                remMin = st?.remMin.numero()?.roundToInt(),
-                leggeroMin = st?.lightMin.numero()?.roundToInt(),
-                vegliaMin = st?.wakeMin.numero()?.roundToInt(),
-                hrvMs = rmssd?.roundToInt(),
-                hrvConfronto = VoceDati.confronto(rmssd, range.second),
-                fcMediaSonno = s.hrAvg.numero()?.roundToInt(),
-                fcRiposo = s.restingHr.numero()?.roundToInt(),
-            ))
-      }
-  AzioneVoce(VoceNoctalix.Pagina.NOTTI, data?.toString(), elementi)
-}
-
-/** Coach: decisione e motivo (codici del cervello), semaforo, sedute di oggi o riposo. */
-@Composable
-fun AzioneVoceCoach(r: Riepilogo?) {
-  val ctx = LocalContext.current
-  val codici by produceState<List<String>?>(null, r?.data) {
-    value = r?.let { rr ->
-      withContext(Dispatchers.IO) {
-        val f = File(Cervello.cartella(ctx), "riepilogo_${rr.data}.json")
-        VoceDati.codiciCoach(runCatching { f.takeIf { it.exists() }?.readText() }.getOrNull(), rr.decisione.codice)
-      }
-    }
-  }
-  val elementi =
-      r?.let { rr ->
-        codici?.let { c ->
-          val sedute = if (rr.settimanale) emptyList() else VoceDati.seduteDaRiepilogo(rr.oggi)
-          FrasarioCoach.componi(
-              DatiCoachVocale(
-                  codici = c,
-                  semaforo = VoceDati.semaforo(rr.biometria?.takeIf { it.ok == true }?.banda),
-                  sedute = sedute,
-                  giornoDiRiposo = !rr.settimanale && rr.oggi.isNullOrBlank()))
-        }
-      }
-  AzioneVoce(VoceNoctalix.Pagina.COACH, r?.data, elementi)
-}
-
-/** Eta': eta' NoctaliX e anagrafica arrotondate; chiave = giorno del calcolo. */
-@Composable
-fun AzioneVoceEta(eta: Double?, anagrafica: Double?) {
-  val elementi = eta?.let { FrasarioEta.componi(DatiEtaVocale(it.roundToInt(), anagrafica?.roundToInt())) }
-  AzioneVoce(VoceNoctalix.Pagina.ETA, eta?.let { LocalDate.now().toString() }, elementi)
-}
-
-/** Impostazioni: scelta della voce, anteprima, lettura automatica per pagina. */
+/** Impostazioni: scelta della voce, anteprima, lettura automatica della pagina Oggi. */
 @Composable
 fun SezioneVoce() {
   val ctx = LocalContext.current
@@ -198,24 +116,17 @@ fun SezioneVoce() {
         Spacer(Modifier.width(8.dp))
         Text(tr("Ascolta"))
       }
+      // la voce c'e' solo nella pagina Oggi: un solo interruttore
       Text(tr("Leggi in automatico"), style = MaterialTheme.typography.labelLarge)
-      val pagine =
-          listOf(
-              VoceNoctalix.Pagina.COACH to tr("Coach"),
-              VoceNoctalix.Pagina.NOTTI to tr("Notti"),
-              VoceNoctalix.Pagina.OGGI to tr("Oggi"),
-              VoceNoctalix.Pagina.ETA to stringResource(R.string.bio_age_eta, BuildConfig.APP_NAME))
-      for ((p, etichetta) in pagine) {
-        var acceso by remember(p) { mutableStateOf(VoceNoctalix.letturaAutomatica(ctx, p)) }
-        Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
-          Text(etichetta, Modifier.weight(1f))
-          Switch(
-              checked = acceso,
-              onCheckedChange = {
-                VoceNoctalix.impostaLetturaAutomatica(ctx, p, it)
-                acceso = it
-              })
-        }
+      var acceso by remember { mutableStateOf(VoceNoctalix.letturaAutomatica(ctx, VoceNoctalix.Pagina.OGGI)) }
+      Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
+        Text(tr("Oggi"), Modifier.weight(1f))
+        Switch(
+            checked = acceso,
+            onCheckedChange = {
+              VoceNoctalix.impostaLetturaAutomatica(ctx, VoceNoctalix.Pagina.OGGI, it)
+              acceso = it
+            })
       }
       Text(
           tr("La pagina viene letta una volta, alla prima apertura con un contenuto nuovo. Il pulsante con l'altoparlante la ripete."),

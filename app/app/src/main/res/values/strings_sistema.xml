@@ -565,7 +565,6 @@
     <string name="sis_vc_disattivata">Off</string>
     <string name="sis_vc_ascolta">Listen</string>
     <string name="sis_vc_auto">Read automatically</string>
-    <string name="sis_vc_notti">Nights</string>
     <string name="sis_vc_ripeti">Read aloud again</string>
     <string name="sis_vc_ferma">Stop the voice</string>
     <string name="sis_vc_nota">The page is read once, the first time it opens with new content. The speaker button repeats it.</string>

@@ -564,7 +564,6 @@
     <string name="sis_vc_disattivata">Disattivata</string>
     <string name="sis_vc_ascolta">Ascolta</string>
     <string name="sis_vc_auto">Leggi in automatico</string>
-    <string name="sis_vc_notti">Notti</string>
     <string name="sis_vc_ripeti">Ripeti a voce</string>
     <string name="sis_vc_ferma">Ferma la voce</string>
     <string name="sis_vc_nota">La pagina viene letta una volta, alla prima apertura con un contenuto nuovo. Il pulsante con l\'altoparlante la ripete.</string>

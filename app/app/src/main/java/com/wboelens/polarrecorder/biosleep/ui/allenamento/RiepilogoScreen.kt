@@ -1,6 +1,5 @@
 package com.wboelens.polarrecorder.biosleep.ui.allenamento
 
-import com.wboelens.polarrecorder.biosleep.voce.AzioneVoceCoach
 import com.wboelens.polarrecorder.biosleep.lingua.tr
 import com.wboelens.polarrecorder.R
 import androidx.compose.ui.res.stringResource
@@ -206,7 +205,6 @@ fun RiepilogoScreen(data: String, onBack: () -> Unit, onApriSeduta: (String) -> 
         TopAppBar(
             title = { Text(stringResource(R.string.riepilogo_coach, (DateIt.breve(LocalDate.parse(data))).toString())) },
             navigationIcon = { IconButton(onClick = onBack) { Icon(Icons.AutoMirrored.Filled.ArrowBack, tr("Indietro")) } },
-            actions = { AzioneVoceCoach(r) },
         )
       },
   ) { padding ->
