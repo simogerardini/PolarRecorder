@@ -33,6 +33,7 @@ data class DatiRiepilogoVocale(
     val semaforo: Semaforo? = null,
     val sedute: List<SedutaVocale> = emptyList(),
     val giornoDiRiposo: Boolean = false,
+    val ora: Int? = null,            // 0-23; null = ora attuale del telefono
 )
 
 /** Mattoni comuni a tutte le pagine. */
@@ -120,7 +121,8 @@ object FrasarioRiepilogo {
 
     fun componi(d: DatiRiepilogoVocale): List<Elemento> {
         val e = mutableListOf<Elemento>()
-        e += Elemento.Seg("saluto"); e += Elemento.Pausa(Mattoni.PUNTO)
+        e += Elemento.Seg(saluto(d.ora ?: java.util.Calendar.getInstance().get(java.util.Calendar.HOUR_OF_DAY)))
+        e += Elemento.Pausa(Mattoni.PUNTO)
         d.sonnoMin?.takeIf { it > 0 }?.let { sonno ->
             e += Elemento.Seg("sonno_pre"); Mattoni.durata(e, sonno)
             d.profondoMin?.takeIf { it > 0 }?.let { p ->
@@ -134,5 +136,13 @@ object FrasarioRiepilogo {
         Mattoni.semaforo(e, d.semaforo)
         Mattoni.sedute(e, d.sedute, d.giornoDiRiposo)
         return e
+    }
+
+    /** 5-12 Buongiorno, 12-18 Buon pomeriggio, 18-22 Buonasera, 22-5 Buonanotte. */
+    fun saluto(ora: Int): String = when (ora) {
+        in 5..11 -> "saluto_mattina"
+        in 12..17 -> "saluto_pomeriggio"
+        in 18..21 -> "saluto_sera"
+        else -> "saluto_notte"
     }
 }
