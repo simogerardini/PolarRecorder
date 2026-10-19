@@ -599,6 +599,13 @@ class BioSleepDataSaver(
       }
       // Fase 7: fasi del sonno (HRV, piu' accelerometro se registrato; solo FC se mancano gli RR)
       val stages = stageSafely(result, db.loadAcc(sessionId), soloFc = senzaHrv)
+      // Precisione della biometria (cervello 2026.10.19): sul solo sonno; senza HRV niente
+      // rMSSD tarda e respiro (RR non affidabili). Un errore qui non ferma la notte.
+      val prec = runCatching { PrecisioneNotte.calcola(result, stages?.sleepOnsetMs, stages?.sleepEndMs, senzaHrv) }.getOrNull()
+      if (prec != null) {
+        result = result.copy(summary = result.summary.copy(
+            rmssdLate = prec.rmssdLate, hrNadirPct = prec.hrNadirPct, respRate = prec.respRate))
+      }
       db.saveNight(result, stages, System.currentTimeMillis())
       if (isNewNight) newNightReady.value = sessionId
       if (!isNewNight) {

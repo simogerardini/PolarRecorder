@@ -31,6 +31,10 @@ object IntervalsClient {
   internal const val BASE_URL = "https://intervals.icu/api/v1/athlete/0"
   private const val CONNECT_TIMEOUT_MS = 15_000
   private const val READ_TIMEOUT_MS = 20_000
+  /** Sotto questa affidabilita' della notte i valori di precisione non si scrivono. */
+  private const val SOGLIA_QUALITA = 80.0
+  /** Campi nuovi: se Intervals non li ha ancora creati la notte resta inviata (non e' un errore). */
+  private val CAMPI_FACOLTATIVI = setOf(CampiWellness.F_RMSSD_LATE, CampiWellness.F_HR_NADIR, CampiWellness.F_RESP)
 
 
   /** Codice campo -> descrizione, per la schermata delle impostazioni. */
@@ -48,6 +52,9 @@ object IntervalsClient {
           CampiWellness.F_REM_MIN to "Sonno REM stimato (min)",
           CampiWellness.F_LIGHT_MIN to "Sonno leggero stimato (min)",
           CampiWellness.F_AWAKE_MIN to "Veglia dopo l'addormentamento (min)",
+          CampiWellness.F_RMSSD_LATE to "rMSSD seconda metà del sonno (ms)",
+          CampiWellness.F_HR_NADIR to "Minimo della FC nel sonno (% della durata)",
+          CampiWellness.F_RESP to "Frequenza respiratoria nel sonno (respiri/min)",
       )
 
   /** La notte appartiene al giorno del risveglio, come per Oura e Garmin. */
@@ -70,6 +77,12 @@ object IntervalsClient {
         s.qualityPct?.let { put(CampiWellness.F_QUALITY, round(it, 1)) }
         s.rmssd?.let { put(CampiWellness.F_RMSSD, round(it, 1)) }
         s.sdnn?.let { put(CampiWellness.F_SDNN, round(it, 1)) }
+        // Precisione (cervello 2026.10.19): solo con la notte sopra la soglia di qualita'
+        if ((s.qualityPct ?: 0.0) >= SOGLIA_QUALITA) {
+          s.rmssdLate?.let { put(CampiWellness.F_RMSSD_LATE, round(it, 1)) }
+          s.hrNadirPct?.let { put(CampiWellness.F_HR_NADIR, round(it, 1)) }
+          s.respRate?.let { put(CampiWellness.F_RESP, round(it, 1)) }
+        }
       }
 
   /** Invia il riepilogo di una notte nei campi personalizzati del giorno del risveglio. */
@@ -89,7 +102,7 @@ object IntervalsClient {
     val missing =
         try {
           val saved = JSONObject(text)
-          body.keys().asSequence().filter { !saved.has(it) || saved.isNull(it) }.toList()
+          body.keys().asSequence().filter { (!saved.has(it) || saved.isNull(it)) && it !in CAMPI_FACOLTATIVI }.toList()
         } catch (e: JSONException) {
           emptyList()
         }

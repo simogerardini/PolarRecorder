@@ -59,7 +59,7 @@ class SleepDb private constructor(context: Context) :
 
   companion object {
     private const val DB_NAME = "biosleep.db"
-    private const val DB_VERSION = 7
+    private const val DB_VERSION = 8
 
     @Volatile private var instance: SleepDb? = null
 
@@ -112,10 +112,18 @@ class SleepDb private constructor(context: Context) :
     addStagingSchema(db)
     addFeaturesTable(db)
     addQualityColumn(db)
+    addPrecisioneColumns(db)
   }
 
   private fun addQualityColumn(db: SQLiteDatabase) {
     db.execSQL("ALTER TABLE nights ADD COLUMN quality_pct REAL")
+  }
+
+  /** v8: precisione della biometria (rMSSD tarda, minimo della FC, respiro). */
+  private fun addPrecisioneColumns(db: SQLiteDatabase) {
+    for (c in listOf("rmssd_late REAL", "hr_nadir_pct REAL", "resp_rate REAL")) {
+      db.execSQL("ALTER TABLE nights ADD COLUMN $c")
+    }
   }
 
   /** Aggiorna un database gia' esistente sul telefono senza perdere i dati. */
@@ -134,6 +142,8 @@ class SleepDb private constructor(context: Context) :
     if (oldVersion < 6) addFeaturesTable(db)
     // v7: indice di affidabilita' della notte (NoctalixQuality)
     if (oldVersion < 7) addQualityColumn(db)
+    // v8: precisione della biometria
+    if (oldVersion < 8) addPrecisioneColumns(db)
   }
 
   private fun addFeaturesTable(db: SQLiteDatabase) {
@@ -463,6 +473,9 @@ class SleepDb private constructor(context: Context) :
         put("windows_ok", s.windowsOk)
         put("windows_total", s.windowsTotal)
         put("quality_pct", s.qualityPct)
+        put("rmssd_late", s.rmssdLate)
+        put("hr_nadir_pct", s.hrNadirPct)
+        put("resp_rate", s.respRate)
         put("analyzed_at", analyzedAt)
         syncedAt?.let { put("intervals_synced_at", it) }
         syncStatus?.let { put("intervals_status", it) }
@@ -550,7 +563,8 @@ class SleepDb private constructor(context: Context) :
          n.rmssd, n.sdnn, n.pnn50, n.windows_ok, n.windows_total,
          n.intervals_synced_at, n.intervals_status,
          n.hypno_start_ms, n.hypnogram, n.sleep_onset_ms, n.sleep_end_ms, n.tst_min,
-         n.deep_min, n.light_min, n.rem_min, n.wake_min, n.staging_mode, n.quality_pct"""
+         n.deep_min, n.light_min, n.rem_min, n.wake_min, n.staging_mode, n.quality_pct,
+         n.rmssd_late, n.hr_nadir_pct, n.resp_rate"""
 
   private fun Cursor.doubleOrNull(i: Int): Double? = if (isNull(i)) null else getDouble(i)
 
@@ -577,6 +591,9 @@ class SleepDb private constructor(context: Context) :
                   windowsOk = getInt(15),
                   windowsTotal = getInt(16),
                   qualityPct = doubleOrNull(29),
+                  rmssdLate = doubleOrNull(30),
+                  hrNadirPct = doubleOrNull(31),
+                  respRate = doubleOrNull(32),
               ),
           syncedAt = if (isNull(17)) null else getLong(17),
           syncStatus = if (isNull(18)) null else getString(18),

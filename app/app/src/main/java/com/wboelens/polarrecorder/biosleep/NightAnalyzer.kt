@@ -38,6 +38,11 @@ data class NightSummary(
      * dati su 8 = circa 87%). Inviata a Intervals.icu come NoctalixQuality.
      */
     val qualityPct: Double? = null,
+    /** Precisione (cervello 2026.10.19): rMSSD della seconda meta' del sonno (ms), posizione del
+     *  minimo della FC nel sonno (%), respiri al minuto. null = non calcolabile. */
+    val rmssdLate: Double? = null,
+    val hrNadirPct: Double? = null,
+    val respRate: Double? = null,
 )
 
 /** Battiti dopo la pulizia: tempo di fine (ms), intervallo NN (NaN = scartato), esito. */
