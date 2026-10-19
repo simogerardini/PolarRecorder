@@ -17,6 +17,7 @@ config (JSON):
                   vocabolario in coach_settimanale.TAG_GIORNO / TAG_SEDUTA
   lingua          facoltativo: "it"|"en"|"es"|"zh" (sedute sul calendario; zh -> en)
   checkin         facoltativo: {"<external_id>": {"stato", "rpe", "minuti", "data", "tag"}}, 28 giorni
+  notti           facoltativo: {"YYYY-MM-DD": {"inizio": "HH:MM"}} inizio del sonno (tag automatici)
   disponibilita_date  facoltativo: {"YYYY-MM-DD": minuti} dal "+" del calendario
                   (0 = giorno non disponibile; vince sulla settimana tipo)
   posizione       facoltativo: {"lat", "lon"} dal telefono (meteo per i giorni caldi;
@@ -51,7 +52,7 @@ from marchio import NOME_APP
 import campi
 import messaggi   # 07/10/2026 (punto 13a): codici dei messaggi per l'app
 
-VERSIONE = "2026.10.19-ferie-in-corso"   # anche nel LEGGIMI del pacchetto
+VERSIONE = "2026.10.19-precisione1"   # anche nel LEGGIMI del pacchetto
 import contextlib, importlib, io, json, os, re, sys, traceback
 
 # 09/10/2026: il cervello non usa piu' GitHub ne' Telegram; le variabili si tolgono comunque
@@ -783,8 +784,8 @@ def _adesso(cfg):
 
 def _carica_moduli():
     global cs
-    import sedute, biometria, carico, soglie, palestra, caldo, detp, traduzioni_palestra, traduzioni, degradato, nomi, checkin, avanzate, coach_settimanale
-    for m in (sedute, biometria, carico, soglie, palestra, caldo, detp, traduzioni_palestra, traduzioni, degradato, nomi, checkin, avanzate, coach_settimanale):
+    import sedute, biometria, carico, soglie, palestra, caldo, detp, traduzioni_palestra, traduzioni, degradato, nomi, checkin, avanzate, tag_auto, coach_settimanale
+    for m in (sedute, biometria, carico, soglie, palestra, caldo, detp, traduzioni_palestra, traduzioni, degradato, nomi, checkin, avanzate, tag_auto, coach_settimanale):
         importlib.reload(m)
     cs = coach_settimanale
     return sedute
@@ -796,7 +797,7 @@ def _blocchi(oggi, ore_target):
     lun = cs.lunedi_di(oggi)
     dom = (cs._dt(lun) + cs.timedelta(days=6)).strftime("%Y-%m-%d")
     wellness60 = cs.get_wellness(60)
-    serie, _ = cs.storia_biometrica(cs.get_wellness(90), cs.TAG_GIORNI)   # 11/10: 90 gg per l'archivio
+    serie, _ = cs.storia_biometrica(cs.get_wellness(90), cs.tag_baseline())   # 11/10: 90 gg per l'archivio
     baseline = cs.calc_baseline_hrv(serie, oggi, archivio=cs.ARCHIVIO_ESTERNO)
     pos = cs.posizione_ciclo(lun, cs.get_races(), pause=cs.pause_recenti(lun))
     mod = cs.modulazione_biometrica(baseline, cs.stato_forma(wellness60), pos["fase"])
@@ -966,6 +967,18 @@ def esegui_app(config_json):
             cs.CHECKIN = ck.leggi(cfg.get("checkin"))
             tag_ck, cs.CHECKIN_PSEUDO = ck.tag_sedute(cs.CHECKIN)
             cs.TAG_SEDUTE = dict(cs.TAG_SEDUTE, **tag_ck)
+            # 19/10/2026: tag automatici (notte tropicale, viaggio, sonno tardivo) SOLO per la
+            # baseline biometrica; l'app li mostra come proposte (riepilogo "tag_automatici")
+            import tag_auto
+            try:
+                st_auto = cs.carica_stato()
+                tag_auto_proposte = tag_auto.aggiorna(st_auto, cs.now_local().strftime("%Y-%m-%d"),
+                                                      cfg.get("fuso"), cfg.get("posizione"), cfg.get("notti"))
+                cs.salva_stato(st_auto)
+                cs.TAG_BASELINE = tag_auto.tag_per_baseline(cs.TAG_GIORNI, st_auto)
+            except Exception as e:
+                print(f"  ⚠️ tag automatici non calcolati: {type(e).__name__}: {e}")
+                tag_auto_proposte = []
             # Il riepilogo vive nell'app (riepilogo_<data>.json): nessuna NOTE di piano sul
             # calendario di Intervals.icu (coach silenzioso, decisione di Simone).
             cs.scrivi_nota = lambda *a, **k: None
@@ -1058,6 +1071,7 @@ def esegui_app(config_json):
                     if tag_scartati:
                         righe.append("tag sconosciuti ignorati: " + ", ".join(sorted(set(tag_scartati))))
                     rie["avvisi"] = "\n".join(x for x in [rie.get("avvisi") or ""] + righe if x)
+                rie["tag_automatici"] = tag_auto_proposte     # 19/10/2026: proposte da confermare
                 if cs.CHECKIN:   # 10/10/2026: check-in degli ultimi 7 giorni
                     import checkin as ck
                     rie["checkin"] = ck.riepilogo(cs.CHECKIN, cs.now_local().strftime("%Y-%m-%d"))

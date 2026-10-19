@@ -498,6 +498,12 @@ def storia_biometrica(wellness, tag_giorni=None):
 
 
 ARCHIVIO_ESTERNO = None
+# 19/10/2026: tag di giorno + tag automatici, solo per la baseline (impostati dal cervello)
+TAG_BASELINE = None
+
+
+def tag_baseline():
+    return TAG_BASELINE if TAG_BASELINE is not None else TAG_GIORNI
 
 
 def archivio_esterno(wellness, tag_giorni=None):
@@ -3515,7 +3521,7 @@ def esegui(lunedi, dry=False, solo_futuro=True, pre_lock=None, senza_attesa=Fals
     print(f"\n═══ COACH SETTIMANALE — settimana del {lunedi} ═══")
     races = get_races()
     print(f"  Gare a calendario: {len(races)}")
-    oura_hist, fonte_bio = storia_biometrica(get_wellness(90), TAG_GIORNI)
+    oura_hist, fonte_bio = storia_biometrica(get_wellness(90), tag_baseline())
     print(f"  Biometria: {len(oura_hist)} notti ({fonte_bio})")
     wellness = get_wellness(42)
     activities = get_activities(42)
@@ -3631,7 +3637,7 @@ def esegui_giornaliero(dry=False, force=False, pre_lock=None):
     oggi = now_local().strftime("%Y-%m-%d")
     lunedi = lunedi_di(oggi)
     races = get_races()
-    oura_hist, _fonte_bio = storia_biometrica(get_wellness(90), TAG_GIORNI)
+    oura_hist, _fonte_bio = storia_biometrica(get_wellness(90), tag_baseline())
     wellness = get_wellness(42)
     activities = get_activities(42)
     pos = posizione_ciclo(lunedi, races, pause=pause_recenti(lunedi))
