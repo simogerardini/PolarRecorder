@@ -135,6 +135,9 @@ data class ProfiloAtleta(
      * null = non scelto: non si manda e il cervello usa quello della palestra.
      */
     val livello: String? = null,
+    /** Ciclo mestruale (facoltativo): conta solo se attivo; date di inizio "YYYY-MM-DD". */
+    val cicloAttivo: Boolean = false,
+    val cicloInizi: List<String> = emptyList(),
 ) {
   /** Il blocco "profilo" del configJson (contiene sempre almeno la settimana tipo). */
   fun json(): JsonObject {
@@ -151,6 +154,13 @@ data class ProfiloAtleta(
       add("detp", detp.json())
       addProperty("stryd", stryd)
       livello?.let { addProperty("livello", it) }
+      // dato sanitario locale: solo al cervello sul telefono, mai su Intervals.icu
+      if (cicloAttivo) {
+        add("ciclo", JsonObject().apply {
+          addProperty("attivo", true)
+          add("inizi", com.google.gson.JsonArray().apply { Ciclo.recenti(cicloInizi).forEach { add(it) } })
+        })
+      }
     }
   }
 
@@ -223,6 +233,8 @@ class ProfiloStore(context: Context) {
           detp = Detp(core2 = prefs.getBoolean("core2", false), detp = prefs.getBoolean("detp", false)),
           stryd = prefs.getBoolean("stryd", false),
           livello = prefs.getString("livello_atleta", null),
+          cicloAttivo = prefs.getBoolean("ciclo_attivo", false),
+          cicloInizi = prefs.getStringSet("ciclo_inizi", emptySet()).orEmpty().sorted(),
       )
 
   fun salva(p: ProfiloAtleta) {
@@ -245,6 +257,8 @@ class ProfiloStore(context: Context) {
       putBoolean("detp", p.detp.attivo)
       putBoolean("stryd", p.stryd)
       if (p.livello != null) putString("livello_atleta", p.livello) else remove("livello_atleta")
+      putBoolean("ciclo_attivo", p.cicloAttivo)
+      putStringSet("ciclo_inizi", p.cicloInizi.toSet())
     }.apply()
   }
 }

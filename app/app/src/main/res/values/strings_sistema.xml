@@ -575,4 +575,10 @@
     <string name="sis_ta_viaggio" formatted="true">Time zone changed: from %1$s to %2$s</string>
     <string name="sis_ta_tardivo" formatted="true">Sleep started %1$s minutes later than usual</string>
     <string name="sis_resp_consiglio">It often comes before an infection: if you feel unwell, add the illness tag.</string>
+    <string name="sis_ci_titolo">Menstrual cycle</string>
+    <string name="sis_ci_considera">Consider the cycle in the assessment</string>
+    <string name="sis_ci_aggiungi">Add start date</string>
+    <string name="sis_ci_nessuna">No dates entered</string>
+    <string name="sis_ci_rimuovi">Remove</string>
+    <string name="sis_ci_nota">Enter the first day of each period. The 7 days before it don\'t count towards the HRV baseline. It stays on the phone: it is not sent to Intervals.icu.</string>
 </resources>

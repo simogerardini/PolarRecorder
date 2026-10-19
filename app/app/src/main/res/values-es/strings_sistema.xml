@@ -575,4 +575,10 @@
     <string name="sis_ta_viaggio" formatted="true">Zona horaria cambiada: de %1$s a %2$s</string>
     <string name="sis_ta_tardivo" formatted="true">El sueño empezó %1$s minutos más tarde de lo habitual</string>
     <string name="sis_resp_consiglio">A menudo precede a una infección: si te encuentras mal, pon la etiqueta enfermedad.</string>
+    <string name="sis_ci_titolo">Ciclo menstrual</string>
+    <string name="sis_ci_considera">Tener en cuenta el ciclo en la valoración</string>
+    <string name="sis_ci_aggiungi">Añadir inicio</string>
+    <string name="sis_ci_nessuna">Ninguna fecha introducida</string>
+    <string name="sis_ci_rimuovi">Quitar</string>
+    <string name="sis_ci_nota">Introduce el primer día de cada menstruación. Los 7 días anteriores no cuentan para la línea base del HRV. Se queda en el teléfono: no se envía a Intervals.icu.</string>
 </resources>

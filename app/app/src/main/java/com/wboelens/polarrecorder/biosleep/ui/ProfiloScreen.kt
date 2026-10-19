@@ -123,6 +123,8 @@ fun ProfiloScreen(onBack: () -> Unit, onApriGare: () -> Unit = {}) {
   var detp by remember { mutableStateOf(iniziale.detp.attivo) }
   var stryd by remember { mutableStateOf(iniziale.stryd) }
   var livelloAtleta by remember { mutableStateOf(iniziale.livello) }
+  var cicloAttivo by remember { mutableStateOf(iniziale.cicloAttivo) }
+  var cicloInizi by remember { mutableStateOf(iniziale.cicloInizi) }
   var strydSalvato by remember { mutableStateOf(iniziale.stryd) }
   val chiediPosizione =
       rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission()) { ok ->
@@ -165,7 +167,9 @@ fun ProfiloScreen(onBack: () -> Unit, onApriGare: () -> Unit = {}) {
           caldo = Caldo(converti, oraFeriale, oraWeekend),
           detp = Detp(core2, detp),
           stryd = stryd,
-          livello = livelloAtleta)
+          livello = livelloAtleta,
+          cicloAttivo = cicloAttivo,
+          cicloInizi = cicloInizi)
 
   Scaffold(
       topBar = {
@@ -197,6 +201,9 @@ fun ProfiloScreen(onBack: () -> Unit, onApriGare: () -> Unit = {}) {
             FilterChip(selected = mostrato == k, onClick = { livelloAtleta = k; esito = null }, label = { Text(tr(etichetta)) })
       }
       Nota(tr("Le sedute di qualità si adattano al tuo livello: da principiante circa metà delle ripetute, da avanzato tutte. Se non scegli, vale il livello della palestra."))
+
+      // cervello 2026.10.19-precisione3: ciclo mestruale facoltativo (fase luteale fuori dalla baseline)
+      SezioneCiclo(cicloAttivo, cicloInizi, { cicloAttivo = it; esito = null }, { cicloInizi = it; esito = null })
 
       Text(stringResource(R.string.profilo_frequenza_cardiaca), style = MaterialTheme.typography.titleSmall)
       CampoNumero(fcMax, { fcMax = it; esito = null }, "FC massima (bpm)", errFcMax)

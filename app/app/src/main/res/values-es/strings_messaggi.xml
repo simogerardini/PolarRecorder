@@ -18,6 +18,9 @@
     <string name="msg_dato_biometrico_vecchio" formatted="true">último dato biométrico de hace %1$s días</string>
     <string name="msg_taratura_biometria" formatted="true">biometría en calibración: %1$s noches %2$s válidas de %3$s</string>
     <string name="msg_notte_esclusa_qualita" formatted="true">noche del %1$s excluida por calidad: decide la banda de los días anteriores</string>
+    <string name="msg_efficienza_in_calo" formatted="true">eficiencia aeróbica en descenso en %1$s: %2$s%% en las últimas 2 semanas</string>
+    <string name="msg_fatica_percepita_in_aumento" formatted="true">esfuerzo percibido en aumento: la misma carga cuesta un %1$s%% más de esfuerzo</string>
+    <string name="msg_fase_luteale">fase lútea: se espera un HRV más bajo y no afecta a la línea base</string>
     <string name="msg_respiro_in_aumento" formatted="true">frecuencia respiratoria en aumento: media de 3 noches %1$s rpm frente a %2$s de las 14 anteriores (+%3$s)</string>
     <string name="msg_banda_provvisoria" formatted="true">banda provisional: nivel a partir de %1$s noches %2$s de %3$s, variabilidad a partir de %4$s noches del historial de Intervals.icu</string>
     <string name="msg_motivo_provvisoria_segue_piano">banda verde provisional: se sigue el plan</string>

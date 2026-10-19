@@ -45,7 +45,13 @@ class CacheRepo(
 
     fun get(context: Context): CacheRepo {
       val tag = TagDb.get(context)
-      return CacheRepo(CacheDb.get(context), { da, a -> tag.giorni(da, a) }, { da, a -> NottiLocali.righe(context.applicationContext, da, a) })
+      // ciclo (facoltativo): i giorni luteali escono dalla baseline come nel cervello
+      val profilo = runCatching { com.wboelens.polarrecorder.biosleep.cervello.ProfiloStore(context).leggi() }.getOrNull()
+      val inizi = profilo?.takeIf { it.cicloAttivo }?.cicloInizi.orEmpty()
+      return CacheRepo(
+          CacheDb.get(context),
+          { da, a -> com.wboelens.polarrecorder.biosleep.cervello.Ciclo.conLuteali(tag.giorni(da, a), inizi, da, a) },
+          { da, a -> NottiLocali.righe(context.applicationContext, da, a) })
     }
   }
 

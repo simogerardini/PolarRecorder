@@ -17,7 +17,7 @@ class TagTest {
     assertTrue("infortunio:caviglia" in Vocabolario.GIORNO)
     assertTrue("dolore:spalla" in Vocabolario.SEDUTA)
     // ogni tag confondente della baseline e' un tag di giorno dell'app
-    assertTrue(Vocabolario.GIORNO.containsAll(BioBaselineCalc.TAG_CONFONDENTI))
+    assertTrue(Vocabolario.GIORNO.containsAll(BioBaselineCalc.TAG_CONFONDENTI - "luteale")) // luteale: tag interno del cervello
     assertEquals("Infortunio — ginocchio", Vocabolario.etichetta("infortunio:ginocchio"))
   }
 

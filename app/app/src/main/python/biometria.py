@@ -280,7 +280,8 @@ def zona_forma_attesa(fase):
 # tag Oura, per cui "malattia", "altitudine", "sonno_disturbato" e "caffeina_tardi" non
 # venivano riconosciuti). La copia Kotlin nell'app usa lo stesso elenco.
 TAG_CONFONDENTI = ("alcol", "cena_tardiva", "caffeina_tardi", "stress", "viaggio",
-                   "malattia", "sonno_disturbato", "caldo", "altitudine")
+                   "malattia", "sonno_disturbato", "caldo", "altitudine",
+                   "luteale")   # 19/10/2026: fase luteale tardiva (ciclo, facoltativo)
 _BASELINE_TAG_CONFONDENTI = TAG_CONFONDENTI
 
 def _bio_media_sd(vals):

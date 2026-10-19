@@ -64,7 +64,8 @@ object BioBaselineCalc {
    * dei tag Oura). Il test di parita' verifica che l'elenco coincida con quello del cervello.
    */
   val TAG_CONFONDENTI =
-      setOf("alcol", "cena_tardiva", "caffeina_tardi", "stress", "viaggio", "malattia", "sonno_disturbato", "caldo", "altitudine")
+      setOf("alcol", "cena_tardiva", "caffeina_tardi", "stress", "viaggio", "malattia", "sonno_disturbato", "caldo", "altitudine",
+          "luteale") // 19/10/2026: fase luteale tardiva (ciclo, facoltativo), tag interno del cervello
 
   // 11/10/2026 banda provvisoria: con 5-13 notti NoctaliX e un archivio esterno valido (campi
   // standard hrv di Intervals.icu) il LIVELLO viene dalle notti NoctaliX, dall'archivio solo la

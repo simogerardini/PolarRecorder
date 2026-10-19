@@ -575,4 +575,10 @@
     <string name="sis_ta_viaggio" formatted="true">时区已更改：从 %1$s 到 %2$s</string>
     <string name="sis_ta_tardivo" formatted="true">入睡比平时晚 %1$s 分钟</string>
     <string name="sis_resp_consiglio">这常常是感染的前兆：如果感觉不适，请添加“生病”标签。</string>
+    <string name="sis_ci_titolo">月经周期</string>
+    <string name="sis_ci_considera">在评估中考虑月经周期</string>
+    <string name="sis_ci_aggiungi">添加开始日期</string>
+    <string name="sis_ci_nessuna">尚未添加日期</string>
+    <string name="sis_ci_rimuovi">删除</string>
+    <string name="sis_ci_nota">输入每次月经的第一天。之前 7 天不计入 HRV 基线。数据只保存在手机上，不会发送到 Intervals.icu。</string>
 </resources>

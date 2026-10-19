@@ -13,7 +13,7 @@ class TagNotteTest {
   fun confondentiPerPrimi() {
     val conf = listOf("alcol", "cena_tardiva", "caffeina_tardi", "stress", "viaggio", "malattia", "sonno_disturbato", "caldo", "altitudine")
     assertEquals(conf, Vocabolario.NOTTE.take(9))
-    assertEquals(BioBaselineCalc.TAG_CONFONDENTI.toSet(), conf.toSet(), "gli stessi della baseline")
+    assertEquals(BioBaselineCalc.TAG_CONFONDENTI.toSet() - "luteale", conf.toSet(), "gli stessi della baseline (luteale: tag interno)")
     assertEquals(Vocabolario.GIORNO.toSet(), Vocabolario.NOTTE.toSet(), "stesso vocabolario dei tag di giorno")
     assertEquals(Vocabolario.NOTTE.size, Vocabolario.NOTTE.toSet().size)
   }

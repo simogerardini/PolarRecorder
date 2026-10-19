@@ -53,7 +53,7 @@ from marchio import NOME_APP
 import campi
 import messaggi   # 07/10/2026 (punto 13a): codici dei messaggi per l'app
 
-VERSIONE = "2026.10.19-respiro"   # anche nel LEGGIMI del pacchetto
+VERSIONE = "2026.10.19-precisione3b"   # anche nel LEGGIMI del pacchetto
 import contextlib, importlib, io, json, os, re, sys, traceback
 
 # 09/10/2026: il cervello non usa piu' GitHub ne' Telegram; le variabili si tolgono comunque
@@ -785,8 +785,8 @@ def _adesso(cfg):
 
 def _carica_moduli():
     global cs
-    import sedute, biometria, carico, soglie, palestra, caldo, detp, traduzioni_palestra, traduzioni, degradato, nomi, checkin, avanzate, tag_auto, coach_settimanale
-    for m in (sedute, biometria, carico, soglie, palestra, caldo, detp, traduzioni_palestra, traduzioni, degradato, nomi, checkin, avanzate, tag_auto, coach_settimanale):
+    import sedute, biometria, carico, soglie, palestra, caldo, detp, traduzioni_palestra, traduzioni, degradato, nomi, checkin, avanzate, tag_auto, efficienza, coach_settimanale
+    for m in (sedute, biometria, carico, soglie, palestra, caldo, detp, traduzioni_palestra, traduzioni, degradato, nomi, checkin, avanzate, tag_auto, efficienza, coach_settimanale):
         importlib.reload(m)
     cs = coach_settimanale
     return sedute
@@ -978,9 +978,19 @@ def esegui_app(config_json):
                                                       rifiutati=cfg.get("tag_auto_rifiutati"))
                 cs.salva_stato(st_auto)
                 cs.TAG_BASELINE = tag_auto.tag_per_baseline(cs.TAG_GIORNI, st_auto)
+                # 19/10/2026 (proposta 8): fase luteale tardiva come confondente della baseline
+                import efficienza
+                ciclo = prof.get("ciclo") or {}
+                luteali = efficienza.giorni_luteali(ciclo.get("inizi"), cs.now_local().strftime("%Y-%m-%d")) \
+                    if ciclo.get("attivo") else set()
+                for d in luteali:
+                    cs.TAG_BASELINE.setdefault(d, [])
+                    if "luteale" not in cs.TAG_BASELINE[d]:
+                        cs.TAG_BASELINE[d] = cs.TAG_BASELINE[d] + ["luteale"]
             except Exception as e:
                 print(f"  ⚠️ tag automatici non calcolati: {type(e).__name__}: {e}")
                 tag_auto_proposte = []
+                luteali = set()
             # Il riepilogo vive nell'app (riepilogo_<data>.json): nessuna NOTE di piano sul
             # calendario di Intervals.icu (coach silenzioso, decisione di Simone).
             cs.scrivi_nota = lambda *a, **k: None
@@ -1080,6 +1090,18 @@ def esegui_app(config_json):
                     av_resp = cs.avviso_respiro(rie["ombra"])     # 19/10/2026: solo avviso
                     if av_resp:
                         rie["avvisi"] = "\n".join(x for x in [rie.get("avvisi") or "", av_resp] if x)
+                    # 19/10/2026 (proposte 5, 6, 8): efficienza, fatica percepita, ciclo (solo avvisi)
+                    import efficienza
+                    oggi_e = cs.now_local().strftime("%Y-%m-%d")
+                    rie["efficienza"] = efficienza.analisi(cs.get_activities(42), oggi_e)
+                    altri = efficienza.avvisi(rie["efficienza"])
+                    if cs.CHECKIN:
+                        fp = efficienza.fatica_percepita(cs.CHECKIN, cs.get_activities(42), oggi_e)
+                        rie["fatica_percepita"] = fp
+                        altri.append(efficienza.avviso_fatica(fp))
+                    altri.append(efficienza.avviso_ciclo(luteali, oggi_e))
+                    if any(altri):
+                        rie["avvisi"] = "\n".join(x for x in [rie.get("avvisi") or ""] + altri if x)
                 except Exception as e:
                     print(f"  ⚠️ ombra non calcolata: {type(e).__name__}: {e}")
                 if cs.CHECKIN:   # 10/10/2026: check-in degli ultimi 7 giorni
