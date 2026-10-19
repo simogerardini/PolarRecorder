@@ -268,9 +268,23 @@ def get_events(oldest, newest):
     key = ("events", oldest, newest)
     if key in _CACHE:
         return _CACHE[key]
-    data = _get_icu("events", oldest=oldest, newest=newest) or []
-    _CACHE[key] = [e for e in data if isinstance(e, dict)]
+    data = [e for e in (_get_icu("events", oldest=oldest, newest=newest) or []) if isinstance(e, dict)]
+    # BUG FIX (19/10/2026, ferie dal 12 al 25/10 ignorate nella settimana del 19): Intervals.icu
+    # restituisce solo gli eventi che INIZIANO nella finestra, quindi un'assenza di piu' giorni
+    # iniziata prima spariva. Si aggiungono le assenze iniziate nei giorni precedenti che
+    # arrivano dentro la finestra (una lettura in piu', in cache come le altre).
+    prima = (_dt(oldest) - timedelta(days=ASSENZA_LOOKBACK_GG)).strftime("%Y-%m-%d")
+    fine_prima = (_dt(oldest) - timedelta(days=1)).strftime("%Y-%m-%d")
+    visti = {e.get("id") for e in data}
+    for e in _get_icu("events", oldest=prima, newest=fine_prima) or []:
+        if (isinstance(e, dict) and (e.get("category") or "") in CATEGORIE_INDISPONIBILE
+                and e.get("id") not in visti and any(oldest <= d <= newest for d in giorni_evento(e))):
+            data.append(e)
+    _CACHE[key] = data
     return _CACHE[key]
+
+
+ASSENZA_LOOKBACK_GG = 180   # assenze lunghe (infortuni) iniziate fino a 6 mesi prima
 
 
 def get_races(mesi_avanti=18, look_back_days=10):
