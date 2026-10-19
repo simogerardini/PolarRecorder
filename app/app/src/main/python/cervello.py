@@ -53,7 +53,7 @@ from marchio import NOME_APP
 import campi
 import messaggi   # 07/10/2026 (punto 13a): codici dei messaggi per l'app
 
-VERSIONE = "2026.10.19-ombra"   # anche nel LEGGIMI del pacchetto
+VERSIONE = "2026.10.19-respiro"   # anche nel LEGGIMI del pacchetto
 import contextlib, importlib, io, json, os, re, sys, traceback
 
 # 09/10/2026: il cervello non usa piu' GitHub ne' Telegram; le variabili si tolgono comunque
@@ -1077,6 +1077,9 @@ def esegui_app(config_json):
                 try:                                         # 19/10/2026: campi nuovi in ombra
                     rie["ombra"] = cs.ombra_biometria(cs.get_wellness(90), cs.now_local().strftime("%Y-%m-%d"),
                                                       cs.tag_baseline())
+                    av_resp = cs.avviso_respiro(rie["ombra"])     # 19/10/2026: solo avviso
+                    if av_resp:
+                        rie["avvisi"] = "\n".join(x for x in [rie.get("avvisi") or "", av_resp] if x)
                 except Exception as e:
                     print(f"  ⚠️ ombra non calcolata: {type(e).__name__}: {e}")
                 if cs.CHECKIN:   # 10/10/2026: check-in degli ultimi 7 giorni

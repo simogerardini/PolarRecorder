@@ -543,7 +543,28 @@ def ombra_biometria(wellness, oggi_str, tag_giorni=None):
     out["resp_ultima"] = resp[-1][1] if resp else None
     prec = [v for _, v in resp[-15:-1]]
     out["resp_media_14"] = round(sum(prec) / len(prec), 1) if len(prec) >= 7 else None
+    # 19/10/2026 (decisione di Simone): avviso se la media delle ultime 3 notti supera di
+    # >= RESP_SOGLIA_RPM la media delle 14 notti precedenti a quelle 3 (respiro molto stabile:
+    # SD 0.4 rpm sulle notti di Simone). Solo avviso, nessun effetto sul piano.
+    ult3 = [v for _, v in resp[-3:]]
+    base = [v for _, v in resp[-17:-3]]
+    out["resp_media_3"] = round(sum(ult3) / 3, 1) if len(ult3) == 3 else None
+    out["resp_base_14"] = round(sum(base) / len(base), 1) if len(base) >= 7 else None
+    out["allarme_resp"] = bool(out["resp_media_3"] is not None and out["resp_base_14"] is not None
+                               and out["resp_media_3"] - out["resp_base_14"] >= RESP_SOGLIA_RPM - 1e-9)
     return out
+
+
+RESP_SOGLIA_RPM = 1.0
+
+
+def avviso_respiro(ombra):
+    """Testo dell'avviso del respiro (codice respiro_in_aumento), o None."""
+    if not (ombra or {}).get("allarme_resp"):
+        return None
+    d = round(ombra["resp_media_3"] - ombra["resp_base_14"], 1)
+    return (f"frequenza respiratoria in aumento: media di 3 notti {ombra['resp_media_3']} rpm contro "
+            f"{ombra['resp_base_14']} delle 14 precedenti (+{d})")
 
 
 def notte_di_oggi(wellness, oggi_str):

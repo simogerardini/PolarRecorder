@@ -38,6 +38,8 @@ CATALOGO = [
     ("taratura_biometria", r"biometria in taratura: (?P<notti>\d+) notti \w+ valide su (?P<minimo>\d+)"),
     ("banda_provvisoria", r"banda provvisoria: livello da (?P<notti>\d+) notti \w+ su (?P<minimo>\d+), "
                           r"variabilita' da (?P<notti_archivio>\d+) notti dello storico Intervals\.icu"),
+    ("respiro_in_aumento", r"frequenza respiratoria in aumento: media di 3 notti (?P<media3>[\d.]+) rpm contro "
+                           r"(?P<media14>[\d.]+) delle 14 precedenti \(\+(?P<delta>[\d.]+)\)"),
     ("notte_esclusa_qualita", rf"notte del {_D} esclusa per qualita': decide la banda dei giorni precedenti"),
     ("dato_biometrico_vecchio", r"ultimo dato biometrico di (?P<giorni>\d+) giorni fa"),
     # ── settimana e forza ─────────────────────────────────────────────────────────
