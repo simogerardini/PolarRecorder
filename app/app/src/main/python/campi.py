@@ -25,5 +25,15 @@ CAMPI = [
     {"chiave": "awake_min",   "code": "NoctalixAwakeMin",   "costante": "F_AWAKE_MIN",   "vecchio": "BioSleepAwakeMin",   "nome": "Awake min",   "units": "min", "desc": "veglia durante la notte"},
     {"chiave": "quality",     "code": "NoctalixQuality",    "costante": "F_QUALITY",     "vecchio": "BioSleepQuality",    "nome": "Quality",     "units": "%",   "desc": "copertura della registrazione con battiti validi"},
 ]
+# 19/10/2026 (precisione, proposte 1-3 approvate da Simone): calcolati dall'app (Parte 1) e
+# letti dal cervello prima in ombra, poi nella banda. Nessun vecchio codice BioSleep*.
+CAMPI += [
+    {"chiave": "rmssd_tardo", "code": "NoctalixRMSSDLate", "costante": "F_RMSSD_LATE", "nome": "rMSSD late",
+     "units": "ms", "desc": "rMSSD della seconda meta' del sonno (finestra fissa, meno sensibile alla sera)"},
+    {"chiave": "nadir_fc", "code": "NoctalixHRNadir", "costante": "F_HR_NADIR", "nome": "HR nadir",
+     "units": "%", "desc": "posizione del minimo della FC nella notte (0 = inizio, 100 = risveglio)"},
+    {"chiave": "respiro", "code": "NoctalixResp", "costante": "F_RESP", "nome": "Resp rate",
+     "units": "rpm", "desc": "frequenza respiratoria media nel sonno, dagli intervalli RR"},
+]
 CODICE = {c["chiave"]: c["code"] for c in CAMPI}          # chiave -> codice
-VECCHI = {c["code"]: c["vecchio"] for c in CAMPI}         # codice nuovo -> codice BioSleep*
+VECCHI = {c["code"]: c["vecchio"] for c in CAMPI if c.get("vecchio")}   # codice nuovo -> BioSleep*

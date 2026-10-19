@@ -567,4 +567,10 @@
     <string name="sis_vc_ripeti">Ripeti a voce</string>
     <string name="sis_vc_ferma">Ferma la voce</string>
     <string name="sis_vc_nota">La pagina viene letta una volta, alla prima apertura con un contenuto nuovo. Il pulsante con l\'altoparlante la ripete.</string>
+    <string name="sis_ta_proposti">Proposti dal coach</string>
+    <string name="sis_ta_conferma">Conferma</string>
+    <string name="sis_ta_non_cosi">Non era così</string>
+    <string name="sis_ta_tropicale" formatted="true">Notte tropicale: minima %1$s °C</string>
+    <string name="sis_ta_viaggio" formatted="true">Fuso orario cambiato: da %1$s a %2$s</string>
+    <string name="sis_ta_tardivo" formatted="true">Sonno iniziato %1$s minuti dopo il solito</string>
 </resources>

@@ -568,4 +568,10 @@
     <string name="sis_vc_ripeti">Read aloud again</string>
     <string name="sis_vc_ferma">Stop the voice</string>
     <string name="sis_vc_nota">The page is read once, the first time it opens with new content. The speaker button repeats it.</string>
+    <string name="sis_ta_proposti">Suggested by the coach</string>
+    <string name="sis_ta_conferma">Confirm</string>
+    <string name="sis_ta_non_cosi">That\'s not right</string>
+    <string name="sis_ta_tropicale" formatted="true">Tropical night: low of %1$s °C</string>
+    <string name="sis_ta_viaggio" formatted="true">Time zone changed: from %1$s to %2$s</string>
+    <string name="sis_ta_tardivo" formatted="true">Sleep started %1$s minutes later than usual</string>
 </resources>

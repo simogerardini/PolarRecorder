@@ -1,5 +1,6 @@
 package com.wboelens.polarrecorder.biosleep.ui.allenamento
 
+import com.wboelens.polarrecorder.biosleep.ui.ProposteTag
 import com.wboelens.polarrecorder.biosleep.voce.AzioneVoceOggi
 import androidx.compose.ui.platform.LocalContext
 import com.wboelens.polarrecorder.biosleep.demo.DemoParte3
@@ -173,6 +174,7 @@ fun OggiScreen(
       if (coach) CardSweat()
       if (coach) MessaggioCss()
       RigaTagOggi(onApriTag)
+      ProposteTag(java.time.LocalDate.now().toString())
       if (dati == null) {
         Box(Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) { CircularProgressIndicator() }
         return@Column

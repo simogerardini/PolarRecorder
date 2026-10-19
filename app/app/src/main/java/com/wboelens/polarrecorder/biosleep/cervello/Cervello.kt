@@ -32,6 +32,12 @@ data class ConfigCervello(
     val tag: com.google.gson.JsonObject? = null,
     /** Check-in delle sedute (ultimi 28 giorni): {external_id: {stato, rpe, minuti, data, tag}}. */
     val checkin: com.google.gson.JsonObject? = null,
+    /** Fuso orario del telefono (IANA): ora locale del cervello e tag automatico del viaggio. */
+    val fuso: String? = java.time.ZoneId.systemDefault().id,
+    /** {"YYYY-MM-DD": {"inizio": "HH:MM"}}: inizio del sonno delle notti registrate (28 giorni). */
+    val notti: com.google.gson.JsonObject? = null,
+    /** Tag automatici rifiutati dall'atleta: ["YYYY-MM-DD:chiave"]. */
+    val tagAutoRifiutati: List<String>? = null,
 ) {
   /** JSON costruito con Gson: le virgolette nella API key non possono rompere il formato. */
   fun json(): String =
@@ -61,6 +67,11 @@ data class ConfigCervello(
             profilo?.let { add("profilo", it.json()) }
             tag?.let { add("tag", it) }
             checkin?.let { add("checkin", it) }
+            fuso?.let { addProperty("fuso", it) }
+            notti?.let { add("notti", it) }
+            tagAutoRifiutati?.takeIf { it.isNotEmpty() }?.let { l ->
+              add("tag_auto_rifiutati", com.google.gson.JsonArray().apply { l.forEach { add(it) } })
+            }
           }
           .toString()
 

@@ -146,6 +146,7 @@ fun TagNotte(fineNotteMs: Long, conTitolo: Boolean = true) {
             label = { Text(tr(Vocabolario.etichetta(k))) })
       }
     }
+    ProposteTag(data)
     if (scelti.isNotEmpty()) {
       Text(
           tr("Scelti: " + Vocabolario.NOTTE.filter { it in scelti }.joinToString(" · ") { Vocabolario.etichetta(it) }),
