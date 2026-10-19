@@ -400,6 +400,27 @@ class SleepDb private constructor(context: Context) :
               null)
           .use { c -> buildList { while (c.moveToNext()) add(c.getLong(0)) } }
 
+  /** Notti con battiti (anche archiviati) senza alcun valore di precisione. */
+  fun nottiSenzaPrecisione(): List<Long> =
+      readableDatabase
+          .rawQuery(
+              """SELECT n.session_id FROM nights n
+                 WHERE n.rmssd_late IS NULL AND n.hr_nadir_pct IS NULL AND n.resp_rate IS NULL
+                   AND (EXISTS (SELECT 1 FROM rr_archive a WHERE a.session_id = n.session_id)
+                        OR EXISTS (SELECT 1 FROM rr r WHERE r.session_id = n.session_id))
+                 ORDER BY n.start_ms""",
+              null)
+          .use { c -> buildList { while (c.moveToNext()) add(c.getLong(0)) } }
+
+  fun salvaPrecisione(sessionId: Long, p: Precisione) {
+    val v = ContentValues().apply {
+      put("rmssd_late", p.rmssdLate)
+      put("hr_nadir_pct", p.hrNadirPct)
+      put("resp_rate", p.respRate)
+    }
+    writableDatabase.update("nights", v, "session_id = ?", arrayOf(sessionId.toString()))
+  }
+
   /** Elimina del tutto una sessione (usato per registrazioni troppo corte o vuote). */
   fun deleteSession(sessionId: Long) {
     val db = writableDatabase

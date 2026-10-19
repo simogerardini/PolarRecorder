@@ -164,7 +164,11 @@ class BioSleepDataSaver(
     // Notti analizzate ma mai inviate (es. invio fallito senza rete): tornano in coda da sole
     analysisExecutor.execute { accodaInviiInSospeso() }
     // Fase 7: calcola le fasi del sonno anche per le notti registrate prima dell'aggiornamento
-    analysisExecutor.execute { stageOldNights() }
+    analysisExecutor.execute {
+      stageOldNights()
+      // Precisione della biometria sulle notti gia' registrate (una volta sola, dopo le fasi)
+      PrecisioneStoricoWorker.accoda(appContext)
+    }
   }
 
   @Suppress("TooGenericExceptionCaught")
