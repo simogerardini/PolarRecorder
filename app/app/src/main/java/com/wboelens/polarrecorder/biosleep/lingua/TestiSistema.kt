@@ -132,6 +132,7 @@ object TestiSistema {
       Voce("hrv_verificata", "HRV verificata nei primi 5 minuti della prima notte"),
       Voce("istr_xiaomi_2", "In Risparmio batteria scegli \"Nessuna restrizione\"."),
       Voce("tn_regola", "La birra di ieri sera va sulla notte di stamattina."),
+      Voce("na_riga", "HRV di stanotte %s, atteso %s dal carico di ieri (%s TSS)"),
       Voce("piano_rimodulato_n", "🗓️ Piano settimanale — rimodulazione del %s, banda %s:"),
       Voce("cons_sp_normale", "HRV nella tua norma: allenati come avevi previsto."),
       Voce("nessun_battito_da", "Nessun battito da %d minuti: la fascia è indossata?"),

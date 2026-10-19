@@ -191,6 +191,9 @@ private fun NightContent(
     // Fase 7: fasi del sonno
     SleepStagesSection(detail.night)
 
+    // HRV atteso dal modello personale (cervello 2026.10.19-notte-attesa); nascosta se spento
+    RigaNotteAttesa(s.endMs)
+
     // Tag della notte (data = giorno del risveglio, come per il coach)
     TagNotte(s.endMs)
 

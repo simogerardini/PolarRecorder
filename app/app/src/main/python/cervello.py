@@ -53,8 +53,8 @@ from marchio import NOME_APP
 import campi
 import messaggi   # 07/10/2026 (punto 13a): codici dei messaggi per l'app
 
-VERSIONE = "2026.10.19-precisione3b"   # anche nel LEGGIMI del pacchetto
-import contextlib, importlib, io, json, os, re, sys, traceback
+VERSIONE = "2026.10.19-notte-attesa"   # anche nel LEGGIMI del pacchetto
+import contextlib, importlib, io, json, math, os, re, sys, traceback
 
 # 09/10/2026: il cervello non usa piu' GitHub ne' Telegram; le variabili si tolgono comunque
 # dall'ambiente, nel caso il processo le avesse ereditate.
@@ -785,8 +785,8 @@ def _adesso(cfg):
 
 def _carica_moduli():
     global cs
-    import sedute, biometria, carico, soglie, palestra, caldo, detp, traduzioni_palestra, traduzioni, degradato, nomi, checkin, avanzate, tag_auto, efficienza, coach_settimanale
-    for m in (sedute, biometria, carico, soglie, palestra, caldo, detp, traduzioni_palestra, traduzioni, degradato, nomi, checkin, avanzate, tag_auto, efficienza, coach_settimanale):
+    import sedute, biometria, carico, soglie, palestra, caldo, detp, traduzioni_palestra, traduzioni, degradato, nomi, checkin, avanzate, tag_auto, efficienza, modello, coach_settimanale
+    for m in (sedute, biometria, carico, soglie, palestra, caldo, detp, traduzioni_palestra, traduzioni, degradato, nomi, checkin, avanzate, tag_auto, efficienza, modello, coach_settimanale):
         importlib.reload(m)
     cs = coach_settimanale
     return sedute
@@ -1100,6 +1100,19 @@ def esegui_app(config_json):
                         rie["fatica_percepita"] = fp
                         altri.append(efficienza.avviso_fatica(fp))
                     altri.append(efficienza.avviso_ciclo(luteali, oggi_e))
+                    # 19/10/2026: modello personale (ristimato ogni 7 giorni) -> notte attesa
+                    import modello, biometria as _bio
+                    conf = {d for d, v in (cs.tag_baseline() or {}).items()
+                            if any(t in _bio.TAG_CONFONDENTI for t in v)}
+                    st_m = cs.carica_stato()
+                    m = modello.modello_aggiornato(st_m, lambda: cs.get_wellness(365), oggi_e, conf)
+                    cs.salva_stato(st_m)
+                    rie["modello"] = {"attivo": m.get("attivo"), "fonte": m.get("fonte"), "notti": m.get("notti"),
+                                      "motivo": m.get("motivo"), "data": m.get("data"),
+                                      "carico_ieri_pct_100tss": round(math.expm1(m["coeff"]["carico_1"]) * 100, 1)
+                                      if m.get("coeff") else None}
+                    rie["notte_attesa"] = modello.notte_attesa(cs.get_wellness(90), oggi_e, m, conf)
+                    altri.append(modello.avviso_calo(rie["notte_attesa"]))
                     if any(altri):
                         rie["avvisi"] = "\n".join(x for x in [rie.get("avvisi") or ""] + altri if x)
                 except Exception as e:

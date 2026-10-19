@@ -580,4 +580,5 @@
     <string name="sis_ci_nessuna">Nessuna data inserita</string>
     <string name="sis_ci_rimuovi">Rimuovi</string>
     <string name="sis_ci_nota">Inserisci il primo giorno di ogni mestruazione. I 7 giorni prima non pesano sulla baseline dell\'HRV. Resta sul telefono: non va su Intervals.icu.</string>
+    <string name="sis_na_riga" formatted="true">HRV di stanotte %1$s, atteso %2$s dal carico di ieri (%3$s TSS)</string>
 </resources>

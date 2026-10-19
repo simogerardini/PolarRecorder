@@ -18,6 +18,7 @@
     <string name="msg_dato_biometrico_vecchio" formatted="true">last biometric data from %1$s days ago</string>
     <string name="msg_taratura_biometria" formatted="true">biometrics calibrating: %1$s valid %2$s nights out of %3$s</string>
     <string name="msg_notte_esclusa_qualita" formatted="true">night of %1$s excluded for quality: the band of the previous days applies</string>
+    <string name="msg_calo_non_spiegato" formatted="true">unexplained drop: last night\'s HRV %1$s%% vs %2$s%% expected from load and tags (±%3$s%%)</string>
     <string name="msg_efficienza_in_calo" formatted="true">aerobic efficiency dropping in %1$s: %2$s%% over the last 2 weeks</string>
     <string name="msg_fatica_percepita_in_aumento" formatted="true">perceived effort rising: the same load costs %1$s%% more effort</string>
     <string name="msg_fase_luteale">luteal phase: a lower HRV is expected and does not affect the baseline</string>

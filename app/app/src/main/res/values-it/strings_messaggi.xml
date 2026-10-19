@@ -17,6 +17,7 @@
     <string name="msg_dato_biometrico_vecchio" formatted="true">ultimo dato biometrico di %1$s giorni fa</string>
     <string name="msg_taratura_biometria" formatted="true">biometria in taratura: %1$s notti %2$s valide su %3$s</string>
     <string name="msg_notte_esclusa_qualita" formatted="true">notte del %1$s esclusa per qualità: decide la banda dei giorni precedenti</string>
+    <string name="msg_calo_non_spiegato" formatted="true">calo non spiegato: HRV di stanotte %1$s%% contro %2$s%% atteso da carico e tag (±%3$s%%)</string>
     <string name="msg_efficienza_in_calo" formatted="true">efficienza aerobica in calo nella %1$s: %2$s%% nelle ultime 2 settimane</string>
     <string name="msg_fatica_percepita_in_aumento" formatted="true">fatica percepita in aumento: lo stesso carico costa il %1$s%% in più di fatica</string>
     <string name="msg_fase_luteale">fase luteale: un HRV più basso è atteso e non pesa sulla baseline</string>

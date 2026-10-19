@@ -581,4 +581,5 @@
     <string name="sis_ci_nessuna">Ninguna fecha introducida</string>
     <string name="sis_ci_rimuovi">Quitar</string>
     <string name="sis_ci_nota">Introduce el primer día de cada menstruación. Los 7 días anteriores no cuentan para la línea base del HRV. Se queda en el teléfono: no se envía a Intervals.icu.</string>
+    <string name="sis_na_riga" formatted="true">HRV de esta noche %1$s, esperado %2$s por la carga de ayer (%3$s TSS)</string>
 </resources>

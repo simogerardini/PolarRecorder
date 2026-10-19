@@ -581,4 +581,5 @@
     <string name="sis_ci_nessuna">尚未添加日期</string>
     <string name="sis_ci_rimuovi">删除</string>
     <string name="sis_ci_nota">输入每次月经的第一天。之前 7 天不计入 HRV 基线。数据只保存在手机上，不会发送到 Intervals.icu。</string>
+    <string name="sis_na_riga" formatted="true">昨晚 HRV %1$s，按昨天负荷（%3$s TSS）预期 %2$s</string>
 </resources>

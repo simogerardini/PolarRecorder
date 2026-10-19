@@ -43,6 +43,8 @@ CATALOGO = [
     ("efficienza_in_calo", r"efficienza aerobica in calo nella (?P<sport>bici|corsa): (?P<variazione>-?[\d.]+)% nelle ultime 2 settimane"),
     ("fatica_percepita_in_aumento", r"fatica percepita in aumento: lo stesso carico costa il (?P<aumento>[\d.]+)% in piu' di fatica"),
     ("fase_luteale", r"fase luteale: un HRV piu' basso e' atteso e non pesa sulla baseline"),
+    ("calo_non_spiegato", r"calo non spiegato: HRV di stanotte (?P<reale>-?[\d.]+)% contro (?P<atteso>-?[\d.]+)% atteso "
+                          r"da carico e tag \(±(?P<intervallo>[\d.]+)%\)"),
     ("notte_esclusa_qualita", rf"notte del {_D} esclusa per qualita': decide la banda dei giorni precedenti"),
     ("dato_biometrico_vecchio", r"ultimo dato biometrico di (?P<giorni>\d+) giorni fa"),
     # ── settimana e forza ─────────────────────────────────────────────────────────

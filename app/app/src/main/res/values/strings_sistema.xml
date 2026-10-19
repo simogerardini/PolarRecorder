@@ -581,4 +581,5 @@
     <string name="sis_ci_nessuna">No dates entered</string>
     <string name="sis_ci_rimuovi">Remove</string>
     <string name="sis_ci_nota">Enter the first day of each period. The 7 days before it don\'t count towards the HRV baseline. It stays on the phone: it is not sent to Intervals.icu.</string>
+    <string name="sis_na_riga" formatted="true">Last night\'s HRV %1$s, expected %2$s from yesterday\'s load (%3$s TSS)</string>
 </resources>
