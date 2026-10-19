@@ -29,7 +29,7 @@ NOCTALIX_NOTTI_PROVVISORIA = 5
 ARCHIVIO_NOTTI_MIN = 28
 ARCHIVIO_GIORNI = 90
 
-def noctalix_history_da_wellness(wellness, oura_history=None):
+def noctalix_history_da_wellness(wellness, oura_history=None, chiave_hrv="rmssd"):
     """Serie NoctaliX nello stesso formato di get_oura_history, per calc_baseline_biometrici.
     Giorno senza rMSSD valido (campi.CODICE['rmssd']) = saltato (mai zero). Tag confondenti presi da Oura."""
     tags = {g.get("data"): g.get("tags") for g in (oura_history or [])
@@ -44,7 +44,9 @@ def noctalix_history_da_wellness(wellness, oura_history=None):
         # vecchio BioSleep* (storico di chi ha usato BioSleep, nessuna migrazione richiesta)
         val = lambda chiave: w.get(campi.CODICE[chiave]) if w.get(campi.CODICE[chiave]) is not None \
             else w.get(campi.VECCHI[campi.CODICE[chiave]])
-        hrv = num(val("rmssd"))
+        # 19/10/2026: chiave_hrv="rmssd_tardo" per la lettura in ombra della seconda meta' della
+        # notte (NoctalixRMSSDLate, nessun vecchio codice BioSleep*)
+        hrv = num(val(chiave_hrv) if chiave_hrv in campi.VECCHI_PER_CHIAVE else w.get(campi.CODICE[chiave_hrv]))
         if not d or hrv is None:
             continue
         q = val("quality")

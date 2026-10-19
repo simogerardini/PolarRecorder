@@ -519,6 +519,33 @@ def archivio_esterno(wellness, tag_giorni=None):
     return out
 
 
+def ombra_biometria(wellness, oggi_str, tag_giorni=None):
+    """19/10/2026: lettura IN OMBRA dei campi nuovi della Parte 1 (nessun effetto sul piano).
+    Banda calcolata con l'rMSSD della seconda meta' della notte (NoctalixRMSSDLate) con le
+    stesse regole della banda vera, confronto con quella, ultimo nadir della FC e frequenza
+    respiratoria (ultima notte e media delle 14 precedenti). Serve alla validazione."""
+    import campi
+    tag_l = [{"data": d, "tags": list(v)} for d, v in (tag_giorni or {}).items() if v]
+    late = biometria.noctalix_history_da_wellness(wellness, tag_l, chiave_hrv="rmssd_tardo")
+    vera = biometria.noctalix_history_da_wellness(wellness, tag_l)
+    out = {"notti_late": len(late), "banda_late": None, "z_late": None, "banda": None, "z": None, "accordo": None}
+    if len(late) >= NOCTALIX_NOTTI_MIN:
+        bl = biometria.calc_baseline_biometrici(late, today_str=oggi_str)
+        bv = biometria.calc_baseline_biometrici(vera, today_str=oggi_str)
+        out.update(banda_late=bl.get("banda") if bl.get("ok") else "grigio", z_late=bl.get("z_ln"),
+                   banda=bv.get("banda") if bv.get("ok") else "grigio", z=bv.get("z_ln"))
+        out["accordo"] = out["banda_late"] == out["banda"]
+    righe = sorted((w for w in wellness or [] if (w.get("id") or "")[:10] <= oggi_str), key=lambda w: w.get("id"))
+    resp = [(w["id"][:10], w.get(campi.CODICE["respiro"])) for w in righe
+            if isinstance(w.get(campi.CODICE["respiro"]), (int, float))]
+    nadir = [w.get(campi.CODICE["nadir_fc"]) for w in righe if isinstance(w.get(campi.CODICE["nadir_fc"]), (int, float))]
+    out["nadir_ultimo"] = nadir[-1] if nadir else None
+    out["resp_ultima"] = resp[-1][1] if resp else None
+    prec = [v for _, v in resp[-15:-1]]
+    out["resp_media_14"] = round(sum(prec) / len(prec), 1) if len(prec) >= 7 else None
+    return out
+
+
 def notte_di_oggi(wellness, oggi_str):
     """"arrivata" se la wellness di oggi ha un campo NoctaliX della notte (anche BioSleep*),
     "esclusa_qualita" se c'e' ma sotto la soglia di qualita' (o senza rMSSD), "mancante"

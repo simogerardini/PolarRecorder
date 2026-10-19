@@ -37,3 +37,4 @@ CAMPI += [
 ]
 CODICE = {c["chiave"]: c["code"] for c in CAMPI}          # chiave -> codice
 VECCHI = {c["code"]: c["vecchio"] for c in CAMPI if c.get("vecchio")}   # codice nuovo -> BioSleep*
+VECCHI_PER_CHIAVE = {c["chiave"] for c in CAMPI if c.get("vecchio")}
