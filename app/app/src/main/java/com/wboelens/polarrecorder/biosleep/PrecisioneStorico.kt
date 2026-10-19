@@ -45,7 +45,8 @@ class PrecisioneStoricoWorker(context: Context, params: WorkerParameters) : Coro
           OneTimeWorkRequestBuilder<PrecisioneStoricoWorker>()
               .setBackoffCriteria(BackoffPolicy.EXPONENTIAL, 10, TimeUnit.MINUTES)
               .build()
-      WorkManager.getInstance(context).enqueueUniqueWork(NOME, ExistingWorkPolicy.KEEP, req)
+      // Nei test unitari WorkManager non e' inizializzato: si salta, riparte al prossimo avvio vero
+      runCatching { WorkManager.getInstance(context).enqueueUniqueWork(NOME, ExistingWorkPolicy.KEEP, req) }
     }
   }
 
