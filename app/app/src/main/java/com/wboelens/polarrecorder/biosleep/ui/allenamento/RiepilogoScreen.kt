@@ -280,7 +280,13 @@ private fun Avvisi(r: Riepilogo) {
     Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
       val colore = MaterialTheme.colorScheme.onErrorContainer
       Text(stringResource(R.string.riepilogo_avvisi), style = MaterialTheme.typography.titleSmall, color = colore, fontWeight = FontWeight.Bold)
-      righe.forEach { RigaConTag(it, MaterialTheme.typography.bodyMedium, colore) }
+      righe.forEach {
+        RigaConTag(it, MaterialTheme.typography.bodyMedium, colore)
+        // cervello 2026.10.19-respiro: un aumento del respiro spesso precede un'infezione
+        if (it.trimStart().startsWith("frequenza respiratoria in aumento")) {
+          Text(tr("Spesso precede un'infezione: se ti senti poco bene, metti il tag malattia."), style = MaterialTheme.typography.bodySmall, color = colore)
+        }
+      }
       if (r.nonScritte.isNotEmpty()) {
         Text(stringResource(R.string.riepilogo_sedute_che_il_coach), style = MaterialTheme.typography.bodyMedium, color = colore)
         for (s in r.nonScritte) Text(tr("• $s"), style = MaterialTheme.typography.bodyMedium, color = colore)

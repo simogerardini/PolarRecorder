@@ -574,4 +574,5 @@
     <string name="sis_ta_tropicale" formatted="true">Noche tropical: mínima de %1$s °C</string>
     <string name="sis_ta_viaggio" formatted="true">Zona horaria cambiada: de %1$s a %2$s</string>
     <string name="sis_ta_tardivo" formatted="true">El sueño empezó %1$s minutos más tarde de lo habitual</string>
+    <string name="sis_resp_consiglio">A menudo precede a una infección: si te encuentras mal, pon la etiqueta enfermedad.</string>
 </resources>

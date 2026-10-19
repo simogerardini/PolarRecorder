@@ -18,6 +18,7 @@
     <string name="msg_dato_biometrico_vecchio" formatted="true">last biometric data from %1$s days ago</string>
     <string name="msg_taratura_biometria" formatted="true">biometrics calibrating: %1$s valid %2$s nights out of %3$s</string>
     <string name="msg_notte_esclusa_qualita" formatted="true">night of %1$s excluded for quality: the band of the previous days applies</string>
+    <string name="msg_respiro_in_aumento" formatted="true">breathing rate rising: 3-night average %1$s rpm vs %2$s over the previous 14 (+%3$s)</string>
     <string name="msg_banda_provvisoria" formatted="true">provisional band: level from %1$s %2$s nights out of %3$s, variability from %4$s nights of Intervals.icu history</string>
     <string name="msg_motivo_provvisoria_segue_piano">provisional green band: following the plan</string>
     <string name="msg_rm_invariata_taratura">calibrating: following the plan</string>

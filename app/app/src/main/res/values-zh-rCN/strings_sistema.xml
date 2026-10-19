@@ -574,4 +574,5 @@
     <string name="sis_ta_tropicale" formatted="true">热带夜：最低 %1$s °C</string>
     <string name="sis_ta_viaggio" formatted="true">时区已更改：从 %1$s 到 %2$s</string>
     <string name="sis_ta_tardivo" formatted="true">入睡比平时晚 %1$s 分钟</string>
+    <string name="sis_resp_consiglio">这常常是感染的前兆：如果感觉不适，请添加“生病”标签。</string>
 </resources>

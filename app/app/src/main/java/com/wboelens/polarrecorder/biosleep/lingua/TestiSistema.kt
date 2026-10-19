@@ -82,6 +82,7 @@ object TestiSistema {
       Voce("eff_cp", "Senza CP (FTP corsa) le sedute restano in FC o passo: Stryd non viene usato"),
       Voce("ripianificazione_in_corso", "Ripianificazione in corso: il riepilogo arriverà con la notifica del coach"),
       Voce("eff_ftp", "Senza FTP Intervals.icu stima peggio il carico (TSS) delle uscite senza FC"),
+      Voce("resp_consiglio", "Spesso precede un'infezione: se ti senti poco bene, metti il tag malattia."),
       Voce("nessuna_impostazione", "Nessuna impostazione salvata: fai prima una registrazione dalle schermate"),
       Voce("ck_spento", "Spento: la chiede solo se Intervals.icu non riesce a leggere le attività."),
       Voce("voce_notifiche_sp", "Servono per la notifica della notte in corso e per gli avvisi del coach."),

@@ -44,6 +44,7 @@ object Messaggi {
           "dato_biometrico_vecchio" to listOf("giorni"),
           "taratura_biometria" to listOf("notti", "nome_app", "minimo"),
           "notte_esclusa_qualita" to listOf("data"),
+          "respiro_in_aumento" to listOf("media3", "media14", "delta"),
           "banda_provvisoria" to listOf("notti", "nome_app", "minimo", "notti_archivio"),
           "motivo_provvisoria_segue_piano" to listOf(),
           "rm_invariata_taratura" to listOf(),

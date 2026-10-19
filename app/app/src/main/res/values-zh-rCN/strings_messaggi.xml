@@ -18,6 +18,7 @@
     <string name="msg_dato_biometrico_vecchio" formatted="true">最近的生理数据来自 %1$s 天前</string>
     <string name="msg_taratura_biometria" formatted="true">生物指标校准中：有效 %2$s 夜晚 %1$s/%3$s</string>
     <string name="msg_notte_esclusa_qualita" formatted="true">%1$s 的夜间数据因质量不足被排除：沿用前几天的区间</string>
+    <string name="msg_respiro_in_aumento" formatted="true">呼吸频率上升：3 晚平均 %1$s 次/分，之前 14 晚为 %2$s（+%3$s）</string>
     <string name="msg_banda_provvisoria" formatted="true">临时区间：水平来自 %1$s/%3$s 个 %2$s 夜晚，变异性来自 Intervals.icu 历史中的 %4$s 个夜晚</string>
     <string name="msg_motivo_provvisoria_segue_piano">临时绿色区间：按计划执行</string>
     <string name="msg_rm_invariata_taratura">校准中：按计划执行</string>

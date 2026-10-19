@@ -573,4 +573,5 @@
     <string name="sis_ta_tropicale" formatted="true">Notte tropicale: minima %1$s °C</string>
     <string name="sis_ta_viaggio" formatted="true">Fuso orario cambiato: da %1$s a %2$s</string>
     <string name="sis_ta_tardivo" formatted="true">Sonno iniziato %1$s minuti dopo il solito</string>
+    <string name="sis_resp_consiglio">Spesso precede un\'infezione: se ti senti poco bene, metti il tag malattia.</string>
 </resources>
