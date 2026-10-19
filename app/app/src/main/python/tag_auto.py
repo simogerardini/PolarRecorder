@@ -64,14 +64,18 @@ def sonni_tardivi(notti_cfg):
     return {d: m - mediana for d, m in inizi.items() if m - mediana >= RITARDO_SONNO_MIN}
 
 
-def aggiorna(stato, oggi, fuso=None, posizione=None, notti_cfg=None, sessione=None):
-    """Aggiorna stato["tag_auto"] e restituisce le proposte nuove o confermate degli ultimi
-    7 giorni: [{"data", "tag", "motivo", "valori"}]."""
-    tag = {d: dict(v) for d, v in (stato.get("tag_auto") or {}).items()}
+def aggiorna(stato, oggi, fuso=None, posizione=None, notti_cfg=None, sessione=None, rifiutati=None):
+    """Aggiorna stato["tag_auto"] e restituisce le proposte degli ultimi 7 giorni:
+    [{"data", "tag", "motivo", "valori"}]. rifiutati = ["YYYY-MM-DD:chiave"] dall'app
+    ("Non era cosi'"): tolti e mai riproposti (memorizzati in stato["tag_auto_rifiutati"])."""
+    no = set(stato.get("tag_auto_rifiutati") or []) | {str(x) for x in rifiutati or []}
+    tag = {d: {k: v for k, v in dict(v).items() if f"{d}:{k}" not in no}
+           for d, v in (stato.get("tag_auto") or {}).items()}
     proposte = []
 
     def metti(d, chiave, motivo, valori):
-        tag.setdefault(d, {})[chiave] = {"motivo": motivo, "valori": valori}
+        if f"{d}:{chiave}" not in no:
+            tag.setdefault(d, {})[chiave] = {"motivo": motivo, "valori": valori}
 
     # viaggio: cambio di fuso
     prima = stato.get("ultimo_fuso")
@@ -90,7 +94,8 @@ def aggiorna(stato, oggi, fuso=None, posizione=None, notti_cfg=None, sessione=No
     for d, ritardo in sonni_tardivi(notti_cfg).items():
         metti(d, "sonno_disturbato", "tag_auto_sonno_tardivo", {"ritardo": str(ritardo)})
     limite = (datetime.strptime(oggi, "%Y-%m-%d") - timedelta(days=CONSERVA_GG)).strftime("%Y-%m-%d")
-    stato["tag_auto"] = {d: v for d, v in tag.items() if d >= limite}
+    stato["tag_auto"] = {d: v for d, v in tag.items() if d >= limite and v}
+    stato["tag_auto_rifiutati"] = sorted(x for x in no if x[:10] >= limite)
     dal = (datetime.strptime(oggi, "%Y-%m-%d") - timedelta(days=7)).strftime("%Y-%m-%d")
     for d in sorted(stato["tag_auto"]):
         if d >= dal:

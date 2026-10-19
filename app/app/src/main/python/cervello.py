@@ -18,6 +18,7 @@ config (JSON):
   lingua          facoltativo: "it"|"en"|"es"|"zh" (sedute sul calendario; zh -> en)
   checkin         facoltativo: {"<external_id>": {"stato", "rpe", "minuti", "data", "tag"}}, 28 giorni
   notti           facoltativo: {"YYYY-MM-DD": {"inizio": "HH:MM"}} inizio del sonno (tag automatici)
+  tag_auto_rifiutati  facoltativo: ["YYYY-MM-DD:chiave"] tag automatici rifiutati dall'atleta
   disponibilita_date  facoltativo: {"YYYY-MM-DD": minuti} dal "+" del calendario
                   (0 = giorno non disponibile; vince sulla settimana tipo)
   posizione       facoltativo: {"lat", "lon"} dal telefono (meteo per i giorni caldi;
@@ -52,7 +53,7 @@ from marchio import NOME_APP
 import campi
 import messaggi   # 07/10/2026 (punto 13a): codici dei messaggi per l'app
 
-VERSIONE = "2026.10.19-precisione1"   # anche nel LEGGIMI del pacchetto
+VERSIONE = "2026.10.19-precisione2"   # anche nel LEGGIMI del pacchetto
 import contextlib, importlib, io, json, os, re, sys, traceback
 
 # 09/10/2026: il cervello non usa piu' GitHub ne' Telegram; le variabili si tolgono comunque
@@ -973,7 +974,8 @@ def esegui_app(config_json):
             try:
                 st_auto = cs.carica_stato()
                 tag_auto_proposte = tag_auto.aggiorna(st_auto, cs.now_local().strftime("%Y-%m-%d"),
-                                                      cfg.get("fuso"), cfg.get("posizione"), cfg.get("notti"))
+                                                      cfg.get("fuso"), cfg.get("posizione"), cfg.get("notti"),
+                                                      rifiutati=cfg.get("tag_auto_rifiutati"))
                 cs.salva_stato(st_auto)
                 cs.TAG_BASELINE = tag_auto.tag_per_baseline(cs.TAG_GIORNI, st_auto)
             except Exception as e:
