@@ -34,6 +34,7 @@ object IntervalsClient {
   /** Sotto questa affidabilita' della notte i valori di precisione non si scrivono. */
   private const val SOGLIA_QUALITA = 80.0
   /** Campi nuovi: se Intervals non li ha ancora creati la notte resta inviata (non e' un errore). */
+  private val CAMPO_SCONOSCIUTO = Regex("""Unrecognized wellness field \[(\w+)\]""")
   private val CAMPI_FACOLTATIVI = setOf(CampiWellness.F_RMSSD_LATE, CampiWellness.F_HR_NADIR, CampiWellness.F_RESP, CampiWellness.F_SOURCE)
 
 
@@ -92,12 +93,30 @@ object IntervalsClient {
   fun uploadNight(auth: String, s: NightSummary, stages: SleepStages?): IntervalsResult {
     val date = morningDate(s)
     val body = buildWellness(s, stages)
-    val (code, text) =
+    fun put(): Pair<Int, String> = request("PUT", "$BASE_URL/wellness/$date", auth, body.toString())
+    var (code, text) =
         try {
-          request("PUT", "$BASE_URL/wellness/$date", auth, body.toString())
+          put()
         } catch (e: IOException) {
           return IntervalsResult.Failed("Connessione non riuscita: ${e.message}")
         }
+    // Parte 11: Intervals.icu rifiuta tutta la notte (422 "Unrecognized wellness field [X]") se un
+    // campo non e' ancora stato creato. Un campo facoltativo si toglie e la notte si reinvia.
+    val tolti = mutableListOf<String>()
+    while (code == 422) {
+      val campo = CAMPO_SCONOSCIUTO.find(text)?.groupValues?.get(1)
+      if (campo == null || campo !in CAMPI_FACOLTATIVI || !body.has(campo)) break
+      body.remove(campo)
+      tolti += campo
+      val r =
+          try {
+            put()
+          } catch (e: IOException) {
+            return IntervalsResult.Failed("Connessione non riuscita: ${e.message}")
+          }
+      code = r.first
+      text = r.second
+    }
     if (code != HttpURLConnection.HTTP_OK) return IntervalsResult.Failed(describeError(code, text))
 
     // Controllo: Intervals restituisce il giorno aggiornato. Se un campo manca nella risposta,
@@ -110,7 +129,9 @@ object IntervalsClient {
           emptyList()
         }
     return if (missing.isEmpty()) {
-      IntervalsResult.Ok("Inviata a Intervals.icu ($date)")
+      IntervalsResult.Ok(
+          "Inviata a Intervals.icu ($date)" +
+              (if (tolti.isEmpty()) "" else " senza ${tolti.joinToString()}: in Impostazioni premi \"Prepara i campi\""))
     } else {
       IntervalsResult.Failed(
           "Intervals non ha salvato: ${missing.joinToString()}. " +

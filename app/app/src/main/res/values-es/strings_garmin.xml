@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="garmin_titolo">Garmin Connect</string>
-    <string name="garmin_spiegazione">¿No tienes banda pectoral? %1$s puede leer la VFC nocturna, la FC en reposo y el sueño de tu reloj Garmin con tu propia Personal API key de Garmin. Los entrenamientos se siguen creando en Intervals.icu.</string>
+    <string name="garmin_spiegazione">¿No tienes banda pectoral? %1$s puede leer la VFC nocturna, la FC en reposo y el sueño de tu dispositivo Garmin con tu propia Personal API key de Garmin. Los entrenamientos se siguen creando en Intervals.icu.</string>
     <string name="garmin_crea_chiave">Crea la clave en Garmin Connect</string>
     <string name="garmin_chiave">Personal API key de Garmin</string>
     <string name="garmin_salva_e_prova">Guardar y probar</string>
@@ -10,18 +10,18 @@
     <string name="garmin_collegato">Garmin Connect conectado</string>
     <string name="garmin_privacy">La clave se queda solo en este teléfono, cifrada. %1$s la usa para leer tus datos de Garmin para tu uso personal, no la comparte y no la incluye en las copias de seguridad.</string>
     <string name="garmin_ok_hrv">Conectado. Última VFC nocturna: %1$d ms (%2$s)</string>
-    <string name="garmin_ok_senza_notti">Conectado, pero ninguna noche con VFC en los últimos 30 días: lleva el reloj en la cama.</string>
+    <string name="garmin_ok_senza_notti">Conectado, pero ninguna noche con VFC en los últimos 30 días: lleva tu dispositivo Garmin en la cama.</string>
     <string name="garmin_chiave_non_valida">Garmin rechazó la clave: puede que haya caducado o se haya eliminado. Crea una nueva e introdúcela otra vez.</string>
     <string name="garmin_troppe_richieste">Garmin está limitando las solicitudes: inténtalo más tarde.</string>
     <string name="garmin_errore">Garmin Connect no disponible: %1$s</string>
     <string name="garmin_sorgente_titolo">Fuente de la noche</string>
     <string name="garmin_sorgente_fascia">Banda pectoral</string>
-    <string name="garmin_sorgente_garmin">Garmin Connect (reloj)</string>
-    <string name="garmin_sorgente_nota">La preparación usa una sola fuente: la VFC de muñeca y la de pecho tienen niveles distintos. Al cambiar de fuente la calibración vuelve a empezar (con Garmin se carga enseguida tu historial de Garmin).</string>
+    <string name="garmin_sorgente_garmin">Garmin Connect</string>
+    <string name="garmin_sorgente_nota">La preparación usa una sola fuente: la VFC de un dispositivo Garmin y la de la banda pectoral tienen niveles distintos. Al cambiar de fuente la calibración vuelve a empezar (con Garmin se carga enseguida tu historial de Garmin).</string>
     <string name="garmin_esito_salvata">Última noche de Garmin: %1$s</string>
-    <string name="garmin_esito_attesa">Esperando la noche de Garmin Connect: abre la app Garmin Connect para sincronizar el reloj.</string>
+    <string name="garmin_esito_attesa">Esperando la noche de Garmin Connect: abre la app Garmin Connect para sincronizar el dispositivo.</string>
     <string name="garmin_esito_errore">Garmin Connect no disponible: lo reintento dentro de una hora.</string>
     <string name="garmin_avviso_chiave_titolo">Garmin Connect: clave no válida</string>
-    <string name="garmin_fasi_nota">Fases del sueño de Garmin Connect (reloj). Garmin solo proporciona los totales, no cómo se distribuyen las fases durante la noche.</string>
-    <string name="garmin_fonte_notte">Noche de Garmin Connect (reloj): VFC medida en %1$d de %2$d ventanas de cinco minutos.</string>
+    <string name="garmin_fasi_nota">Fases del sueño de Garmin Connect. Garmin solo proporciona los totales, no cómo se distribuyen las fases durante la noche.</string>
+    <string name="garmin_fonte_notte">Noche de Garmin Connect: VFC medida en %1$d de %2$d ventanas de cinco minutos.</string>
 </resources>

@@ -2,7 +2,7 @@
 <!-- Parte 11: Garmin Connect (Personal API). Default language: English. -->
 <resources>
     <string name="garmin_titolo">Garmin Connect</string>
-    <string name="garmin_spiegazione">No chest strap? %1$s can read your overnight HRV, resting heart rate and sleep from your Garmin watch, using your own Garmin Personal API key. Workouts are still created on Intervals.icu.</string>
+    <string name="garmin_spiegazione">No chest strap? %1$s can read your overnight HRV, resting heart rate and sleep from your Garmin device, using your own Garmin Personal API key. Workouts are still created on Intervals.icu.</string>
     <string name="garmin_crea_chiave">Create your key on Garmin Connect</string>
     <string name="garmin_chiave">Garmin Personal API key</string>
     <string name="garmin_salva_e_prova">Save and test</string>
@@ -11,18 +11,18 @@
     <string name="garmin_collegato">Garmin Connect linked</string>
     <string name="garmin_privacy">The key stays on this phone only, encrypted. %1$s uses it to read your own Garmin data for your personal use, never shares it and never includes it in backups.</string>
     <string name="garmin_ok_hrv">Connected. Last overnight HRV: %1$d ms (%2$s)</string>
-    <string name="garmin_ok_senza_notti">Connected, but no night with HRV in the last 30 days: wear your watch in bed.</string>
+    <string name="garmin_ok_senza_notti">Connected, but no night with HRV in the last 30 days: wear your Garmin device in bed.</string>
     <string name="garmin_chiave_non_valida">Garmin rejected the key: it may have expired or been deleted. Create a new one and enter it again.</string>
     <string name="garmin_troppe_richieste">Garmin is limiting requests: try again later.</string>
     <string name="garmin_errore">Garmin Connect not reachable: %1$s</string>
     <string name="garmin_sorgente_titolo">Night data source</string>
     <string name="garmin_sorgente_fascia">Chest strap</string>
-    <string name="garmin_sorgente_garmin">Garmin Connect (watch)</string>
-    <string name="garmin_sorgente_nota">Readiness uses one source only: wrist and chest HRV have different levels. Switching source restarts the calibration (with Garmin, your Garmin history is loaded right away).</string>
+    <string name="garmin_sorgente_garmin">Garmin Connect</string>
+    <string name="garmin_sorgente_nota">Readiness uses one source only: HRV from a Garmin device and from a chest strap have different levels. Switching source restarts the calibration (with Garmin, your Garmin history is loaded right away).</string>
     <string name="garmin_esito_salvata">Last Garmin night: %1$s</string>
-    <string name="garmin_esito_attesa">Waiting for last night from Garmin Connect: open the Garmin Connect app to sync your watch.</string>
+    <string name="garmin_esito_attesa">Waiting for last night from Garmin Connect: open the Garmin Connect app to sync your device.</string>
     <string name="garmin_esito_errore">Garmin Connect not reachable: retrying in an hour.</string>
     <string name="garmin_avviso_chiave_titolo">Garmin Connect: key not valid</string>
-    <string name="garmin_fasi_nota">Sleep stages from Garmin Connect (watch). Garmin provides only the totals, not how the stages unfold during the night.</string>
-    <string name="garmin_fonte_notte">Night from Garmin Connect (watch): HRV measured in %1$d of %2$d five-minute windows.</string>
+    <string name="garmin_fasi_nota">Sleep stages from Garmin Connect. Garmin provides only the totals, not how the stages unfold during the night.</string>
+    <string name="garmin_fonte_notte">Night from Garmin Connect: HRV measured in %1$d of %2$d five-minute windows.</string>
 </resources>
