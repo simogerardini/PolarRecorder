@@ -90,7 +90,8 @@ object AgeRepository {
         } catch (e: SQLException) {
           emptyList()
         }
-    val recent = nights.filter { it.summary.endMs >= since }
+    // Parte 11: senza le notti Garmin (la card dell'Eta' NoctaliX si condivide)
+    val recent = nights.filter { it.summary.endMs >= since && it.summary.sorgente != com.wboelens.polarrecorder.biosleep.NightSummary.SORGENTE_GARMIN }
     val lowQuality = recent.count { (it.summary.qualityPct ?: 0.0) < MIN_QUALITY }
     val noStages = recent.count { (it.summary.qualityPct ?: 0.0) >= MIN_QUALITY && (it.stages?.tstMin ?: 0) <= 0 }
     val valid =

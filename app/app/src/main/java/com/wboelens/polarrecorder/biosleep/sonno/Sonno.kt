@@ -23,6 +23,8 @@ data class NotteSonno(
     val vegliaMin: Int,
     /** Minuti dall'inizio della registrazione all'addormentamento (null = non stimabile). */
     val latenzaMin: Int? = null,
+    /** Parte 11: notte letta da Garmin Connect (resta sul telefono: niente card condivisibile). */
+    val garmin: Boolean = false,
 ) {
   /** Punto centrale del sonno. */
   val centro: LocalDateTime get() = inizio.plusSeconds(Duration.between(inizio, fine).seconds / 2)

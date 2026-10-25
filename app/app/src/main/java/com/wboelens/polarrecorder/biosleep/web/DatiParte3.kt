@@ -47,7 +47,10 @@ data class DatiParte3(
 
     fun perCopia(context: Context, oggi: LocalDate = LocalDate.now()): DatiParte3 {
       val ctx = context.applicationContext
-      val notti = runCatching { SonnoRepo.notti(SleepDb.get(ctx).listNights()) }.getOrDefault(emptyList())
+      // Parte 11 (privacy): le notti Garmin non escono dal telefono
+      val notti = runCatching {
+        SonnoRepo.notti(SleepDb.get(ctx).listNights().filter { it.summary.sorgente != com.wboelens.polarrecorder.biosleep.NightSummary.SORGENTE_GARMIN })
+      }.getOrDefault(emptyList())
       val stato = SonnoRepo.calcola(notti, oggi)
       val tag = runCatching { TagDb.get(ctx) }.getOrNull()
       return DatiParte3(
@@ -67,7 +70,7 @@ data class DatiParte3(
         }
 
     private fun prontezza(ctx: Context, oggi: LocalDate): JsonObject {
-      val repo = CacheRepo.get(ctx)
+      val repo = CacheRepo.get(ctx, perUscita = true)
       val o = JsonObject()
       o.addProperty("data", oggi.toString())
       when (val p = repo.prontezza(oggi)) {

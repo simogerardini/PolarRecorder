@@ -43,7 +43,8 @@ class CacheRepo(
     /** BIOSLEEP_LOOKBACK_DAYS del coach: la banda si calcola sugli stessi 60 giorni. */
     const val GG_BANDA = 60L
 
-    fun get(context: Context): CacheRepo {
+    /** perUscita = true per cio' che esce dal telefono (web, card): senza le notti Garmin (Parte 11). */
+    fun get(context: Context, perUscita: Boolean = false): CacheRepo {
       val tag = TagDb.get(context)
       // ciclo (facoltativo): i giorni luteali escono dalla baseline come nel cervello
       val profilo = runCatching { com.wboelens.polarrecorder.biosleep.cervello.ProfiloStore(context).leggi() }.getOrNull()
@@ -51,7 +52,7 @@ class CacheRepo(
       return CacheRepo(
           CacheDb.get(context),
           { da, a -> com.wboelens.polarrecorder.biosleep.cervello.Ciclo.conLuteali(tag.giorni(da, a), inizi, da, a) },
-          { da, a -> NottiLocali.righe(context.applicationContext, da, a) })
+          { da, a -> NottiLocali.righe(context.applicationContext, da, a, conGarmin = !perUscita) })
     }
   }
 

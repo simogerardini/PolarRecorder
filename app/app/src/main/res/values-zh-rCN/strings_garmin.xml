@@ -24,4 +24,17 @@
     <string name="garmin_avviso_chiave_titolo">Garmin Connect：密钥无效</string>
     <string name="garmin_fasi_nota">睡眠阶段来自 Garmin Connect。Garmin 只提供总时长，不提供夜间各阶段的变化过程。</string>
     <string name="garmin_fonte_notte">来自 Garmin Connect 的夜间数据：%2$d 个五分钟窗口中有 %1$d 个测得 HRV。</string>
+    <string name="garmin_fonte_breve">夜间数据：Garmin Connect</string>
+    <string name="garmin_fonte_grafici">这些图表中的部分夜晚来自 Garmin Connect。</string>
+    <string name="garmin_resta_sul_telefono">来自 Garmin Connect 的夜间数据仅保存在此手机上：不会发送到 Intervals.icu、网页版或分享卡片。</string>
+    <string name="garmin_durata_titolo">在 Garmin Connect 上为密钥选择的有效期</string>
+    <string name="garmin_durata_giorni">%1$d 天</string>
+    <string name="garmin_scade_il">Garmin 密钥大约在 %1$s 过期。</string>
+    <string name="garmin_avviso_scadenza_titolo">Garmin Connect：密钥即将过期</string>
+    <string name="garmin_avviso_scadenza_testo">你的 Garmin 密钥将在 %1$d 天后过期。请在 Garmin Connect 上创建新密钥并在设置中输入。</string>
+    <string name="garmin_scollega_titolo">断开 Garmin Connect？</string>
+    <string name="garmin_scollega_testo">密钥将被删除。要保留已从 Garmin Connect 读取的夜间数据，还是从此手机上删除？</string>
+    <string name="garmin_tieni_notti">保留夜间数据</string>
+    <string name="garmin_cancella_notti">删除夜间数据</string>
+    <string name="garmin_annulla">取消</string>
 </resources>

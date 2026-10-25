@@ -167,7 +167,7 @@ fun SonnoScreen(onBack: () -> Unit) {
               val ctx = LocalContext.current
               val notte = s?.ultima
               val punti = s?.punteggio
-              if (notte != null && punti != null) {
+              if (notte != null && punti != null && !notte.garmin) {
                 val fascia = tr(PunteggioSonno.etichetta(punti.totale))
                 IconButton(onClick = { Condivisione.apri(ctx, CardSonno.da(notte, punti, fascia)) }) {
                   Icon(Icons.Filled.Share, contentDescription = stringResource(R.string.condivisione_azione))
@@ -184,7 +184,11 @@ fun SonnoScreen(onBack: () -> Unit) {
         Modifier.fillMaxSize().padding(padding).verticalScroll(rememberScrollState()).padding(16.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp),
     ) {
-      Sezione(stringResource(R.string.sonno_punteggio_del_sonno)) { Punteggio(s) }
+      Sezione(stringResource(R.string.sonno_punteggio_del_sonno)) {
+        Punteggio(s)
+        // Parte 11: attribuzione dei dati Garmin
+        if (s.ultima?.garmin == true) Nota(stringResource(R.string.garmin_fonte_breve))
+      }
       // la notte: fasi, frequenza cardiaca, HRV, registrazione
       ultimaNotte?.let { RiepilogoNotte(it) }
       // le tendenze di piu' notti

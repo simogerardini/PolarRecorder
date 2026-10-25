@@ -59,6 +59,8 @@ data class DatiGrafici(
     val sonno: List<Double?>,
     val rangeHrv: Pair<Double, Double>?,
     val formaOggi: StatoForma?,
+    /** Parte 11: almeno una notte del periodo viene da Garmin Connect. */
+    val garmin: Boolean = false,
 ) {
   companion object {
     fun carica(repo: CacheRepo, oggi: LocalDate): DatiGrafici {
@@ -87,6 +89,7 @@ data class DatiGrafici(
           sonno = campo(CampiWellness.F_SLEEP_HOURS),
           rangeHrv = range,
           formaOggi = home.oggi,
+          garmin = giorni.any { d -> wellness[d.toString()]?.let { PyJson.num(it.get(CampiWellness.F_SOURCE))?.v?.toInt() } == com.wboelens.polarrecorder.biosleep.NightSummary.SORGENTE_GARMIN },
       )
     }
   }
@@ -122,6 +125,8 @@ fun GraficiScreen(bottomBar: @Composable () -> Unit) {
       Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
         for (p in listOf(30, 90)) FilterChip(selected = p == periodo, onClick = { periodo = p }, label = { Text(stringResource(R.string.grafici_giorni, p.toString())) })
       }
+      // Parte 11: attribuzione dei dati Garmin
+      if (d.garmin) Text(stringResource(R.string.garmin_fonte_grafici), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
       val coach = coachAttivo()
       if (coach) Sezione(stringResource(R.string.grafici_forma_fisica_e_stanchezza)) {
         GraficoLinee(

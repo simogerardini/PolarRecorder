@@ -28,6 +28,7 @@ object SonnoRepo {
   /** Una notte del database -> NotteSonno; null se non c'e' la stadiazione o e' troppo corta. */
   fun daNotte(n: NightListItem, zona: ZoneId = ZoneId.systemDefault()): NotteSonno? =
       n.stages?.let { daRegistrazione(n.summary.startMs, n.summary.endMs, it, zona) }
+          ?.copy(garmin = n.summary.sorgente == com.wboelens.polarrecorder.biosleep.NightSummary.SORGENTE_GARMIN)
 
   /** Inizio e fine della registrazione + fasi della stadiazione -> NotteSonno. */
   fun daRegistrazione(startMs: Long, endMs: Long, st: SleepStages, zona: ZoneId = ZoneId.systemDefault()): NotteSonno? {

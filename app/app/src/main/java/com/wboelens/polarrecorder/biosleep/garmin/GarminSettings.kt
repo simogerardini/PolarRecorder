@@ -49,8 +49,29 @@ class GarminSettings(context: Context) {
       prefs.edit().putLong(K_PAUSA, value).apply()
     }
 
+  /** Parte 11: durata scelta su Garmin Connect alla creazione (30/90/180/365 giorni) e data di inserimento. */
+  fun salvaDurata(giorni: Int, inseritaMs: Long = System.currentTimeMillis()) {
+    prefs.edit().putInt(K_DURATA, giorni).putLong(K_INSERITA, inseritaMs).remove(K_AVVISO_SCADENZA).apply()
+  }
+
+  /** Scadenza stimata della chiave (ms), null se la durata non e' nota. */
+  val scadenzaMs: Long?
+    get() {
+      val g = prefs.getInt(K_DURATA, 0)
+      val da = prefs.getLong(K_INSERITA, 0L)
+      return if (g > 0 && da > 0) da + g * 86_400_000L else null
+    }
+
+  /** true una sola volta per chiave: l'avviso dei 14 giorni. */
+  internal fun primoAvvisoScadenza(): Boolean {
+    if (prefs.getBoolean(K_AVVISO_SCADENZA, false)) return false
+    prefs.edit().putBoolean(K_AVVISO_SCADENZA, true).apply()
+    return true
+  }
+
   fun scollega() {
-    prefs.edit().remove(K_CHIAVE).remove(K_TOKEN).remove(K_TOKEN_EXP).remove(K_PAUSA).apply()
+    prefs.edit().remove(K_CHIAVE).remove(K_TOKEN).remove(K_TOKEN_EXP).remove(K_PAUSA)
+        .remove(K_DURATA).remove(K_INSERITA).remove(K_AVVISO_SCADENZA).apply()
   }
 
   companion object {
@@ -58,5 +79,9 @@ class GarminSettings(context: Context) {
     private const val K_TOKEN = "garmin_token_cifrato"
     private const val K_TOKEN_EXP = "garmin_token_exp"
     private const val K_PAUSA = "garmin_pausa_fino_ms"
+    private const val K_DURATA = "garmin_chiave_giorni"
+    private const val K_INSERITA = "garmin_chiave_inserita_ms"
+    private const val K_AVVISO_SCADENZA = "garmin_avviso_scadenza"
+    val DURATE = listOf(30, 90, 180, 365)
   }
 }

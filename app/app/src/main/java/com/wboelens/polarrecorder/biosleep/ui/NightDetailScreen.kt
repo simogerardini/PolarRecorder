@@ -223,6 +223,7 @@ private fun NightContent(
 
     // Fase 6: stato e invio manuale a Intervals.icu
     val night = detail.night
+    if (s.sorgente != com.wboelens.polarrecorder.biosleep.NightSummary.SORGENTE_GARMIN) {
     Text(stringResource(R.string.night_detail_intervals_icu), style = MaterialTheme.typography.titleSmall)
     Text(
         tr(when {
@@ -244,6 +245,7 @@ private fun NightContent(
         CircularProgressIndicator(Modifier.size(24.dp))
       }
     }
+    } // Parte 11: fine della sezione Intervals.icu (non per le notti Garmin)
   }
 }
 
@@ -411,7 +413,7 @@ fun RiepilogoNotte(sessionId: Long) {
             stringResource(R.string.night_detail_affidabilita_battiti_scartati_interruzioni, (fmt(s.qualityPct, 1)).toString(), s.beats.toString(), (fmt(s.pctDropped, 1)).toString(), s.gaps.toString(), s.windowsOk.toString(), s.windowsTotal.toString()),
             style = MaterialTheme.typography.bodySmall,
             color = MaterialTheme.colorScheme.onSurfaceVariant)
-        Text(
+        if (s.sorgente != com.wboelens.polarrecorder.biosleep.NightSummary.SORGENTE_GARMIN) Text(
             tr(when {
               night.syncedAt != null -> "Intervals.icu: ✓ inviata il ${dateTimeLabel(night.syncedAt)}"
               night.syncStatus != null -> "Intervals.icu: non inviata (${night.syncStatus})"
@@ -421,7 +423,7 @@ fun RiepilogoNotte(sessionId: Long) {
             color =
                 if (night.syncedAt == null && night.syncStatus != null) MaterialTheme.colorScheme.error
                 else MaterialTheme.colorScheme.onSurfaceVariant)
-        if (night.syncedAt == null) {
+        if (night.syncedAt == null && s.sorgente != com.wboelens.polarrecorder.biosleep.NightSummary.SORGENTE_GARMIN) {
           Row(verticalAlignment = Alignment.CenterVertically) {
             Button(
                 onClick = {

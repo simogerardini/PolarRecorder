@@ -210,6 +210,12 @@ class SleepDb private constructor(context: Context) :
           .rawQuery("SELECT id FROM sessions WHERE source = ? AND start_ms = ? LIMIT 1", arrayOf(source, startMs.toString()))
           .use { c -> if (c.moveToNext()) c.getLong(0) else null }
 
+  /** Parte 11: tutte le sessioni di una sorgente (es. "GARMIN"). */
+  fun sessioniDa(source: String): List<Long> =
+      readableDatabase
+          .rawQuery("SELECT id FROM sessions WHERE source = ?", arrayOf(source))
+          .use { c -> buildList { while (c.moveToNext()) add(c.getLong(0)) } }
+
   fun closeSession(sessionId: Long, endMs: Long) {
     val v = ContentValues().apply { put("end_ms", endMs) }
     writableDatabase.update("sessions", v, "id = ?", arrayOf(sessionId.toString()))

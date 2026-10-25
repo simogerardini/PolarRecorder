@@ -25,4 +25,17 @@
     <string name="garmin_avviso_chiave_titolo">Garmin Connect: key not valid</string>
     <string name="garmin_fasi_nota">Sleep stages from Garmin Connect. Garmin provides only the totals, not how the stages unfold during the night.</string>
     <string name="garmin_fonte_notte">Night from Garmin Connect: HRV measured in %1$d of %2$d five-minute windows.</string>
+    <string name="garmin_fonte_breve">Night data: Garmin Connect</string>
+    <string name="garmin_fonte_grafici">Some nights in these charts come from Garmin Connect.</string>
+    <string name="garmin_resta_sul_telefono">Garmin Connect nights stay on this phone only: they are not sent to Intervals.icu, the web app or shared cards.</string>
+    <string name="garmin_durata_titolo">Key validity chosen on Garmin Connect</string>
+    <string name="garmin_durata_giorni">%1$d days</string>
+    <string name="garmin_scade_il">The Garmin key expires around %1$s.</string>
+    <string name="garmin_avviso_scadenza_titolo">Garmin Connect: the key is about to expire</string>
+    <string name="garmin_avviso_scadenza_testo">Your Garmin key expires in %1$d days. Create a new one on Garmin Connect and enter it in Settings.</string>
+    <string name="garmin_scollega_titolo">Disconnect Garmin Connect?</string>
+    <string name="garmin_scollega_testo">The key will be deleted. Do you want to keep the nights already read from Garmin Connect or delete them from this phone?</string>
+    <string name="garmin_tieni_notti">Keep the nights</string>
+    <string name="garmin_cancella_notti">Delete the nights</string>
+    <string name="garmin_annulla">Cancel</string>
 </resources>

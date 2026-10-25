@@ -231,7 +231,8 @@ fun IntervalsSettingsScreen(
 
       HorizontalDivider()
       // Parte 11: Garmin Connect (Personal API) per chi non ha la fascia cardio
-      SezioneGarmin()
+      // solo nelle build di sviluppo finche' Garmin non conferma per iscritto (Parte 4)
+      if (BuildConfig.DEBUG) SezioneGarmin()
 
       HorizontalDivider()
       // Il coach nell'app (cervello Python): id atleta per la API key, ultimo run, profilo, misura

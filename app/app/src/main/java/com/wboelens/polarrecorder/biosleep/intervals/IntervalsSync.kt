@@ -25,6 +25,9 @@ object IntervalsSync {
         } catch (e: SQLException) {
           return IntervalsResult.Failed("Errore del database: ${e.message}")
         } ?: return IntervalsResult.Failed("Notte non trovata")
+    // Parte 11 (privacy, Parte 4): le notti Garmin restano solo sul telefono
+    if (night.summary.sorgente == com.wboelens.polarrecorder.biosleep.NightSummary.SORGENTE_GARMIN)
+        return IntervalsResult.Failed("Notte Garmin Connect: resta sul telefono")
 
     val result = IntervalsClient.uploadNight(IntervalsAuth.header(credenziali), night.summary, night.stages)
     try {

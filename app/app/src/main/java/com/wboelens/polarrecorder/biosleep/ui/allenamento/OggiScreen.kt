@@ -80,7 +80,7 @@ import com.wboelens.polarrecorder.biosleep.ui.TestOggi
 import java.time.LocalDate
 
 /** Una notte dalla wellness: valori BioSleep inviati da questa app. */
-data class NotteBio(val data: LocalDate, val rmssd: Double?, val fcMedia: Double?, val sonnoOre: Double?)
+data class NotteBio(val data: LocalDate, val rmssd: Double?, val fcMedia: Double?, val sonnoOre: Double?, val garmin: Boolean = false)
 
 /** Tutto quello che serve alla schermata, letto in una volta dalla cache. */
 data class DatiOggi(
@@ -109,7 +109,8 @@ data class DatiOggi(
                 d,
                 PyJson.num(o.get(CampiWellness.F_RMSSD))?.v,
                 PyJson.num(o.get(CampiWellness.F_AVG_HR))?.v,
-                PyJson.num(o.get(CampiWellness.F_SLEEP_HOURS))?.v)
+                PyJson.num(o.get(CampiWellness.F_SLEEP_HOURS))?.v,
+                garmin = PyJson.num(o.get(CampiWellness.F_SOURCE))?.v?.toInt() == com.wboelens.polarrecorder.biosleep.NightSummary.SORGENTE_GARMIN)
           }
       val prontezza = repo.prontezza(oggi)
       return DatiOggi(
@@ -284,6 +285,10 @@ private fun Recupero(d: DatiOggi) {
       "Sonno stanotte",
       stanotte?.sonnoOre?.let { Formato.durata((it * 3600).toInt()) } ?: "—",
       media { it.sonnoOre }?.let { "media 7 gg ${Formato.durata((it * 3600).toInt())}" })
+  // Parte 11: attribuzione dei dati Garmin
+  if (stanotte?.garmin == true) {
+    Text(stringResource(R.string.garmin_fonte_breve), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+  }
 }
 
 @Composable

@@ -59,9 +59,10 @@ class InvioNotteWorker(context: Context, params: WorkerParameters) : CoroutineWo
     }
     // Parte 11: con Garmin come sorgente le notti della fascia non si inviano in automatico
     // (sovrascriverebbero la notte Garmin dello stesso giorno); "Invia ora" resta possibile
+    val sorgenteNotte = withContext(Dispatchers.IO) { com.wboelens.polarrecorder.biosleep.SleepDb.get(ctx).loadNight(id) }?.summary?.sorgente
+    if (sorgenteNotte == com.wboelens.polarrecorder.biosleep.NightSummary.SORGENTE_GARMIN) return Result.success() // resta sul telefono
     if (com.wboelens.polarrecorder.biosleep.garmin.GarminScelta.attiva(ctx) &&
-        withContext(Dispatchers.IO) { com.wboelens.polarrecorder.biosleep.SleepDb.get(ctx).loadNight(id) }?.summary?.sorgente ==
-            com.wboelens.polarrecorder.biosleep.NightSummary.SORGENTE_FASCIA) {
+        sorgenteNotte == com.wboelens.polarrecorder.biosleep.NightSummary.SORGENTE_FASCIA) {
       AutoStopLog.write(ctx, "Invio notte $id: sorgente scelta Garmin, notte della fascia non inviata")
       return Result.success()
     }

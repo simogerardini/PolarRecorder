@@ -128,7 +128,7 @@ object FontiSnapshot {
                   n.quality_pct, n.hypno_start_ms, n.hypnogram, n.sleep_onset_ms, n.sleep_end_ms, n.tst_min,
                   n.deep_min, n.light_min, n.rem_min, n.wake_min, n.staging_mode, s.source
            FROM nights n LEFT JOIN sessions s ON s.id = n.session_id
-           WHERE n.start_ms IS NOT NULL AND n.end_ms IS NOT NULL AND IFNULL(s.source, '') != 'DEMO'
+           WHERE n.start_ms IS NOT NULL AND n.end_ms IS NOT NULL AND IFNULL(s.source, '') NOT IN ('DEMO', 'GARMIN')
            ORDER BY n.end_ms""",
         null).use { c ->
       while (c.moveToNext()) {

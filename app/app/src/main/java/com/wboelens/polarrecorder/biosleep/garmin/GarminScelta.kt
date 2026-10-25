@@ -31,7 +31,10 @@ object GarminScelta {
   fun sorgente(c: Context): Int = prefs(c).getInt(K_SORGENTE, NightSummary.SORGENTE_FASCIA)
 
   /** Garmin scelto come sorgente e chiave presente. */
-  fun attiva(c: Context): Boolean = sorgente(c) == NightSummary.SORGENTE_GARMIN && GarminSettings(c).collegato
+  fun attiva(c: Context): Boolean =
+      // Parte 4: solo nelle build di sviluppo finche' Garmin non conferma per iscritto
+      com.wboelens.polarrecorder.BuildConfig.DEBUG &&
+          sorgente(c) == NightSummary.SORGENTE_GARMIN && GarminSettings(c).collegato
 
   fun imposta(c: Context, sorgente: Int) {
     prefs(c).edit().putInt(K_SORGENTE, sorgente).apply()
@@ -77,6 +80,18 @@ object GarminScelta {
       WorkManager.getInstance(c).enqueueUniqueWork(LAVORO_ORA, ExistingWorkPolicy.KEEP,
           OneTimeWorkRequestBuilder<GarminNotteWorker>().setConstraints(rete).build())
     }
+  }
+
+  /** Allo scollegamento: chiave cancellata, sorgente fascia; [cancellaNotti] = anche le notti Garmin del telefono. */
+  fun scollega(c: Context, cancellaNotti: Boolean): Int {
+    GarminSettings(c).scollega()
+    imposta(c, NightSummary.SORGENTE_FASCIA)
+    prefs(c).edit().remove(K_STORICO).remove(K_ESITO).remove(K_AVVISO).apply()
+    if (!cancellaNotti) return 0
+    val db = com.wboelens.polarrecorder.biosleep.SleepDb.get(c)
+    val ids = db.sessioniDa(NightSummary.SOURCE_GARMIN)
+    ids.forEach { db.deleteSession(it) }
+    return ids.size
   }
 
   private fun avviaStorico(c: Context) {

@@ -25,7 +25,7 @@ object SedutaCondivisibile {
   fun carica(context: Context, a: DettaglioAttivita): CardSeduta? =
       try {
         val giorno = a.inizio?.toLocalDate() ?: return null
-        val repo = CacheRepo.get(context)
+        val repo = CacheRepo.get(context, perUscita = true) // Parte 11: senza notti Garmin
         val att = repo.attivita(giorno, giorno).firstOrNull { PyJson.str(it.get("id")) == a.id } ?: return null
         val eventoId = PyJson.str(att.get("paired_event_id")) ?: return null
         val evento = repo.eventi(giorno, giorno).mapNotNull { Allenamenti.evento(it) }.firstOrNull { it.id == eventoId } ?: return null

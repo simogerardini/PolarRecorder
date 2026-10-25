@@ -24,4 +24,17 @@
     <string name="garmin_avviso_chiave_titolo">Garmin Connect: clave no válida</string>
     <string name="garmin_fasi_nota">Fases del sueño de Garmin Connect. Garmin solo proporciona los totales, no cómo se distribuyen las fases durante la noche.</string>
     <string name="garmin_fonte_notte">Noche de Garmin Connect: VFC medida en %1$d de %2$d ventanas de cinco minutos.</string>
+    <string name="garmin_fonte_breve">Datos de la noche: Garmin Connect</string>
+    <string name="garmin_fonte_grafici">Algunas noches de estos gráficos vienen de Garmin Connect.</string>
+    <string name="garmin_resta_sul_telefono">Las noches de Garmin Connect se quedan solo en este teléfono: no se envían a Intervals.icu, a la web app ni a las tarjetas para compartir.</string>
+    <string name="garmin_durata_titolo">Validez elegida para la clave en Garmin Connect</string>
+    <string name="garmin_durata_giorni">%1$d días</string>
+    <string name="garmin_scade_il">La clave de Garmin caduca hacia el %1$s.</string>
+    <string name="garmin_avviso_scadenza_titolo">Garmin Connect: la clave está a punto de caducar</string>
+    <string name="garmin_avviso_scadenza_testo">Tu clave de Garmin caduca dentro de %1$d días. Crea una nueva en Garmin Connect e introdúcela en Ajustes.</string>
+    <string name="garmin_scollega_titolo">¿Desconectar Garmin Connect?</string>
+    <string name="garmin_scollega_testo">La clave se borrará. ¿Quieres conservar las noches ya leídas de Garmin Connect o borrarlas de este teléfono?</string>
+    <string name="garmin_tieni_notti">Conservar las noches</string>
+    <string name="garmin_cancella_notti">Borrar las noches</string>
+    <string name="garmin_annulla">Cancelar</string>
 </resources>

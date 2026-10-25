@@ -342,7 +342,14 @@ object Cervello {
       synchronized(lucchetto) {
         if (!Python.isStarted()) Python.start(AndroidPlatform(context.applicationContext))
         try {
-          val testo = python(context, "esegui_app", config.json()).toString()
+          // Parte 11: notti del telefono (fascia e Garmin) per il cervello: "notti_locali"
+          val percorso = runCatching {
+            com.wboelens.polarrecorder.biosleep.cache.NottiLocali.scriviPerCervello(
+                context.applicationContext, java.io.File(cartella(context), "notti_locali.json"))
+          }.getOrNull()
+          val cfg = if (percorso == null) config.json()
+              else com.google.gson.JsonParser.parseString(config.json()).asJsonObject.apply { addProperty("notti_locali", percorso) }.toString()
+          val testo = python(context, "esegui_app", cfg).toString()
           RisultatoCervello.da(testo)
         } catch (e: PyException) {
           // esegui_app intercetta gia' i propri errori: qui arrivano solo quelli di import/avvio

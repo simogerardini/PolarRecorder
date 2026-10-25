@@ -24,4 +24,17 @@
     <string name="garmin_avviso_chiave_titolo">Garmin Connect: chiave non valida</string>
     <string name="garmin_fasi_nota">Fasi del sonno da Garmin Connect. Garmin fornisce solo i totali, non l’andamento delle fasi nella notte.</string>
     <string name="garmin_fonte_notte">Notte da Garmin Connect: HRV misurata in %1$d finestre di 5 minuti su %2$d.</string>
+    <string name="garmin_fonte_breve">Dati della notte: Garmin Connect</string>
+    <string name="garmin_fonte_grafici">Alcune notti di questi grafici vengono da Garmin Connect.</string>
+    <string name="garmin_resta_sul_telefono">Le notti Garmin Connect restano solo su questo telefono: non vanno su Intervals.icu, sulla web app né nelle card condivisibili.</string>
+    <string name="garmin_durata_titolo">Durata scelta per la chiave su Garmin Connect</string>
+    <string name="garmin_durata_giorni">%1$d giorni</string>
+    <string name="garmin_scade_il">La chiave Garmin scade intorno al %1$s.</string>
+    <string name="garmin_avviso_scadenza_titolo">Garmin Connect: la chiave sta per scadere</string>
+    <string name="garmin_avviso_scadenza_testo">La tua chiave Garmin scade tra %1$d giorni. Creane una nuova su Garmin Connect e inseriscila nelle Impostazioni.</string>
+    <string name="garmin_scollega_titolo">Scollegare Garmin Connect?</string>
+    <string name="garmin_scollega_testo">La chiave verrà cancellata. Vuoi tenere le notti già lette da Garmin Connect o cancellarle da questo telefono?</string>
+    <string name="garmin_tieni_notti">Tieni le notti</string>
+    <string name="garmin_cancella_notti">Cancella le notti</string>
+    <string name="garmin_annulla">Annulla</string>
 </resources>

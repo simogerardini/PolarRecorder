@@ -3,6 +3,7 @@ package com.wboelens.polarrecorder.biosleep.cache
 import android.content.Context
 import com.google.gson.JsonObject
 import com.google.gson.JsonParser
+import com.wboelens.polarrecorder.biosleep.NightSummary
 import com.wboelens.polarrecorder.biosleep.SleepDb
 import com.wboelens.polarrecorder.biosleep.intervals.CampiWellness
 import com.wboelens.polarrecorder.biosleep.intervals.IntervalsClient
@@ -16,18 +17,25 @@ import java.time.LocalDate
  * biometria, account non collegato, invio automatico spento, telefono offline.
  */
 object NottiLocali {
-  /** Righe wellness delle notti con risveglio in [da, a], una per giorno (l'ultima notte vince). */
-  fun righe(context: Context, da: LocalDate, a: LocalDate): List<JsonObject> =
+  /**
+   * Righe wellness delle notti con risveglio in [da, a], una per giorno: vince la notte della
+   * sorgente scelta (fascia/Garmin), poi la piu' recente.
+   * Parte 11 (privacy, Parte 4): [conGarmin] = false per tutto cio' che esce dal telefono
+   * (NoctaliX Web, card condivisibili): le notti Garmin restano solo sul telefono.
+   */
+  fun righe(context: Context, da: LocalDate, a: LocalDate, conGarmin: Boolean = true): List<JsonObject> =
       try {
+        val preferita = com.wboelens.polarrecorder.biosleep.garmin.GarminScelta.sorgente(context)
         SleepDb.get(context).listNights()
+            .filter { conGarmin || it.summary.sorgente != NightSummary.SORGENTE_GARMIN }
             .mapNotNull { n ->
               val giorno = IntervalsClient.morningDate(n.summary)
               if (giorno < da.toString() || giorno > a.toString()) return@mapNotNull null
               val o = JsonParser.parseString(IntervalsClient.buildWellness(n.summary, n.stages).toString()).asJsonObject
               o.addProperty("id", giorno)
-              n.summary.endMs to o
+              ((if (n.summary.sorgente == preferita) 1L else 0L) to n.summary.endMs) to o
             }
-            .sortedBy { it.first }
+            .sortedWith(compareBy({ it.first.first }, { it.first.second }))
             .associateBy { it.second.get("id").asString }
             .values
             .map { it.second }
@@ -55,5 +63,16 @@ object NottiLocali {
       }
     }
     return perGiorno.entries.sortedBy { it.key }.map { it.value }
+  }
+
+  /**
+   * Parte 11: le notti del telefono (fascia e Garmin, ultimi 365 giorni) per il cervello, che le
+   * preferisce a quelle lette da Intervals.icu (config "notti_locali", contratto con la Parte 2).
+   */
+  fun scriviPerCervello(context: Context, file: java.io.File, oggi: LocalDate = LocalDate.now()): String {
+    val arr = com.google.gson.JsonArray()
+    righe(context, oggi.minusDays(365), oggi).forEach { arr.add(it) }
+    file.writeText(arr.toString())
+    return file.absolutePath
   }
 }

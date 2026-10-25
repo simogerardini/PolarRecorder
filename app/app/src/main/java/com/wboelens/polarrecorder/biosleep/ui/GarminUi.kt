@@ -7,7 +7,9 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
+import androidx.compose.material3.FilterChip
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -59,6 +61,8 @@ fun SezioneGarmin() {
   var inCorso by remember { mutableStateOf(false) }
   var esito by remember { mutableStateOf<EsitoProvaGarmin?>(null) }
   var sorgente by remember { mutableStateOf(GarminScelta.sorgente(context)) }
+  var durata by remember { mutableStateOf(365) }
+  var chiediScollega by remember { mutableStateOf(false) }
 
   fun prova() {
     inCorso = true
@@ -79,13 +83,12 @@ fun SezioneGarmin() {
       Text(stringResource(R.string.garmin_collegato), color = MaterialTheme.colorScheme.primary)
       Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
         OutlinedButton(onClick = { prova() }, enabled = !inCorso) { Text(stringResource(R.string.garmin_prova)) }
-        TextButton(onClick = {
-          settings.scollega()
-          GarminScelta.imposta(context, NightSummary.SORGENTE_FASCIA)
-          sorgente = NightSummary.SORGENTE_FASCIA
-          collegato = false
-          esito = null
-        }) { Text(stringResource(R.string.garmin_scollega)) }
+        TextButton(onClick = { chiediScollega = true }) { Text(stringResource(R.string.garmin_scollega)) }
+      }
+      // scadenza stimata dalla durata scelta su Garmin Connect
+      settings.scadenzaMs?.let { ms ->
+        val giorno = java.time.Instant.ofEpochMilli(ms).atZone(java.time.ZoneId.systemDefault()).toLocalDate()
+        Text(stringResource(R.string.garmin_scade_il, giorno.toString()), style = MaterialTheme.typography.bodySmall)
       }
       // Sorgente della notte
       Text(stringResource(R.string.garmin_sorgente_titolo), style = MaterialTheme.typography.labelLarge)
@@ -137,9 +140,17 @@ fun SezioneGarmin() {
           },
           modifier = Modifier.fillMaxWidth(),
       )
+      // durata scelta su Garmin Connect: serve all'avviso 14 giorni prima della scadenza
+      Text(stringResource(R.string.garmin_durata_titolo), style = MaterialTheme.typography.labelLarge)
+      Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+        for (g in GarminSettings.DURATE) {
+          FilterChip(selected = durata == g, onClick = { durata = g }, label = { Text(stringResource(R.string.garmin_durata_giorni, g)) })
+        }
+      }
       Button(
           onClick = {
             settings.chiave = chiave
+            settings.salvaDurata(durata)
             chiave = ""
             collegato = settings.collegato
             prova()
@@ -147,6 +158,10 @@ fun SezioneGarmin() {
           enabled = chiave.isNotBlank() && !inCorso,
       ) { Text(stringResource(R.string.garmin_salva_e_prova)) }
     }
+    Text(
+        stringResource(R.string.garmin_resta_sul_telefono),
+        style = MaterialTheme.typography.bodySmall,
+        color = MaterialTheme.colorScheme.onSurfaceVariant)
     Text(
         stringResource(R.string.garmin_privacy, BuildConfig.APP_NAME),
         style = MaterialTheme.typography.bodySmall,
@@ -165,6 +180,29 @@ fun SezioneGarmin() {
       Text(testo, color = if (ok) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.error)
     }
   }
+  if (chiediScollega) {
+    fun fatto(cancella: Boolean) {
+      chiediScollega = false
+      scope.launch {
+        withContext(Dispatchers.IO) { GarminScelta.scollega(context.applicationContext, cancella) }
+        sorgente = NightSummary.SORGENTE_FASCIA
+        collegato = false
+        esito = null
+      }
+    }
+    AlertDialog(
+        onDismissRequest = { chiediScollega = false },
+        title = { Text(stringResource(R.string.garmin_scollega_titolo)) },
+        text = { Text(stringResource(R.string.garmin_scollega_testo)) },
+        confirmButton = { TextButton(onClick = { fatto(cancella = true) }) { Text(stringResource(R.string.garmin_cancella_notti)) } },
+        dismissButton = {
+          Row {
+            TextButton(onClick = { chiediScollega = false }) { Text(stringResource(R.string.garmin_annulla)) }
+            TextButton(onClick = { fatto(cancella = false) }) { Text(stringResource(R.string.garmin_tieni_notti)) }
+          }
+        })
+  }
+
 }
 
 /** Parte 11: al posto della qualita' del segnale (battiti), per le notti lette da Garmin Connect. */
@@ -172,6 +210,10 @@ fun SezioneGarmin() {
 fun GarminFonteNotte(s: NightSummary) {
   Text(
       stringResource(R.string.garmin_fonte_notte, s.windowsOk, s.windowsTotal),
+      style = MaterialTheme.typography.bodySmall,
+      color = MaterialTheme.colorScheme.onSurfaceVariant)
+  Text(
+      stringResource(R.string.garmin_resta_sul_telefono),
       style = MaterialTheme.typography.bodySmall,
       color = MaterialTheme.colorScheme.onSurfaceVariant)
 }
