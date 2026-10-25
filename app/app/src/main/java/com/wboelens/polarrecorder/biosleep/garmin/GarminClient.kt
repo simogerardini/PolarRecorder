@@ -100,6 +100,8 @@ object GarminClient {
 
   /** GET di un percorso della Personal API (es. "/hrv-service/hrv/2026-10-25"). */
   fun leggi(context: Context, percorso: String): LetturaGarmin {
+    // modalita' demo: nessuna connessione verso Garmin (stesso interruttore di IntervalsClient)
+    if (com.wboelens.polarrecorder.biosleep.demo.DemoParte3.scrittureBloccate()) return LetturaGarmin.Errore("Modalità demo")
     val s = GarminSettings(context)
     if (ora() < s.pausaFinoMs) return LetturaGarmin.TroppeRichieste
     var forza = false

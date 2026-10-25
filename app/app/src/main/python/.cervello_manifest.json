@@ -1,0 +1,27 @@
+{
+ "file": {
+  "avanzate.py": "9165753dcee9be31a38ef12882b66904bb77c105479703660325bc7c668dfc8b",
+  "baseline_cases.json": "ca840cb3246f968ad488632cf9b42a411f03b544324b345b7053858ff553e49d",
+  "biometria.py": "8710f559f16f3558ddfb8f51694cdbf4179300156cc9ce8e820d56568558c755",
+  "caldo.py": "a2900dc3f161f3bb2447067597d1d5b094c85f75173676c679f626e60dc82a9e",
+  "campi.py": "0b4bedd163066a0fe1aea2c4467d3f4fd140e908f3abc13a09742a2f334bc4cd",
+  "carico.py": "321ef188a1e984bfbc63c44b2eaba6d68fc296fcfb15fb3e3946a59556c9e1d4",
+  "cervello.py": "7c994d03166fde9bbd8d0fb98b230c6fcf0983ec266d5f3b6f20e771ac2f47f2",
+  "checkin.py": "7b48da431019a3a1645a6c862c0cf5a71edca86833069c811cf5054cb96836e2",
+  "coach_settimanale.py": "f34010a4613941e8efc3f38ad55a615cfc9f18f40b0105ef4711146fbc512ce3",
+  "degradato.py": "ed24851729b44a44e3ef9df5e9fe60d07614b00bd7dc9acc2249e3ad85236f95",
+  "detp.py": "97a071a1f3c753d90e37cb6d838cf03afe732767663c0be2308a999302ee4726",
+  "efficienza.py": "8e2dfe7053bd51b9c73ac825cdce20d04e7c89029f627e0abf6a1e3cc87132b9",
+  "marchio.py": "11c71b6f7d44c420d7d4b7236f869c240a31f02127572cf3af050c33b3190e1c",
+  "messaggi.py": "c638eecbc7148e3086ffefdb1ecb320261bdfca90bd0583ade54d8332ac21bdf",
+  "modello.py": "80e4ac3b77a8fb3473c8056b6ca7efd0387dcc5d268180eecdfc07567c05d2c1",
+  "nomi.py": "c8396ff31a2ffdcfb0eb42ca54eb86c68446cc23e58f27dcdf6dbbc1757faeec",
+  "palestra.py": "0b83f89cc970b2ccc361f6ef989b4209c3310afe31afafffbe8235621afa74e6",
+  "sedute.py": "e7e1f63c8f12a408a424b4cf75d03b803266440a1eab0c30702a250afd5e4344",
+  "soglie.py": "30edb7215e4282bcdb98af8ffb3a32d7d7fd0a684c8c193d6a94755203d8137e",
+  "tag_auto.py": "c7d35726d3954051f83c11b356b273aabd50af9cf1c88d6b1e31ed99e14962aa",
+  "traduzioni.py": "a5ade5a0caf737cc6466d7a63e0a5869a60d117162c3ab6c41c20ebadac08847",
+  "traduzioni_palestra.py": "97d6c715a9da3da3ebad5b1771cdc522956ae2686af5285a0ba89e2a998428b5"
+ },
+ "versione": "2026.10.25-notti-locali"
+}

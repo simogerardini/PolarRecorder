@@ -16,6 +16,7 @@ config (JSON):
   tag             facoltativo: {"giorni": {"YYYY-MM-DD": [chiavi]}, "sedute": {"<id attivita'>": [chiavi]}}
                   vocabolario in coach_settimanale.TAG_GIORNO / TAG_SEDUTA
   lingua          facoltativo: "it"|"en"|"es"|"zh" (sedute sul calendario; zh -> en)
+  notti_locali    facoltativo: percorso del JSON delle notti tenute solo sul telefono (Garmin)
   checkin         facoltativo: {"<external_id>": {"stato", "rpe", "minuti", "data", "tag"}}, 28 giorni
   notti           facoltativo: {"YYYY-MM-DD": {"inizio": "HH:MM"}} inizio del sonno (tag automatici)
   tag_auto_rifiutati  facoltativo: ["YYYY-MM-DD:chiave"] tag automatici rifiutati dall'atleta
@@ -53,7 +54,7 @@ from marchio import NOME_APP
 import campi
 import messaggi   # 07/10/2026 (punto 13a): codici dei messaggi per l'app
 
-VERSIONE = "2026.10.25-sorgente"   # anche nel LEGGIMI del pacchetto
+VERSIONE = "2026.10.25-notti-locali"   # anche nel LEGGIMI del pacchetto
 import contextlib, importlib, io, json, math, os, re, sys, traceback
 
 # 09/10/2026: il cervello non usa piu' GitHub ne' Telegram; le variabili si tolgono comunque
@@ -923,7 +924,7 @@ def esegui_app(config_json):
     # mano che raccoglie dati) valgono piu' di quelle su Intervals.icu; disponibilita' per
     # giorno in minuti (0 = non disponibile); tetto ore cardio settimanale.
     for k in ("FCMAX", "FCREST", "FC_DA_APP", "MAX_ORE_CARDIO_SETT", "DISPONIBILITA", "SETTIMANA_TIPO",
-              "PALESTRA", "CALDO", "DETP", "DISPONIBILITA_DATE", "LINGUA", "LIVELLO"):
+              "PALESTRA", "CALDO", "DETP", "DISPONIBILITA_DATE", "LINGUA", "LIVELLO", "NOTTI_LOCALI"):
         os.environ.pop(k, None)
     prof = cfg.get("profilo") or {}
     if prof.get("fc_max") and prof.get("fc_riposo"):
@@ -933,6 +934,8 @@ def esegui_app(config_json):
         os.environ["MAX_ORE_CARDIO_SETT"] = str(float(prof["tetto_ore"]))
     if prof.get("disponibilita"):
         os.environ["DISPONIBILITA"] = json.dumps(prof["disponibilita"])
+    if cfg.get("notti_locali"):   # 25/10/2026 (Parte 11): notti Garmin solo sul telefono
+        os.environ["NOTTI_LOCALI"] = str(cfg["notti_locali"])
     if cfg.get("lingua"):     # 08/10/2026 (13b): lingua del calendario (zh -> en sull'orologio)
         os.environ["LINGUA"] = str(cfg["lingua"])
     if cfg.get("disponibilita_date"):   # 08/10/2026: minuti per data dal "+" del calendario

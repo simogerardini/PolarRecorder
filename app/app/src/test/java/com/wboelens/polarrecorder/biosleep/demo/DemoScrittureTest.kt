@@ -40,6 +40,8 @@ class DemoScrittureTest {
     val chiamate = src.flatMap { f -> Regex("""getModule\("cervello"\)\s*(//[^\n]*\s*)?\.callAttr""").findAll(f.readText()).map { f.name }.toList() }
     assertEquals(listOf("Cervello.kt"), chiamate, "ogni funzione del cervello passa da Cervello.python")
     val http = src.filter { "openConnection()" in it.readText() }.map { it.name }.sorted()
-    assertTrue(http.all { it in setOf("IntervalsClient.kt", "IntervalsReader.kt", "OAuthIntervals.kt", "ClientePonte.kt") }, "connessioni nuove: $http")
+    assertTrue(http.all { it in setOf("IntervalsClient.kt", "IntervalsReader.kt", "OAuthIntervals.kt", "ClientePonte.kt",
+        // Parte 11: solo letture da Garmin Connect (piu' il token), nessuna scrittura; in demo non si connette
+        "GarminClient.kt") }, "connessioni nuove: $http")
   }
 }

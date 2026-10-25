@@ -316,10 +316,73 @@ def get_wellness(days=42):
     oldest = (now_local() - timedelta(days=days)).strftime("%Y-%m-%d")
     newest = now_local().strftime("%Y-%m-%d")
     data = _get_icu("wellness", oldest=oldest, newest=newest) or []
+    # 25/10/2026 (Parte 11, privacy): le notti Garmin restano sul telefono e arrivano dal file
+    # "notti_locali"; i loro Noctalix* sostituiscono quelli di Intervals.icu in ogni lettura.
+    locali = [r for r in (_notti_locali() or []) if oldest <= str(r.get("id"))[:10] <= newest]
+    data = unisci_notti_locali([w for w in data if isinstance(w, dict)], locali or None)
     # ordinamento esplicito: piu' consumatori leggono "l'ultimo giorno" come [-1] e
     # l'ordine di risposta dell'API non e' garantito da contratto.
     return sorted([w for w in data if isinstance(w, dict)],
                   key=lambda x: x.get("id") or x.get("date") or "")
+
+
+NOTTI_LOCALI = os.getenv("NOTTI_LOCALI") or None
+
+
+def _notti_locali():
+    """Righe del file delle notti locali (cache), None se manca o non si legge."""
+    if not NOTTI_LOCALI:
+        return None
+    if "notti_locali" not in _CACHE:
+        try:
+            with open(NOTTI_LOCALI, encoding="utf-8") as f:
+                righe = json.load(f)
+            _CACHE["notti_locali"] = [r for r in righe if isinstance(r, dict) and r.get("id")]
+        except (OSError, ValueError) as e:
+            print(f"  ⚠️ notti locali non lette ({type(e).__name__}): si usano quelle di Intervals.icu")
+            _CACHE["notti_locali"] = None
+    return _CACHE["notti_locali"]
+
+
+def unisci_notti_locali(righe, locali):
+    """Per ogni giorno del file locale: i campi Noctalix* della riga di Intervals.icu sono
+    sostituiti da quelli del file (riga creata se manca); gli altri campi (CTL, ATL...)
+    restano. Senza file (None) le righe tornano invariate."""
+    if not locali:
+        return righe
+    per_giorno = {str(r["id"])[:10]: r for r in locali}
+    out, visti = [], set()
+    for w in righe:
+        d = str(w.get("id") or w.get("date") or "")[:10]
+        if d in per_giorno:
+            nuova = {k: v for k, v in w.items() if not k.startswith("Noctalix")}
+            nuova.update({k: v for k, v in per_giorno[d].items() if k.startswith("Noctalix")})
+            out.append(nuova)
+            visti.add(d)
+        else:
+            out.append(w)
+    for d, r in per_giorno.items():
+        if d not in visti:
+            out.append(dict({"id": d}, **{k: v for k, v in r.items() if k.startswith("Noctalix")}))
+    return out
+
+
+def notti_da_garmin():
+    """True se l'ultima notte (quella che decide la sorgente della banda) e' Garmin."""
+    import campi
+    righe = [w for w in get_wellness(30) if campi._ha_notte(w)]
+    return bool(righe) and campi.sorgente(righe[-1]) == campi.SORGENTE_GARMIN
+
+
+_BIOMETRICI = re.compile(r"\d+(?:[.,]\d+)?\s?(?:ms|bpm)\b|rMSSD|\bHRV\b|\bSD\b|baseline|normal range", re.I)
+
+
+def senza_biometria(testo):
+    """Testo per Intervals.icu senza numeri biometrici (righe che li contengono tolte): con
+    notti Garmin i valori derivati restano sul telefono (decisione privacy, Parte 4)."""
+    if not testo:
+        return testo
+    return "\n".join(r for r in str(testo).split("\n") if not _BIOMETRICI.search(r))
 
 
 def get_activities(days=42):
@@ -3170,6 +3233,9 @@ def eventi_del_coach(eventi):
 
 def scrivi_evento(payload, esistente, dry=False):
     payload = traduzioni.traduci_evento(payload, LINGUA)   # 13b: unico punto di scrittura
+    if notti_da_garmin():   # 25/10/2026: nessun valore biometrico Garmin su Intervals.icu
+        payload = dict(payload, **{k: senza_biometria(payload[k]) for k in ("name", "description")
+                                   if isinstance(payload.get(k), str)})
     if evento_allineato(esistente, payload):
         print(f"    = {payload['start_date_local'][:10]} — {payload['name']} (invariato)")
         return "invariato"
