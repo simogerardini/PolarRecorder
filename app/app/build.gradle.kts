@@ -29,8 +29,8 @@ android {
     applicationId = "com.noctalix.app"
     minSdk = 26
     targetSdk = 36
-    versionCode = 38
-    versionName = "1.0.7"
+    versionCode = 39
+    versionName = "1.0.8"
 
     // Nome dell'app: UNICA fonte. Genera @string/app_name e BuildConfig.APP_NAME.
     val nomeApp = "NoctaliX"
