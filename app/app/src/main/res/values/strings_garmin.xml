@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Parte 11: Garmin Connect (Personal API). Default language: English. -->
+<resources>
+    <string name="garmin_titolo">Garmin Connect</string>
+    <string name="garmin_spiegazione">No chest strap? %1$s can read your overnight HRV, resting heart rate and sleep from your Garmin watch, using your own Garmin Personal API key. Workouts are still created on Intervals.icu.</string>
+    <string name="garmin_crea_chiave">Create your key on Garmin Connect</string>
+    <string name="garmin_chiave">Garmin Personal API key</string>
+    <string name="garmin_salva_e_prova">Save and test</string>
+    <string name="garmin_prova">Test connection</string>
+    <string name="garmin_scollega">Disconnect Garmin</string>
+    <string name="garmin_collegato">Garmin Connect linked</string>
+    <string name="garmin_privacy">The key stays on this phone only, encrypted. %1$s uses it to read your own Garmin data for your personal use, never shares it and never includes it in backups.</string>
+    <string name="garmin_ok_hrv">Connected. Last overnight HRV: %1$d ms (%2$s)</string>
+    <string name="garmin_ok_senza_notti">Connected, but no night with HRV in the last 30 days: wear your watch in bed.</string>
+    <string name="garmin_chiave_non_valida">Garmin rejected the key: it may have expired or been deleted. Create a new one and enter it again.</string>
+    <string name="garmin_troppe_richieste">Garmin is limiting requests: try again later.</string>
+    <string name="garmin_errore">Garmin Connect not reachable: %1$s</string>
+</resources>

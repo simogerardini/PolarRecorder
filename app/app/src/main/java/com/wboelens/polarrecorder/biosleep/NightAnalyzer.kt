@@ -43,7 +43,16 @@ data class NightSummary(
     val rmssdLate: Double? = null,
     val hrNadirPct: Double? = null,
     val respRate: Double? = null,
-)
+    /** Parte 11: sorgente della notte (NoctalixSource): 1 = fascia cardio, 2 = Garmin Connect. */
+    val sorgente: Int = SORGENTE_FASCIA,
+) {
+  companion object {
+    const val SORGENTE_FASCIA = 1
+    const val SORGENTE_GARMIN = 2
+    /** Valore della colonna sessions.source per le notti lette da Garmin Connect. */
+    const val SOURCE_GARMIN = "GARMIN"
+  }
+}
 
 /** Battiti dopo la pulizia: tempo di fine (ms), intervallo NN (NaN = scartato), esito. */
 class CleanBeats(val t: DoubleArray, val nn: DoubleArray, val flags: IntArray)

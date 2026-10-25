@@ -13,6 +13,8 @@ data class WellnessBio(
     val avgHr: PyNum?,
     val quality: PyNum?,
     val sleepHours: PyNum?,
+    /** Parte 11: NoctalixSource (null = notte scritta prima del campo = fascia). */
+    val sorgente: PyNum? = null,
 )
 
 /**
@@ -25,9 +27,34 @@ object BioSleepSeries {
 
   private fun num(v: PyNum?) = if (v != null && v.v > 0) v else null
 
+  /** Sorgente di una riga: 1 fascia, 2 Garmin; assente o non valida = fascia (campi.sorgente). */
+  fun sorgente(w: WellnessBio): Int {
+    val v = w.sorgente?.v?.toInt()
+    return if (v == 1 || v == 2) v else 1
+  }
+
+  private fun haNotte(w: WellnessBio) = w.rmssd != null && w.rmssd.v > 0
+
+  /** Copia di campi.filtra_sorgente: solo le notti della sorgente dell'ultima notte (per data). */
+  fun filtraSorgente(righe: List<WellnessBio>): List<WellnessBio> {
+    val giorno = { w: WellnessBio -> (w.id?.takeIf { it.isNotEmpty() } ?: w.date?.takeIf { it.isNotEmpty() } ?: "").take(10) }
+    var ultima: WellnessBio? = null
+    var ultimoGiorno = ""
+    for (w in righe) {
+      if (!haNotte(w)) continue
+      val g = giorno(w)
+      if (ultima == null || g >= ultimoGiorno) {
+        ultima = w
+        ultimoGiorno = g
+      }
+    }
+    val corrente = ultima?.let { sorgente(it) } ?: return righe
+    return righe.filter { !haNotte(it) || sorgente(it) == corrente }
+  }
+
   fun daWellness(righe: List<WellnessBio>, tags: Map<String, List<String>> = emptyMap()): List<GiornoBio> {
     val out = ArrayList<GiornoBio>()
-    for (w in righe) {
+    for (w in filtraSorgente(righe)) {
       val d = (w.id?.takeIf { it.isNotEmpty() } ?: w.date?.takeIf { it.isNotEmpty() } ?: "").take(10)
       val hrv = num(w.rmssd)
       if (d.isEmpty() || hrv == null) continue
@@ -77,7 +104,8 @@ object PyJson {
           rmssd = num(CampiStorici.leggi(o, CampiWellness.F_RMSSD)),
           avgHr = num(CampiStorici.leggi(o, CampiWellness.F_AVG_HR)),
           quality = num(CampiStorici.leggi(o, CampiWellness.F_QUALITY)),
-          sleepHours = num(CampiStorici.leggi(o, CampiWellness.F_SLEEP_HOURS)))
+          sleepHours = num(CampiStorici.leggi(o, CampiWellness.F_SLEEP_HOURS)),
+          sorgente = num(o.get(CampiWellness.F_SOURCE)))
 
   fun wellnessBio(a: JsonArray): List<WellnessBio> = a.filter { it.isJsonObject }.map { wellnessBio(it.asJsonObject) }
 

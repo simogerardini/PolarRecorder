@@ -35,6 +35,43 @@ CAMPI += [
     {"chiave": "respiro", "code": "NoctalixResp", "costante": "F_RESP", "nome": "Resp rate",
      "units": "rpm", "desc": "frequenza respiratoria media nel sonno, dagli intervalli RR"},
 ]
+# 25/10/2026 (Parte 11, Garmin Connect): da quale sorgente viene la notte. Lo scrive l'app a
+# ogni invio; le notti scritte prima non lo hanno e valgono come fascia.
+CAMPI += [
+    {"chiave": "sorgente", "code": "NoctalixSource", "costante": "F_SOURCE", "nome": "Source",
+     "units": "", "desc": "sorgente della notte: 1 = fascia cardio, 2 = Garmin Connect"},
+]
 CODICE = {c["chiave"]: c["code"] for c in CAMPI}          # chiave -> codice
 VECCHI = {c["code"]: c["vecchio"] for c in CAMPI if c.get("vecchio")}   # codice nuovo -> BioSleep*
 VECCHI_PER_CHIAVE = {c["chiave"] for c in CAMPI if c.get("vecchio")}
+
+
+# 25/10/2026 (Parte 11): sorgenti della notte. rMSSD da polso (Garmin) e da fascia non hanno lo
+# stesso livello: la banda usa solo le notti della sorgente dell'ULTIMA notte. Cambiare sorgente
+# riparte con la taratura; tornare alla precedente ritrova le sue notti.
+SORGENTE_FASCIA, SORGENTE_GARMIN = 1, 2
+SORGENTI = (SORGENTE_FASCIA, SORGENTE_GARMIN)
+
+
+def sorgente(w):
+    """Sorgente di una riga wellness; campo assente o non valido = fascia."""
+    v = w.get(CODICE["sorgente"]) if isinstance(w, dict) else None
+    return int(v) if isinstance(v, (int, float)) and int(v) in SORGENTI else SORGENTE_FASCIA
+
+
+def _ha_notte(w):
+    v = w.get(CODICE["rmssd"])
+    if v is None:
+        v = w.get(VECCHI[CODICE["rmssd"]])
+    return isinstance(v, (int, float)) and v > 0
+
+
+def filtra_sorgente(wellness):
+    """Toglie le notti di una sorgente diversa da quella dell'ultima notte (per data).
+    Le righe senza notte restano (CTL, ATL...). Stessa regola in BioSleepSeries.kt."""
+    righe = [w for w in (wellness or []) if isinstance(w, dict)]
+    notti = [(str(w.get("id") or w.get("date") or "")[:10], i) for i, w in enumerate(righe) if _ha_notte(w)]
+    if not notti:
+        return righe
+    corrente = sorgente(righe[max(notti)[1]])
+    return [w for w in righe if not _ha_notte(w) or sorgente(w) == corrente]

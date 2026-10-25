@@ -36,7 +36,8 @@ def noctalix_history_da_wellness(wellness, oura_history=None, chiave_hrv="rmssd"
             if isinstance(g, dict) and g.get("data") and g.get("tags")}
     num = lambda v: v if isinstance(v, (int, float)) and v > 0 else None
     out = []
-    for w in wellness or []:
+    # 25/10/2026 (Parte 11): solo le notti della sorgente dell'ultima notte (fascia o Garmin)
+    for w in campi.filtra_sorgente(wellness):
         if not isinstance(w, dict):
             continue
         d = str(w.get("id") or w.get("date") or "")[:10]

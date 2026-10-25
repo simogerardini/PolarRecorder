@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="garmin_titolo">Garmin Connect</string>
+    <string name="garmin_spiegazione">没有心率胸带？%1$s 可以使用你自己的 Garmin Personal API 密钥，从 Garmin 手表读取夜间 HRV、静息心率和睡眠。训练仍在 Intervals.icu 上创建。</string>
+    <string name="garmin_crea_chiave">在 Garmin Connect 创建密钥</string>
+    <string name="garmin_chiave">Garmin Personal API 密钥</string>
+    <string name="garmin_salva_e_prova">保存并测试</string>
+    <string name="garmin_prova">测试连接</string>
+    <string name="garmin_scollega">断开 Garmin</string>
+    <string name="garmin_collegato">已连接 Garmin Connect</string>
+    <string name="garmin_privacy">密钥仅加密保存在此手机上。%1$s 仅用它读取你自己的 Garmin 数据供个人使用，不会共享，也不会放入备份。</string>
+    <string name="garmin_ok_hrv">已连接。最近一晚的 HRV：%1$d ms（%2$s）</string>
+    <string name="garmin_ok_senza_notti">已连接，但最近 30 天没有带 HRV 的夜晚：请戴着手表睡觉。</string>
+    <string name="garmin_chiave_non_valida">Garmin 拒绝了该密钥：可能已过期或被删除。请创建新密钥并重新输入。</string>
+    <string name="garmin_troppe_richieste">Garmin 正在限制请求：请稍后再试。</string>
+    <string name="garmin_errore">无法连接 Garmin Connect：%1$s</string>
+</resources>

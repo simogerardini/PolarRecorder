@@ -13,7 +13,7 @@ import org.junit.Test
 class CampiWellnessTest {
   @Test
   fun dodiciCodiciNoctalix() {
-    assertEquals(15, CampiWellness.TUTTI.toSet().size)
+    assertEquals(16, CampiWellness.TUTTI.toSet().size)
     assertTrue(CampiWellness.TUTTI.all { it.startsWith("Noctalix") })
   }
 

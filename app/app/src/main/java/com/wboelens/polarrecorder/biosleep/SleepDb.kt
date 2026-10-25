@@ -585,7 +585,7 @@ class SleepDb private constructor(context: Context) :
          n.intervals_synced_at, n.intervals_status,
          n.hypno_start_ms, n.hypnogram, n.sleep_onset_ms, n.sleep_end_ms, n.tst_min,
          n.deep_min, n.light_min, n.rem_min, n.wake_min, n.staging_mode, n.quality_pct,
-         n.rmssd_late, n.hr_nadir_pct, n.resp_rate"""
+         n.rmssd_late, n.hr_nadir_pct, n.resp_rate, s.source"""
 
   private fun Cursor.doubleOrNull(i: Int): Double? = if (isNull(i)) null else getDouble(i)
 
@@ -615,6 +615,9 @@ class SleepDb private constructor(context: Context) :
                   rmssdLate = doubleOrNull(30),
                   hrNadirPct = doubleOrNull(31),
                   respRate = doubleOrNull(32),
+                  sorgente =
+                      if (!isNull(33) && getString(33) == NightSummary.SOURCE_GARMIN) NightSummary.SORGENTE_GARMIN
+                      else NightSummary.SORGENTE_FASCIA,
               ),
           syncedAt = if (isNull(17)) null else getLong(17),
           syncStatus = if (isNull(18)) null else getString(18),

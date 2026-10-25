@@ -34,7 +34,7 @@ object IntervalsClient {
   /** Sotto questa affidabilita' della notte i valori di precisione non si scrivono. */
   private const val SOGLIA_QUALITA = 80.0
   /** Campi nuovi: se Intervals non li ha ancora creati la notte resta inviata (non e' un errore). */
-  private val CAMPI_FACOLTATIVI = setOf(CampiWellness.F_RMSSD_LATE, CampiWellness.F_HR_NADIR, CampiWellness.F_RESP)
+  private val CAMPI_FACOLTATIVI = setOf(CampiWellness.F_RMSSD_LATE, CampiWellness.F_HR_NADIR, CampiWellness.F_RESP, CampiWellness.F_SOURCE)
 
 
   /** Codice campo -> descrizione, per la schermata delle impostazioni. */
@@ -55,6 +55,7 @@ object IntervalsClient {
           CampiWellness.F_RMSSD_LATE to "rMSSD seconda metà del sonno (ms)",
           CampiWellness.F_HR_NADIR to "Minimo della FC nel sonno (% della durata)",
           CampiWellness.F_RESP to "Frequenza respiratoria nel sonno (respiri/min)",
+          CampiWellness.F_SOURCE to "Sorgente della notte (1 = fascia, 2 = Garmin Connect)",
       )
 
   /** La notte appartiene al giorno del risveglio, come per Oura e Garmin. */
@@ -77,6 +78,8 @@ object IntervalsClient {
         s.qualityPct?.let { put(CampiWellness.F_QUALITY, round(it, 1)) }
         s.rmssd?.let { put(CampiWellness.F_RMSSD, round(it, 1)) }
         s.sdnn?.let { put(CampiWellness.F_SDNN, round(it, 1)) }
+        // Parte 11: sorgente della notte; la banda non mescola fascia e Garmin
+        put(CampiWellness.F_SOURCE, s.sorgente)
         // Precisione (cervello 2026.10.19): solo con la notte sopra la soglia di qualita'
         if ((s.qualityPct ?: 0.0) >= SOGLIA_QUALITA) {
           s.rmssdLate?.let { put(CampiWellness.F_RMSSD_LATE, round(it, 1)) }

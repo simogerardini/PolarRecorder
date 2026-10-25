@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="garmin_titolo">Garmin Connect</string>
+    <string name="garmin_spiegazione">¿No tienes banda pectoral? %1$s puede leer la VFC nocturna, la FC en reposo y el sueño de tu reloj Garmin con tu propia Personal API key de Garmin. Los entrenamientos se siguen creando en Intervals.icu.</string>
+    <string name="garmin_crea_chiave">Crea la clave en Garmin Connect</string>
+    <string name="garmin_chiave">Personal API key de Garmin</string>
+    <string name="garmin_salva_e_prova">Guardar y probar</string>
+    <string name="garmin_prova">Probar conexión</string>
+    <string name="garmin_scollega">Desconectar Garmin</string>
+    <string name="garmin_collegato">Garmin Connect conectado</string>
+    <string name="garmin_privacy">La clave se queda solo en este teléfono, cifrada. %1$s la usa para leer tus datos de Garmin para tu uso personal, no la comparte y no la incluye en las copias de seguridad.</string>
+    <string name="garmin_ok_hrv">Conectado. Última VFC nocturna: %1$d ms (%2$s)</string>
+    <string name="garmin_ok_senza_notti">Conectado, pero ninguna noche con VFC en los últimos 30 días: lleva el reloj en la cama.</string>
+    <string name="garmin_chiave_non_valida">Garmin rechazó la clave: puede que haya caducado o se haya eliminado. Crea una nueva e introdúcela otra vez.</string>
+    <string name="garmin_troppe_richieste">Garmin está limitando las solicitudes: inténtalo más tarde.</string>
+    <string name="garmin_errore">Garmin Connect no disponible: %1$s</string>
+</resources>

@@ -57,7 +57,8 @@ def _ols(X, y):
 
 def _serie(wellness, fonte):
     out = {}
-    for w in wellness or []:
+    # 25/10/2026 (Parte 11): la serie NoctaliX usa una sola sorgente (campi.filtra_sorgente)
+    for w in (campi.filtra_sorgente(wellness) if fonte == "noctalix" else wellness or []):
         d = str(w.get("id") or "")[:10]
         if fonte == "noctalix":
             v, q = w.get(campi.CODICE["rmssd"]), w.get(campi.CODICE["quality"])

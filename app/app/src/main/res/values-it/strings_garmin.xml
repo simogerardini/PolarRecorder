@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="garmin_titolo">Garmin Connect</string>
+    <string name="garmin_spiegazione">Non hai una fascia cardio? %1$s può leggere HRV notturna, FC a riposo e sonno dal tuo orologio Garmin, con la tua Personal API key di Garmin. Gli allenamenti restano creati su Intervals.icu.</string>
+    <string name="garmin_crea_chiave">Crea la chiave su Garmin Connect</string>
+    <string name="garmin_chiave">Personal API key di Garmin</string>
+    <string name="garmin_salva_e_prova">Salva e prova</string>
+    <string name="garmin_prova">Prova collegamento</string>
+    <string name="garmin_scollega">Scollega Garmin</string>
+    <string name="garmin_collegato">Garmin Connect collegato</string>
+    <string name="garmin_privacy">La chiave resta solo su questo telefono, cifrata. %1$s la usa per leggere i tuoi dati Garmin per tuo uso personale, non la condivide e non la mette nei backup.</string>
+    <string name="garmin_ok_hrv">Collegato. Ultima HRV notturna: %1$d ms (%2$s)</string>
+    <string name="garmin_ok_senza_notti">Collegato, ma nessuna notte con HRV negli ultimi 30 giorni: indossa l\'orologio a letto.</string>
+    <string name="garmin_chiave_non_valida">Garmin ha rifiutato la chiave: forse è scaduta o è stata eliminata. Creane una nuova e inseriscila di nuovo.</string>
+    <string name="garmin_troppe_richieste">Garmin sta limitando le richieste: riprova più tardi.</string>
+    <string name="garmin_errore">Garmin Connect non raggiungibile: %1$s</string>
+</resources>

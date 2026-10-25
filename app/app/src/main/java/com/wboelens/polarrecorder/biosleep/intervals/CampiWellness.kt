@@ -17,5 +17,6 @@ object CampiWellness {
     const val F_RMSSD_LATE = "NoctalixRMSSDLate"   // rMSSD late (ms)
     const val F_HR_NADIR = "NoctalixHRNadir"   // HR nadir (%)
     const val F_RESP = "NoctalixResp"   // Resp rate (rpm)
-    val TUTTI = listOf(F_RMSSD, F_SDNN, F_RHR, F_MIN_HR, F_AVG_HR, F_HOURS, F_SLEEP_HOURS, F_DEEP_MIN, F_REM_MIN, F_LIGHT_MIN, F_AWAKE_MIN, F_QUALITY, F_RMSSD_LATE, F_HR_NADIR, F_RESP)
+    const val F_SOURCE = "NoctalixSource"   // Source ()
+    val TUTTI = listOf(F_RMSSD, F_SDNN, F_RHR, F_MIN_HR, F_AVG_HR, F_HOURS, F_SLEEP_HOURS, F_DEEP_MIN, F_REM_MIN, F_LIGHT_MIN, F_AWAKE_MIN, F_QUALITY, F_RMSSD_LATE, F_HR_NADIR, F_RESP, F_SOURCE)
 }

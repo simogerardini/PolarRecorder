@@ -53,7 +53,7 @@ from marchio import NOME_APP
 import campi
 import messaggi   # 07/10/2026 (punto 13a): codici dei messaggi per l'app
 
-VERSIONE = "2026.10.19-notte-attesa"   # anche nel LEGGIMI del pacchetto
+VERSIONE = "2026.10.25-sorgente"   # anche nel LEGGIMI del pacchetto
 import contextlib, importlib, io, json, math, os, re, sys, traceback
 
 # 09/10/2026: il cervello non usa piu' GitHub ne' Telegram; le variabili si tolgono comunque
