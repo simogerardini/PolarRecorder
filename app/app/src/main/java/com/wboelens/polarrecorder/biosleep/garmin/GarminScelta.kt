@@ -31,10 +31,8 @@ object GarminScelta {
   fun sorgente(c: Context): Int = prefs(c).getInt(K_SORGENTE, NightSummary.SORGENTE_FASCIA)
 
   /** Garmin scelto come sorgente e chiave presente. */
-  fun attiva(c: Context): Boolean =
-      // Parte 4: solo nelle build di sviluppo finche' Garmin non conferma per iscritto
-      com.wboelens.polarrecorder.BuildConfig.DEBUG &&
-          sorgente(c) == NightSummary.SORGENTE_GARMIN && GarminSettings(c).collegato
+  // Parte 7: Garmin ha confermato per iscritto l'uso in un'app distribuita (chiave personale di ogni utente)
+  fun attiva(c: Context): Boolean = sorgente(c) == NightSummary.SORGENTE_GARMIN && GarminSettings(c).collegato
 
   fun imposta(c: Context, sorgente: Int) {
     prefs(c).edit().putInt(K_SORGENTE, sorgente).apply()
