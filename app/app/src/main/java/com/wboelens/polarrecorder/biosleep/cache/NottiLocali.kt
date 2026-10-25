@@ -44,23 +44,30 @@ object NottiLocali {
       }
 
   /**
-   * Unisce la cache di Intervals.icu e le notti locali. Il giorno che su Intervals.icu ha gia' la
-   * notte (rMSSD) resta quello del server, identico a cio' che legge il coach; un giorno senza notte
-   * prende i campi Noctalix locali, conservando gli altri campi del server (CTL, ATL...).
+   * Unisce la cache di Intervals.icu e le notti locali. Copia di cs.unisci_notti_locali (cervello
+   * 2026.10.25-notti-locali): per ogni giorno con una notte sul telefono i campi Noctalix* della
+   * riga di Intervals.icu sono sostituiti da quelli locali (tutti: anche quelli che la notte locale
+   * non ha), gli altri campi (CTL, ATL...) restano; riga creata se manca. Il telefono vince sempre:
+   * prontezza dell'app e banda del coach decidono sulle stesse notti.
    */
   fun unisci(server: List<JsonObject>, locali: List<JsonObject>): List<JsonObject> {
     val perGiorno = LinkedHashMap<String, JsonObject>()
     for (o in server) perGiorno[(o.get("id")?.asString ?: continue).take(10)] = o
     for (l in locali) {
-      val g = l.get("id")?.asString ?: continue
+      val g = l.get("id")?.asString?.take(10) ?: continue
       val s = perGiorno[g]
-      when {
-        s == null -> perGiorno[g] = l
-        CampiStorici.leggi(s, CampiWellness.F_RMSSD) != null -> Unit
-        else ->
-            perGiorno[g] =
-                s.deepCopy().apply { for (k in CampiWellness.TUTTI) l.get(k)?.let { add(k, it) } }
+      val riga = JsonObject()
+      if (s != null) {
+        for ((k, v) in s.entrySet()) {
+          if (!k.startsWith("Noctalix")) riga.add(k, v)
+        }
+      } else {
+        riga.addProperty("id", g)
       }
+      for ((k, v) in l.entrySet()) {
+        if (k.startsWith("Noctalix")) riga.add(k, v)
+      }
+      perGiorno[g] = riga
     }
     return perGiorno.entries.sortedBy { it.key }.map { it.value }
   }
