@@ -137,7 +137,8 @@ object GarminClient {
       conn.connectTimeout = CONNECT_TIMEOUT_MS
       conn.readTimeout = READ_TIMEOUT_MS
       conn.setRequestProperty("Authorization", auth)
-      conn.setRequestProperty("Accept", "application/json")
+      // il token arriva come testo grezzo: con Accept JSON Garmin risponde 406
+      conn.setRequestProperty("Accept", if (metodo == "POST") "*/*" else "application/json")
       if (metodo == "POST") {
         conn.doOutput = true
         conn.setFixedLengthStreamingMode(0)

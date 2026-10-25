@@ -214,7 +214,8 @@ private fun NightContent(
     )
 
     Text(stringResource(R.string.night_detail_qualita_del_segnale), style = MaterialTheme.typography.titleSmall)
-    Text(
+    if (s.sorgente == com.wboelens.polarrecorder.biosleep.NightSummary.SORGENTE_GARMIN) GarminFonteNotte(s)
+    else Text(
         stringResource(R.string.night_detail_affidabilita_notte_coperta_da, (fmt(s.qualityPct, 1)).toString(), s.beats.toString(), (fmt(s.pctGood, 1)).toString(), (fmt(s.pctCorrected, 1)).toString(), (fmt(s.pctDropped, 1)).toString(), s.gaps.toString(), s.windowsOk.toString(), s.windowsTotal.toString()),
         style = MaterialTheme.typography.bodySmall,
         color = MaterialTheme.colorScheme.onSurfaceVariant,
@@ -276,7 +277,8 @@ private fun SleepStagesSection(night: NightListItem, titolo: Boolean = true) {
       style = MaterialTheme.typography.bodySmall,
       color = MaterialTheme.colorScheme.onSurfaceVariant,
   )
-  Hypnogram(st, Modifier.fillMaxWidth().height(160.dp))
+  // Parte 11: le notti Garmin hanno solo i totali delle fasi
+  if (st.hypnogram.isNotEmpty()) Hypnogram(st, Modifier.fillMaxWidth().height(160.dp))
   MetricRow(
       Metric(stringResource(R.string.night_detail_profondo), hm(st.deepMin), ""),
       Metric(stringResource(R.string.night_detail_rem), hm(st.remMin), ""),
@@ -285,6 +287,14 @@ private fun SleepStagesSection(night: NightListItem, titolo: Boolean = true) {
       Metric(stringResource(R.string.night_detail_leggero), hm(st.lightMin), ""),
       Metric(stringResource(R.string.night_detail_veglia_notturna), hm(st.wakeMin), ""),
   )
+  if (st.mode == com.wboelens.polarrecorder.biosleep.garmin.GarminNotte.MODO_FASI) {
+    Text(
+        stringResource(R.string.garmin_fasi_nota),
+        style = MaterialTheme.typography.bodySmall,
+        color = MaterialTheme.colorScheme.onSurfaceVariant,
+    )
+    return
+  }
   Text(
       tr(if (st.mode.startsWith("FC"))
           "Stima dalla sola frequenza cardiaca" + (if (st.mode.contains("ACC")) " e dal movimento" else ", senza dati di movimento") +
@@ -396,7 +406,8 @@ fun RiepilogoNotte(sessionId: Long) {
       }
 
       Sezione(stringResource(R.string.night_detail_registrazione)) {
-        Text(
+        if (s.sorgente == com.wboelens.polarrecorder.biosleep.NightSummary.SORGENTE_GARMIN) GarminFonteNotte(s)
+        else Text(
             stringResource(R.string.night_detail_affidabilita_battiti_scartati_interruzioni, (fmt(s.qualityPct, 1)).toString(), s.beats.toString(), (fmt(s.pctDropped, 1)).toString(), s.gaps.toString(), s.windowsOk.toString(), s.windowsTotal.toString()),
             style = MaterialTheme.typography.bodySmall,
             color = MaterialTheme.colorScheme.onSurfaceVariant)

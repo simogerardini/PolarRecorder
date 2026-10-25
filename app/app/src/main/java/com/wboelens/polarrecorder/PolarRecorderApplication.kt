@@ -66,6 +66,9 @@ class PolarRecorderApplication : Application() {
     Parte3Ponte.fonti = FontiParte3Noctalix
     // avvio automatico: rinnova l'osservazione della fascia associata
     com.wboelens.polarrecorder.biosleep.auto.AutoStart.assicuraOsservazione(this)
+    // Parte 11: notte da Garmin Connect (se scelto come sorgente): controllo orario + uno subito
+    com.wboelens.polarrecorder.biosleep.garmin.GarminScelta.programma(this)
+    com.wboelens.polarrecorder.biosleep.garmin.GarminScelta.subito(this)
   }
 
   /**

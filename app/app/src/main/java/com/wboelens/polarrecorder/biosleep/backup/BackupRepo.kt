@@ -44,6 +44,7 @@ object BackupRepo {
           "biosleep_intervals" to setOf("auto_upload", "athlete_id"), // MAI token o API key
           "noctalix_disponibilita_date" to null, // tempo disponibile per data dal calendario
           "noctalix_lingua" to null, // lingua delle sedute
+          "biosleep_garmin" to setOf("sorgente_notte"), // Parte 11: MAI la chiave Garmin (sta in biosleep_intervals)
       )
 
   // --- Stato del promemoria ---------------------------------------------------------------------
