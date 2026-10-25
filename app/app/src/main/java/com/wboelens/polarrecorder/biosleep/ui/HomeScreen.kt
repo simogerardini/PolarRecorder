@@ -92,6 +92,15 @@ fun HomeScreen(
   val profileStore = remember { NightProfileStore(context) }
   var profile by remember { mutableStateOf(profileStore.load()) }
   val demo by Demo.stato(context).collectAsState()
+  // Parte 11: chi usa solo Garmin Connect (nessuna fascia) deve poter aprire le sue notti
+  var fonti by remember { mutableStateOf<com.wboelens.polarrecorder.biosleep.garmin.FonteNotti.Stato?>(null) }
+  LaunchedEffect(profile) {
+    fonti = kotlinx.coroutines.withContext(kotlinx.coroutines.Dispatchers.IO) {
+      com.wboelens.polarrecorder.biosleep.garmin.FonteNotti.stato(context.applicationContext)
+    }
+  }
+  var aggiungiFascia by rememberSaveable { mutableStateOf(false) }
+  val senzaFasciaConNotti = profile == null && fonti?.elenco == true
 
   val binder by serviceConnection.binder.collectAsState()
   val recording = binder?.recordingState?.collectAsState()?.value
@@ -127,7 +136,7 @@ fun HomeScreen(
         TopAppBar(
             title = { Text(BuildConfig.APP_NAME) },
             actions = {
-              if (profile != null || demo) {
+              if (profile != null || demo || senzaFasciaConNotti) {
                 IconButton(onClick = onOpenNights) { Icon(Icons.Filled.Bedtime, tr("Le mie notti")) }
                 IconButton(onClick = onOpenBioAge) { Icon(Icons.Filled.HourglassTop, tr("Età ${BuildConfig.APP_NAME}")) }
               }
@@ -146,6 +155,10 @@ fun HomeScreen(
                 recording!!.recordingStartTime, app, serviceConnection, onNightStopped, batteria) { fiore = true }
         demo -> {
           DemoCard(onOpenNights, onOpenBioAge) { Demo.esciInBackground(context) }
+          RiquadroSonno(onOpenSleep)
+        }
+        p == null && senzaFasciaConNotti && !aggiungiFascia -> {
+          NottiSenzaFascia(onOpenNights) { aggiungiFascia = true }
           RiquadroSonno(onOpenSleep)
         }
         p == null -> {

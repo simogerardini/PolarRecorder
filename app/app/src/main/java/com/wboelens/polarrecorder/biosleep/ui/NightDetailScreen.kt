@@ -176,7 +176,8 @@ private fun NightContent(
 
     MetricRow(Metric(stringResource(R.string.night_detail_fc_minima), fmt(s.hrMin), "bpm"), Metric(stringResource(R.string.night_detail_fc_a_riposo), fmt(s.restingHr), "bpm"))
     MetricRow(Metric(stringResource(R.string.night_detail_fc_media), fmt(s.hrAvg), "bpm"), Metric(stringResource(R.string.night_detail_rmssd), fmt(s.rmssd, 1), "ms"))
-    MetricRow(Metric(stringResource(R.string.night_detail_sdnn), fmt(s.sdnn, 1), "ms"), Metric(stringResource(R.string.night_detail_pnn50), fmt(s.pnn50, 1), "%"))
+    // Parte 11: SDNN e pNN50 richiedono gli RR, che le notti Garmin non hanno
+    if (s.sorgente != com.wboelens.polarrecorder.biosleep.NightSummary.SORGENTE_GARMIN) MetricRow(Metric(stringResource(R.string.night_detail_sdnn), fmt(s.sdnn, 1), "ms"), Metric(stringResource(R.string.night_detail_pnn50), fmt(s.pnn50, 1), "%"))
     // Punto 10: fascia senza RR affidabili (solo FC o sensore ottico)
     if (detail.night.stages?.mode?.startsWith("FC") == true) {
       // dopo la notte: stesso avviso di prima della notte, piu' cosa non arriva a Intervals.icu
@@ -401,8 +402,13 @@ fun RiepilogoNotte(sessionId: Long) {
               style = MaterialTheme.typography.bodySmall,
               color = MaterialTheme.colorScheme.onSurfaceVariant)
         } else {
-          MetricRow(Metric(stringResource(R.string.night_detail_rmssd), fmt(s.rmssd, 1), "ms"), Metric(stringResource(R.string.night_detail_sdnn), fmt(s.sdnn, 1), "ms"))
-          Text(stringResource(R.string.night_detail_pnn50_rmssd_ogni_5, (fmt(s.pnn50, 1)).toString()), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+          if (s.sorgente == com.wboelens.polarrecorder.biosleep.NightSummary.SORGENTE_GARMIN) {
+            // Parte 11: notte Garmin, niente RR: rMSSD di Garmin e FC media al posto di SDNN/pNN50
+            MetricRow(Metric(stringResource(R.string.night_detail_rmssd), fmt(s.rmssd, 1), "ms"), Metric(stringResource(R.string.night_detail_fc_media), fmt(s.hrAvg), "bpm"))
+          } else {
+            MetricRow(Metric(stringResource(R.string.night_detail_rmssd), fmt(s.rmssd, 1), "ms"), Metric(stringResource(R.string.night_detail_sdnn), fmt(s.sdnn, 1), "ms"))
+            Text(stringResource(R.string.night_detail_pnn50_rmssd_ogni_5, (fmt(s.pnn50, 1)).toString()), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+          }
           TimeLineChart(times = w.map { it.startMs }, values = w.map { it.rmssd }, lineColor = RMSSD_COLOR, modifier = Modifier.fillMaxWidth().height(160.dp))
         }
       }

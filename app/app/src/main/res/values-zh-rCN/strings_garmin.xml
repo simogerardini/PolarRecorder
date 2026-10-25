@@ -37,4 +37,7 @@
     <string name="garmin_tieni_notti">保留夜间数据</string>
     <string name="garmin_cancella_notti">删除夜间数据</string>
     <string name="garmin_annulla">取消</string>
+    <string name="garmin_notti_titolo">你的夜间数据</string>
+    <string name="garmin_notti_senza_fascia">夜间数据每天早上来自 Garmin Connect。你也可以连接心率胸带。</string>
+    <string name="garmin_collega_fascia">连接心率胸带</string>
 </resources>

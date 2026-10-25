@@ -37,4 +37,7 @@
     <string name="garmin_tieni_notti">Tieni le notti</string>
     <string name="garmin_cancella_notti">Cancella le notti</string>
     <string name="garmin_annulla">Annulla</string>
+    <string name="garmin_notti_titolo">Le tue notti</string>
+    <string name="garmin_notti_senza_fascia">Le notti arrivano da Garmin Connect ogni mattina. Puoi anche collegare una fascia cardio.</string>
+    <string name="garmin_collega_fascia">Collega una fascia cardio</string>
 </resources>

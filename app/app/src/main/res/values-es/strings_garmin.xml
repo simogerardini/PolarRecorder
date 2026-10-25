@@ -37,4 +37,7 @@
     <string name="garmin_tieni_notti">Conservar las noches</string>
     <string name="garmin_cancella_notti">Borrar las noches</string>
     <string name="garmin_annulla">Cancelar</string>
+    <string name="garmin_notti_titolo">Tus noches</string>
+    <string name="garmin_notti_senza_fascia">Las noches llegan de Garmin Connect cada mañana. También puedes conectar una banda pectoral.</string>
+    <string name="garmin_collega_fascia">Conectar una banda pectoral</string>
 </resources>

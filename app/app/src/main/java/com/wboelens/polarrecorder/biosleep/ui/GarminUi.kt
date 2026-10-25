@@ -217,3 +217,15 @@ fun GarminFonteNotte(s: NightSummary) {
       style = MaterialTheme.typography.bodySmall,
       color = MaterialTheme.colorScheme.onSurfaceVariant)
 }
+
+/** Parte 11: scheda Notti senza fascia ma con Garmin Connect o con notti salvate. */
+@Composable
+fun NottiSenzaFascia(onApriNotti: () -> Unit, onCollegaFascia: () -> Unit) {
+  Text(stringResource(R.string.garmin_notti_titolo), style = MaterialTheme.typography.headlineSmall)
+  Text(
+      stringResource(R.string.garmin_notti_senza_fascia),
+      style = MaterialTheme.typography.bodyMedium,
+      color = MaterialTheme.colorScheme.onSurfaceVariant)
+  OutlinedButton(onClick = onApriNotti, modifier = Modifier.fillMaxWidth()) { Text(stringResource(R.string.home_le_mie_notti)) }
+  TextButton(onClick = onCollegaFascia) { Text(stringResource(R.string.garmin_collega_fascia)) }
+}

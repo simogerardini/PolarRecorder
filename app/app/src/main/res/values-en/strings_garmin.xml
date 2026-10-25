@@ -38,4 +38,7 @@
     <string name="garmin_tieni_notti">Keep the nights</string>
     <string name="garmin_cancella_notti">Delete the nights</string>
     <string name="garmin_annulla">Cancel</string>
+    <string name="garmin_notti_titolo">Your nights</string>
+    <string name="garmin_notti_senza_fascia">Your nights arrive from Garmin Connect every morning. You can also connect a chest strap.</string>
+    <string name="garmin_collega_fascia">Connect a chest strap</string>
 </resources>
