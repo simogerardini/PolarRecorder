@@ -14,4 +14,14 @@
     <string name="garmin_chiave_non_valida">Garmin ha rifiutato la chiave: forse è scaduta o è stata eliminata. Creane una nuova e inseriscila di nuovo.</string>
     <string name="garmin_troppe_richieste">Garmin sta limitando le richieste: riprova più tardi.</string>
     <string name="garmin_errore">Garmin Connect non raggiungibile: %1$s</string>
+    <string name="garmin_sorgente_titolo">Sorgente della notte</string>
+    <string name="garmin_sorgente_fascia">Fascia cardio</string>
+    <string name="garmin_sorgente_garmin">Garmin Connect (orologio)</string>
+    <string name="garmin_sorgente_nota">La prontezza usa una sola sorgente: l’HRV da polso e da torace hanno livelli diversi. Cambiando sorgente la taratura riparte (con Garmin lo storico Garmin viene caricato subito).</string>
+    <string name="garmin_esito_salvata">Ultima notte Garmin: %1$s</string>
+    <string name="garmin_esito_attesa">In attesa della notte da Garmin Connect: apri l’app Garmin Connect per sincronizzare l’orologio.</string>
+    <string name="garmin_esito_errore">Garmin Connect non raggiungibile: riprovo tra un’ora.</string>
+    <string name="garmin_avviso_chiave_titolo">Garmin Connect: chiave non valida</string>
+    <string name="garmin_fasi_nota">Fasi del sonno da Garmin Connect (orologio). Garmin fornisce solo i totali, non l’andamento delle fasi nella notte.</string>
+    <string name="garmin_fonte_notte">Notte da Garmin Connect (orologio): HRV misurata in %1$d finestre di 5 minuti su %2$d.</string>
 </resources>

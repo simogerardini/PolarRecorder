@@ -14,6 +14,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -22,6 +23,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalUriHandler
@@ -33,15 +35,17 @@ import com.wboelens.polarrecorder.BuildConfig
 import com.wboelens.polarrecorder.R
 import com.wboelens.polarrecorder.biosleep.garmin.EsitoProvaGarmin
 import com.wboelens.polarrecorder.biosleep.garmin.GarminClient
+import com.wboelens.polarrecorder.biosleep.garmin.GarminScelta
 import com.wboelens.polarrecorder.biosleep.garmin.GarminSettings
+import com.wboelens.polarrecorder.biosleep.NightSummary
 import com.wboelens.polarrecorder.biosleep.garmin.ProvaGarmin
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 /**
- * Parte 11, passo A: collegamento a Garmin Connect con la Personal API key dell'utente.
- * Per ora salva la chiave e prova l'accesso; la scelta della sorgente della notte arriva nel passo B.
+ * Parte 11: collegamento a Garmin Connect con la Personal API key dell'utente e scelta della
+ * sorgente della notte (fascia cardio o Garmin: una sola, la banda non le mescola).
  */
 @Composable
 fun SezioneGarmin() {
@@ -54,6 +58,7 @@ fun SezioneGarmin() {
   var mostra by remember { mutableStateOf(false) }
   var inCorso by remember { mutableStateOf(false) }
   var esito by remember { mutableStateOf<EsitoProvaGarmin?>(null) }
+  var sorgente by remember { mutableStateOf(GarminScelta.sorgente(context)) }
 
   fun prova() {
     inCorso = true
@@ -76,9 +81,41 @@ fun SezioneGarmin() {
         OutlinedButton(onClick = { prova() }, enabled = !inCorso) { Text(stringResource(R.string.garmin_prova)) }
         TextButton(onClick = {
           settings.scollega()
+          GarminScelta.imposta(context, NightSummary.SORGENTE_FASCIA)
+          sorgente = NightSummary.SORGENTE_FASCIA
           collegato = false
           esito = null
         }) { Text(stringResource(R.string.garmin_scollega)) }
+      }
+      // Sorgente della notte
+      Text(stringResource(R.string.garmin_sorgente_titolo), style = MaterialTheme.typography.labelLarge)
+      for ((valore, etichetta) in listOf(
+          NightSummary.SORGENTE_FASCIA to R.string.garmin_sorgente_fascia,
+          NightSummary.SORGENTE_GARMIN to R.string.garmin_sorgente_garmin)) {
+        Row(verticalAlignment = Alignment.CenterVertically) {
+          RadioButton(selected = sorgente == valore, onClick = {
+            sorgente = valore
+            GarminScelta.imposta(context, valore)
+          })
+          Text(stringResource(etichetta))
+        }
+      }
+      Text(
+          stringResource(R.string.garmin_sorgente_nota),
+          style = MaterialTheme.typography.bodySmall,
+          color = MaterialTheme.colorScheme.onSurfaceVariant)
+      if (sorgente == NightSummary.SORGENTE_GARMIN) {
+        val e = remember(sorgente) { GarminScelta.esito(context) }
+        val testo =
+            when {
+              e == null -> null
+              e.startsWith("salvata:") -> stringResource(R.string.garmin_esito_salvata, e.removePrefix("salvata:"))
+              e == "attesa" -> stringResource(R.string.garmin_esito_attesa)
+              e == "chiave" -> stringResource(R.string.garmin_chiave_non_valida)
+              e == "limite" -> stringResource(R.string.garmin_troppe_richieste)
+              else -> stringResource(R.string.garmin_esito_errore)
+            }
+        testo?.let { Text(it, style = MaterialTheme.typography.bodySmall) }
       }
     } else {
       TextButton(onClick = { runCatching { uri.openUri(GarminClient.PAGINA_CHIAVE) } }) {
@@ -128,4 +165,13 @@ fun SezioneGarmin() {
       Text(testo, color = if (ok) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.error)
     }
   }
+}
+
+/** Parte 11: al posto della qualita' del segnale (battiti), per le notti lette da Garmin Connect. */
+@Composable
+fun GarminFonteNotte(s: NightSummary) {
+  Text(
+      stringResource(R.string.garmin_fonte_notte, s.windowsOk, s.windowsTotal),
+      style = MaterialTheme.typography.bodySmall,
+      color = MaterialTheme.colorScheme.onSurfaceVariant)
 }

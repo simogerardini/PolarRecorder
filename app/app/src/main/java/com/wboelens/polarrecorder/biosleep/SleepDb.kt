@@ -204,6 +204,12 @@ class SleepDb private constructor(context: Context) :
     return writableDatabase.insertOrThrow("sessions", null, v)
   }
 
+  /** Parte 11: la sessione di una sorgente con quell'inizio (notte Garmin gia' salvata), o null. */
+  fun sessioneDa(source: String, startMs: Long): Long? =
+      readableDatabase
+          .rawQuery("SELECT id FROM sessions WHERE source = ? AND start_ms = ? LIMIT 1", arrayOf(source, startMs.toString()))
+          .use { c -> if (c.moveToNext()) c.getLong(0) else null }
+
   fun closeSession(sessionId: Long, endMs: Long) {
     val v = ContentValues().apply { put("end_ms", endMs) }
     writableDatabase.update("sessions", v, "id = ?", arrayOf(sessionId.toString()))
@@ -622,8 +628,23 @@ class SleepDb private constructor(context: Context) :
           syncedAt = if (isNull(17)) null else getLong(17),
           syncStatus = if (isNull(18)) null else getString(18),
           stages =
-              if (isNull(20) || getString(20).isEmpty()) null
-              else
+              if (isNull(20) || getString(20).isEmpty()) {
+                // Parte 11: le notti Garmin hanno i totali delle fasi ma nessun ipnogramma
+                if (!isNull(28) && getString(28) == "GARMIN" && !isNull(23))
+                    SleepStages(
+                        hypnoStartMs = if (isNull(19)) getLong(2) else getLong(19),
+                        hypnogram = "",
+                        sleepOnsetMs = if (isNull(21)) null else getLong(21),
+                        sleepEndMs = if (isNull(22)) null else getLong(22),
+                        tstMin = getInt(23),
+                        deepMin = getInt(24),
+                        lightMin = getInt(25),
+                        remMin = getInt(26),
+                        wakeMin = getInt(27),
+                        mode = getString(28),
+                    )
+                else null
+              } else
                   SleepStages(
                       hypnoStartMs = getLong(19),
                       hypnogram = getString(20),

@@ -14,4 +14,14 @@
     <string name="garmin_chiave_non_valida">Garmin 拒绝了该密钥：可能已过期或被删除。请创建新密钥并重新输入。</string>
     <string name="garmin_troppe_richieste">Garmin 正在限制请求：请稍后再试。</string>
     <string name="garmin_errore">无法连接 Garmin Connect：%1$s</string>
+    <string name="garmin_sorgente_titolo">夜间数据来源</string>
+    <string name="garmin_sorgente_fascia">心率胸带</string>
+    <string name="garmin_sorgente_garmin">Garmin Connect（手表）</string>
+    <string name="garmin_sorgente_nota">准备度只使用一个来源：手腕和胸部测得的 HRV 水平不同。更换来源后校准会重新开始（选择 Garmin 时会立即载入你的 Garmin 历史数据）。</string>
+    <string name="garmin_esito_salvata">最近一晚 Garmin 数据：%1$s</string>
+    <string name="garmin_esito_attesa">正在等待 Garmin Connect 的夜间数据：请打开 Garmin Connect 应用同步手表。</string>
+    <string name="garmin_esito_errore">无法连接 Garmin Connect：一小时后重试。</string>
+    <string name="garmin_avviso_chiave_titolo">Garmin Connect：密钥无效</string>
+    <string name="garmin_fasi_nota">睡眠阶段来自 Garmin Connect（手表）。Garmin 只提供总时长，不提供夜间各阶段的变化过程。</string>
+    <string name="garmin_fonte_notte">来自 Garmin Connect（手表）的夜间数据：%2$d 个五分钟窗口中有 %1$d 个测得 HRV。</string>
 </resources>
