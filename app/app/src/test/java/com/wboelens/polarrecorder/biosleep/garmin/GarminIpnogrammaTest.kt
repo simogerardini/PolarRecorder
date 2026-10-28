@@ -291,7 +291,7 @@ class GarminIpnogrammaTest {
   @Test
   fun comeIlPrototipo() {
     val f = GarminIpnogramma.finestre(inizio, fine, fc, letture, 80 * 60.0, 55 * 60.0, 12 * 60.0)
-    assertEquals("LLLLLDDDDDDDDDLLLLLLLLLLWLDDDDDLDLLLLLLLLLLLLDLLLLLLLLWLLLLLLLLLLRRRRRRRRRRR", f)
+    assertEquals("LLLLLDDDDDDDDDLLLLLLLRRLWLDDDDDLDLLLLLLRRLLLLDLLLLLLLLWLLRRRLLLLLLLLLLLLRRRR", f)
   }
 
   @Test
@@ -300,7 +300,8 @@ class GarminIpnogrammaTest {
     assertEquals(16, f.count { it == 'D' })
     assertEquals(11, f.count { it == 'R' })
     assertEquals(2, f.count { it == 'W' })
-    assertTrue("niente REM nei primi 45 minuti", f.take(9).none { it == 'R' })
+    assertTrue("niente REM nei primi 60 minuti", f.take(12).none { it == 'R' })
+    assertTrue("REM in piu' cicli, non un blocco unico", Regex("R+").findAll(f).count() >= 3)
     val ipno = GarminIpnogramma.ipnogramma(inizio, fine, fc, letture, 80 * 60.0, 55 * 60.0, 12 * 60.0)
     assertEquals(((fine - inizio) / 30_000L).toInt(), ipno.length)
   }
