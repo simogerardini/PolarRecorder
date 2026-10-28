@@ -1,3 +1,6 @@
 .DS_Store
 .idea/androidTestResultsUserPreferences.xml
 .idea/deploymentTargetSelector.xml
+
+# Cache di Android Studio (es. deviceStreaming.xml): cambiano da sole, non vanno nel repository
+**/.idea/caches/
