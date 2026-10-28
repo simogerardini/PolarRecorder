@@ -305,6 +305,13 @@ class GarminIpnogrammaTest {
     assertEquals(((fine - inizio) / 30_000L).toInt(), ipno.length)
   }
 
+  /** 28/10: notte dello storico senza la FC della prima parte (prima di mezzanotte): niente stima. */
+  @Test
+  fun fcInsufficienteNessunaStima() {
+    val soloSecondaMeta = fc.filter { it.first > inizio + (fine - inizio) / 2 }
+    assertEquals("", GarminIpnogramma.ipnogramma(inizio, fine, soloSecondaMeta, letture, 80 * 60.0, 55 * 60.0, 12 * 60.0))
+  }
+
   @Test
   fun senzaFcNessunaStima() =
       assertEquals("", GarminIpnogramma.ipnogramma(inizio, fine, emptyList(), letture, 80 * 60.0, 0.0, 0.0))

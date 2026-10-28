@@ -21,6 +21,7 @@ object GarminIpnogramma {
   private const val FINESTRA_MS = 300_000L
   private const val EPOCHE_PER_FINESTRA = (FINESTRA_MS / SleepStages.EPOCH_MS).toInt()
   private const val NIENTE_REM_MIN = 45.0
+  private const val COPERTURA_MINIMA = 0.8
 
   // pesi (prototipo: dr=-1, dh=0.5, dsd=0.5, dt=2, rt=0.5, k=1, wsd=0.5)
   private const val P_RMSSD = -1.0
@@ -46,10 +47,12 @@ object GarminIpnogramma {
 
   /** Riempie i buchi con la media dei vicini (+-2), in ordine, come il prototipo; altrimenti 0. */
   private fun riempi(v: Array<Double?>): DoubleArray {
+    // 28/10: senza vicini la media della notte, non 0 (uno 0 creava finti salti di FC = finta veglia)
+    val media = v.filterNotNull().takeIf { it.isNotEmpty() }?.average() ?: 0.0
     for (i in v.indices) {
       if (v[i] == null) {
         val vic = (maxOf(0, i - 2)..minOf(v.size - 1, i + 2)).mapNotNull { v[it] }
-        v[i] = if (vic.isEmpty()) 0.0 else vic.average()
+        v[i] = if (vic.isEmpty()) media else vic.average()
       }
     }
     return DoubleArray(v.size) { v[it]!! }
@@ -75,6 +78,9 @@ object GarminIpnogramma {
       sd[i] = if (w.size > 1) pstdev(w) else 0.0
       rm[i] = letture.firstOrNull { it.first >= da && it.first < da + FINESTRA_MS }?.second
     }
+    // 28/10: con la FC su meno dell'80% della notte la stima inventerebbe le fasi (prima notte
+    // dello storico senza la FC prima di mezzanotte): meglio solo i totali
+    if (hr.count { it != null } < COPERTURA_MINIMA * n) return ""
     val h = riempi(hr)
     val r = riempi(rm)
     val zh = z(h)

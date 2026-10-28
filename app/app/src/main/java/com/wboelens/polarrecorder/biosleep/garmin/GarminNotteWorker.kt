@@ -19,6 +19,7 @@ import com.wboelens.polarrecorder.biosleep.watchdog.AutoStopLog
 import java.time.LocalDate
 import java.time.LocalTime
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.withContext
 
 /** Giorni (mattine) che hanno gia' una notte nel database, di qualunque sorgente o di una sola. */
@@ -98,55 +99,49 @@ class GarminNotteWorker(context: Context, params: WorkerParameters) : CoroutineW
 
 /**
  * Parte 11: storico iniziale (una volta, quando si sceglie Garmin): fino a 28 notti, solo sul
- * telefono. Minimizzazione (Parte 4): sonno e HRV a intervallo + la sola FC del giorno
- * (dailyHeartRate) per ogni notte da salvare; niente riepiloghi giornalieri (passi, stress...).
- * Salta i giorni che hanno gia' una notte (di qualunque sorgente) e la notte di oggi.
+ * telefono, notte di oggi compresa (anche se si collega Garmin di sera).
+ * 28/10: ogni notte si legge come al mattino (GarminNotte.scarica: sonno, HRV con le letture ogni
+ * 5 minuti, FC del giorno e della vigilia). Prima lo storico leggeva solo i riepiloghi HRV e la FC
+ * del giorno: senza letture niente grafico rMSSD, e senza la FC prima di mezzanotte l'andamento
+ * stimato delle fasi era inventato. Costa 4 chiamate per notte, una volta sola.
+ * Salta i giorni che hanno gia' una notte (di qualunque sorgente).
  */
 class GarminStoricoWorker(context: Context, params: WorkerParameters) : CoroutineWorker(context, params) {
   companion object {
     private const val GIORNI = 28L
+    private const val PAUSA_MS = 500L
   }
-
-  private fun problema(r: LetturaGarmin) = r !is LetturaGarmin.Ok && r !is LetturaGarmin.Vuoto
 
   override suspend fun doWork(): Result =
       withContext(Dispatchers.IO) {
         val ctx = applicationContext
         if (!GarminScelta.attiva(ctx)) return@withContext Result.success()
         val oggi = LocalDate.now()
-        val da = oggi.minusDays(GIORNI)
-        val a = oggi.minusDays(1)
         val presenti = mattineConNotte(ctx)
-        val sonni = GarminClient.leggi(ctx, "/sleep-service/sleep/dailySleepSummariesByDate?startDate=$da&endDate=$a")
-        val hrv = GarminClient.leggi(ctx, "/hrv-service/hrv/daily/$da/$a")
-        if (problema(sonni) || problema(hrv)) {
+        // un'unica chiamata per sapere quali giorni hanno un sonno
+        val sonni = GarminClient.leggi(ctx, "/sleep-service/sleep/dailySleepSummariesByDate?startDate=${oggi.minusDays(GIORNI)}&endDate=$oggi")
+        if (sonni !is LetturaGarmin.Ok && sonni !is LetturaGarmin.Vuoto) {
           AutoStopLog.write(ctx, "Storico Garmin: lettura non riuscita, riprovo piu' tardi")
           return@withContext Result.retry()
         }
-        val hrvPerGiorno =
-            (hrv as? LetturaGarmin.Ok)?.json.oggetto()?.get("hrvSummaries")?.takeIf { it.isJsonArray }?.asJsonArray
-                ?.mapNotNull { it.oggetto() }?.associateBy { it.get("calendarDate")?.takeIf { d -> !d.isJsonNull }?.asString ?: "" }
-                .orEmpty()
-        val elenco = (sonni as? LetturaGarmin.Ok)?.json?.takeIf { it.isJsonArray }?.asJsonArray
+        val giorni =
+            ((sonni as? LetturaGarmin.Ok)?.json?.takeIf { it.isJsonArray }?.asJsonArray ?: emptyList<JsonElement>())
+                .mapNotNull { it.oggetto() }
+                .filter { (it.numero("sleepTimeSeconds") ?: 0.0) > 0.0 }
+                .mapNotNull { it.get("calendarDate")?.takeIf { d -> !d.isJsonNull }?.asString }
+                .filter { it !in presenti && it <= oggi.toString() }
+                .sorted()
         var salvate = 0
-        for (e in elenco ?: emptyList<JsonElement>()) {
-          val sonno = e.oggetto() ?: continue
-          val giorno = sonno.get("calendarDate")?.takeIf { !it.isJsonNull }?.asString ?: continue
-          if (giorno in presenti || giorno >= oggi.toString()) continue
-          if ((sonno.numero("sleepTimeSeconds") ?: 0.0) <= 0.0) continue
-          val rf = GarminClient.leggi(ctx, "/wellness-service/wellness/dailyHeartRate?date=$giorno")
-          if (problema(rf)) {
-            AutoStopLog.write(ctx, "Storico Garmin interrotto ($salvate notti salvate): riprovo piu' tardi")
-            return@withContext Result.retry()
+        for (g in giorni) {
+          when (val e = GarminNotte.scarica(ctx, LocalDate.parse(g), aspettaHrv = false)) {
+            is GarminNotte.Esito.Salvata -> salvate++
+            GarminNotte.Esito.NonAncora -> {}
+            else -> {
+              AutoStopLog.write(ctx, "Storico Garmin interrotto ($salvate notti salvate, $e): riprovo piu' tardi")
+              return@withContext Result.retry()
+            }
           }
-          val fc = (rf as? LetturaGarmin.Ok)?.json
-          val h = hrvPerGiorno[giorno]?.let { JsonObject().apply { add("hrvSummary", it) } }
-          val notte =
-              GarminNotte.componi(sonno, h, GarminNotte.serieFc(fc),
-                  fcRiposo = fc.oggetto()?.numero("restingHeartRate"),
-                  fcMinima = fc.oggetto()?.numero("minHeartRate")) ?: continue
-          GarminNotte.salva(ctx, notte)
-          salvate++
+          delay(PAUSA_MS)
         }
         GarminScelta.storicoFatto(ctx)
         AutoStopLog.write(ctx, "Storico Garmin: $salvate notti salvate (solo sul telefono)")
