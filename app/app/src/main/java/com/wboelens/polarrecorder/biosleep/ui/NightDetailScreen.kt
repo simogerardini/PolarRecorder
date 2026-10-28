@@ -281,7 +281,9 @@ private fun SleepStagesSection(night: NightListItem, titolo: Boolean = true) {
       color = MaterialTheme.colorScheme.onSurfaceVariant,
   )
   // Parte 11: le notti Garmin hanno solo i totali delle fasi
-  if (st.hypnogram.isNotEmpty()) Hypnogram(st, Modifier.fillMaxWidth().height(160.dp))
+  if (st.hypnogram.isNotEmpty())
+      Hypnogram(st, Modifier.fillMaxWidth().height(160.dp),
+          remIndicativa = st.mode == com.wboelens.polarrecorder.biosleep.garmin.GarminNotte.MODO_FASI)
   MetricRow(
       Metric(stringResource(R.string.night_detail_profondo), hm(st.deepMin), ""),
       Metric(stringResource(R.string.night_detail_rem), hm(st.remMin), ""),
@@ -292,7 +294,8 @@ private fun SleepStagesSection(night: NightListItem, titolo: Boolean = true) {
   )
   if (st.mode == com.wboelens.polarrecorder.biosleep.garmin.GarminNotte.MODO_FASI) {
     Text(
-        stringResource(R.string.garmin_fasi_nota),
+        if (st.hypnogram.isEmpty()) stringResource(R.string.garmin_fasi_nota)
+        else stringResource(R.string.garmin_fasi_stima, com.wboelens.polarrecorder.BuildConfig.APP_NAME),
         style = MaterialTheme.typography.bodySmall,
         color = MaterialTheme.colorScheme.onSurfaceVariant,
     )

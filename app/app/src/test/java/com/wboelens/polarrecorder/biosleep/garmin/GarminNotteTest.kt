@@ -51,7 +51,7 @@ class GarminNotteTest {
     assertEquals(412, st.lightMin)
     assertEquals(0, st.remMin)
     assertEquals(10, st.wakeMin)
-    assertEquals("", st.hypnogram)
+    assertEquals(((fine - inizio) / 30_000L).toInt(), st.hypnogram.length) // andamento stimato
     assertEquals(GarminNotte.MODO_FASI, st.mode)
     assertEquals(96, n.windows.size)
   }

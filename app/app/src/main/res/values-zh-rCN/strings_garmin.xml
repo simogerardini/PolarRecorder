@@ -40,4 +40,5 @@
     <string name="garmin_notti_titolo">你的夜间数据</string>
     <string name="garmin_notti_senza_fascia">夜间数据每天早上来自 Garmin Connect。你也可以连接心率胸带。</string>
     <string name="garmin_collega_fascia">连接心率胸带</string>
+    <string name="garmin_fasi_stima">各睡眠阶段的总时长来自 Garmin Connect。夜间变化过程由 %1$s 估算：深睡和醒来较为可靠，REM 的位置（淡色）仅供参考。</string>
 </resources>

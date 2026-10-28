@@ -40,4 +40,5 @@
     <string name="garmin_notti_titolo">Tus noches</string>
     <string name="garmin_notti_senza_fascia">Las noches llegan de Garmin Connect cada mañana. También puedes conectar una banda pectoral.</string>
     <string name="garmin_collega_fascia">Conectar una banda pectoral</string>
+    <string name="garmin_fasi_stima">Totales de las fases de Garmin Connect. La evolución la estima %1$s: el sueño profundo y los despertares son fiables, la posición del REM (difuminada) es orientativa.</string>
 </resources>

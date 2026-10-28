@@ -41,4 +41,5 @@
     <string name="garmin_notti_titolo">Your nights</string>
     <string name="garmin_notti_senza_fascia">Your nights arrive from Garmin Connect every morning. You can also connect a chest strap.</string>
     <string name="garmin_collega_fascia">Connect a chest strap</string>
+    <string name="garmin_fasi_stima">Stage totals from Garmin Connect. The timeline is estimated by %1$s: deep sleep and awakenings are reliable, the REM position (faded) is indicative.</string>
 </resources>

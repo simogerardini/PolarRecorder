@@ -40,4 +40,5 @@
     <string name="garmin_notti_titolo">Le tue notti</string>
     <string name="garmin_notti_senza_fascia">Le notti arrivano da Garmin Connect ogni mattina. Puoi anche collegare una fascia cardio.</string>
     <string name="garmin_collega_fascia">Collega una fascia cardio</string>
+    <string name="garmin_fasi_stima">Totali delle fasi da Garmin Connect. L’andamento è stimato da %1$s: profondo e risvegli sono affidabili, la posizione della REM (sfumata) è indicativa.</string>
 </resources>

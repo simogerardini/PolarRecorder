@@ -105,7 +105,11 @@ object GarminNotte {
     val min = { k: String -> ((sonno.num(k) ?: 0.0) / 60).toInt() }
     val stages =
         SleepStages(
-            hypnoStartMs = inizio, hypnogram = "", sleepOnsetMs = inizio, sleepEndMs = fine,
+            hypnoStartMs = inizio,
+            // andamento stimato da NoctaliX sui totali Garmin (vuoto senza FC nella notte)
+            hypnogram = GarminIpnogramma.ipnogramma(inizio, fine, fcNotte, letture,
+                sonno.num("deepSleepSeconds") ?: 0.0, sonno.num("remSleepSeconds") ?: 0.0, sonno.num("awakeSleepSeconds") ?: 0.0),
+            sleepOnsetMs = inizio, sleepEndMs = fine,
             tstMin = sonnoS / 60, deepMin = min("deepSleepSeconds"), lightMin = min("lightSleepSeconds"),
             remMin = min("remSleepSeconds"), wakeMin = min("awakeSleepSeconds"), mode = MODO_FASI)
     val summary =

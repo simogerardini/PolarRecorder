@@ -68,7 +68,7 @@ private fun segments(hyp: String): List<Segment> {
  * quello della successiva, cosi' la notte si legge come un'unica linea.
  */
 @Composable
-fun Hypnogram(stages: SleepStages, modifier: Modifier = Modifier) {
+fun Hypnogram(stages: SleepStages, modifier: Modifier = Modifier, remIndicativa: Boolean = false) {
   val textMeasurer = rememberTextMeasurer()
   // Etichette delle righe nella lingua dell'app (stesso ordine di ROWS)
   val rowLabels =
@@ -133,7 +133,8 @@ fun Hypnogram(stages: SleepStages, modifier: Modifier = Modifier) {
       val x0 = (left + s.start * blockW - connectorW / 2).coerceAtLeast(left)
       val x1 = (left + s.end * blockW + connectorW / 2).coerceAtMost(size.width - right)
       drawRoundRect(
-          color = STAGE_COLORS.getValue(s.stage),
+          // Parte 11: notti Garmin, la posizione della REM e' solo indicativa (barra sfumata)
+          color = STAGE_COLORS.getValue(s.stage).let { if (remIndicativa && s.stage == Stage.REM) it.copy(alpha = 0.4f) else it },
           topLeft = Offset(x0, rowTop(s.stage)),
           size = Size(x1 - x0, barH),
           cornerRadius = radius,
