@@ -2531,13 +2531,17 @@ def effetti_tag(d, ref, tag_giorni, tag_sedute, activities):
     for k in range(0, 3):
         x = _piu(ref, -k)
         if x <= d:
-            recenti |= {t for t in (tg.get(x) or []) if t == "malattia" or t.startswith("infortunio:")}
+            # BUG FIX (29/10/2026): solo l'infortunio si estende ai giorni seguenti; la malattia
+            # recente si estendeva a tutta la settimana come "solo leggero" (tag fino al 28 ->
+            # 29, 30, 31 e 1/11 leggeri), e con un testo che sembrava un tag di quei giorni.
+            recenti |= {t for t in (tg.get(x) or []) if t.startswith("infortunio:")}
     if "malattia" in oggi_t:
         eff["riposo"] = True
         eff["motivi"].append(f"tag malattia del {d}: riposo")
-    elif "malattia" in ieri_t or "malattia" in recenti:
+    elif "malattia" in ieri_t:
+        # rientro: il giorno dopo l'ultimo giorno di malattia, solo attivita' leggera
         eff["leggero"] = True
-        eff["motivi"].append(f"tag malattia: {d} solo attivita' leggera")
+        eff["motivi"].append(f"dopo la malattia del {_piu(d, -1)}: {d} solo attivita' leggera (rientro)")
     for t in sorted(oggi_t | recenti):
         if t.startswith("infortunio:") and t.split(":", 1)[1] in ZONE_INFORTUNIO:
             z = t.split(":", 1)[1]
@@ -2576,6 +2580,9 @@ def effetti_tag(d, ref, tag_giorni, tag_sedute, activities):
     return eff
 
 
+LEGGERO_MAX_MIN = 45
+
+
 def applica_tag(sedute_sett, giorni, ref, tag_giorni, tag_sedute, activities):
     """Effetti dei tag sul piano della settimana; motivi in _MOTIVI_TAG."""
     if not tag_giorni and not tag_sedute:
@@ -2594,7 +2601,12 @@ def applica_tag(sedute_sett, giorni, ref, tag_giorni, tag_sedute, activities):
                 if m not in _MOTIVI_TAG:
                     _MOTIVI_TAG.append(m)
             continue
-        if eff["riposo"] or s["famiglia"] in eff["vietate"] or (eff["no_forza"] and s["famiglia"] == "forza"):
+        # 29/10/2026: "solo attivita' leggera" (rientro dalla malattia) ora cambia davvero il
+        # piano: niente forza ne' corsa del brick, niente qualita', al massimo 45'
+        if eff["leggero"]:
+            eff["no_qualita"], eff["max_min"] = True, min(eff["max_min"] or LEGGERO_MAX_MIN, LEGGERO_MAX_MIN)
+        if (eff["riposo"] or s["famiglia"] in eff["vietate"] or (eff["no_forza"] and s["famiglia"] == "forza")
+                or (eff["leggero"] and (s["famiglia"] == "forza" or s["key"] == "brick_corsa"))):
             s["durata"] = 0
             motivo = "tolta"
         else:
@@ -3977,14 +3989,17 @@ def blocchi_riepilogo(oggi_str, pos, baseline, mod, wellness, activities, eventi
     b, fc = baseline or {}, (baseline or {}).get("fc_riposo") or {}
     mod = mod or {}
     banda = b.get("banda") if b.get("ok") else None
+    # 29/10/2026: anche i tag che hanno ridotto il piano (malattia, rientro, infortunio, viaggio)
+    # contano: con il piano ridotto la scheda non puo' dire "RISPETTA IL PIANO"
+    motivi_tag = list(_MOTIVI_TAG)
     if mod.get("riposo"):
         codice = "RECUPERO"
-    elif mod.get("banda") in ("giallo", "rosso") or mod.get("motivi"):
+    elif mod.get("banda") in ("giallo", "rosso") or mod.get("motivi") or motivi_tag:
         codice = "RIDUCI"
     else:
         codice = "RISPETTA"
     provv = bool(b.get("provvisoria")) and b.get("ok")
-    motivo = "; ".join(mod.get("motivi") or []) or (
+    motivo = "; ".join(list(mod.get("motivi") or []) + motivi_tag) or (
         "banda verde provvisoria: si segue il piano" if provv and banda == "verde" else
         f"banda {banda}: si segue il piano" if banda else "baseline in calibrazione: si segue il piano")
 
@@ -4040,10 +4055,10 @@ def blocchi_riepilogo(oggi_str, pos, baseline, mod, wellness, activities, eventi
     return {
         "fase_codice": pos.get("fase"),
         "decisione": {"codice": codice, "etichetta": DECISIONI[codice], "motivo": motivo,
-                      "motivo_codice": ("motivi" if mod.get("motivi") else
+                      "motivo_codice": ("motivi" if mod.get("motivi") or motivi_tag else
                                         "provvisoria_segue_piano" if provv and banda == "verde" else
                                         "banda_segue_piano" if banda else "calibrazione_segue_piano"),
-                      "motivo_valori": ({"banda": banda} if banda and not mod.get("motivi")
+                      "motivo_valori": ({"banda": banda} if banda and not mod.get("motivi") and not motivi_tag
                                         and not (provv and banda == "verde") else {})},
         "biometria": {"ok": bool(b.get("ok")), "banda": banda, "azione": b.get("azione"),
                       "provvisoria": bool(provv),

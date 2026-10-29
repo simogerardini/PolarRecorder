@@ -56,6 +56,7 @@ CATALOGO = [
     # ── tag ───────────────────────────────────────────────────────────────────────
     ("tag_malattia_riposo", rf"tag malattia del {_D}: riposo"),
     ("tag_malattia_leggero", rf"tag malattia: {_D} solo attivita' leggera"),
+    ("tag_malattia_rientro", rf"dopo la malattia del (?P<data_malattia>\d{{4}}-\d{{2}}-\d{{2}}): {_D} solo attivita' leggera \(rientro\)"),
     ("tag_infortunio", rf"tag infortunio (?P<zona>\w+): {_D} senza (?P<discipline>.+)"),
     ("tag_viaggio", rf"tag viaggio del {_D}: niente qualita' ne' forza, max 45'"),
     ("tag_dolore_muscolare", rf"tag dolore muscolare del {_D}: niente qualita'"),
