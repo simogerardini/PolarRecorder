@@ -33,6 +33,7 @@
     <string name="msg_companion_prevenzione" formatted="true">companion sostituita con %1$s (prevenzione %2$s)</string>
     <string name="msg_tag_malattia_riposo" formatted="true">tag malattia del %1$s: riposo</string>
     <string name="msg_tag_malattia_leggero" formatted="true">tag malattia: %1$s solo attività leggera</string>
+    <string name="msg_tag_malattia_rientro" formatted="true">dopo la malattia del %1$s: %2$s solo attività leggera (rientro)</string>
     <string name="msg_tag_infortunio" formatted="true">tag infortunio %1$s: %2$s senza %3$s</string>
     <string name="msg_tag_viaggio" formatted="true">tag viaggio del %1$s: niente qualità né forza, max 45\'</string>
     <string name="msg_tag_dolore_muscolare" formatted="true">tag dolore muscolare del %1$s: niente qualità</string>

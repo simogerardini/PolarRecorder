@@ -34,6 +34,7 @@
     <string name="msg_companion_prevenzione" formatted="true">complemento sustituido por %1$s (prevención %2$s)</string>
     <string name="msg_tag_malattia_riposo" formatted="true">etiqueta enfermedad del %1$s: descanso</string>
     <string name="msg_tag_malattia_leggero" formatted="true">etiqueta enfermedad: %1$s solo actividad ligera</string>
+    <string name="msg_tag_malattia_rientro" formatted="true">tras la enfermedad del %1$s: %2$s solo actividad ligera (vuelta)</string>
     <string name="msg_tag_infortunio" formatted="true">etiqueta lesión %1$s: %2$s sin %3$s</string>
     <string name="msg_tag_viaggio" formatted="true">etiqueta viaje del %1$s: sin calidad ni fuerza, máx. 45\'</string>
     <string name="msg_tag_dolore_muscolare" formatted="true">etiqueta dolor muscular del %1$s: sin calidad</string>

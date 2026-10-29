@@ -34,6 +34,7 @@
     <string name="msg_companion_prevenzione" formatted="true">辅助训练已替换为 %1$s（%2$s 预防）</string>
     <string name="msg_tag_malattia_riposo" formatted="true">%1$s 的生病标签：休息</string>
     <string name="msg_tag_malattia_leggero" formatted="true">生病标签：%1$s 仅做轻度活动</string>
+    <string name="msg_tag_malattia_rientro" formatted="true">%1$s 生病后：%2$s 仅轻度活动（恢复期）</string>
     <string name="msg_tag_infortunio" formatted="true">受伤标签（%1$s）：%2$s 不进行 %3$s</string>
     <string name="msg_tag_viaggio" formatted="true">%1$s 的出行标签：不安排强度课和力量训练，最多 45 分钟</string>
     <string name="msg_tag_dolore_muscolare" formatted="true">%1$s 的肌肉酸痛标签：不安排强度课</string>

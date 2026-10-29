@@ -60,6 +60,7 @@ object Messaggi {
           "companion_prevenzione" to listOf("scheda", "zona"),
           "tag_malattia_riposo" to listOf("data"),
           "tag_malattia_leggero" to listOf("data"),
+          "tag_malattia_rientro" to listOf("data_malattia", "data"),
           "tag_infortunio" to listOf("zona", "data", "discipline"),
           "tag_viaggio" to listOf("data"),
           "tag_dolore_muscolare" to listOf("data"),

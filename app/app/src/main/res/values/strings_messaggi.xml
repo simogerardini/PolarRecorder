@@ -34,6 +34,7 @@
     <string name="msg_companion_prevenzione" formatted="true">companion replaced with %1$s (%2$s prevention)</string>
     <string name="msg_tag_malattia_riposo" formatted="true">illness tag on %1$s: rest</string>
     <string name="msg_tag_malattia_leggero" formatted="true">illness tag: %1$s light activity only</string>
+    <string name="msg_tag_malattia_rientro" formatted="true">after the illness of %1$s: %2$s light activity only (return)</string>
     <string name="msg_tag_infortunio" formatted="true">injury tag %1$s: %2$s without %3$s</string>
     <string name="msg_tag_viaggio" formatted="true">travel tag on %1$s: no quality or strength, max 45\'</string>
     <string name="msg_tag_dolore_muscolare" formatted="true">muscle soreness tag on %1$s: no quality</string>
