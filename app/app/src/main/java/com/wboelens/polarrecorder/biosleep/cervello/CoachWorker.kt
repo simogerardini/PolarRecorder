@@ -190,6 +190,9 @@ class CoachWorker(context: Context, params: WorkerParameters) : CoroutineWorker(
     val r = withContext(Dispatchers.IO) { Cervello.esegui(ctx, config) }
     val durata = System.currentTimeMillis() - t0
     Log.i(TAG, "Coach $data (tentativo $tentativo, senza_attesa=$senzaAttesa): ${r.esito} in ${durata / 1000} s")
+    // Parte 11: esito anche nel registro persistente (il logcat si perde in poche ore)
+    com.wboelens.polarrecorder.biosleep.watchdog.AutoStopLog.write(ctx, "Coach $data (tentativo $tentativo, senza_attesa=$senzaAttesa): ${r.esito}" +
+        (r.errore?.let { " - $it" } ?: "") + (r.logFile?.let { " (log: $it)" } ?: ""))
     CoachStato(ctx).registra(data, r, durata, "auto")
 
     val riepilogoLetto = r.riepilogoFile?.let { f -> runCatching { com.wboelens.polarrecorder.biosleep.riepilogo.RiepilogoParser.leggi(java.io.File(f).readText(Charsets.UTF_8)) }.getOrNull() }

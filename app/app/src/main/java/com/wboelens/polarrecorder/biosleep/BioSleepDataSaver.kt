@@ -705,6 +705,8 @@ class BioSleepDataSaver(
       val limite = System.currentTimeMillis() - 7 * 86_400_000L
       db.listNights()
           .filter { it.summary.endMs >= limite && it.syncedAt == null }
+          // Parte 11: le notti Garmin restano sul telefono, non si inviano mai
+          .filter { it.summary.sorgente != com.wboelens.polarrecorder.biosleep.NightSummary.SORGENTE_GARMIN }
           .filter { n ->
             val esito = n.syncStatus
             esito == null || esito.startsWith("Connessione") || esito.contains("HTTP 5")

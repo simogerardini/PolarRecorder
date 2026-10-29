@@ -22,7 +22,10 @@ object GarminScelta {
   private const val K_STORICO = "storico_fatto_2"
   private const val K_ESITO = "ultimo_esito"
   private const val K_AVVISO = "avviso_chiave_giorno"
-  private const val LAVORO = "noctalix-garmin-notte"
+  private const val LAVORO = "noctalix-garmin-notte-15m"
+  private const val LAVORO_VECCHIO = "noctalix-garmin-notte" // controllo orario fino al 29/10
+  private const val K_ULTIMO = "ultimo_tentativo_ms"
+  const val K_SUBITO = "subito"
   private const val LAVORO_ORA = "noctalix-garmin-notte-ora"
   private const val LAVORO_STORICO = "noctalix-garmin-storico"
 
@@ -50,6 +53,10 @@ object GarminScelta {
 
   internal fun salvaEsito(c: Context, e: String) = prefs(c).edit().putString(K_ESITO, e).apply()
 
+  internal fun ultimoTentativoMs(c: Context): Long = prefs(c).getLong(K_ULTIMO, 0L)
+
+  internal fun segnaTentativo(c: Context) = prefs(c).edit().putLong(K_ULTIMO, System.currentTimeMillis()).apply()
+
   /** true la prima volta in un giorno (avviso di chiave non valida una volta al giorno). */
   internal fun primoAvvisoDelGiorno(c: Context, giorno: String): Boolean {
     if (prefs(c).getString(K_AVVISO, null) == giorno) return false
@@ -64,10 +71,13 @@ object GarminScelta {
     val wm = runCatching { WorkManager.getInstance(c) }.getOrNull() ?: return
     if (attiva(c) && !prefs(c).getBoolean(K_STORICO, false)) avviaStorico(c)
     if (attiva(c)) {
+      wm.cancelUniqueWork(LAVORO_VECCHIO)
+      // ogni 15 minuti (il minimo di WorkManager); dopo le 10 il lavoro stesso si limita a uno all'ora
       wm.enqueueUniquePeriodicWork(LAVORO, ExistingPeriodicWorkPolicy.KEEP,
-          PeriodicWorkRequestBuilder<GarminNotteWorker>(1, TimeUnit.HOURS).setConstraints(rete).build())
+          PeriodicWorkRequestBuilder<GarminNotteWorker>(15, TimeUnit.MINUTES).setConstraints(rete).build())
     } else {
       wm.cancelUniqueWork(LAVORO)
+      wm.cancelUniqueWork(LAVORO_VECCHIO)
     }
   }
 
@@ -76,7 +86,8 @@ object GarminScelta {
     if (!attiva(c)) return
     runCatching {
       WorkManager.getInstance(c).enqueueUniqueWork(LAVORO_ORA, ExistingWorkPolicy.KEEP,
-          OneTimeWorkRequestBuilder<GarminNotteWorker>().setConstraints(rete).build())
+          OneTimeWorkRequestBuilder<GarminNotteWorker>().setConstraints(rete)
+              .setInputData(androidx.work.workDataOf(K_SUBITO to true)).build())
     }
   }
 

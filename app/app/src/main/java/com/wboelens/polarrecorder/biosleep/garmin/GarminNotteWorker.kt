@@ -34,9 +34,13 @@ internal fun mattineConNotte(context: Context, sorgente: Int? = null): Set<Strin
  * ("notti_locali", Cervello.esegui).
  */
 internal fun avviaCoach(context: Context, giorno: String) {
-  if (giorno != LocalDate.now().toString() || !ModalitaCoach.attivo(context)) return
+  if (giorno != LocalDate.now().toString() || !ModalitaCoach.attivo(context)) {
+    AutoStopLog.write(context, "Coach dopo la notte Garmin $giorno: non avviato (coach spento o notte non di oggi)")
+    return
+  }
   val attesaMs = AttesaTag.ms(context)
   CoachWorker.dopoNotte(context, giorno, attesaMs)
+  AutoStopLog.write(context, "Coach dopo la notte Garmin $giorno: avviato (attesa tag ${attesaMs / 60_000} min)")
   if (attesaMs > 0) NotificheCoach.chiediTag(context, giorno)
 }
 
@@ -64,12 +68,19 @@ class GarminNotteWorker(context: Context, params: WorkerParameters) : CoroutineW
   override suspend fun doWork(): Result {
     val ctx = applicationContext
     if (!GarminScelta.attiva(ctx) || Demo.attiva(ctx)) return Result.success()
+    val subito = inputData.getBoolean(GarminScelta.K_SUBITO, false) // apertura dell'app: sempre
     avvisoScadenza(ctx)
     val ora = LocalTime.now()
     if (ora.hour < 5 || ora.hour >= 13) return Result.success()
     val oggi = LocalDate.now()
     return withContext(Dispatchers.IO) {
       if (oggi.toString() in mattineConNotte(ctx, NightSummary.SORGENTE_GARMIN)) return@withContext Result.success()
+      // 29/10: controllo ogni 15 minuti fino alle 10 (la notte arriva entro 15' dalla sincronizzazione),
+      // poi al massimo uno all'ora: finche' Garmin non ha la notte costa una chiamata
+      if (!subito && ora.hour >= 10 && System.currentTimeMillis() - GarminScelta.ultimoTentativoMs(ctx) < 55 * 60_000L) {
+        return@withContext Result.success()
+      }
+      GarminScelta.segnaTentativo(ctx)
       when (val e = GarminNotte.scarica(ctx, oggi, aspettaHrv = ora.hour < 9)) {
         is GarminNotte.Esito.Salvata -> {
           GarminScelta.salvaEsito(ctx, "salvata:$oggi")
