@@ -6,7 +6,7 @@
   "caldo.py": "a2900dc3f161f3bb2447067597d1d5b094c85f75173676c679f626e60dc82a9e",
   "campi.py": "0b4bedd163066a0fe1aea2c4467d3f4fd140e908f3abc13a09742a2f334bc4cd",
   "carico.py": "321ef188a1e984bfbc63c44b2eaba6d68fc296fcfb15fb3e3946a59556c9e1d4",
-  "cervello.py": "33ee1f5dfc486be2ef7ca4d3da3a0483e990aafa041cdc7112210d29bea086f2",
+  "cervello.py": "fd987b24ca3a524689a41f3d5e9a1bb5c3887e0d238083a9238696726c6d82cc",
   "checkin.py": "7b48da431019a3a1645a6c862c0cf5a71edca86833069c811cf5054cb96836e2",
   "coach_settimanale.py": "1596ff035eb40420b38c162bb09868d8a341d11014d07afcc3fcda451bac0cd8",
   "degradato.py": "ed24851729b44a44e3ef9df5e9fe60d07614b00bd7dc9acc2249e3ad85236f95",
@@ -23,5 +23,5 @@
   "traduzioni.py": "a5ade5a0caf737cc6466d7a63e0a5869a60d117162c3ab6c41c20ebadac08847",
   "traduzioni_palestra.py": "97d6c715a9da3da3ebad5b1771cdc522956ae2686af5285a0ba89e2a998428b5"
  },
- "versione": "2026.10.29-rientro"
+ "versione": "2026.10.29-spegni-coach"
 }

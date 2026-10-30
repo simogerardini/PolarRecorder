@@ -54,7 +54,7 @@ from marchio import NOME_APP
 import campi
 import messaggi   # 07/10/2026 (punto 13a): codici dei messaggi per l'app
 
-VERSIONE = "2026.10.29-rientro"   # anche nel LEGGIMI del pacchetto
+VERSIONE = "2026.10.29-spegni-coach"   # anche nel LEGGIMI del pacchetto
 import contextlib, importlib, io, json, math, os, re, sys, traceback
 
 # 09/10/2026: il cervello non usa piu' GitHub ne' Telegram; le variabili si tolgono comunque
@@ -497,6 +497,8 @@ PREFISSI_APP = ("sw:", "app:gara:", "app:pausa:")
 
 def pulisci_intervals(config_json):
     """{"conferma": true per eseguire (senza: prova), "anche_passato": false (default: da oggi),
+    "solo_sedute": false (true: solo le sedute del coach), "salta_abbinate": false (true: non le
+    sedute gia' svolte),
     "campi": false (true: elimina anche le definizioni dei campi Noctalix*)}.
     Risultato: {"esito": "prova"|"ok"|"permesso_mancante"|"errore", "eventi_da_eliminare",
     "per_tipo": {"sedute", "gare", "pause", "altro"},
@@ -514,8 +516,13 @@ def pulisci_intervals(config_json):
         if r.status_code in (401, 403):
             out["esito"] = "permesso_mancante"
             return json.dumps(out)
-        ev = [e for e in (r.json() or []) if (e.get("external_id") or "").startswith(PREFISSI_APP)
-              and (e.get("start_date_local") or "")[:10] >= dal]
+        # 29/10/2026 (Parte 3, spegnimento del coach): "solo_sedute" = solo le sedute del coach
+        # (sw:), non gare ne' pause; "salta_abbinate" = non le sedute gia' svolte (abbinate a
+        # un'attivita', paired_activity_id). Senza i due parametri tutto come prima.
+        prefissi = ("sw:",) if cfg.get("solo_sedute") else PREFISSI_APP
+        ev = [e for e in (r.json() or []) if (e.get("external_id") or "").startswith(prefissi)
+              and (e.get("start_date_local") or "")[:10] >= dal
+              and not (cfg.get("salta_abbinate") and e.get("paired_activity_id"))]
         out["eventi_da_eliminare"] = [e["id"] for e in ev]
         # 09/10/2026 (Parte 3): conteggio per tipo, dalla category degli eventi da eliminare
         tipi = {"sedute": 0, "gare": 0, "pause": 0, "altro": 0}
