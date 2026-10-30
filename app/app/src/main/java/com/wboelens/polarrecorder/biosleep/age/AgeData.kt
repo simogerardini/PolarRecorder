@@ -67,6 +67,8 @@ data class BioAgeScreenData(
      * lo mostra con "Riprova". null = letture riuscite, oppure Intervals.icu non collegato.
      */
     val erroreIntervals: String? = null,
+    /** Parte 11: eta' calcolata su notti Garmin Connect: la card non si condivide (dati Garmin solo sul telefono). */
+    val conGarmin: Boolean = false,
 )
 
 /** Raccoglie i dati (database + Intervals.icu) e calcola. Da chiamare fuori dal main thread. */
@@ -90,8 +92,13 @@ object AgeRepository {
         } catch (e: SQLException) {
           emptyList()
         }
-    // Parte 11: senza le notti Garmin (la card dell'Eta' NoctaliX si condivide)
-    val recent = nights.filter { it.summary.endMs >= since && it.summary.sorgente != com.wboelens.polarrecorder.biosleep.NightSummary.SORGENTE_GARMIN }
+    // Parte 11 (30/10): anche le notti Garmin, ma di una sola sorgente, quella dell'ultima notte (come la
+    // banda): FC media e affidabilita' da torace e da polso/braccio non si mescolano. Prima le notti Garmin
+    // erano escluse e chi usa solo Garmin restava a 0 notti valide per sempre.
+    val ultime = nights.filter { it.summary.endMs >= since }
+    val sorgente = ultime.maxByOrNull { it.summary.endMs }?.summary?.sorgente
+    val recent = ultime.filter { it.summary.sorgente == sorgente }
+    val conGarmin = sorgente == com.wboelens.polarrecorder.biosleep.NightSummary.SORGENTE_GARMIN
     val lowQuality = recent.count { (it.summary.qualityPct ?: 0.0) < MIN_QUALITY }
     val noStages = recent.count { (it.summary.qualityPct ?: 0.0) >= MIN_QUALITY && (it.stages?.tstMin ?: 0) <= 0 }
     val valid =
@@ -148,7 +155,7 @@ object AgeRepository {
     val store = AgeProfileStore(context)
     if (outcome is BioAgeOutcome.Ready && !demo) store.saveToday(outcome.result.age, chrono)
     val history = store.history()
-    return BioAgeScreenData(outcome, recent.size, lowQuality, noStages, pace(history), history.size, errore)
+    return BioAgeScreenData(outcome, recent.size, lowQuality, noStages, pace(history), history.size, errore, conGarmin)
   }
 
   /** Esito di una lettura: i dati, oppure l'errore (HTTP o rete) da mostrare all'utente. */

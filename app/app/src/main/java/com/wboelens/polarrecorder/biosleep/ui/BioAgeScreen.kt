@@ -108,7 +108,8 @@ fun BioAgeScreen(onBack: () -> Unit) {
             actions = {
               // Parte 5: condivisione, solo con l'eta' pronta (non in taratura)
               val pronta = data?.outcome as? BioAgeOutcome.Ready
-              if (pronta != null && !editing) {
+              // Parte 11: con notti Garmin niente card (le notti Garmin restano sul telefono)
+              if (pronta != null && !editing && data?.conGarmin != true) {
                 IconButton(onClick = { Condivisione.apri(context, cardEta(pronta.result)) }) {
                   Icon(Icons.Filled.Share,
                       contentDescription = stringResource(R.string.condivisione_azione))
