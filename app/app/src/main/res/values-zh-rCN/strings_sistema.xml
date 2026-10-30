@@ -582,4 +582,11 @@
     <string name="sis_ci_rimuovi">删除</string>
     <string name="sis_ci_nota">输入每次月经的第一天。之前 7 天不计入 HRV 基线。数据只保存在手机上，不会发送到 Intervals.icu。</string>
     <string name="sis_na_riga" formatted="true">昨晚 HRV %1$s，按昨天负荷（%3$s TSS）预期 %2$s</string>
+    <string name="sis_cs_spento2">关闭：仅显示夜间生理数据（HRV、静息心率、睡眠、生理年龄）及其信号灯。关闭时，尚未完成的未来训练会从 Intervals.icu 中移除。</string>
+    <string name="sis_cs_domanda">关闭教练？</string>
+    <string name="sis_cs_togli" formatted="true">我将从 Intervals.icu 日历中移除 %1$s 次尚未完成的未来训练。比赛、暂停和已完成的训练会保留。</string>
+    <string name="sis_cs_spegni_togli">关闭并移除</string>
+    <string name="sis_cs_controllo">正在检查日历…</string>
+    <string name="sis_cs_tolte" formatted="true">教练已关闭：已从日历中移除 %1$s 次训练。</string>
+    <string name="sis_cs_non_tolte" formatted="true">教练已关闭，但无法移除训练：%1$s</string>
 </resources>

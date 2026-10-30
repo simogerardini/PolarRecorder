@@ -270,11 +270,21 @@ object Cervello {
           ?: EsitoGara("errore", null, false, "Python non disponibile")
 
   /** cervello.pulisci_intervals: senza [conferma] e' una prova (conta), con [conferma] elimina. */
-  fun pulisciIntervals(context: Context, c: Credenziali, conferma: Boolean, campi: Boolean, anchePassato: Boolean): EsitoPulizia =
+  fun pulisciIntervals(
+      context: Context,
+      c: Credenziali,
+      conferma: Boolean,
+      campi: Boolean,
+      anchePassato: Boolean,
+      soloSedute: Boolean = false, // solo le sedute del coach (sw:), niente gare e pause dell'app
+      saltaAbbinate: Boolean = false, // non le sedute gia' svolte (con attivita' abbinata)
+  ): EsitoPulizia =
       chiama(context, "pulisci_intervals", c) {
         addProperty("conferma", conferma)
         addProperty("campi", campi)
         addProperty("anche_passato", anchePassato)
+        if (soloSedute) addProperty("solo_sedute", true)
+        if (saltaAbbinate) addProperty("salta_abbinate", true)
       }?.let { EsitoPulizia.da(it) } ?: EsitoPulizia.errore("Python non disponibile")
 
   /** Funzioni senza credenziali (esporta_stato, importa_stato): {"esito", ...} o null se Python fallisce. */

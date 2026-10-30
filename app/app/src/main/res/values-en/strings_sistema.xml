@@ -582,4 +582,11 @@
     <string name="sis_ci_rimuovi">Remove</string>
     <string name="sis_ci_nota">Enter the first day of each period. The 7 days before it don\'t count towards the HRV baseline. It stays on the phone: it is not sent to Intervals.icu.</string>
     <string name="sis_na_riga" formatted="true">Last night\'s HRV %1$s, expected %2$s from yesterday\'s load (%3$s TSS)</string>
+    <string name="sis_cs_spento2">Off: only the night\'s biometric data (HRV, resting HR, sleep, biological age) with their traffic lights. When you switch it off, future sessions not yet done are removed from Intervals.icu.</string>
+    <string name="sis_cs_domanda">Switch off the coach?</string>
+    <string name="sis_cs_togli" formatted="true">I\'ll remove %1$s future sessions not yet done from the Intervals.icu calendar. Races, breaks and completed sessions stay.</string>
+    <string name="sis_cs_spegni_togli">Switch off and remove</string>
+    <string name="sis_cs_controllo">Checking the calendar…</string>
+    <string name="sis_cs_tolte" formatted="true">Coach off: %1$s sessions removed from the calendar.</string>
+    <string name="sis_cs_non_tolte" formatted="true">Coach off, but I couldn\'t remove the sessions: %1$s</string>
 </resources>
