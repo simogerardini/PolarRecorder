@@ -138,6 +138,8 @@ data class ProfiloAtleta(
     /** Ciclo mestruale (facoltativo): conta solo se attivo; date di inizio "YYYY-MM-DD". */
     val cicloAttivo: Boolean = false,
     val cicloInizi: List<String> = emptyList(),
+    /** Tymewear (facoltativo): VT1/VT2 di bici e corsa; nel configJson solo se attivo. */
+    val tymewear: Tymewear = Tymewear(),
 ) {
   /** Il blocco "profilo" del configJson (contiene sempre almeno la settimana tipo). */
   fun json(): JsonObject {
@@ -161,6 +163,7 @@ data class ProfiloAtleta(
           add("inizi", com.google.gson.JsonArray().apply { Ciclo.recenti(cicloInizi).forEach { add(it) } })
         })
       }
+      if (tymewear.attivo) add("tymewear", tymewear.json())
     }
   }
 
@@ -235,6 +238,7 @@ class ProfiloStore(context: Context) {
           livello = prefs.getString("livello_atleta", null),
           cicloAttivo = prefs.getBoolean("ciclo_attivo", false),
           cicloInizi = prefs.getStringSet("ciclo_inizi", emptySet()).orEmpty().sorted(),
+          tymewear = Tymewear.da(prefs.getString("tymewear", null)),
       )
 
   fun salva(p: ProfiloAtleta) {
@@ -259,6 +263,7 @@ class ProfiloStore(context: Context) {
       if (p.livello != null) putString("livello_atleta", p.livello) else remove("livello_atleta")
       putBoolean("ciclo_attivo", p.cicloAttivo)
       putStringSet("ciclo_inizi", p.cicloInizi.toSet())
+      putString("tymewear", p.tymewear.json().toString())
     }.apply()
   }
 }

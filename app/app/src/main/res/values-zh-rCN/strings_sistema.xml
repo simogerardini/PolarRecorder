@@ -589,4 +589,15 @@
     <string name="sis_cs_controllo">正在检查日历…</string>
     <string name="sis_cs_tolte" formatted="true">教练已关闭：已从日历中移除 %1$s 次训练。</string>
     <string name="sis_cs_non_tolte" formatted="true">教练已关闭，但无法移除训练：%1$s</string>
+    <string name="sis_tw_nota">来自 Tymewear 测试的通气阈（VT1 和 VT2）。教练将其作为有氧训练的上限；FTP 和 LTHR 不会被更改。</string>
+    <string name="sis_tw_data">测试日期</string>
+    <string name="sis_tw_manuale">手动输入</string>
+    <string name="sis_tw_auto">由 Garmin 检测</string>
+    <string name="sis_tw_fc">心率（次/分）</string>
+    <string name="sis_tw_passo">配速（分/公里）</string>
+    <string name="sis_tw_test">Tymewear 测试</string>
+    <string name="sis_tw_eff_bici">VT1/VT2 骑行（Tymewear）：没有它们，有氧训练就没有第一通气阈的上限</string>
+    <string name="sis_tw_eff_corsa">VT1/VT2 跑步（Tymewear）：没有它们，有氧训练就没有第一通气阈的上限</string>
+    <string name="sis_tw_rip_bici" formatted="true">Tymewear 骑行测试需要重做（%1$s）</string>
+    <string name="sis_tw_rip_corsa" formatted="true">Tymewear 跑步测试需要重做（%1$s）</string>
 </resources>

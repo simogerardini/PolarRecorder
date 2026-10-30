@@ -18,6 +18,9 @@
     <string name="msg_dato_biometrico_vecchio" formatted="true">último dato biométrico de hace %1$s días</string>
     <string name="msg_taratura_biometria" formatted="true">biometría en calibración: %1$s noches %2$s válidas de %3$s</string>
     <string name="msg_notte_esclusa_qualita" formatted="true">noche del %1$s excluida por calidad: decide la banda de los días anteriores</string>
+    <string name="msg_tymewear_vt2_ftp" formatted="true">Tymewear: VT2 %1$s %2$s W, FTP %3$s W: repite el test o actualiza el FTP</string>
+    <string name="msg_tymewear_vt2_lthr" formatted="true">Tymewear: VT2 %1$s %2$s bpm, LTHR %3$s bpm: repite el test o actualiza la LTHR</string>
+    <string name="msg_tymewear_da_ripetere" formatted="true">Tymewear: test de %1$s del %2$s por repetir (más de 12 semanas)</string>
     <string name="msg_calo_non_spiegato" formatted="true">descenso no explicado: HRV de esta noche %1$s%% frente a %2$s%% esperado por carga y etiquetas (±%3$s%%)</string>
     <string name="msg_efficienza_in_calo" formatted="true">eficiencia aeróbica en descenso en %1$s: %2$s%% en las últimas 2 semanas</string>
     <string name="msg_fatica_percepita_in_aumento" formatted="true">esfuerzo percibido en aumento: la misma carga cuesta un %1$s%% más de esfuerzo</string>

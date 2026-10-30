@@ -54,7 +54,7 @@ from marchio import NOME_APP
 import campi
 import messaggi   # 07/10/2026 (punto 13a): codici dei messaggi per l'app
 
-VERSIONE = "2026.10.29-spegni-coach"   # anche nel LEGGIMI del pacchetto
+VERSIONE = "2026.10.30-tymewear"   # anche nel LEGGIMI del pacchetto
 import contextlib, importlib, io, json, math, os, re, sys, traceback
 
 # 09/10/2026: il cervello non usa piu' GitHub ne' Telegram; le variabili si tolgono comunque
@@ -172,7 +172,7 @@ def potenza_corsa_attiva(profilo, atleta):
     return False
 
 
-def verifica_soglie(atleta, stryd=False):
+def verifica_soglie(atleta, stryd=False, tymewear=None, oggi=None):
     """([mancanti], {valori}) dal JSON di GET /athlete. Pura: usata da controlla_soglie e
     dagli avvisi di ogni riepilogo. stryd=True: la CP di corsa diventa necessaria."""
     out = {"mancanti": [], "valori": {}}
@@ -211,6 +211,26 @@ def verifica_soglie(atleta, stryd=False):
             out["mancanti"].append({"disciplina": "corsa", "campo": "cp", "gravita": "bloccante",
                                     "effetto": "senza CP (FTP corsa) le sedute restano in FC/passo: "
                                                "Stryd non viene usato"})
+    # 30/10/2026 (Parte 13): Tymewear attivo -> VT1/VT2 per ogni disciplina allenata (non
+    # bloccante), valori mostrati, test da ripetere dopo 12 settimane
+    if (tymewear or {}).get("attivo"):
+        import tymewear as tw_mod
+        from datetime import date as _d
+        oggi = oggi or _d.today().isoformat()
+        for disc, tipi in tw_mod.DISCIPLINE.items():
+            if not any(set(tipi) & set(x.get("types") or []) for x in sport):
+                continue                              # disciplina non allenata
+            s = tw_mod.soglie_disc(tymewear, disc)
+            v1 = (s or {}).get("vt1") or {}
+            if not s or not tw_mod._num(v1.get("fc")):
+                out["mancanti"].append({"disciplina": disc, "campo": "vt_tymewear", "gravita": "consigliato",
+                                        "effetto": f"VT1/VT2 {disc} (Tymewear): senza, le sedute aerobiche non hanno "
+                                                   f"il tetto al primo limite ventilatorio"})
+                continue
+            out["valori"].setdefault(disc, {})["tymewear"] = tw_mod.valori_txt(s, disc)
+            if s.get("data") and tw_mod._vecchio(s["data"], oggi):
+                out["mancanti"].append({"disciplina": disc, "campo": "vt_da_ripetere", "gravita": "consigliato",
+                                        "effetto": f"test Tymewear da ripetere ({disc}, del {str(s['data'])[:10]})"})
     return out["mancanti"], out["valori"]
 
 
@@ -233,7 +253,8 @@ def controlla_soglie(config_json):
         if r.status_code != 200:
             out["errore"] = f"lettura atleta: HTTP {r.status_code}"
             return json.dumps(out)
-        mancanti, valori = verifica_soglie(r.json() or {}, (cfg.get("profilo") or {}).get("stryd"))
+        mancanti, valori = verifica_soglie(r.json() or {}, (cfg.get("profilo") or {}).get("stryd"),
+                                           (cfg.get("profilo") or {}).get("tymewear"))
         out["mancanti"], out["valori"] = mancanti, valori
         bloccanti = any(m["gravita"] == "bloccante" for m in out["mancanti"])
         out["esito"] = "da_completare" if bloccanti else "ok"
@@ -793,8 +814,8 @@ def _adesso(cfg):
 
 def _carica_moduli():
     global cs
-    import sedute, biometria, carico, soglie, palestra, caldo, detp, traduzioni_palestra, traduzioni, degradato, nomi, checkin, avanzate, tag_auto, efficienza, modello, coach_settimanale
-    for m in (sedute, biometria, carico, soglie, palestra, caldo, detp, traduzioni_palestra, traduzioni, degradato, nomi, checkin, avanzate, tag_auto, efficienza, modello, coach_settimanale):
+    import sedute, biometria, carico, soglie, palestra, caldo, detp, traduzioni_palestra, traduzioni, degradato, nomi, checkin, avanzate, tag_auto, efficienza, modello, tymewear, coach_settimanale
+    for m in (sedute, biometria, carico, soglie, palestra, caldo, detp, traduzioni_palestra, traduzioni, degradato, nomi, checkin, avanzate, tag_auto, efficienza, modello, tymewear, coach_settimanale):
         importlib.reload(m)
     cs = coach_settimanale
     return sedute
@@ -931,7 +952,7 @@ def esegui_app(config_json):
     # mano che raccoglie dati) valgono piu' di quelle su Intervals.icu; disponibilita' per
     # giorno in minuti (0 = non disponibile); tetto ore cardio settimanale.
     for k in ("FCMAX", "FCREST", "FC_DA_APP", "MAX_ORE_CARDIO_SETT", "DISPONIBILITA", "SETTIMANA_TIPO",
-              "PALESTRA", "CALDO", "DETP", "DISPONIBILITA_DATE", "LINGUA", "LIVELLO", "NOTTI_LOCALI"):
+              "PALESTRA", "CALDO", "DETP", "DISPONIBILITA_DATE", "LINGUA", "LIVELLO", "NOTTI_LOCALI", "TYMEWEAR"):
         os.environ.pop(k, None)
     prof = cfg.get("profilo") or {}
     if prof.get("fc_max") and prof.get("fc_riposo"):
@@ -952,6 +973,9 @@ def esegui_app(config_json):
     liv = prof.get("livello") or (prof.get("palestra") or {}).get("livello")
     if liv:
         os.environ["LIVELLO"] = str(liv)
+    # 30/10/2026 (Parte 13): soglie ventilatorie Tymewear (tetto VT1 delle sedute aerobiche)
+    if (prof.get("tymewear") or {}).get("attivo"):
+        os.environ["TYMEWEAR"] = json.dumps(prof["tymewear"])
     if prof.get("detp"):          # 07/10/2026: CORE 2 e protocollo DETP (punto 11)
         os.environ["DETP"] = json.dumps(prof["detp"])
     if prof.get("caldo"):         # 06/10/2026: preferenze per i giorni caldi (punto 7)
@@ -1006,6 +1030,7 @@ def esegui_app(config_json):
             cs.scrivi_nota = lambda *a, **k: None
             r = cs.requests.get(f"{cs.ICU_BASE}/athlete/{cs.ATHLETE_ID}", headers=cs.ICU)
             atleta = r.json() if r.status_code == 200 else {}
+            cs.ATLETA_CORRENTE = atleta     # 30/10/2026: soglie per il tetto VT1 (Tymewear)
             sedute.configura(atleta, cs.get_activities(42),
                              potenza_corsa=potenza_corsa_attiva(prof, atleta))   # punto 12
             oggi = cs.now_local().strftime("%Y-%m-%d")
@@ -1086,6 +1111,12 @@ def esegui_app(config_json):
                     rie["avvisi"] = "\n".join(x for x in [rie.get("avvisi") or "",
                                                          "soglie da completare su Intervals.icu: "
                                                          + ", ".join(bloccanti)] if x)
+                # 30/10/2026 (Parte 13): coerenza delle soglie Tymewear (solo avvisi)
+                if (prof.get("tymewear") or {}).get("attivo"):
+                    import tymewear
+                    av_tw = tymewear.avvisi(prof["tymewear"], atleta, cs.now_local().strftime("%Y-%m-%d"))
+                    if av_tw:
+                        rie["avvisi"] = "\n".join(x for x in [rie.get("avvisi") or ""] + av_tw if x)
                 # 05/10/2026: decisioni prese per un tag, visibili nell'app
                 if cs._MOTIVI_TAG or tag_scartati:
                     rie["motivi"] = list(dict.fromkeys((rie.get("motivi") or []) + cs._MOTIVI_TAG))

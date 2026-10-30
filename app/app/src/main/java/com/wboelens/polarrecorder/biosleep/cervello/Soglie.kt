@@ -54,6 +54,13 @@ object Soglie {
         "css" -> "Le sedute di nuoto a passo arrivano sull'orologio senza target"
         "ftp" -> "Senza FTP Intervals.icu stima peggio il carico (TSS) delle uscite senza FC"
         "cp" -> "Senza CP (FTP corsa) le sedute restano in FC o passo: Stryd non viene usato"
+        "vt_tymewear" -> when (m.disciplina) {
+          "bici" -> "VT1/VT2 bici (Tymewear): senza, le sedute aerobiche non hanno il tetto al primo limite ventilatorio"
+          "corsa" -> "VT1/VT2 corsa (Tymewear): senza, le sedute aerobiche non hanno il tetto al primo limite ventilatorio"
+          else -> null
+        }
+        // "test Tymewear da ripetere (bici, del <data>)": testo del cervello, tradotto dal modello con la data
+        "vt_da_ripetere" -> null
         "sport" -> when (m.disciplina) {
           "corsa" -> "Nessuna impostazione per la corsa su Intervals.icu: le sedute arrivano sull'orologio senza target"
           "bici" -> "Nessuna impostazione per la bici su Intervals.icu: le sedute arrivano sull'orologio senza target"
@@ -70,13 +77,15 @@ object Soglie {
         "lthr" -> "FC soglia (LTHR)"
         "ftp" -> "FTP"
         "cp" -> "CP corsa (Stryd)"
+        "vt_tymewear" -> "VT1/VT2 Tymewear"
+        "vt_da_ripetere" -> "Test Tymewear"
         "sport" -> "Impostazioni $disciplina"
         else -> c
       }
 
   /** "LTHR 167 · passo soglia 4:30/km" per una disciplina. */
   fun valoriLeggibili(campi: Map<String, String>): String =
-      listOf("lthr", "passo_soglia", "cp", "ftp", "css")
+      listOf("lthr", "passo_soglia", "cp", "ftp", "css", "tymewear")
           .mapNotNull { k ->
             campi[k]?.let { v ->
               when (k) {
@@ -85,6 +94,7 @@ object Soglie {
                 "ftp" -> "FTP $v W"
                 "cp" -> "CP ${v.toDoubleOrNull()?.let { Math.round(it).toString() } ?: v} W"
                 "css" -> "CSS $v"
+                "tymewear" -> v // "VT1 149 bpm 149 W · VT2 165 bpm 190 W", gia' composto dal cervello
                 else -> "$k $v"
               }
             }
@@ -135,7 +145,9 @@ object SoglieRepo {
   fun controlla(context: Context, forza: Boolean): EsitoSoglie? {
     val prefs = context.getSharedPreferences(PREFS, Context.MODE_PRIVATE)
     val oggi = LocalDate.now().toString()
-    if (!forza && prefs.getString("giorno", null) == oggi) return carica(context)
+    // Tymewear: soglie rilevate dal cervello (fase futura, inattivo senza "tymewear_soglie")
+    val tymewearNuovo = runCatching { TymewearAuto.applica(context) }.getOrDefault(false)
+    if (!forza && !tymewearNuovo && prefs.getString("giorno", null) == oggi) return carica(context)
     val c = IntervalsSettings(context).credenziali ?: return carica(context)
     val e = Cervello.controllaSoglie(context, c, ProfiloRepo.effettivo(context))
     if (e.esito == Soglie.ERRORE) return carica(context) ?: e

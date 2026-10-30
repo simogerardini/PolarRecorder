@@ -589,4 +589,15 @@
     <string name="sis_cs_controllo">Compruebo el calendario…</string>
     <string name="sis_cs_tolte" formatted="true">Coach apagado: %1$s sesiones quitadas del calendario.</string>
     <string name="sis_cs_non_tolte" formatted="true">Coach apagado, pero no he podido quitar las sesiones: %1$s</string>
+    <string name="sis_tw_nota">Umbrales ventilatorios del test Tymewear (VT1 y VT2). El coach los usa como tope para las sesiones aeróbicas; FTP y LTHR no se cambian.</string>
+    <string name="sis_tw_data">Fecha del test</string>
+    <string name="sis_tw_manuale">introducido a mano</string>
+    <string name="sis_tw_auto">detectado por Garmin</string>
+    <string name="sis_tw_fc">FC (ppm)</string>
+    <string name="sis_tw_passo">Ritmo (min/km)</string>
+    <string name="sis_tw_test">Test Tymewear</string>
+    <string name="sis_tw_eff_bici">VT1/VT2 bici (Tymewear): sin ellos, las sesiones aeróbicas no tienen el tope del primer umbral ventilatorio</string>
+    <string name="sis_tw_eff_corsa">VT1/VT2 carrera (Tymewear): sin ellos, las sesiones aeróbicas no tienen el tope del primer umbral ventilatorio</string>
+    <string name="sis_tw_rip_bici" formatted="true">test Tymewear de bici por repetir (del %1$s)</string>
+    <string name="sis_tw_rip_corsa" formatted="true">test Tymewear de carrera por repetir (del %1$s)</string>
 </resources>

@@ -6,14 +6,14 @@
   "caldo.py": "a2900dc3f161f3bb2447067597d1d5b094c85f75173676c679f626e60dc82a9e",
   "campi.py": "0b4bedd163066a0fe1aea2c4467d3f4fd140e908f3abc13a09742a2f334bc4cd",
   "carico.py": "321ef188a1e984bfbc63c44b2eaba6d68fc296fcfb15fb3e3946a59556c9e1d4",
-  "cervello.py": "fd987b24ca3a524689a41f3d5e9a1bb5c3887e0d238083a9238696726c6d82cc",
+  "cervello.py": "79032c29839f53e783fc8fe5c20f9b518ae1e495355203f481aa2e6f55bf6797",
   "checkin.py": "7b48da431019a3a1645a6c862c0cf5a71edca86833069c811cf5054cb96836e2",
-  "coach_settimanale.py": "1596ff035eb40420b38c162bb09868d8a341d11014d07afcc3fcda451bac0cd8",
+  "coach_settimanale.py": "208b74359e4dc553fb341617da429c313b410fb74a61c52d2db49169f7b842ce",
   "degradato.py": "ed24851729b44a44e3ef9df5e9fe60d07614b00bd7dc9acc2249e3ad85236f95",
   "detp.py": "97a071a1f3c753d90e37cb6d838cf03afe732767663c0be2308a999302ee4726",
   "efficienza.py": "8e2dfe7053bd51b9c73ac825cdce20d04e7c89029f627e0abf6a1e3cc87132b9",
   "marchio.py": "11c71b6f7d44c420d7d4b7236f869c240a31f02127572cf3af050c33b3190e1c",
-  "messaggi.py": "995029659fbfd98c86eff9990aef2517fa1079b4132c1ec4cc8c78ef2da06284",
+  "messaggi.py": "fc3b4748fdde5ffb265534328960aa49901bba930c6b51893d37046690d3b22e",
   "modello.py": "80e4ac3b77a8fb3473c8056b6ca7efd0387dcc5d268180eecdfc07567c05d2c1",
   "nomi.py": "c8396ff31a2ffdcfb0eb42ca54eb86c68446cc23e58f27dcdf6dbbc1757faeec",
   "palestra.py": "0b83f89cc970b2ccc361f6ef989b4209c3310afe31afafffbe8235621afa74e6",
@@ -21,7 +21,8 @@
   "soglie.py": "30edb7215e4282bcdb98af8ffb3a32d7d7fd0a684c8c193d6a94755203d8137e",
   "tag_auto.py": "c7d35726d3954051f83c11b356b273aabd50af9cf1c88d6b1e31ed99e14962aa",
   "traduzioni.py": "a5ade5a0caf737cc6466d7a63e0a5869a60d117162c3ab6c41c20ebadac08847",
-  "traduzioni_palestra.py": "97d6c715a9da3da3ebad5b1771cdc522956ae2686af5285a0ba89e2a998428b5"
+  "traduzioni_palestra.py": "97d6c715a9da3da3ebad5b1771cdc522956ae2686af5285a0ba89e2a998428b5",
+  "tymewear.py": "021caa5ba9bc3e9c5ea119bea6c12c02a3a24a4034b82edd4aa0b3fbec065e08"
  },
- "versione": "2026.10.29-spegni-coach"
+ "versione": "2026.10.30-tymewear"
 }

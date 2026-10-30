@@ -18,6 +18,9 @@
     <string name="msg_dato_biometrico_vecchio" formatted="true">最近的生理数据来自 %1$s 天前</string>
     <string name="msg_taratura_biometria" formatted="true">生物指标校准中：有效 %2$s 夜晚 %1$s/%3$s</string>
     <string name="msg_notte_esclusa_qualita" formatted="true">%1$s 的夜间数据因质量不足被排除：沿用前几天的区间</string>
+    <string name="msg_tymewear_vt2_ftp" formatted="true">Tymewear：%1$s VT2 %2$s W，FTP %3$s W：请重新测试或更新 FTP</string>
+    <string name="msg_tymewear_vt2_lthr" formatted="true">Tymewear：%1$s VT2 %2$s bpm，LTHR %3$s bpm：请重新测试或更新 LTHR</string>
+    <string name="msg_tymewear_da_ripetere" formatted="true">Tymewear：%2$s 的%1$s测试需要重做（超过 12 周）</string>
     <string name="msg_calo_non_spiegato" formatted="true">无法解释的下降：昨晚 HRV %1$s%%，按负荷和标签预期 %2$s%%（±%3$s%%）</string>
     <string name="msg_efficienza_in_calo" formatted="true">%1$s有氧效率下降：最近 2 周 %2$s%%</string>
     <string name="msg_fatica_percepita_in_aumento" formatted="true">主观疲劳上升：同样的负荷多消耗 %1$s%% 的疲劳</string>

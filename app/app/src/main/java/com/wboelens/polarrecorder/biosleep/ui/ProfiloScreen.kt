@@ -125,6 +125,7 @@ fun ProfiloScreen(onBack: () -> Unit, onApriGare: () -> Unit = {}) {
   var livelloAtleta by remember { mutableStateOf(iniziale.livello) }
   var cicloAttivo by remember { mutableStateOf(iniziale.cicloAttivo) }
   var cicloInizi by remember { mutableStateOf(iniziale.cicloInizi) }
+  var tymewear by remember { mutableStateOf(iniziale.tymewear) }
   var strydSalvato by remember { mutableStateOf(iniziale.stryd) }
   val chiediPosizione =
       rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission()) { ok ->
@@ -169,7 +170,8 @@ fun ProfiloScreen(onBack: () -> Unit, onApriGare: () -> Unit = {}) {
           stryd = stryd,
           livello = livelloAtleta,
           cicloAttivo = cicloAttivo,
-          cicloInizi = cicloInizi)
+          cicloInizi = cicloInizi,
+          tymewear = tymewear)
 
   Scaffold(
       topBar = {
@@ -204,6 +206,9 @@ fun ProfiloScreen(onBack: () -> Unit, onApriGare: () -> Unit = {}) {
 
       // cervello 2026.10.19-precisione3: ciclo mestruale facoltativo (fase luteale fuori dalla baseline)
       SezioneCiclo(cicloAttivo, cicloInizi, { cicloAttivo = it; esito = null }, { cicloInizi = it; esito = null })
+
+      // cervello 2026.10.30-tymewear: soglie ventilatorie (facoltativo)
+      SezioneTymewear(tymewear, stryd) { tymewear = it; esito = null }
 
       Text(stringResource(R.string.profilo_frequenza_cardiaca), style = MaterialTheme.typography.titleSmall)
       CampoNumero(fcMax, { fcMax = it; esito = null }, "FC massima (bpm)", errFcMax)

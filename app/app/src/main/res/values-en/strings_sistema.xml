@@ -589,4 +589,15 @@
     <string name="sis_cs_controllo">Checking the calendar…</string>
     <string name="sis_cs_tolte" formatted="true">Coach off: %1$s sessions removed from the calendar.</string>
     <string name="sis_cs_non_tolte" formatted="true">Coach off, but I couldn\'t remove the sessions: %1$s</string>
+    <string name="sis_tw_nota">Ventilatory thresholds from the Tymewear test (VT1 and VT2). The coach uses them as a cap for aerobic sessions; FTP and LTHR are not changed.</string>
+    <string name="sis_tw_data">Test date</string>
+    <string name="sis_tw_manuale">entered manually</string>
+    <string name="sis_tw_auto">detected by Garmin</string>
+    <string name="sis_tw_fc">HR (bpm)</string>
+    <string name="sis_tw_passo">Pace (min/km)</string>
+    <string name="sis_tw_test">Tymewear test</string>
+    <string name="sis_tw_eff_bici">VT1/VT2 cycling (Tymewear): without them, aerobic sessions have no cap at the first ventilatory threshold</string>
+    <string name="sis_tw_eff_corsa">VT1/VT2 running (Tymewear): without them, aerobic sessions have no cap at the first ventilatory threshold</string>
+    <string name="sis_tw_rip_bici" formatted="true">Tymewear cycling test to be repeated (of %1$s)</string>
+    <string name="sis_tw_rip_corsa" formatted="true">Tymewear running test to be repeated (of %1$s)</string>
 </resources>

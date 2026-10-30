@@ -44,6 +44,9 @@ object Messaggi {
           "dato_biometrico_vecchio" to listOf("giorni"),
           "taratura_biometria" to listOf("notti", "nome_app", "minimo"),
           "notte_esclusa_qualita" to listOf("data"),
+          "tymewear_vt2_ftp" to listOf("disciplina", "vt2", "ftp"),
+          "tymewear_vt2_lthr" to listOf("disciplina", "vt2", "lthr"),
+          "tymewear_da_ripetere" to listOf("disciplina", "data"),
           "calo_non_spiegato" to listOf("reale", "atteso", "intervallo"),
           "efficienza_in_calo" to listOf("sport", "variazione"),
           "fatica_percepita_in_aumento" to listOf("aumento"),
@@ -142,7 +145,7 @@ object Messaggi {
       )
 
   /** Valori da tradurre con un piccolo vocabolario (voc_<parola>), se la parola c'e'. */
-  private val VOCABOLARIO = setOf("banda", "zona", "sport")
+  private val VOCABOLARIO = setOf("banda", "zona", "sport", "disciplina")
 
   private val NUMERI = setOf("z", "ore", "gradi", "valore", "bpm", "rampa", "tsb", "min", "max", "temp", "limite")
 

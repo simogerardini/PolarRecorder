@@ -3139,9 +3139,9 @@ def payload_eventi(s, data_str):
     external_id resta lo schema di questo coach (sw:<chiave>:<data>[:parte]): e' cosi'
     che riconosce come propri gli eventi da aggiornare o pulire."""
     if not s.get("eventi"):
-        return [{"category": "WORKOUT", "start_date_local": f"{data_str}T00:00:00",
+        return _con_tetto_vt1(s, [{"category": "WORKOUT", "start_date_local": f"{data_str}T00:00:00",
                  "type": s["sport"], "name": s["nome"], "description": s["descrizione"],
-                 "moving_time": s["moving_time"], "external_id": external_id(s["key"], data_str)}]
+                 "moving_time": s["moving_time"], "external_id": external_id(s["key"], data_str)}])
     out = []
     for i, e in enumerate(s["eventi"]):
         # MODIFICA (04/10/2026 — regola di Simone): niente apostrofi nei nomi ("NN'" e
@@ -3149,7 +3149,36 @@ def payload_eventi(s, data_str):
         e = dict(e, name=_senza_apostrofi(e["name"]))
         eid = external_id(s["key"], data_str) + ("" if i == 0 else f":{e['type'].lower()}")
         out.append(dict(e, start_date_local=f"{data_str}T00:00:00", external_id=eid))
-    return out
+    return _con_tetto_vt1(s, out)
+
+
+def _tymewear_da_env():
+    try:
+        v = json.loads(os.getenv("TYMEWEAR") or "null")
+        return v if isinstance(v, dict) and v.get("attivo") else None
+    except ValueError:
+        return None
+
+
+TYMEWEAR = _tymewear_da_env()
+ATLETA_CORRENTE = None
+
+
+def _con_tetto_vt1(s, eventi):
+    """30/10/2026 (Parte 13): sedute aerobiche (non qualita') con il tetto al VT1 di Tymewear.
+    Le sedute di soglia e qualita' restano su FTP/CP/LTHR."""
+    # il brick conta come seduta chiave ma la sua bici/corsa facile e' aerobica: il tetto vale
+    # sugli step che partono dalla Z1/Z2 (il ritmo gara del brick 70.3 resta escluso)
+    # letto al momento della scrittura: il profilo arriva nell'ambiente dopo l'import del modulo
+    tw = TYMEWEAR or _tymewear_da_env()
+    if not tw or (s.get("qualita") and not str(s.get("key", "")).startswith("brick")):
+        return eventi
+    import tymewear
+    # soglie dell'atleta lette dal cervello prima del piano (la cache di soglie.py e'
+    # configurata solo dopo, per gli aggiornamenti automatici)
+    atleta = ATLETA_CORRENTE or getattr(soglie, "_ATHLETE_CACHE", None) or {}
+    return [dict(e, description=tymewear.applica(e.get("description"), e.get("type"), atleta, tw))
+            if e.get("type") in ("Ride", "VirtualRide", "Run", "VirtualRun") else e for e in eventi]
 
 
 def payload_evento(s, data_str):

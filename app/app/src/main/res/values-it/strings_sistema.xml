@@ -588,4 +588,15 @@
     <string name="sis_cs_controllo">Controllo il calendario…</string>
     <string name="sis_cs_tolte" formatted="true">Coach spento: tolte %1$s sedute dal calendario.</string>
     <string name="sis_cs_non_tolte" formatted="true">Coach spento, ma non sono riuscito a togliere le sedute: %1$s</string>
+    <string name="sis_tw_nota">Soglie ventilatorie dal test Tymewear (VT1 e VT2). Il coach le usa come tetto per le sedute aerobiche; FTP e LTHR non vengono cambiate.</string>
+    <string name="sis_tw_data">Data del test</string>
+    <string name="sis_tw_manuale">inserito a mano</string>
+    <string name="sis_tw_auto">rilevato dal Garmin</string>
+    <string name="sis_tw_fc">FC (bpm)</string>
+    <string name="sis_tw_passo">Passo (min/km)</string>
+    <string name="sis_tw_test">Test Tymewear</string>
+    <string name="sis_tw_eff_bici">VT1/VT2 bici (Tymewear): senza, le sedute aerobiche non hanno il tetto al primo limite ventilatorio</string>
+    <string name="sis_tw_eff_corsa">VT1/VT2 corsa (Tymewear): senza, le sedute aerobiche non hanno il tetto al primo limite ventilatorio</string>
+    <string name="sis_tw_rip_bici" formatted="true">test Tymewear da ripetere (bici, del %1$s)</string>
+    <string name="sis_tw_rip_corsa" formatted="true">test Tymewear da ripetere (corsa, del %1$s)</string>
 </resources>

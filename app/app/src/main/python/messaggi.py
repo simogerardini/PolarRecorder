@@ -45,6 +45,9 @@ CATALOGO = [
     ("fase_luteale", r"fase luteale: un HRV piu' basso e' atteso e non pesa sulla baseline"),
     ("calo_non_spiegato", r"calo non spiegato: HRV di stanotte (?P<reale>-?[\d.]+)% contro (?P<atteso>-?[\d.]+)% atteso "
                           r"da carico e tag \(±(?P<intervallo>[\d.]+)%\)"),
+    ("tymewear_vt2_ftp", r"Tymewear: VT2 (?P<disciplina>bici) (?P<vt2>\d+) W, FTP (?P<ftp>\d+) W: ripeti il test o aggiorna l'FTP"),
+    ("tymewear_vt2_lthr", r"Tymewear: VT2 (?P<disciplina>bici|corsa) (?P<vt2>\d+) bpm, LTHR (?P<lthr>\d+) bpm: ripeti il test o aggiorna la LTHR"),
+    ("tymewear_da_ripetere", rf"Tymewear: test (?P<disciplina>bici|corsa) del {_D} da ripetere \(piu' di 12 settimane\)"),
     ("notte_esclusa_qualita", rf"notte del {_D} esclusa per qualita': decide la banda dei giorni precedenti"),
     ("dato_biometrico_vecchio", r"ultimo dato biometrico di (?P<giorni>\d+) giorni fa"),
     # ── settimana e forza ─────────────────────────────────────────────────────────
