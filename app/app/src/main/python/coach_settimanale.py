@@ -371,7 +371,8 @@ def notti_da_garmin():
     """True se l'ultima notte (quella che decide la sorgente della banda) e' Garmin."""
     import campi
     righe = [w for w in get_wellness(30) if campi._ha_notte(w)]
-    return bool(righe) and campi.sorgente(righe[-1]) == campi.SORGENTE_GARMIN
+    # 31/10/2026: anche Salute (Apple Watch): notti solo sul telefono, nessun valore su Intervals.icu
+    return bool(righe) and campi.sorgente(righe[-1]) in (campi.SORGENTE_GARMIN, campi.SORGENTE_SALUTE)
 
 
 _BIOMETRICI = re.compile(r"\d+(?:[.,]\d+)?\s?(?:ms|bpm)\b|rMSSD|\bHRV\b|\bSD\b|baseline|normal range", re.I)
