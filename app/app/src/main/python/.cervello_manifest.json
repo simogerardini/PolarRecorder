@@ -4,11 +4,11 @@
   "baseline_cases.json": "ca840cb3246f968ad488632cf9b42a411f03b544324b345b7053858ff553e49d",
   "biometria.py": "8710f559f16f3558ddfb8f51694cdbf4179300156cc9ce8e820d56568558c755",
   "caldo.py": "a2900dc3f161f3bb2447067597d1d5b094c85f75173676c679f626e60dc82a9e",
-  "campi.py": "b6c865d18ec209220ae2cc848923b3826c4c13f67081b84a40297faaf6fd0cea",
+  "campi.py": "0b4bedd163066a0fe1aea2c4467d3f4fd140e908f3abc13a09742a2f334bc4cd",
   "carico.py": "321ef188a1e984bfbc63c44b2eaba6d68fc296fcfb15fb3e3946a59556c9e1d4",
-  "cervello.py": "79032c29839f53e783fc8fe5c20f9b518ae1e495355203f481aa2e6f55bf6797",
+  "cervello.py": "8b4fa0fda6405fd2b7d471271ab501fc3e82cac854e5a5934cbc687f9c864842",
   "checkin.py": "7b48da431019a3a1645a6c862c0cf5a71edca86833069c811cf5054cb96836e2",
-  "coach_settimanale.py": "8aafbd1dd1c200630dc8c169ac1b923ca8f7f92178d4106387b4cec29d4fff46",
+  "coach_settimanale.py": "db505805d19c959744f00a001d4dd74fe326fdc341b9204cd329b5b36f52b760",
   "degradato.py": "ed24851729b44a44e3ef9df5e9fe60d07614b00bd7dc9acc2249e3ad85236f95",
   "detp.py": "97a071a1f3c753d90e37cb6d838cf03afe732767663c0be2308a999302ee4726",
   "efficienza.py": "8e2dfe7053bd51b9c73ac825cdce20d04e7c89029f627e0abf6a1e3cc87132b9",
@@ -20,9 +20,9 @@
   "sedute.py": "e7e1f63c8f12a408a424b4cf75d03b803266440a1eab0c30702a250afd5e4344",
   "soglie.py": "30edb7215e4282bcdb98af8ffb3a32d7d7fd0a684c8c193d6a94755203d8137e",
   "tag_auto.py": "c7d35726d3954051f83c11b356b273aabd50af9cf1c88d6b1e31ed99e14962aa",
-  "traduzioni.py": "a5ade5a0caf737cc6466d7a63e0a5869a60d117162c3ab6c41c20ebadac08847",
+  "traduzioni.py": "56aaf5894019f6e51c0afa04dbff9e143db634e6129ca8435356e1dbb4798251",
   "traduzioni_palestra.py": "97d6c715a9da3da3ebad5b1771cdc522956ae2686af5285a0ba89e2a998428b5",
-  "tymewear.py": "021caa5ba9bc3e9c5ea119bea6c12c02a3a24a4034b82edd4aa0b3fbec065e08"
+  "tymewear.py": "2c164de0560ae72e2febeecb6a78d3a95df6a18d7b6fd628253b4920d2248563"
  },
- "versione": "2026.10.30-tymewear"
+ "versione": "2026.10.31-ripresa"
 }

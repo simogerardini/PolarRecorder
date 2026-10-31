@@ -86,18 +86,38 @@ def tetti(tw, atleta, sport):
 
 
 def applica(descrizione, sport, atleta, tw):
-    """Descrizione con il tetto VT1 sugli step aerobici (vedi testa del modulo)."""
+    """Descrizione con il tetto VT1 sugli step aerobici (vedi testa del modulo) e, se il test
+    ha la VE, la nota "VE sotto <ve> L/min Tymewear" sugli step aerobici attivi (31/10/2026:
+    riferimento ventilatorio da seguire sul data field; Intervals.icu non ha target in VE)."""
     cap = tetti(tw, atleta, sport)
     if not cap or not descrizione:
         return descrizione
     disc, st = disciplina_di(sport), _impostazioni(atleta, sport)
+    ve = _num(((soglie_disc(tw, disc) or {}).get("vt1") or {}).get("ve"))
     righe = []
     for riga in str(descrizione).split("\n"):
-        righe.append(_applica_riga(riga, cap, st, disc) if riga.startswith("- ") and "(ritmo gara)" not in riga else riga)
+        if riga.startswith("- ") and "(ritmo gara)" not in riga:
+            nuova, aerobica = _applica_riga(riga, cap, st, disc, con_esito=True)
+            if aerobica and ve and "intensity=active" in nuova:
+                nuova = _con_nota(nuova, f"VE sotto {round(ve)} L/min Tymewear")
+            righe.append(nuova)
+        else:
+            righe.append(riga)
     return "\n".join(righe)
 
 
-def _applica_riga(riga, cap, st, disc):
+def _con_nota(riga, nota):
+    if riga.rstrip().endswith(")") and "intensity=" in riga.rsplit("(", 1)[0]:
+        return riga.rstrip()[:-1] + f", {nota})"
+    return riga.rstrip() + f" ({nota})"
+
+
+def _applica_riga(riga, cap, st, disc, con_esito=False):
+    r, aerobica = _applica_riga_esito(riga, cap, st, disc)
+    return (r, aerobica) if con_esito else r
+
+
+def _applica_riga_esito(riga, cap, st, disc):
     m = _T_PCT.search(riga)
     if m:
         unita = {"LTHR": "HR", "FTP": "Power", "CP": "Power", "Pace": "Pace"}[m.group("u")]
@@ -105,18 +125,20 @@ def _applica_riga(riga, cap, st, disc):
     else:
         m = _T_ZONA.search(riga)
         if not m:
-            return riga
+            return riga, False
         unita = m.group("u")
         lo, hi = _range_zona(_zone_pct(st, unita, disc), int(m.group("a")), int(m.group("b") or m.group("a")))
         testo_u = {"HR": "LTHR", "Power": "FTP", "Pace": "Pace"}[unita]
     z2_top = _zone_pct(st, unita, disc)[1]
     # step aerobico = parte dalla Z1/Z2 (anche se a cavallo con la Z3, come la bici del brick
     # "81-93% LTHR"); da Z3 in su (tempo, sweet spot, soglia) nessun tetto
-    if unita not in cap or lo > z2_top + 0.5 or hi <= cap[unita]:
-        return riga                       # step non aerobico, nessun tetto per l'unita', o gia' sotto
+    if lo > z2_top + 0.5:
+        return riga, False                # step non aerobico (da Z3 in su)
+    if unita not in cap or hi <= cap[unita]:
+        return riga, True                 # aerobico, nessun tetto per l'unita' o gia' sotto
     nuovo_hi = math.floor(cap[unita])
     nuovo_lo = min(round(lo), nuovo_hi - 3)
-    return riga[:m.start()] + f"{nuovo_lo}-{nuovo_hi}% {testo_u}" + riga[m.end():]
+    return riga[:m.start()] + f"{nuovo_lo}-{nuovo_hi}% {testo_u}" + riga[m.end():], True
 
 
 def _vecchio(data, oggi_str):

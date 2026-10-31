@@ -371,8 +371,7 @@ def notti_da_garmin():
     """True se l'ultima notte (quella che decide la sorgente della banda) e' Garmin."""
     import campi
     righe = [w for w in get_wellness(30) if campi._ha_notte(w)]
-    # 31/10/2026: anche Salute (Apple Watch): notti solo sul telefono, nessun valore su Intervals.icu
-    return bool(righe) and campi.sorgente(righe[-1]) in (campi.SORGENTE_GARMIN, campi.SORGENTE_SALUTE)
+    return bool(righe) and campi.sorgente(righe[-1]) == campi.SORGENTE_GARMIN
 
 
 _BIOMETRICI = re.compile(r"\d+(?:[.,]\d+)?\s?(?:ms|bpm)\b|rMSSD|\bHRV\b|\bSD\b|baseline|normal range", re.I)
@@ -3576,9 +3575,11 @@ def lunedi_di(data_str):
 
 
 def costruisci_settimana(lunedi, races, oura_hist, wellness, activities,
-                         eventi_settimana=None, zone=None, pace100=None, pause=None):
+                         eventi_settimana=None, zone=None, pace100=None, pause=None, dal=None):
     """PIPELINE PURA: dagli input grezzi alla lista di sedute pronte da scrivere.
-    Nessuna chiamata di rete qui dentro — e' questa la funzione che la suite testa."""
+    Nessuna chiamata di rete qui dentro — e' questa la funzione che la suite testa.
+    dal (31/10/2026): primo giorno da pianificare in una settimana gia' iniziata (ripresa del
+    coach a meta' settimana): i giorni prima sono persi, non si recuperano e non compaiono."""
     giorni = [(_dt(lunedi) + timedelta(days=i)).strftime("%Y-%m-%d") for i in range(7)]
 
     pos = posizione_ciclo(lunedi, races,
@@ -3605,11 +3606,16 @@ def costruisci_settimana(lunedi, races, oura_hist, wellness, activities,
            "pace100": pace100 or swim_pace_sec_100m(activities),
            "settimana_pari": (_dt(lunedi).isocalendar()[1] % 2 == 0)}
 
+    # 31/10/2026 (regola di Simone): con un'assenza il volume e' la quota della settimana tipo
+    # dei giorni rimasti, mai il recupero dei minuti persi (prima le sedute chiave ricollocate
+    # e il dimensionamento sul target intero accumulavano volume nei giorni rimasti).
+    quota_disp = _quota_settimana_tipo(pos, disp_sett, indisp, giorni)
     if pos["fase"] == "senza_gara":
         # 04/10/2026: ciclo continuo con settimana tipo e durate proprie (PERPETUO).
         # Niente Word ne' dimensionamento per quote: solo i freni biometrici sul volume.
         # 08/10/2026 (Parte 5): i giorni di assenza a calendario escono gia' dalla settimana
         # tipo, cosi' le sedute chiave si ricollocano nei giorni rimasti (prima si toglievano).
+        pieno_h = sum(x["durata"] for x in settimana_perpetua(pos, disp=disp_sett) if x["famiglia"] != "forza") / 60
         sedute = settimana_perpetua(pos, escludi=indisp, disp=disp_sett)
         for m in _MOTIVI_SETTIMANA:
             if m not in mod["motivi"]:
@@ -3617,13 +3623,15 @@ def costruisci_settimana(lunedi, races, oura_hist, wellness, activities,
         sedute = applica_vincoli(sedute, pos, indisp)
         sedute = applica_modulazione(sedute, mod, pos)
         sedute = scala_biometrica(sedute, mod)
+        if quota_disp < 1:
+            sedute = applica_tetto_ore(sedute, round(pieno_h * quota_disp, 2))
         ore = round(sum(s["durata"] for s in sedute if s["famiglia"] != "forza") / 60, 2)
         sedute = limita_alta_intensita(sedute, pos, ctx)
     else:
         sedute = settimana_tipo(pos)
         sedute = applica_vincoli(sedute, pos, indisp)
         sedute = applica_modulazione(sedute, mod, pos)
-        sedute = dimensiona(sedute, ore, mod, pos)
+        sedute = dimensiona(sedute, round(ore * quota_disp, 2), mod, pos)
         sedute = applica_tetti(sedute, pos)
         sedute = limita_alta_intensita(sedute, pos, ctx)
 
@@ -3659,6 +3667,14 @@ def costruisci_settimana(lunedi, races, oura_hist, wellness, activities,
     sedute_mod.imposta_passo_nuoto(ctx["pace100"])
     for s in sedute:
         s["data"] = giorni[s["giorno"]]
+    if dal and dal > giorni[0]:
+        # 31/10/2026: ripresa a meta' settimana: i giorni passati sono persi (nessun recupero:
+        # le sedute dei giorni rimasti restano quelle della settimana tipo)
+        sedute = [s for s in sedute if s["data"] >= dal]
+        ore = round(sum(s["durata"] for s in sedute if s["famiglia"] != "forza") / 60, 2)
+        vecchi = [m for m in _MOTIVI_TAG if not _motivo_del_passato(m, dal)]
+        mod["motivi"] = [m for m in mod["motivi"] if m not in _MOTIVI_TAG or m in vecchi]
+        _MOTIVI_TAG[:] = vecchi
     accoppia_brick(sedute)
     for s in sedute:
         componi(s, ctx)
@@ -3667,6 +3683,23 @@ def costruisci_settimana(lunedi, races, oura_hist, wellness, activities,
             "ore_target": ore, "volume_precedente": vol_prec, "sedute": sedute,
             "giorni": giorni, "indisponibili": sorted(indisp), "ctx": ctx,
             "carico": info_carico}
+
+
+def _motivo_del_passato(m, dal):
+    date = re.findall(r"\d{4}-\d{2}-\d{2}", m)
+    return bool(date) and all(d < dal for d in date)
+
+
+def _quota_settimana_tipo(pos, disp_sett, indisp, giorni):
+    """Quota dei minuti della settimana tipo (cardio) che cade nei giorni disponibili."""
+    try:
+        base = settimana_perpetua(pos, disp=disp_sett) if pos.get("fase") == "senza_gara" else settimana_tipo(pos)
+    except Exception:
+        return 1.0
+    tot = sum(x.get("durata") or x.get("nominale") or 0 for x in base if x.get("famiglia") != "forza")
+    via = sum(x.get("durata") or x.get("nominale") or 0 for x in base
+              if x.get("famiglia") != "forza" and x["giorno"] in indisp)
+    return max(0.0, 1 - via / tot) if tot else 1.0
 
 
 def esegui(lunedi, dry=False, solo_futuro=True, pre_lock=None, senza_attesa=False):
@@ -3704,8 +3737,10 @@ def esegui(lunedi, dry=False, solo_futuro=True, pre_lock=None, senza_attesa=Fals
     giorni = [(_dt(lunedi) + timedelta(days=i)).strftime("%Y-%m-%d") for i in range(7)]
     eventi = get_events(giorni[0], giorni[-1])
 
+    oggi_r = now_local().strftime("%Y-%m-%d")
     piano = costruisci_settimana(lunedi, races, oura_hist, wellness, activities,
-                                 eventi, zone=zone, pause=pause_recenti(lunedi))
+                                 eventi, zone=zone, pause=pause_recenti(lunedi),
+                                 dal=oggi_r if solo_futuro else None)
     testo = riepilogo(piano["pos"], piano["ore_target"], piano["mod"], piano["sedute"],
                       piano["baseline"], piano["forma"], giorni, piano["ctx"])
     print("\n" + testo + "\n")
@@ -4029,7 +4064,7 @@ def blocchi_riepilogo(oggi_str, pos, baseline, mod, wellness, activities, eventi
     else:
         codice = "RISPETTA"
     provv = bool(b.get("provvisoria")) and b.get("ok")
-    motivo = "; ".join(list(mod.get("motivi") or []) + motivi_tag) or (
+    motivo = "; ".join(dict.fromkeys(list(mod.get("motivi") or []) + motivi_tag)) or (
         "banda verde provvisoria: si segue il piano" if provv and banda == "verde" else
         f"banda {banda}: si segue il piano" if banda else "baseline in calibrazione: si segue il piano")
 

@@ -50,9 +50,7 @@ VECCHI_PER_CHIAVE = {c["chiave"] for c in CAMPI if c.get("vecchio")}
 # stesso livello: la banda usa solo le notti della sorgente dell'ULTIMA notte. Cambiare sorgente
 # riparte con la taratura; tornare alla precedente ritrova le sue notti.
 SORGENTE_FASCIA, SORGENTE_GARMIN = 1, 2
-# 31/10/2026: 3 = Salute (HealthKit su iOS, Apple Watch): notti solo sul telefono, banda separata
-SORGENTE_SALUTE = 3
-SORGENTI = (SORGENTE_FASCIA, SORGENTE_GARMIN, SORGENTE_SALUTE)
+SORGENTI = (SORGENTE_FASCIA, SORGENTE_GARMIN)
 
 
 def sorgente(w):

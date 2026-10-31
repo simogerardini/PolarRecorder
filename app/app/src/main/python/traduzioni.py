@@ -207,6 +207,7 @@ FRAMMENTI = [
     ("Corsa", "Run", "Carrera"),
     # sedute avanzate (13/10/2026)
     ("sotto soglia, controllato", "sub-threshold, controlled", "bajo umbral, controlado"),
+    ("VE sotto", "VE below", "VE por debajo de"),       # 31/10/2026: Tymewear
     ("sprint in salita", "hill sprint", "sprint en subida"),
     ("progressione", "progression", "progresión"),
     # parole degli step
