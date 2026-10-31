@@ -3610,6 +3610,15 @@ def costruisci_settimana(lunedi, races, oura_hist, wellness, activities,
     # dei giorni rimasti, mai il recupero dei minuti persi (prima le sedute chiave ricollocate
     # e il dimensionamento sul target intero accumulavano volume nei giorni rimasti).
     quota_disp = _quota_settimana_tipo(pos, disp_sett, indisp, giorni)
+    # 31/10/2026: rientro dopo una pausa (vedi valuta_rientro): tetto di volume e, nella prima
+    # settimana, solo aerobico. Il TSB della fase non alza mai il volume.
+    rientro = valuta_rientro(activities, dal or lunedi)
+    if rientro:
+        mod["motivi"].append(f"rientro dopo una pausa: volume limitato a {rientro['tetto_h']:g}h "
+                             f"(ultima settimana {rientro['ultima_h']:g}h, abituale {rientro['abituale_h']:g}h)")
+        if rientro["solo_aerobico"]:
+            mod["max_qualita"] = 0
+            mod["motivi"].append("rientro dopo una pausa: nessuna seduta di qualita' questa settimana")
     if pos["fase"] == "senza_gara":
         # 04/10/2026: ciclo continuo con settimana tipo e durate proprie (PERPETUO).
         # Niente Word ne' dimensionamento per quote: solo i freni biometrici sul volume.
@@ -3660,6 +3669,11 @@ def costruisci_settimana(lunedi, races, oura_hist, wellness, activities,
         if m not in mod["motivi"]:
             mod["motivi"].append(m)
     sedute = applica_tetto_ore(sedute, MAX_ORE_CARDIO)
+    if rientro:
+        # quota dei giorni che restano da pianificare (ripresa a meta' settimana)
+        q = 1.0 if not (dal and dal > giorni[0]) else sum(
+            1 for g in giorni if g >= dal) / 7
+        sedute = _tetto_rientro(sedute, rientro["tetto_h"] * q, giorni, dal)
     info_carico = limita_tss(sedute, activities, lunedi, forma, pos)
     if pos["fase"] == "senza_gara":
         ore = round(sum(s["durata"] for s in sedute if s["famiglia"] != "forza") / 60, 2)
@@ -3683,6 +3697,48 @@ def costruisci_settimana(lunedi, races, oura_hist, wellness, activities,
             "ore_target": ore, "volume_precedente": vol_prec, "sedute": sedute,
             "giorni": giorni, "indisponibili": sorted(indisp), "ctx": ctx,
             "carico": info_carico}
+
+
+RIENTRO_SOGLIA = 0.70      # ultima settimana sotto il 70% dell'abituale = rientro
+RIENTRO_MIN = 0.50         # il primo rientro riparte almeno dal 50% dell'abituale
+RIENTRO_SOLO_AEROBICO = 0.50
+
+
+def _tetto_rientro(sedute, tetto_h, giorni, dal):
+    """Tetto delle ore cardio di rientro sui giorni da pianificare: prima le sedute si
+    accorciano fino al minimo (applica_tetto_ore), poi, se non basta, si tolgono le sedute
+    facili piu' corte finche' il tetto e' rispettato (mai recuperare con volume)."""
+    attive = [s for s in sedute if not dal or giorni[s["giorno"]] >= dal]
+    applica_tetto_ore(attive, tetto_h)
+    cardio = lambda: sum(s["durata"] for s in attive if s["famiglia"] != "forza")
+    for s in sorted((s for s in attive if s["famiglia"] != "forza" and not str(s["key"]).startswith("brick")),
+                    key=lambda x: x["durata"]):
+        if cardio() <= tetto_h * 60 + 1:
+            break
+        s["durata"] = 0
+        s["note"].append("tolta per il rientro dopo una pausa")
+    return [s for s in sedute if s["durata"] > 0 or s["famiglia"] == "forza"]
+
+
+def valuta_rientro(activities, rif):
+    """31/10/2026 (Simone: "non va mai forzata la banda TSB"). Dopo una pausa il volume non si
+    rialza per inseguire il TSB della fase. Abituale = mediana delle ore reali delle 4
+    settimane prima dell'ultima (solo quelle con attivita', servono almeno 2); ultima = ore
+    dei 7 giorni prima di rif. Se ultima < 70% dell'abituale: tetto = max(ultima x 1.10,
+    50% dell'abituale), e con ultima < 50% dell'abituale niente qualita'. None altrimenti."""
+    rif_d = _dt(rif)
+    if not rif_d:
+        return None
+    ore = lambda k: volume_reale_settimana(activities, (rif_d - timedelta(days=7 * (k - 1))).strftime("%Y-%m-%d")) or 0.0
+    prima = sorted(v for v in (ore(k) for k in range(2, 6)) if v > 0)
+    if len(prima) < 2:
+        return None
+    abituale = prima[len(prima) // 2] if len(prima) % 2 else (prima[len(prima) // 2 - 1] + prima[len(prima) // 2]) / 2
+    ultima = ore(1)
+    if ultima >= RIENTRO_SOGLIA * abituale:
+        return None
+    return {"tetto_h": round(max(ultima * 1.10, RIENTRO_MIN * abituale), 2), "ultima_h": round(ultima, 1),
+            "abituale_h": round(abituale, 1), "solo_aerobico": ultima < RIENTRO_SOLO_AEROBICO * abituale}
 
 
 def _motivo_del_passato(m, dal):
@@ -4110,6 +4166,8 @@ def blocchi_riepilogo(oggi_str, pos, baseline, mod, wellness, activities, eventi
     resto = [(lun + timedelta(days=i)).strftime("%Y-%m-%d") for i in range(7)]
     resto = [d for d in resto if d >= oggi_str]
     in_assenza = bool(giorni_non_disponibili(eventi_settimana or [], resto))
+    # 31/10/2026: nemmeno al rientro da una pausa: la fascia del TSB non si insegue mai
+    in_assenza = in_assenza or any(str(m).startswith("rientro dopo una pausa") for m in (mod or {}).get("motivi") or [])
     if info.get("fascia") and domenica.get("tsb") is not None and not in_assenza and not (
             info["fascia"][0] <= domenica["tsb"] <= info["fascia"][1]):
         avvisi.append(f"TSB previsto a domenica {domenica['tsb']} fuori dalla fascia attesa "

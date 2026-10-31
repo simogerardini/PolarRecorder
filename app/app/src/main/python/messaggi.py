@@ -48,6 +48,9 @@ CATALOGO = [
     ("tymewear_vt2_ftp", r"Tymewear: VT2 (?P<disciplina>bici) (?P<vt2>\d+) W, FTP (?P<ftp>\d+) W: ripeti il test o aggiorna l'FTP"),
     ("tymewear_vt2_lthr", r"Tymewear: VT2 (?P<disciplina>bici|corsa) (?P<vt2>\d+) bpm, LTHR (?P<lthr>\d+) bpm: ripeti il test o aggiorna la LTHR"),
     ("tymewear_da_ripetere", rf"Tymewear: test (?P<disciplina>bici|corsa) del {_D} da ripetere \(piu' di 12 settimane\)"),
+    ("rientro_volume", r"rientro dopo una pausa: volume limitato a (?P<ore>[\d.]+)h \(ultima settimana (?P<ultima>[\d.]+)h, abituale (?P<abituale>[\d.]+)h\)"),
+    ("rientro_solo_aerobico", r"rientro dopo una pausa: nessuna seduta di qualita' questa settimana"),
+    ("rientro_seduta_tolta", r"tolta per il rientro dopo una pausa"),
     ("notte_esclusa_qualita", rf"notte del {_D} esclusa per qualita': decide la banda dei giorni precedenti"),
     ("dato_biometrico_vecchio", r"ultimo dato biometrico di (?P<giorni>\d+) giorni fa"),
     # ── settimana e forza ─────────────────────────────────────────────────────────

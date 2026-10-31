@@ -6,14 +6,14 @@
   "caldo.py": "a2900dc3f161f3bb2447067597d1d5b094c85f75173676c679f626e60dc82a9e",
   "campi.py": "0b4bedd163066a0fe1aea2c4467d3f4fd140e908f3abc13a09742a2f334bc4cd",
   "carico.py": "321ef188a1e984bfbc63c44b2eaba6d68fc296fcfb15fb3e3946a59556c9e1d4",
-  "cervello.py": "8b4fa0fda6405fd2b7d471271ab501fc3e82cac854e5a5934cbc687f9c864842",
+  "cervello.py": "d08c43ffcfc4ef950aa7a2184bdbf7230c725a2c8666579dbf4652bb36adf80d",
   "checkin.py": "7b48da431019a3a1645a6c862c0cf5a71edca86833069c811cf5054cb96836e2",
-  "coach_settimanale.py": "db505805d19c959744f00a001d4dd74fe326fdc341b9204cd329b5b36f52b760",
+  "coach_settimanale.py": "d234daa7707308afd1066ec3034c8bb2c3293dfaa51ea7241f83c6a99204566e",
   "degradato.py": "ed24851729b44a44e3ef9df5e9fe60d07614b00bd7dc9acc2249e3ad85236f95",
   "detp.py": "97a071a1f3c753d90e37cb6d838cf03afe732767663c0be2308a999302ee4726",
   "efficienza.py": "8e2dfe7053bd51b9c73ac825cdce20d04e7c89029f627e0abf6a1e3cc87132b9",
   "marchio.py": "11c71b6f7d44c420d7d4b7236f869c240a31f02127572cf3af050c33b3190e1c",
-  "messaggi.py": "fc3b4748fdde5ffb265534328960aa49901bba930c6b51893d37046690d3b22e",
+  "messaggi.py": "e097d2b9ab957aef262853318d0bbb08223ddb4a1e72aaced9ad172eb7f58384",
   "modello.py": "80e4ac3b77a8fb3473c8056b6ca7efd0387dcc5d268180eecdfc07567c05d2c1",
   "nomi.py": "c8396ff31a2ffdcfb0eb42ca54eb86c68446cc23e58f27dcdf6dbbc1757faeec",
   "palestra.py": "0b83f89cc970b2ccc361f6ef989b4209c3310afe31afafffbe8235621afa74e6",
@@ -24,5 +24,5 @@
   "traduzioni_palestra.py": "97d6c715a9da3da3ebad5b1771cdc522956ae2686af5285a0ba89e2a998428b5",
   "tymewear.py": "2c164de0560ae72e2febeecb6a78d3a95df6a18d7b6fd628253b4920d2248563"
  },
- "versione": "2026.10.31-ripresa"
+ "versione": "2026.10.31-rientro"
 }
