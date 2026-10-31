@@ -3607,6 +3607,11 @@ def costruisci_settimana(lunedi, races, oura_hist, wellness, activities,
            "pace100": pace100 or swim_pace_sec_100m(activities),
            "settimana_pari": (_dt(lunedi).isocalendar()[1] % 2 == 0)}
 
+    # BUG FIX (31/10/2026, ripresa dopo raffreddore e pausa: domenica con lungo corsa, bici e
+    # nuoto): i giorni di assenza GIA' PASSATI facevano spostare le loro sedute chiave nei
+    # giorni rimasti. Si ricolloca solo per le assenze future; il passato e' perso.
+    if dal and dal > giorni[0]:
+        indisp = {g for g in indisp if giorni[g] >= dal}
     # 31/10/2026 (regola di Simone): con un'assenza il volume e' la quota della settimana tipo
     # dei giorni rimasti, mai il recupero dei minuti persi (prima le sedute chiave ricollocate
     # e il dimensionamento sul target intero accumulavano volume nei giorni rimasti).
