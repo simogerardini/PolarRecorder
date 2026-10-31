@@ -600,4 +600,5 @@
     <string name="sis_tw_eff_corsa">VT1/VT2 running (Tymewear): without them, aerobic sessions have no cap at the first ventilatory threshold</string>
     <string name="sis_tw_rip_bici" formatted="true">Tymewear cycling test to be repeated (of %1$s)</string>
     <string name="sis_tw_rip_corsa" formatted="true">Tymewear running test to be repeated (of %1$s)</string>
+    <string name="sis_cs_riacceso">Coach back on: I\'m replanning the week on Intervals.icu.</string>
 </resources>

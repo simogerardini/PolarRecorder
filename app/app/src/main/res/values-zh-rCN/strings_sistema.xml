@@ -600,4 +600,5 @@
     <string name="sis_tw_eff_corsa">VT1/VT2 跑步（Tymewear）：没有它们，有氧训练就没有第一通气阈的上限</string>
     <string name="sis_tw_rip_bici" formatted="true">Tymewear 骑行测试需要重做（%1$s）</string>
     <string name="sis_tw_rip_corsa" formatted="true">Tymewear 跑步测试需要重做（%1$s）</string>
+    <string name="sis_cs_riacceso">教练已重新开启：正在 Intervals.icu 上重新规划本周。</string>
 </resources>

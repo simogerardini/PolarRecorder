@@ -599,4 +599,5 @@
     <string name="sis_tw_eff_corsa">VT1/VT2 corsa (Tymewear): senza, le sedute aerobiche non hanno il tetto al primo limite ventilatorio</string>
     <string name="sis_tw_rip_bici" formatted="true">test Tymewear da ripetere (bici, del %1$s)</string>
     <string name="sis_tw_rip_corsa" formatted="true">test Tymewear da ripetere (corsa, del %1$s)</string>
+    <string name="sis_cs_riacceso">Coach riacceso: ripianifico la settimana su Intervals.icu.</string>
 </resources>

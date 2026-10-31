@@ -121,6 +121,7 @@ object TestiSistema {
       Voce("eff_lthr_bici", "Le sedute di bici in FC arrivano sull'orologio senza target"),
       Voce("istr_pixel", "Basta l'ottimizzazione della batteria \"Senza restrizioni\"."),
       Voce("cons_sp_riposo", "Il corpo chiede recupero: riposo o attività molto leggera."),
+      Voce("cs_riacceso", "Coach riacceso: ripianifico la settimana su Intervals.icu."),
       Voce("fascia_non_risponde", "La fascia non risponde. Avvicinala al telefono e riprova."),
       Voce("istr_oppo_1", "In Ottimizzazione batteria scegli \"Non ottimizzare\" per %s."),
       Voce("cs_non_tolte", "Coach spento, ma non sono riuscito a togliere le sedute: %s"),

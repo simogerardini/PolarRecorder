@@ -600,4 +600,5 @@
     <string name="sis_tw_eff_corsa">VT1/VT2 carrera (Tymewear): sin ellos, las sesiones aeróbicas no tienen el tope del primer umbral ventilatorio</string>
     <string name="sis_tw_rip_bici" formatted="true">test Tymewear de bici por repetir (del %1$s)</string>
     <string name="sis_tw_rip_corsa" formatted="true">test Tymewear de carrera por repetir (del %1$s)</string>
+    <string name="sis_cs_riacceso">Coach reactivado: replanifico la semana en Intervals.icu.</string>
 </resources>

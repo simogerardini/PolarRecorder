@@ -26,8 +26,11 @@ object ModalitaCoach {
   }
 
   fun imposta(context: Context, acceso: Boolean) {
+    val prima = attivo(context)
     context.getSharedPreferences(PREF, Context.MODE_PRIVATE).edit().putBoolean(K_COACH, acceso).apply()
     stato.value = acceso
+    // riacceso: lo spegnimento ha tolto le sedute future, quindi si ripianifica subito la settimana
+    if (acceso && !prima) RipianificaWorker.avvia(context)
     if (!acceso) {
       // i lavori gia' in coda escono comunque all'avvio; si annullano per non lasciare attese inutili
       val wm = WorkManager.getInstance(context)

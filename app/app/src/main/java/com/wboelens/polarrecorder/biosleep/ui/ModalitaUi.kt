@@ -116,7 +116,7 @@ fun InterruttoreCoach() {
         Text(tr("Controllo il calendario…"), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.primary)
     if (acceso && riacceso)
         Text(
-            tr("Il coach riparte con la prossima notte, o subito con Ripianifica dal profilo atleta."),
+            tr("Coach riacceso: ripianifico la settimana su Intervals.icu."),
             style = MaterialTheme.typography.bodySmall,
             color = MaterialTheme.colorScheme.primary)
     esito?.let { Text(tr(it), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.primary) }
